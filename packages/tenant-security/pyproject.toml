@@ -1,0 +1,16 @@
+[project]
+name = "tenant-security"
+version = "0.1.0"
+description = "Auth, PostgreSQL and tenant isolation for MasterERP Lambdas"
+requires-python = ">=3.11"
+dependencies = [
+  "psycopg[binary]>=3.2",
+  "boto3>=1.35",
+  "PyJWT[crypto]>=2.9",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

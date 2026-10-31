@@ -1,0 +1,18 @@
+[project]
+name = "tenant-onboarding"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+  "tenant-security",
+  "psycopg[binary]>=3.2",
+  "boto3>=1.35",
+]
+
+[tool.uv.sources]
+tenant-security = { path = "../../../../packages/tenant-security", editable = true }
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
