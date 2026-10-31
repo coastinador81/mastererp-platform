@@ -1,1 +1,1 @@
-Componentes y contratos compartidos entre aplicaciones y servicios.
+Contratos, tipos, seguridad de tenant y componentes de interfaz compartidos.

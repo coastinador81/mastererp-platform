@@ -1,1 +1,1 @@
-Frontends de MasterERP. Cada aplicación se despliega de forma independiente.
+Clientes de plataforma futuros: portal, super administración, agentes y storefront. La jerarquía funcional vive en `apps/modules/`; los módulos sin implementación contienen solamente un README.
