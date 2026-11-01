@@ -2,8 +2,6 @@
 
 Objetivo específico: Componer navegación, sesión y tenant activo sin asumir lógica de negocio.
 
-Objetivo específico: Componer navegación, sesión y tenant activo sin asumir lógica de negocio.
-
 Responsabilidad: App Shell — Frontend general, dentro de Plataforma Base.
 Estado: pendiente de implementación en esta capa. Sin código vacío.
 

@@ -2,8 +2,6 @@
 
 Objetivo específico: Proporcionar capacidades transversales para identidad, alta y experiencia de consola.
 
-Objetivo específico: Proporcionar capacidades transversales para identidad, alta y experiencia de consola.
-
 Responsabilidad: experiencia de tenant e identidad. Estado: planned.
 
 ## Contrato y estado de esta capa

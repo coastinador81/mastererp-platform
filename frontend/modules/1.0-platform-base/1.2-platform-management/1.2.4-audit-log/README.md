@@ -2,8 +2,6 @@
 
 Objetivo específico: Registrar operaciones de plataforma con actor y correlación sin contenido sensible.
 
-Objetivo específico: Registrar operaciones de plataforma con actor y correlación sin contenido sensible.
-
 Responsabilidad: Registro de auditoría, dentro de Plataforma Base.
 Estado: pendiente de implementación en esta capa. Sin código vacío.
 

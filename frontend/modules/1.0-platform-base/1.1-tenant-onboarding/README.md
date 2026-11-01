@@ -2,8 +2,6 @@
 
 Objetivo específico: Guiar el alta de tenants, conservar su progreso y aprovisionar las capacidades autorizadas.
 
-Objetivo específico: Guiar el alta de tenants, conservar su progreso y aprovisionar las capacidades autorizadas.
-
 Responsabilidad: alta de tenant. Estado: planned.
 
 ## Contrato y estado de esta capa

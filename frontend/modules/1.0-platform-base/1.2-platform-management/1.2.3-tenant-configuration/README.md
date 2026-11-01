@@ -2,8 +2,6 @@
 
 Objetivo específico: Mantener las preferencias generales del tenant autorizado.
 
-Objetivo específico: Mantener las preferencias generales del tenant autorizado.
-
 Responsabilidad: Configuración del tenant, dentro de Plataforma Base.
 Estado: pendiente de implementación en esta capa. Sin código vacío.
 

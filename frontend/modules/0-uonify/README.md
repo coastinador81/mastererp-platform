@@ -2,8 +2,6 @@
 
 Objetivo específico: Canal conversacional y de voz para consultar y coordinar operaciones con los módulos propietarios.
 
-Objetivo específico: Canal conversacional y de voz para consultar y coordinar operaciones con los módulos propietarios.
-
 Responsabilidad: Chat, voz, memoria, conversaciones, selección de modelos, guardas y orquestación. Cerebro principal compartido.
 Estado: estructura funcional; implementación pendiente.
 

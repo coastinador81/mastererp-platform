@@ -2,8 +2,6 @@
 
 Objetivo específico: Definir permisos técnicos y su evaluación; la administración funcional de roles pertenece a Seguridad.
 
-Objetivo específico: Definir permisos técnicos y su evaluación; la administración funcional de roles pertenece a Seguridad.
-
 Responsabilidad: Roles y permisos, dentro de Plataforma Base.
 Estado: pendiente de implementación en esta capa. Sin código vacío.
 
