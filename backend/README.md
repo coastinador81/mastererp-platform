@@ -1,0 +1,1 @@
+Código backend agnóstico de proveedor. La jerarquía funcional vive en `backend/modules/`; las Lambdas pertenecen a cada módulo. Código transversal en `backend/shared/`. Los módulos sin implementación contienen solamente un README.

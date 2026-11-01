@@ -1,0 +1,1 @@
+Clientes de plataforma: portal, super administración, agentes y storefront. La jerarquía funcional vive en `frontend/modules/`; el shell vive en `frontend/app-shell/`. Los módulos sin implementación contienen solamente un README.

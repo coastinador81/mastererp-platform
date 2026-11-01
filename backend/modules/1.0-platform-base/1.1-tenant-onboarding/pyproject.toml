@@ -9,7 +9,7 @@ dependencies = [
 ]
 
 [tool.uv.sources]
-tenant-security = { path = "../../../../packages/tenant-security", editable = true }
+tenant-security = { path = "../../../shared/tenant-security", editable = true }
 
 [project.optional-dependencies]
 dev = ["pytest>=8.0"]

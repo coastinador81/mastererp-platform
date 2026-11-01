@@ -8,4 +8,4 @@ Responsabilidad: alta de tenant, sesiones, módulos y aprovisionamiento idempote
 - `lambdas/*/` — puntos de entrada Lambda (`lambda_handler`).
 - `tests/` — unitarias + integración (`MASTERERP_TEST_DATABASE_URL`).
 
-Empaquetado SAM: incluir dependencia editable `packages/tenant-security` en el artefacto o capa Lambda.
+Empaquetado SAM: incluir dependencia editable `backend/shared/tenant-security` en el artefacto o capa Lambda.
