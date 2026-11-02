@@ -1,0 +1,122 @@
+{
+  "environment": "DEV",
+  "region": "us-west-1",
+  "validation": "real Cognito access token and HTTP; no doubles",
+  "model_application_invoked": false,
+  "results": [
+    {
+      "case": "initial_spaces",
+      "http": 200,
+      "expected": 200,
+      "result": "passed"
+    },
+    {
+      "case": "same_actor_spaces_include_both",
+      "http": 200,
+      "expected": 200,
+      "result": "passed"
+    },
+    {
+      "case": "tenant_a_permission_allowed",
+      "http": 200,
+      "expected": 200,
+      "result": "passed"
+    },
+    {
+      "case": "tenant_b_explicit_deny",
+      "http": 403,
+      "expected": 403,
+      "result": "passed"
+    },
+    {
+      "case": "parallel_same_actor_1",
+      "http": 200,
+      "expected": 200,
+      "result": "passed"
+    },
+    {
+      "case": "parallel_same_actor_2",
+      "http": 403,
+      "expected": 403,
+      "result": "passed"
+    },
+    {
+      "case": "parallel_same_actor_3",
+      "http": 200,
+      "expected": 200,
+      "result": "passed"
+    },
+    {
+      "case": "parallel_same_actor_4",
+      "http": 403,
+      "expected": 403,
+      "result": "passed"
+    },
+    {
+      "case": "parallel_same_actor_5",
+      "http": 200,
+      "expected": 200,
+      "result": "passed"
+    },
+    {
+      "case": "parallel_same_actor_6",
+      "http": 403,
+      "expected": 403,
+      "result": "passed"
+    },
+    {
+      "case": "parallel_same_actor_7",
+      "http": 200,
+      "expected": 200,
+      "result": "passed"
+    },
+    {
+      "case": "parallel_same_actor_8",
+      "http": 403,
+      "expected": 403,
+      "result": "passed"
+    },
+    {
+      "case": "tenant_b_permission_allowed",
+      "http": 200,
+      "expected": 200,
+      "result": "passed"
+    },
+    {
+      "case": "tenant_a_still_allowed",
+      "http": 200,
+      "expected": 200,
+      "result": "passed"
+    },
+    {
+      "case": "tenant_b_revoked_by_api",
+      "http": 403,
+      "expected": 403,
+      "result": "passed"
+    },
+    {
+      "case": "tenant_a_not_revoked",
+      "http": 200,
+      "expected": 200,
+      "result": "passed"
+    },
+    {
+      "case": "temporary_membership_removed",
+      "result": "passed"
+    },
+    {
+      "case": "restore_admin_a",
+      "result": "passed"
+    },
+    {
+      "case": "restore_admin_b",
+      "result": "passed"
+    },
+    {
+      "case": "spaces_return_to_original",
+      "http": 200,
+      "expected": 200,
+      "result": "passed"
+    }
+  ]
+}
