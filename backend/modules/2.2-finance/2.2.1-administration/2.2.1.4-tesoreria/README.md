@@ -15,3 +15,7 @@ Dependencias: contexto autorizado de tenant y contratos del padre; reglas y crit
 - [Bancos](2.2.1.4.4-bancos/README.md)
 - [Transferencias](2.2.1.4.5-transferencias/README.md)
 - [Conciliación](2.2.1.4.6-conciliacion/README.md)
+
+## Diagnóstico técnico DEV
+
+Función: `mastererp-dev-adm-tesoreria`. Estado funcional: pendiente de implementación; el handler mínimo no implementa operaciones de tesoreria. Código en [handler.py](lambdas/mastererp-dev-adm-tesoreria/handler.py). Python 3.12, 128 MB, timeout 5 segundos; logs con retención de 14 días. Sin API Gateway, Function URL, acceso a datos ni secretos. Ver procedimiento de empaquetado, despliegue y verificación en Administración.

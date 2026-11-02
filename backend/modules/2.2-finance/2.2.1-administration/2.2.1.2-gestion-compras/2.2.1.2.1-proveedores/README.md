@@ -8,3 +8,7 @@ Propietario funcional: Finanzas → Administración; responsable nominal pendien
 Dependencias: contexto autorizado de tenant y contratos del padre; reglas y criterios de aceptación se definirán con el Product Owner al priorizar la tarea.
 
 Maestro de referencia: [Proveedores de Catálogo](../../../../2.1-catalog/2.1.5-suppliers/README.md). Esta dependencia documental no acredita que el maestro esté implementado; consumir su contrato cuando exista, sin copiar sus datos.
+
+## Diagnóstico técnico DEV
+
+Función: `mastererp-dev-adm-proveedores`. Estado funcional: pendiente de implementación; el handler mínimo no implementa operaciones de proveedores. Código en [handler.py](lambdas/mastererp-dev-adm-proveedores/handler.py). Python 3.12, 128 MB, timeout 5 segundos; logs con retención de 14 días. Sin API Gateway, Function URL, acceso a datos ni secretos. Ver procedimiento de empaquetado, despliegue y verificación en Administración.
