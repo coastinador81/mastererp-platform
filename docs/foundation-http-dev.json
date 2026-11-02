@@ -1,0 +1,276 @@
+{
+  "environment": "DEV",
+  "region": "us-west-1",
+  "validation": "real Cognito Code+PKCE and HTTP; no local doubles",
+  "results": [
+    {
+      "case": "uonify_missing_token",
+      "http": 401,
+      "expected": 401,
+      "result": "passed"
+    },
+    {
+      "case": "uonify_invalid_token",
+      "http": 401,
+      "expected": 401,
+      "result": "passed"
+    },
+    {
+      "case": "uonify_id_token_rejected",
+      "http": 403,
+      "expected": 403,
+      "result": "passed"
+    },
+    {
+      "case": "uonify_owner_a",
+      "http": 200,
+      "expected": 200,
+      "result": "passed"
+    },
+    {
+      "case": "uonify_owner_b",
+      "http": 200,
+      "expected": 200,
+      "result": "passed"
+    },
+    {
+      "case": "uonify_non_admin_member",
+      "http": 403,
+      "expected": 403,
+      "result": "passed"
+    },
+    {
+      "case": "uonify_foreign_tenant",
+      "http": 403,
+      "expected": 403,
+      "result": "passed"
+    },
+    {
+      "case": "uonify_actor_switch_back",
+      "http": 200,
+      "expected": 200,
+      "result": "passed"
+    },
+    {
+      "case": "cognito_existing_session_refresh",
+      "http": 200,
+      "expected": 200,
+      "result": "passed"
+    },
+    {
+      "case": "parallel_read_context_1",
+      "http": 200,
+      "expected": 200,
+      "result": "passed"
+    },
+    {
+      "case": "parallel_read_context_2",
+      "http": 200,
+      "expected": 200,
+      "result": "passed"
+    },
+    {
+      "case": "parallel_read_context_3",
+      "http": 403,
+      "expected": 403,
+      "result": "passed"
+    },
+    {
+      "case": "parallel_read_context_4",
+      "http": 403,
+      "expected": 403,
+      "result": "passed"
+    },
+    {
+      "case": "parallel_read_context_5",
+      "http": 200,
+      "expected": 200,
+      "result": "passed"
+    },
+    {
+      "case": "parallel_read_context_6",
+      "http": 200,
+      "expected": 200,
+      "result": "passed"
+    },
+    {
+      "case": "parallel_read_context_7",
+      "http": 403,
+      "expected": 403,
+      "result": "passed"
+    },
+    {
+      "case": "parallel_read_context_8",
+      "http": 403,
+      "expected": 403,
+      "result": "passed"
+    },
+    {
+      "case": "spaces_a",
+      "http": 200,
+      "expected": 200,
+      "result": "passed"
+    },
+    {
+      "case": "spaces_b",
+      "http": 200,
+      "expected": 200,
+      "result": "passed"
+    },
+    {
+      "case": "onboarding_missing_token",
+      "http": 401,
+      "expected": 401,
+      "result": "passed"
+    },
+    {
+      "case": "onboarding_invalid_token",
+      "http": 401,
+      "expected": 401,
+      "result": "passed"
+    },
+    {
+      "case": "onboarding_create_owned_session",
+      "http": 201,
+      "expected": 201,
+      "result": "passed"
+    },
+    {
+      "case": "onboarding_read_owned_session",
+      "http": 200,
+      "expected": 200,
+      "result": "passed"
+    },
+    {
+      "case": "onboarding_foreign_session_hidden",
+      "http": 404,
+      "expected": 404,
+      "result": "passed"
+    },
+    {
+      "case": "onboarding_foreign_tenant",
+      "http": 403,
+      "expected": 403,
+      "result": "passed"
+    },
+    {
+      "case": "onboarding_cannot_attach_foreign_tenant",
+      "http": 403,
+      "expected": 403,
+      "result": "passed"
+    },
+    {
+      "case": "onboarding_no_partial_foreign_association",
+      "http": 200,
+      "expected": 200,
+      "result": "passed"
+    },
+    {
+      "case": "uonify_user_inactive",
+      "http": 403,
+      "expected": 403,
+      "result": "passed"
+    },
+    {
+      "case": "onboarding_user_inactive",
+      "http": 403,
+      "expected": 403,
+      "result": "passed"
+    },
+    {
+      "case": "uonify_context_restored_after_user_inactive",
+      "http": 200,
+      "expected": 200,
+      "result": "passed"
+    },
+    {
+      "case": "uonify_tenant_inactive",
+      "http": 403,
+      "expected": 403,
+      "result": "passed"
+    },
+    {
+      "case": "onboarding_tenant_inactive",
+      "http": 403,
+      "expected": 403,
+      "result": "passed"
+    },
+    {
+      "case": "uonify_context_restored_after_tenant_inactive",
+      "http": 200,
+      "expected": 200,
+      "result": "passed"
+    },
+    {
+      "case": "uonify_membership_inactive",
+      "http": 403,
+      "expected": 403,
+      "result": "passed"
+    },
+    {
+      "case": "onboarding_membership_inactive",
+      "http": 403,
+      "expected": 403,
+      "result": "passed"
+    },
+    {
+      "case": "uonify_context_restored_after_membership_inactive",
+      "http": 200,
+      "expected": 200,
+      "result": "passed"
+    },
+    {
+      "case": "uonify_permission_denied",
+      "http": 403,
+      "expected": 403,
+      "result": "passed"
+    },
+    {
+      "case": "uonify_context_restored_after_permission_denied",
+      "http": 200,
+      "expected": 200,
+      "result": "passed"
+    },
+    {
+      "case": "uonify_module_disabled",
+      "http": 403,
+      "expected": 403,
+      "result": "passed"
+    },
+    {
+      "case": "uonify_context_restored_after_module_disabled",
+      "http": 200,
+      "expected": 200,
+      "result": "passed"
+    },
+    {
+      "case": "no_credentials_in_sampled_logs",
+      "result": "passed",
+      "events_checked": 152
+    },
+    {
+      "case": "structured_audit_observed",
+      "result": "passed",
+      "records": 30
+    },
+    {
+      "case": "restore_admin_a",
+      "result": "passed"
+    },
+    {
+      "case": "restore_admin_b",
+      "result": "passed"
+    },
+    {
+      "case": "cleanup_own_session_probe",
+      "result": "passed"
+    }
+  ],
+  "pending": [
+    "HTTP tenant/company creation concurrency and content conflicts",
+    "HTTP cross-company/branch operations",
+    "HTTP same actor with two tenant memberships",
+    "HTTP provisioning and six routes with removed targets"
+  ],
+  "qa_mutations": "limited existing synthetic fixtures; original baseline restored in finally; new owned session removed by guarded action"
+}

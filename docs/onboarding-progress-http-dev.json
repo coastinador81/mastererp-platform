@@ -1,0 +1,51 @@
+{
+  "validation": "real DEV HTTP; no local doubles",
+  "region": "us-west-1",
+  "results": [
+    {
+      "case": "create_probe",
+      "http": 201,
+      "expected": 201,
+      "result": "passed"
+    },
+    {
+      "case": "progress_without_token",
+      "http": 401,
+      "expected": 401,
+      "result": "passed"
+    },
+    {
+      "case": "progress_owned_session",
+      "http": 200,
+      "expected": 200,
+      "result": "passed"
+    },
+    {
+      "case": "patch_owned_session",
+      "http": 200,
+      "expected": 200,
+      "result": "passed"
+    },
+    {
+      "case": "complete_owned_session",
+      "http": 200,
+      "expected": 200,
+      "result": "passed"
+    },
+    {
+      "case": "read_completed_progress",
+      "http": 200,
+      "expected": 200,
+      "result": "passed"
+    },
+    {
+      "case": "completion_persisted",
+      "result": "passed"
+    },
+    {
+      "case": "cleanup_owned_probe",
+      "result": "passed"
+    }
+  ],
+  "scope": "session/progress only; completion does not claim provisioning"
+}

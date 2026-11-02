@@ -1,5 +1,6 @@
 """Real DEV HTTP probes. Secrets/tokens stay in memory; QA changes restored in finally."""
-import argparse,json,time,uuid,urllib.request,urllib.error
+import argparse,json,time,uuid,urllib.request,urllib.error,urllib.parse
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 import boto3
 from botocore.config import Config
@@ -54,6 +55,17 @@ def main():
         check('uonify_non_admin_member',http(AGENT,path,access('member_a'),a),403)
         check('uonify_foreign_tenant',http(AGENT,path,access('admin_a'),b),403)
         check('uonify_actor_switch_back',http(AGENT,path,access('admin_a'),a),200,honest)
+        refresh_request=urllib.request.Request(qa.DOMAIN+'/oauth2/token',data=urllib.parse.urlencode({
+            'grant_type':'refresh_token','client_id':qa.CLIENT,'refresh_token':tokens['admin_a']['refresh_token']}).encode(),
+            headers={'Content-Type':'application/x-www-form-urlencoded'})
+        with urllib.request.urlopen(refresh_request,timeout=30) as response:refreshed=json.load(response)
+        secret_values.extend(v for k,v in refreshed.items() if k.endswith('_token'))
+        check('cognito_existing_session_refresh',http(AGENT,path,refreshed['access_token'],a),200,honest)
+        probes=[('admin_a',a,200),('admin_b',b,200),('admin_a',b,403),('admin_b',a,403)]*2
+        with ThreadPoolExecutor(max_workers=4) as pool:
+            replies=list(pool.map(lambda item:http(AGENT,path,access(item[0]),item[1]),probes))
+        for index,(probe,response) in enumerate(zip(probes,replies)):
+            check('parallel_read_context_'+str(index+1),response,probe[2])
         check('spaces_a',http(AGENT,qa.SPACES,access('admin_a')),200,lambda body:[x['id'] for x in body.get('spaces',[])]==[a])
         check('spaces_b',http(AGENT,qa.SPACES,access('admin_b')),200,lambda body:[x['id'] for x in body.get('spaces',[])]==[b])
         check('onboarding_missing_token',http(ADMIN,session_path+'/ffffffff-ffff-ffff-ffff-ffffffffffff'),401)
