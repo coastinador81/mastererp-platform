@@ -1,5 +1,7 @@
 # Lambdas técnicas de Administración DEV
 
+Estado de esta entrega: integración de las ocho rutas públicas de diagnóstico en preparación; ver sección Integración HTTP. La sección Resultado comprobado de la fase inicial describe el despliegue anterior sin API.
+
 Ocho diagnósticos mínimos, sin capacidades de negocio, base de datos, secretos, llamadas de red, API Gateway o Function URL. Región us-west-1; cuenta 277352717693. Invocación directa exclusivamente mediante identidad IAM autorizada. El statusCode 200 del handler no es evidencia HTTP de una API.
 
 ## Propiedad
@@ -41,3 +43,23 @@ Conservar changeset.json, manifest.json y verification.json del directorio tempo
 Si falla, inspeccionar aws cloudformation describe-stack-events --stack-name mastererp-dev-administration --profile mastererp-admin --region us-west-1; no ampliar permisos de aplicación para hacerlo pasar. CloudFormation revierte su propio stack al fallar. Para una actualización posterior, recuperar los commits/artefactos anteriores y preparar otro change set sin reemplazos. No borrar automáticamente el stack, logs ni artefactos; una eliminación requiere petición explícita. El bucket reutilizado no pertenece a este stack y no se elimina al revertirlo.
 
 Clientes y Proveedores no crean maestros nuevos. Sin modificaciones de Database, SQL ni frontend. Las rutas HTTP y su autenticación se implementarán en una entrega posterior autorizada.
+
+## Integración HTTP — decisión posterior del propietario
+
+El propietario solicitó dejar públicas únicamente estas ocho rutas técnicas GET /v1/administration/<capacidad>/health (AuthorizationType NONE). No se implementa autorización de operaciones de negocio ni se entregan datos de tenant. No se crean ni modifican Cognito o autorizadores. La prueba esperada ahora es HTTP 200 SIN token; la comprobación anterior de denegación sin token queda reemplazada por esta decisión explícita.
+
+API reutilizada: mastererp-dev-admin-api, ID qx8nmypdhi; base https://qx8nmypdhi.execute-api.us-west-1.amazonaws.com. Propietario confirmado: mastererp-dev-onboarding, recurso AdminHttpApi; stage $default con AutoDeploy. La API administrativa no tenía autorizadores. Se preservan CORS, las 12 rutas y 12 integraciones previas; no se despliega modules/api-gateways.yml ni se actualiza el stack de onboarding, que contiene recursos heredados pendientes de transición.
+
+Cada resources.yml raíz propietario añade solo su Integration AWS_PROXY (payload 2.0), HealthRoute GET y ApiPermission. El permiso restringe cuenta, API, stage $default, método GET y ruta exacta. ExistingAdminApiId se parametriza y limita al ID confirmado. No se cambia el código de las Lambdas, sus roles ni su configuración.
+
+El stack mastererp-dev-administration ensambla ahora 48 recursos: los 24 anteriores y 24 nuevos de integración (8 rutas, 8 integraciones y 8 permisos). El ensamblado debe conservar los 24 recursos anteriores sin cambios. El change set esperado contiene únicamente 24 altas. No se crea otra API ni se cambia su propietario. El script anterior actualizado conserva todas las declaraciones al reaplicar; no usar versiones antiguas de 24 recursos porque retirarían las rutas del stack.
+
+Desplegar con el mismo comando --deploy --verify documentado arriba. Después, desde Infrastructure:
+
+```powershell
+py scripts/validate_administration_http.py --output "$env:TEMP/mastererp-administration-api/http-verification.json"
+```
+
+El validador no obtiene contraseñas ni tokens: exige 200 y JSON exacto en las ocho rutas sin autenticación, y comprueba preflight del origen legítimo existente. CORS permanece a cargo de la API y Lambda no añade cabeceras CORS. No se añade app-dev.uonify.com ni otro origen por esta entrega. Comparar las rutas/integraciones originales y configuración CORS antes y después; los IDs nuevos se admiten solo para estas ocho capacidades.
+
+Recuperación: inspeccionar eventos del stack y preparar un change set que retire únicamente los 24 recursos de esta integración si se requiere revertirla; conservar las ocho funciones y las rutas ajenas. No ejecutar eliminaciones o restauraciones automáticamente. Antes de añadir lógica o datos de negocio, definir e implementar JWT y autorización funcional de tenant; estos diagnósticos no acreditan esas capacidades.

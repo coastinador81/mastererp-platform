@@ -15,4 +15,4 @@ Dependencias: contexto autorizado de tenant y contratos del padre; reglas y crit
 
 ## Diagnóstico técnico DEV
 
-Función: `mastererp-dev-adm-gastos`. Estado funcional: pendiente de implementación; el handler mínimo no implementa operaciones de gastos. Código en [handler.py](lambdas/mastererp-dev-adm-gastos/handler.py). Python 3.12, 128 MB, timeout 5 segundos; logs con retención de 14 días. Sin API Gateway, Function URL, acceso a datos ni secretos. Ver procedimiento de empaquetado, despliegue y verificación en Administración.
+Función: `mastererp-dev-adm-gastos`. Estado funcional: pendiente de implementación; el handler mínimo no implementa operaciones de gastos. Código en [handler.py](lambdas/mastererp-dev-adm-gastos/handler.py). Python 3.12, 128 MB, timeout 5 segundos; logs con retención de 14 días. Con ruta GET técnica pública en el API administrativo existente; sin Function URL, acceso a datos ni secretos. Ver procedimiento de empaquetado, despliegue y verificación en Administración.
