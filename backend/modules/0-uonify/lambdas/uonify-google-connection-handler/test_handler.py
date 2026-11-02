@@ -4,7 +4,7 @@ import os
 import pathlib
 import sys
 import unittest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock, ANY
 
 folder = pathlib.Path(__file__).parent
 sys.path.insert(0, str(folder.parents[3] / "shared/tenant-security"))
@@ -71,7 +71,7 @@ class HandlerTests(unittest.TestCase):
             self.assertEqual(json.loads(result["body"]), {"provider": "google_cloud",
                 "status": "not_configured", "oauthImplemented": False, "geminiEnabled": False})
             check.assert_called_once_with("https://test.invalid", "test-subject",
-                "62000000-0000-0000-0000-000000000001")
+                "62000000-0000-0000-0000-000000000001", correlation_id=ANY)
 
     def test_missing_tenant(self):
         event = self.event()

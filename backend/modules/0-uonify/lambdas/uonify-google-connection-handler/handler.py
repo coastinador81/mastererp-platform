@@ -15,7 +15,7 @@ def response(code, body):
             "cache-control": "no-store"}, "body": json.dumps(body)}
 
 
-def _handle(event):
+def _handle(event, correlation_id):
     route = event.get("routeKey")
     if route not in (ROUTE, SPACES_ROUTE):
         return response(404, {"error": "not_found"})
@@ -28,7 +28,7 @@ def _handle(event):
         tenant = headers.get("x-mastererp-tenant-id")
         if not tenant:
             raise AccessError(403, "tenant_context_required")
-        connection_access(issuer, subject, tenant)
+        connection_access(issuer, subject, tenant, correlation_id=correlation_id)
         return response(200, {"provider": "google_cloud", "status": "not_configured",
                              "oauthImplemented": False, "geminiEnabled": False})
     except AccessError as error:
@@ -38,10 +38,11 @@ def _handle(event):
 
 
 def lambda_handler(event, context):
-    request_id = getattr(context, "aws_request_id", None)
-    correlation_id = request_id if isinstance(request_id, str) and re.fullmatch(
-        r"[a-zA-Z0-9-]{1,64}", request_id) else str(uuid.uuid4())
-    result = _handle(event)
+    try:
+        correlation_id = str(uuid.UUID(str(getattr(context, "aws_request_id", ""))))
+    except (ValueError, TypeError, AttributeError):
+        correlation_id = str(uuid.uuid4())
+    result = _handle(event, correlation_id)
     logging.getLogger(__name__).warning(json.dumps({
         "correlation_id": correlation_id, "status_code": result["statusCode"]}))
     return result

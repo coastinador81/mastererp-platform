@@ -81,25 +81,29 @@ def _set_actor(connection, issuer, subject):
     return actor
 
 
-def connection_access(issuer, subject, tenant_id):
+def connection_access(issuer, subject, tenant_id, *, correlation_id=None):
     try:
         tenant_id = str(UUID(tenant_id))
     except (ValueError, TypeError, AttributeError):
         raise AccessError(400, "invalid_tenant_context") from None
-    with application_connection() as connection:
-        actor = _set_actor(connection, issuer, subject)
-        connection.run("SELECT set_config('app.current_tenant_id',:tenant,true)", tenant=tenant_id)
-        outcome = "failed"
-        try:
+    actor = None
+    outcome = "failed"
+    try:
+        with application_connection() as connection:
+            actor = _set_actor(connection, issuer, subject)
+            connection.run("SELECT set_config('app.current_tenant_id',:tenant,true)", tenant=tenant_id)
             require_capability(connection,module_code="uonify.core",permission_code="uonify.connections.manage")
             outcome = "succeeded"
-        except CapabilityDenied:
-            outcome = "denied"
-            raise AccessError(403,"tenant_permission_denied") from None
-        finally:
-            audit_result(LOGGER,actor_id=actor,tenant_id=tenant_id,
-                         company_id=None,operation="uonify.connections.status",result=outcome,
-                         correlation_id=str(uuid4()))
+    except CapabilityDenied:
+        outcome = "denied"
+        raise AccessError(403,"tenant_permission_denied") from None
+    except AccessError as error:
+        outcome = "denied" if error.status in (401,403) else "failed"
+        raise
+    finally:
+        audit_result(LOGGER,actor_id=actor,tenant_id=tenant_id,company_id=None,
+                     operation="uonify.connections.status",result=outcome,
+                     correlation_id=correlation_id or str(uuid4()))
 
 
 def user_spaces(issuer, subject):
