@@ -17,7 +17,7 @@ def api_response(status: int, body: dict[str, Any] | list[Any] | None = None) ->
         "statusCode": status,
         "headers": {
             "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*",
+            "Cache-Control": "no-store",
         },
         "body": json.dumps(payload, default=str),
     }

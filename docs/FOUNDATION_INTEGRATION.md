@@ -18,9 +18,9 @@ Para escrituras se necesita un comando atómico con su propia transacción, auto
 
 No activar el guard nuevo hasta aplicar SQL 007 después de publicar y verificar la base 006. El empaquetador actual de Uonify usa lista explícita de archivos y aún no incluye foundation_access.py: añadirlo y conectar el guard será parte de la promoción revisada. No confundir una prueba con dobles en tests con verificación SQL o HTTP.
 
-## Candidato Database local
+## Base Database conciliada y aplicada (actualización 2026-11-02)
 
-schema/007_foundation_boundaries.sql (todavía local/no publicado) conserva firmas existentes de creación de tenant y aporta:
+schema/007_foundation_boundaries.sql (publicada en 2a829bd y aplicada en DEV, ejecución 41492018133) conserva firmas existentes de creación de tenant y aporta:
 
 - FK compuesta tenant/empresa de sucursal e índice de referencia, sin borrar ni reasignar datos. NOT VALID primero: nuevas escrituras se verifican; validar filas previas solo si no hay inconsistencias. RLS oculta relaciones heredadas incompatibles. Si quedan filas inconsistentes, informar y resolverlas en otra decisión autorizada.
 - Contexto activo para onboarding (draft/active permitidos para preparación; suspended/cancelled/deleted denegados). Operaciones de negocio requieren active mediante guard de capacidad. No convertir draft en acceso general a negocio.
@@ -30,7 +30,7 @@ schema/007_foundation_boundaries.sql (todavía local/no publicado) conserva firm
 
 Se conserva la unicidad global de claves del contrato anterior: una misma clave no es reutilizable entre actores/operaciones/tenants; se rechaza sin devolver otra respuesta. Cambiar a unicidad compuesta requiere transición acordada. Las claves antiguas sin huella o expiradas se rechazan como conflicto en las primitivas nuevas; no se inventa su contenido original ni se borran. El backend deberá mapear el SQLSTATE 23505 de conflicto idempotente a HTTP 409 sin exponer mensajes SQL.
 
-## Procedimiento de promoción que queda bloqueado
+## Secuencia anterior de promoción (histórico; sustituida por evidencia actual)
 
 1. El propietario del trabajo existente publica su base desplegada: schema/006_shared_identity_permissions.sql, manifiesto/driver/helper oficial del migrador, tests de identidad y modelo de 17 tablas, e integración de identidad/artefactos necesaria. No incluirlos en un commit de otro desarrollador.
 2. Contrastar ese commit con AWS. Hoy Git dev contiene SCHEMA_FILES hasta 005 y un test de 14 tablas; el Lambda oficial contiene 006 y las tres tablas de identidad existen realmente. Un push SQL puede actualizar el migrador con código anterior y volver a aplicar reglas incompletas.
@@ -43,3 +43,13 @@ Se conserva la unicidad global de claves del contrato anterior: una misma clave 
 ## Límites de esta entrega
 
 Las ocho Lambdas de Administración son diagnósticos. No se implementa Finanzas. Los candidatos no están conectados al runtime desplegado y no certifican cobertura de API/pantallas. Se preservaron los cambios previos del equipo. Consultar en Infrastructure docs/FOUNDATION_DEV_DIAGNOSIS.md y foundation-dev-diagnosis.json; resultados SQL desechables en Database docs/foundation-local-validation.json cuando se registre la validación final.
+
+## Reparación actual del backend
+
+006 se concilió selectivamente con el ZIP AWS, sin modificar SQL aplicado; 007 se publicó y el workflow completó deploy-migrator y apply en DEV. El helper require_capability se integra en connection_access de Uonify: exige uonify.core activo además de uonify.connections.manage y respeta override false. Un tenant sin asignación activa obtiene 403; no se activan módulos de clientes automáticamente. Espacios/login/scopes no cambian. La habilitación temporal de módulos para pruebas se limita a los fixtures QA y se restaura.
+
+Onboarding valida firma RS256, exp/iat, issuer, client_id y token_use=access antes de abrir RDS. Las claves públicas se incluyen al empaquetar desde el issuer Cognito exacto; un kid nuevo falla cerrado y exige reempaquetado. No se requiere NAT para autenticación. Vinculación solo issuer/sub mediante resolve_external_identity, nunca email ni grupos. RDS usa mastererp_app y TLS verify-full, conexión nueva y contexto local por petición, commit/rollback y cierre. Se quita CORS comodín del handler: la API sigue siendo propietaria de CORS.
+
+La corrección activa cubre las dos funciones HTTP existentes de sesiones/progreso. Las seis rutas con destinos eliminados y el aprovisionador interno mantienen pendientes sus contratos y reparación; no se presentan como operativos. La decisión previa del propietario permite al usuario interno activo autenticado crear su propio tenant, sin grupos Cognito ni elegir otro propietario. El flag de autorregistro continúa false en este lote: la ruta de creación aún apunta a una función retirada y no se ha validado su reparación. No se amplía la aprobación a registrar identidades por correo ni a aprovisionar tenants ajenos. No se implementa Finanzas.
+
+Pruebas nuevas: seis unitarias con firmas RSA reales en imagen oficial Python 3.12 Linux (sin AWS/RDS); SQL y concurrencia desechables en Database. Los resultados HTTP DEV se registran aparte tras desplegar. Los mocks de las unitarias no se empaquetan ni se usan como respaldo en producción.

@@ -20,7 +20,7 @@ def test_auth_context_create_tenant_flag():
     auth = AuthContext(user_id=uuid4(), email="a@b.c", groups=frozenset(), claims={})
     assert auth.can_create_tenant() is False
     auth_admin = AuthContext(user_id=uuid4(), email="a@b.c", groups=frozenset({"tenant.register"}), claims={})
-    assert auth_admin.can_create_tenant() is True
+    assert auth_admin.can_create_tenant() is False
 
 
 @patch("tenant_security.db.load_database_secret")

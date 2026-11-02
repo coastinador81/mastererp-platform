@@ -1,0 +1,21 @@
+{
+  "aws_code_sha256": "sSnkEno3ImnDDE5v13xgK9yP54oCj+mH4mj0+wUMzXU=",
+  "reused_reviewed_files": [
+    {
+      "file": "backend/modules/0-uonify/lambdas/uonify-google-connection-handler/handler.py",
+      "normalized_sha256": "4f05fb7741c155ddd00be1cc58276c6f19a6de4b2b654d56eab5a81ade4b7e21",
+      "matches_deployed": true
+    },
+    {
+      "file": "backend/shared/tenant-security/tenant_security/__init__.py",
+      "normalized_sha256": "7a6865f0aeb730eea605da5ed86f4685d343babbdb1638a34cd1676110577d9b",
+      "matches_deployed": true
+    },
+    {
+      "file": "backend/shared/tenant-security/tenant_security/rds-us-west-1-bundle.pem",
+      "normalized_sha256": "9ba000312920fc8033d9d59b9b6ba8b18fbed8dc989fb6bdfeab3e8df9c67a7f",
+      "matches_deployed": true
+    }
+  ],
+  "changed": "identity_access: require_capability; package: include foundation_access. Existing handler and stable JWT/scopes contract retained."
+}

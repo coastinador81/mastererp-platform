@@ -1,68 +1,42 @@
+"""Application credentials only; one transaction and a fresh connection per request."""
 import json
 import os
+from pathlib import Path
 from contextlib import contextmanager
-from typing import Any, Iterator
-from uuid import UUID
-
 import boto3
 import psycopg
 from psycopg.rows import dict_row
-
+from psycopg.types.json import JsonbDumper
 from tenant_security.http import HttpError
 
-_secret_cache: dict[str, Any] | None = None
-
-
-def load_database_secret() -> dict[str, Any]:
-    global _secret_cache
-    if _secret_cache is not None:
-        return _secret_cache
-    if os.environ.get("DATABASE_SECRET_JSON"):
-        _secret_cache = json.loads(os.environ["DATABASE_SECRET_JSON"])
-        return _secret_cache
-    secret_arn = os.environ.get("DATABASE_SECRET_ARN")
-    if not secret_arn:
-        raise HttpError(500, "Database secret is not configured")
-    try:
-        client = boto3.client("secretsmanager", region_name=os.environ.get("AWS_REGION", "us-west-2"))
-        raw = client.get_secret_value(SecretId=secret_arn)
-        _secret_cache = json.loads(raw["SecretString"])
-    except Exception as exc:
-        raise HttpError(503, "Unable to load database credentials") from exc
-    return _secret_cache
-
-
-def connect_dsn() -> str:
-    if os.environ.get("DATABASE_URL"):
-        return os.environ["DATABASE_URL"]
-    creds = load_database_secret()
-    host = os.environ.get("DATABASE_HOST", creds.get("host", "localhost"))
-    port = os.environ.get("DATABASE_PORT", creds.get("port", 5432))
-    dbname = os.environ.get("DATABASE_NAME", creds.get("dbname", "mastererp"))
-    user = os.environ.get("DATABASE_USER", creds.get("username"))
-    password = creds.get("password")
-    sslmode = os.environ.get("DATABASE_SSLMODE", "require")
-    return f"postgresql://{user}:{password}@{host}:{port}/{dbname}?sslmode={sslmode}"
-
+def load_database_secret():
+    arn = os.environ.get("DATABASE_SECRET_ARN")
+    if not arn:
+        raise HttpError(503, "Database configuration unavailable")
+    raw = boto3.client("secretsmanager").get_secret_value(SecretId=arn)
+    value = json.loads(raw["SecretString"])
+    if value.get("username") != "mastererp_app":
+        raise HttpError(503, "Application credentials required")
+    return value
 
 @contextmanager
-def db_connection(
-    *,
-    user_id: UUID | None = None,
-    tenant_id: UUID | None = None,
-) -> Iterator[psycopg.Connection]:
-    conn = psycopg.connect(connect_dsn(), row_factory=dict_row, connect_timeout=5)
+def db_connection(*, user_id=None, tenant_id=None, correlation_id=None, operation="onboarding"):
+    creds = load_database_secret()
+    conn = psycopg.connect(host=os.environ["DATABASE_HOST"], port=int(creds.get("port",5432)),
+        dbname="mastererp", user="mastererp_app", password=creds["password"],
+        sslmode="verify-full", sslrootcert=str(Path(__file__).with_name("rds-us-west-1-bundle.pem")),
+        row_factory=dict_row, connect_timeout=5)
+    conn.adapters.register_dumper(dict, JsonbDumper)
+    conn.adapters.register_dumper(list, JsonbDumper)
     try:
-        with conn.cursor() as cur:
-            if user_id is not None:
-                cur.execute("SELECT set_config('app.current_user_id', %s, true)", (str(user_id),))
-            if tenant_id is not None:
-                cur.execute("SELECT set_config('app.current_tenant_id', %s, true)", (str(tenant_id),))
+        if conn.execute("SELECT current_user AS role").fetchone()["role"] != "mastererp_app":
+            raise HttpError(503, "Application role required")
+        for key, value in {"current_user_id":user_id,"current_tenant_id":tenant_id,
+                           "current_operation":operation,"correlation_id":correlation_id,
+                           "current_company_id":None,"current_branch_id":None}.items():
+            conn.execute("SELECT set_config(%s,%s,true)",("app."+key,str(value) if value else ""))
         yield conn
         conn.commit()
-    except psycopg.OperationalError as exc:
-        conn.rollback()
-        raise HttpError(503, "Database connection failed") from exc
     except Exception:
         conn.rollback()
         raise

@@ -1,14 +1,12 @@
+"""Cognito access-token adapter for legacy Onboarding, without group/email linking."""
 import json
 import os
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
 from uuid import UUID
-
 import jwt
-from jwt import PyJWKClient
-
 from tenant_security.http import HttpError
-
 
 @dataclass(frozen=True)
 class AuthContext:
@@ -18,98 +16,47 @@ class AuthContext:
     claims: dict[str, Any]
 
     def has_group(self, group: str) -> bool:
-        return group in self.groups
+        return False  # Cognito groups never authorize tenants.
 
     def can_create_tenant(self) -> bool:
-        if self.has_group("platform.admin") or self.has_group("tenant.register"):
-            return True
         return os.environ.get("ALLOW_TENANT_SELF_REGISTRATION", "false").lower() == "true"
 
-
-_jwks_client: PyJWKClient | None = None
-
-
-def _jwt_issuer() -> str:
-    pool_id = os.environ["COGNITO_USER_POOL_ID"]
-    region = os.environ.get("AWS_REGION", "us-west-2")
-    return f"https://cognito-idp.{region}.amazonaws.com/{pool_id}"
-
-
-def _validate_jwt(token: str) -> dict[str, Any]:
-    global _jwks_client
-    issuer = _jwt_issuer()
-    if _jwks_client is None:
-        _jwks_client = PyJWKClient(f"{issuer}/.well-known/jwks.json")
-    signing_key = _jwks_client.get_signing_key_from_jwt(token)
-    audience = os.environ.get("COGNITO_APP_CLIENT_ID")
-    options = {"verify_aud": bool(audience)}
-    return jwt.decode(
-        token,
-        signing_key.key,
-        algorithms=["RS256"],
-        audience=audience,
-        issuer=issuer,
-        options=options,
-    )
-
-
-def resolve_auth(event: dict[str, Any], conn) -> AuthContext:
-    mode = os.environ.get("AUTH_MODE", "cognito").lower()
+def validate_request(event):
     headers = {k.lower(): v for k, v in (event.get("headers") or {}).items()}
-
-    if mode == "local":
-        user_header = headers.get("x-mastererp-user-id")
-        if not user_header:
-            raise HttpError(401, "Missing X-MasterERP-User-Id header")
-        user_id = UUID(user_header)
-        row = conn.execute(
-            "SELECT id, email FROM plataforma.users WHERE id = %s",
-            (user_id,),
-        ).fetchone()
-        if not row:
-            raise HttpError(401, "Unknown user")
-        groups = frozenset(g.strip() for g in headers.get("x-mastererp-groups", "").split(",") if g.strip())
-        return AuthContext(user_id=row["id"], email=row["email"], groups=groups, claims={})
-
-    auth_header = headers.get("authorization", "")
-    if not auth_header.lower().startswith("bearer "):
+    value = headers.get("authorization", "")
+    if not value.lower().startswith("bearer "):
         raise HttpError(401, "Missing bearer token")
-    token = auth_header.split(" ", 1)[1].strip()
+    issuer, client = os.environ.get("COGNITO_ISSUER"), os.environ.get("COGNITO_APP_CLIENT_ID")
+    if not issuer or not client:
+        raise HttpError(503, "Identity configuration unavailable")
     try:
-        claims = _validate_jwt(token)
-    except jwt.PyJWTError as exc:
-        raise HttpError(401, "Invalid token") from exc
+        token = value.split(" ", 1)[1].strip()
+        header = jwt.get_unverified_header(token)
+        if header.get("alg") != "RS256":
+            raise jwt.InvalidTokenError()
+        # Public issuer keys are pinned into the deployment artefact. No NAT needed.
+        # A new unknown kid fails closed until the package is refreshed.
+        keys = json.loads(Path(__file__).with_name("cognito-jwks.json").read_text())["keys"]
+        jwk = next(k for k in keys if k.get("kid") == header.get("kid") and k.get("use") == "sig")
+        claims = jwt.decode(token, jwt.PyJWK.from_dict(jwk).key, algorithms=["RS256"],
+                            issuer=issuer, options={"verify_aud": False,
+                            "require": ["exp", "iat", "iss", "sub", "token_use", "client_id"]})
+        if claims.get("token_use") != "access" or claims.get("client_id") != client or not claims.get("sub"):
+            raise jwt.InvalidTokenError()
+        return claims
+    except (jwt.PyJWTError, StopIteration, ValueError, TypeError, KeyError):
+        raise HttpError(401, "Invalid access token") from None
 
-    sub = claims.get("sub")
-    email = claims.get("email")
-    if not sub:
-        raise HttpError(401, "Token missing subject")
+def resolve_auth(event, conn, *, verified_claims=None):
+    claims = verified_claims if verified_claims is not None else validate_request(event)
+    row = conn.execute("SELECT plataforma.resolve_external_identity(%s,%s) AS id",
+                       (claims["iss"], claims["sub"])).fetchone()
+    if not row or row["id"] is None:
+        raise HttpError(403, "Identity not linked or inactive")
+    return AuthContext(user_id=row["id"], email=None, groups=frozenset(), claims=claims)
 
-    row = conn.execute(
-        """
-        SELECT id, email
-        FROM plataforma.users
-        WHERE external_identity_id = %s OR email = %s
-        LIMIT 1
-        """,
-        (sub, email),
-    ).fetchone()
-    if not row:
-        raise HttpError(403, "User is not provisioned in MasterERP")
-
-    groups = frozenset(claims.get("cognito:groups") or [])
-    return AuthContext(user_id=row["id"], email=row["email"], groups=groups, claims=claims)
-
-
-def resolve_tenant_for_request(auth: AuthContext, conn, tenant_id: UUID) -> UUID:
-    row = conn.execute(
-        """
-        SELECT tenant_id
-        FROM plataforma.user_tenants
-        WHERE tenant_id = %s AND user_id = %s AND status = 'active'
-        """,
-        (tenant_id, auth.user_id),
-    ).fetchone()
-    if not row and not auth.has_group("platform.admin"):
+def resolve_tenant_for_request(auth, conn, tenant_id):
+    row = conn.execute("SELECT plataforma.user_has_tenant_access(%s) AS allowed", (tenant_id,)).fetchone()
+    if not row or row["allowed"] is not True:
         raise HttpError(403, "Tenant access denied")
     return tenant_id
