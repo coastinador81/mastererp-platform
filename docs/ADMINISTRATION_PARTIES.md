@@ -1,6 +1,6 @@
 # Clientes y Proveedores DEV
 
-Estado de implementación: handlers y comandos SQL preparados; evidencias de publicación y HTTP en Database/docs/parties-dev-validation.json y partidos de validación asociados. No hay frontend ni reglas fiscales.
+Estado de implementación: desplegado y validado en DEV; evidencias de publicación y HTTP en Database/docs/parties-dev-validation.json y informes de validación asociados. No hay frontend ni reglas fiscales.
 
 ## Modelo y autorización
 
@@ -33,3 +33,7 @@ Idempotencia: almacén compartido, clave interna derivada de actor/tenant/operac
 py scripts/package_parties.py --dependencies <dependencias Python existentes> --output <artefactos>. Driver pg8000 puro Python compatible con arm64/Linux. Se empaquetan los dos handlers existentes, parties.py exclusivo de Administración, tenant_security y bundle CA; sin secretos. El empaquetador genérico anterior es histórico para diagnósticos y no debe desplegar estas dos funciones.
 
 Infraestructura y despliegue: mastererp-infrastructure/scripts/deploy_parties.py; API en su propietario actual Onboarding, funciones/rutas en el hijo Administración, actualizado mediante Finanzas. No invocar directamente un update del stack hijo. Recuperación: preservar ZIP/plantillas previos y revisar change set inverso; SQL se corrige hacia delante, no se revierte borrando datos.
+
+## Resultado verificado DEV
+
+Desplegado: 33 comprobaciones HTTP funcionales aprobadas, con persistencia, idempotencia, versiones, permisos, aislamiento y limpieza acotada. Evidencia principal en Database/docs/ADMINISTRATION_PARTIES_DEV.md y parties-http-validation.json. Se documentan aparte los tres 403 previos de Uonify y la incidencia de reimportación SAM recuperada con nuevos IDs de rutas/integraciones. Las ocho Lambdas conservaron sus IDs y las otras seis su código.
