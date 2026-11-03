@@ -36,4 +36,4 @@ Se conserva la ruta y responsabilidad funcional. La composición Finanzas → Ad
 
 ## Ubicación frontend objetivo
 
-Administración es una capacidad del frontend de Finanzas, accesible bajo finanzas.uonify.com/administracion. No tiene frontend, build desplegable o subdominio independiente por este contrato. Las implementaciones de API/datos no acreditan esta UI. Tenant/empresa y sesión siguen el [contrato frontend común](../../../../docs/FRONTEND_ARCHITECTURE.md); el backend conserva la autorización efectiva.
+Administración pertenece al frontend de Finanzas junto con Contabilidad, BI y capacidades asociadas. Sus pantallas deben presentarse dentro del espacio general de Uonify, con menú, identidad y contexto comunes. No tiene frontend, build desplegable o subdominio propio. Las rutas internas y enlaces directos se definirán con la navegación; no se impone una URL bajo un dominio financiero. El mecanismo de integración está pendiente y las APIs/datos no acreditan esta UI. Ver [contrato frontend común](../../../../docs/FRONTEND_ARCHITECTURE.md); el backend autoriza cada operación.

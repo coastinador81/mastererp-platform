@@ -20,7 +20,7 @@ Se conserva la ruta y responsabilidad funcional. La composición Finanzas → Ad
 
 ## Navegación y unidad de entrega objetivo
 
-Raíz: finanzas.uonify.com. Administración (/administracion), Contabilidad (/contabilidad), BI (/bi) y otras capacidades viven dentro de este frontend financiero; Administración no tiene frontend ni subdominio separados. El build/pipeline/despliegue/rollback corresponde al módulo principal Finanzas. No se acredita implementación o dominio financiero DEV por esta decisión. Ver [contrato oficial](../../../docs/FRONTEND_ARCHITECTURE.md); se mantienen nombres y numeración de carpetas.
+Finanzas agrupa Administración, Contabilidad, BI y capacidades asociadas. Sus pantallas deben presentarse dentro del espacio general de Uonify (entrada DEV app-dev.uonify.com), con navegación, identidad y contexto comunes y apertura desde el menú sin usar obligatoriamente el chat. Mantiene componentes, build, pipeline, despliegue y rollback propios. La integración técnica, rutas internas y enlaces directos están pendientes: no se fija `/finanzas` como entrada independiente ni se exige crear finanzas.uonify.com en producción. Administración no tiene frontend/subdominio separado. Ver [contrato oficial](../../../docs/FRONTEND_ARCHITECTURE.md).
 
 ## Página inicial pública DEV
 
@@ -36,4 +36,4 @@ Artefacto: `dist/`, no versionado. Node 24 en CI. Configuración por modo Vite: 
 
 Publicación propia: `.github/workflows/publish-finance-dev.yml`, al cambiar código/build de esta aplicación en dev o mediante dispatch. Autenticación GitHub OIDC, sin claves AWS. Las variables no secretas FINANCE_DEV_BUCKET y FINANCE_DEV_DISTRIBUTION_ID proceden de outputs del stack propietario de hosting. Publica assets con hash antes del HTML, conserva versiones anteriores y después invalida `/` y `/index.html`. No publica otros módulos.
 
-Destino DEV: https://finanzas-dev.uonify.com. El resultado real y recursos se registran en Infrastructure `modules/2.2-finance/HOSTING.md`. Producción finanzas.uonify.com permanece solo como arquitectura objetivo. Recuperación: revertir únicamente archivos de esta aplicación y publicar dev para reconstruir el artefacto previo; no eliminar stacks ni cambiar DNS. La página pública no acredita autenticación, autorización o capacidades financieras implementadas.
+Destino DEV: https://finanzas-dev.uonify.com. El resultado real y recursos se registran en Infrastructure `modules/2.2-finance/HOSTING.md`. Es un acceso independiente de desarrollo y pruebas, no la navegación objetivo del usuario final. No es obligatorio crear finanzas.uonify.com en producción; la integración de pantallas dentro de Uonify sigue pendiente. Recuperación: revertir únicamente archivos de esta aplicación y publicar dev para reconstruir el artefacto previo; no eliminar stacks ni cambiar DNS. La página pública no acredita autenticación, autorización o capacidades financieras implementadas.
