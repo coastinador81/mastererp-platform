@@ -3,7 +3,13 @@
 Objetivo específico: Organizar preparación operativa de pedidos.
 
 Responsabilidad: Preparación, dentro de Operaciones.
-Estado: pendiente de implementación en esta capa. Sin código vacío.
+Estado: candidato funcional implementado; no desplegado.
+
+La API permite listar, iniciar, marcar líneas y completar una preparación. Solo
+acepta pedidos `CONFIRMED`; al completar todas las líneas compromete la reserva
+de Inventario y deja el pedido `READY`. Implementación en `preparation_api/`,
+paquete reproducible en `lambdas/mastererp-dev-preparation/` y pruebas en
+`tests/`. Permisos: `operations.preparation.read/write`.
 
 
 ## Contrato y estado de esta capa
@@ -12,7 +18,6 @@ Código: 2.3.2. Nombre/ruta: `2.3.2-preparation`. Objetivo y alcance: los descri
 
 Capa: backend. Dependencias: contexto autenticado, tenant y contratos del padre cuando correspondan; contratos adicionales pendientes de definición. Exclusiones: lógica y recursos de otros módulos; conectores técnicos fuera de Digital Sales. APIs/eventos/MCP: no declarar disponibles por existir esta carpeta; revisar implementación y contrato antes de consumir. Propuestas sin contrato confirmado permanecen pendientes.
 
-Estado verificable: la reserva documental no acredita implementación; conservar cualquier código/plantilla existente y revisar evidencia específica antes de marcar implementado.
+Estado verificable: pruebas unitarias y recorrido SQL integrado aprobados localmente. Despliegue, backfill y smoke DEV pendientes.
 
 Validaciones: estructura local mediante scripts/validate_structure.py. Pendientes: contratos específicos, responsable nominal y pruebas funcionales antes de habilitar esta capacidad.
-

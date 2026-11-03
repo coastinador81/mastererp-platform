@@ -1,6 +1,8 @@
 # Cómo desarrollar un módulo
 
 Leer [contexto](../PROJECT.md), [carpetas](FOLDER_STANDARD.md) y [estándar](DEVELOPMENT_STANDARD.md).
+Aplicar además el [patrón verificable](IMPLEMENTATION_PATTERN.md), incluida la
+regla de máximo 500 líneas de código fuente por archivo.
 
 1. Identificar módulo, submódulo o pantalla y su dominio propietario.
 2. Leer su README y los padres pertinentes.

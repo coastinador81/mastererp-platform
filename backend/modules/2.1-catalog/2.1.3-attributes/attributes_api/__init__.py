@@ -1,0 +1,1 @@
+"""Catalog attribute definitions API."""

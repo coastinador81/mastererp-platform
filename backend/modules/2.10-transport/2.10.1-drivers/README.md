@@ -3,7 +3,7 @@
 Objetivo específico: Mantener repartidores y su disponibilidad autorizada.
 
 Responsabilidad: Repartidores, dentro de Transporte.
-Estado: pendiente de implementación en esta capa. Sin código vacío.
+Estado: candidato funcional implementado, pendiente de despliegue e integración.
 
 
 ## Contrato y estado de esta capa
@@ -12,7 +12,6 @@ Código: 2.10.1. Nombre/ruta: `2.10.1-drivers`. Objetivo y alcance: los descrito
 
 Capa: backend. Dependencias: contexto autenticado, tenant y contratos del padre cuando correspondan; contratos adicionales pendientes de definición. Exclusiones: lógica y recursos de otros módulos; conectores técnicos fuera de Digital Sales. APIs/eventos/MCP: no declarar disponibles por existir esta carpeta; revisar implementación y contrato antes de consumir. Propuestas sin contrato confirmado permanecen pendientes.
 
-Estado verificable: la reserva documental no acredita implementación; conservar cualquier código/plantilla existente y revisar evidencia específica antes de marcar implementado.
+Estado verificable: API Python, repositorio SQL, Lambda empaquetable y pruebas unitarias. Expone lectura, creación idempotente, actualización optimista y asignación a nodos; Cognito no se aprovisiona desde esta Lambda.
 
-Validaciones: estructura local mediante scripts/validate_structure.py. Pendientes: contratos específicos, responsable nominal y pruebas funcionales antes de habilitar esta capacidad.
-
+Validaciones: estructura local, pruebas unitarias y paquete Lambda. Pendientes: despliegue DEV, smoke con identidad real e integración al app-shell.

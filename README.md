@@ -6,6 +6,8 @@ MasterERP conserva datos, reglas, procesos y autorización. `app-dev.uonify.com`
 
 Entrada rápida: [START_HERE.md](START_HERE.md).
 
+Patrón obligatorio para capacidades nuevas: [patrón verificable](docs/IMPLEMENTATION_PATTERN.md).
+
 ## Mapa físico y referencias
 
 ```text

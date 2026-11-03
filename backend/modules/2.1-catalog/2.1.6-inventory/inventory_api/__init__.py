@@ -1,0 +1,1 @@
+"""Node-scoped Inventory API."""
