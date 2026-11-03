@@ -34,7 +34,6 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::277352717693:role/mastererp-dev-finance-frontend-github-role
           aws-region: us-west-1
-          allowed-account-ids: '277352717693'
       - name: Publish immutable assets then entry point
         env:
           BUCKET: ${{ vars.FINANCE_DEV_BUCKET }}
