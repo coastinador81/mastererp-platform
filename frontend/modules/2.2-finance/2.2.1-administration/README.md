@@ -33,3 +33,7 @@ Clientes y Proveedores consumen maestros existentes sin duplicarlos. Proveedores
 ## Jerarquía de infraestructura
 
 Se conserva la ruta y responsabilidad funcional. La composición Finanzas → Administración y las reservas de Contabilidad/BI se documentan en [docs/FINANCE_HIERARCHY.md](../../../../docs/FINANCE_HIERARCHY.md). En Infrastructure, cada recurso permanece en el YAML raíz de su carpeta propietaria; una carpeta no obliga a crear un stack. El resultado AWS se informa por separado en el mapa y evidencia de Infrastructure.
+
+## Ubicación frontend objetivo
+
+Administración es una capacidad del frontend de Finanzas, accesible bajo finanzas.uonify.com/administracion. No tiene frontend, build desplegable o subdominio independiente por este contrato. Las implementaciones de API/datos no acreditan esta UI. Tenant/empresa y sesión siguen el [contrato frontend común](../../../../docs/FRONTEND_ARCHITECTURE.md); el backend conserva la autorización efectiva.

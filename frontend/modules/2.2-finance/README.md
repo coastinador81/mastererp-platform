@@ -1,4 +1,4 @@
-# Finance frontend
+# Finanzas — frontend principal
 
 Objetivo específico: Coordinar los dominios financieros sin mezclar ejecución operativa.
 
@@ -17,3 +17,7 @@ Validaciones: estructura local mediante scripts/validate_structure.py. Pendiente
 ## Jerarquía de infraestructura
 
 Se conserva la ruta y responsabilidad funcional. La composición Finanzas → Administración y las reservas de Contabilidad/BI se documentan en [docs/FINANCE_HIERARCHY.md](../../../docs/FINANCE_HIERARCHY.md). En Infrastructure, cada recurso permanece en el YAML raíz de su carpeta propietaria; una carpeta no obliga a crear un stack. El resultado AWS se informa por separado en el mapa y evidencia de Infrastructure.
+
+## Navegación y unidad de entrega objetivo
+
+Raíz: finanzas.uonify.com. Administración (/administracion), Contabilidad (/contabilidad), BI (/bi) y otras capacidades viven dentro de este frontend financiero; Administración no tiene frontend ni subdominio separados. El build/pipeline/despliegue/rollback corresponde al módulo principal Finanzas. No se acredita implementación o dominio financiero DEV por esta decisión. Ver [contrato oficial](../../../docs/FRONTEND_ARCHITECTURE.md); se mantienen nombres y numeración de carpetas.
