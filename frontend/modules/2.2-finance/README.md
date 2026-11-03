@@ -21,3 +21,19 @@ Se conserva la ruta y responsabilidad funcional. La composición Finanzas → Ad
 ## Navegación y unidad de entrega objetivo
 
 Raíz: finanzas.uonify.com. Administración (/administracion), Contabilidad (/contabilidad), BI (/bi) y otras capacidades viven dentro de este frontend financiero; Administración no tiene frontend ni subdominio separados. El build/pipeline/despliegue/rollback corresponde al módulo principal Finanzas. No se acredita implementación o dominio financiero DEV por esta decisión. Ver [contrato oficial](../../../docs/FRONTEND_ARCHITECTURE.md); se mantienen nombres y numeración de carpetas.
+
+## Página inicial pública DEV
+
+Aplicación mínima en esta raíz propietaria, sin pantallas nuevas, login, APIs, datos ni operaciones de negocio. Entrada `index.html`, estilos en `src/style.css`; reutiliza Vite con versión fijada y lockfile. `.env.dev` solo contiene la etiqueta pública Desarrollo; nunca introducir secretos en variables VITE_. El frontend completo y la continuidad de sesión/contexto con Uonify siguen pendientes.
+
+```powershell
+cd frontend/modules/2.2-finance
+npm ci
+npm run build
+```
+
+Artefacto: `dist/`, no versionado. Node 24 en CI. Configuración por modo Vite: `npm exec vite build -- --mode <ambiente>`; solo DEV está configurado y autorizado. No crea QA/PROD. No se necesita servidor ni dependencias runtime en hosting.
+
+Publicación propia: `.github/workflows/publish-finance-dev.yml`, al cambiar código/build de esta aplicación en dev o mediante dispatch. Autenticación GitHub OIDC, sin claves AWS. Las variables no secretas FINANCE_DEV_BUCKET y FINANCE_DEV_DISTRIBUTION_ID proceden de outputs del stack propietario de hosting. Publica assets con hash antes del HTML, conserva versiones anteriores y después invalida `/` y `/index.html`. No publica otros módulos.
+
+Destino DEV: https://finanzas-dev.uonify.com. El resultado real y recursos se registran en Infrastructure `modules/2.2-finance/HOSTING.md`. Producción finanzas.uonify.com permanece solo como arquitectura objetivo. Recuperación: revertir únicamente archivos de esta aplicación y publicar dev para reconstruir el artefacto previo; no eliminar stacks ni cambiar DNS. La página pública no acredita autenticación, autorización o capacidades financieras implementadas.
