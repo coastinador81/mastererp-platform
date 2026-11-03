@@ -8,6 +8,7 @@ on:
       - 'frontend/modules/2.2-finance/src/**'
       - 'frontend/modules/2.2-finance/package*.json'
       - 'frontend/modules/2.2-finance/.env.dev'
+      - 'frontend/modules/2.2-finance/.gitattributes'
       - '.github/workflows/publish-finance-dev.yml'
 permissions:
   contents: read
