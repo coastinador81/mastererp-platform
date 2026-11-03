@@ -42,7 +42,7 @@ def authenticated_identity(event, scope):
 
 
 @contextmanager
-def application_connection():
+def application_connection(*, write=False):
     if os.environ.get("IDENTITY_DB_ENABLED", "false") != "true" or not os.environ.get("DATABASE_SECRET_ARN"):
         raise AccessError(503, "identity_database_pending")
     import boto3
@@ -59,12 +59,14 @@ def application_connection():
         database="mastererp", ssl_context=ssl.create_default_context(
             cafile=str(Path(__file__).with_name("rds-us-west-1-bundle.pem"))), timeout=5)
     try:
-        connection.run("BEGIN READ ONLY")
+        connection.run("BEGIN" if write else "BEGIN READ ONLY")
         if connection.run("SELECT current_user")[0][0] != "mastererp_app":
             raise AccessError(503, "application_role_required")
         # Always clear both values transaction-locally before resolving any actor.
         connection.run("SELECT set_config('app.current_user_id','',true), set_config('app.current_tenant_id','',true)")
         yield connection
+        if write:
+            connection.run("COMMIT")
     finally:
         try:
             connection.run("ROLLBACK")

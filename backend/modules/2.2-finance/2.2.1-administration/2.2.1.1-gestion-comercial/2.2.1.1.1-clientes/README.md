@@ -12,3 +12,7 @@ Maestro de clientes: no se encontró una ubicación o contrato explícito en los
 ## Diagnóstico técnico DEV
 
 Función: `mastererp-dev-adm-clientes`. Estado funcional: pendiente de implementación; el handler mínimo no implementa operaciones de clientes. Código en [handler.py](lambdas/mastererp-dev-adm-clientes/handler.py). Python 3.12, 128 MB, timeout 5 segundos; logs con retención de 14 días. Con ruta GET técnica pública en el API administrativo existente; sin Function URL, acceso a datos ni secretos. Ver procedimiento de empaquetado, despliegue y verificación en Administración.
+
+## Capacidad funcional de terceros
+
+Se implementan listado paginado, detalle, creación idempotente y actualización versionada mediante el maestro de terceros y perfiles por empresa (SQL 014). La sección de diagnóstico anterior describe la fase histórica; /health se conserva. Contrato vigente: docs/ADMINISTRATION_PARTIES.md en la raíz de Platform. Sin frontend ni fiscalidad.
