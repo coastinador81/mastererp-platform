@@ -56,6 +56,40 @@ class PartiesTests(unittest.TestCase):
             self.assertEqual(json.loads(response['body'])['data'],{'items':[{'id':ACTOR}],'next_cursor':ACTOR})
             connect.assert_called_once_with(write=False)
 
+    def test_full_supplier_details_are_forwarded_atomically(self):
+        event=self.event('POST');event['rawPath']='/v1/administration/proveedores'
+        event['headers']['idempotency-key']='qa-details'
+        details={'datos_generales':{'email':'qa@example.invalid','pais_fiscal':'VE'},
+                 'contactos':[{'nombre':'QA','principal':True}],
+                 'condiciones':{'plazo_pago_dias':'30','descuento_pronto_pago':'3','plazo_pronto_pago_dias':'5'}}
+        event['body']=json.dumps({'company_id':COMPANY,'codigo':'QA','nombre':'QA',**details})
+        conn=MagicMock();conn.run.side_effect=[[],[[{'id':ACTOR,'replayed':False}]]]
+        with patch.object(parties,'application_connection') as connect,patch.object(parties,'_set_actor',return_value=ACTOR):
+            connect.return_value.__enter__.return_value=conn
+            response=parties.handle(event,None,role='proveedor',capability='proveedores')
+            self.assertEqual(response['statusCode'],201)
+            command=conn.run.call_args
+            self.assertIn('party_write_v2',command.args[0])
+            self.assertEqual(json.loads(command.kwargs['details']),details)
+            connect.assert_called_once_with(write=True)
+
+    def test_invalid_extended_fields_are_rejected_before_connecting(self):
+        examples=[{'datos_generales':{'tenant_id':TENANT}}, {'datos_generales':{'email':'invalid'}},
+                  {'contactos':[{'principal':True},{'principal':True}]},
+                  {'condiciones':{'descuento_pronto_pago':'3'}}, {'condiciones':{'plazo_pago_dias':'-1'}},
+                  {'datos_generales':{'sitio_web':'javascript:alert(1)'}}]
+        for details in examples:
+            event=self.event('POST');event['headers']['idempotency-key']='qa-validation'
+            event['body']=json.dumps({'company_id':COMPANY,'codigo':'QA','nombre':'QA',**details})
+            with self.subTest(details=details),patch.object(parties,'application_connection') as connect:
+                self.assertEqual(self.call(event)['statusCode'],400);connect.assert_not_called()
+
+    def test_commercial_update_requires_profile_version(self):
+        event=self.event('PATCH');event['rawPath']+='/'+ACTOR
+        event['body']=json.dumps({'company_id':COMPANY,'codigo':'QA','nombre':'QA','version':1,'condiciones':{}})
+        with patch.object(parties,'application_connection') as connect:
+            self.assertEqual(self.call(event)['statusCode'],400);connect.assert_not_called()
+
     def test_database_errors_are_sanitized(self):
         event=self.event()
         with patch.object(parties,'application_connection') as connect:

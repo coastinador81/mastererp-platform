@@ -37,3 +37,11 @@ Infraestructura y despliegue: mastererp-infrastructure/scripts/deploy_parties.py
 ## Resultado verificado DEV
 
 Desplegado: 33 comprobaciones HTTP funcionales aprobadas, con persistencia, idempotencia, versiones, permisos, aislamiento y limpieza acotada. Evidencia principal en Database/docs/ADMINISTRATION_PARTIES_DEV.md y parties-http-validation.json. Se documentan aparte los tres 403 previos de Uonify y la incidencia de reimportación SAM recuperada con nuevos IDs de rutas/integraciones. Las ocho Lambdas conservaron sus IDs y las otras seis su código.
+
+## Extensión de Proveedores conciliada con 032
+
+El adaptador actualizado usa parties_read_v2 y party_write_v2; v1 permanece compatible. POST/PATCH de proveedores aceptan opcionalmente datos_generales (objeto cerrado), contactos (hasta diez y un principal como máximo) y condiciones (preferencias y plazos). PATCH con datos generales/contactos exige catalog_version; con condiciones exige profile_version; version del maestro siempre se conserva. GET añade esos objetos y catalog_version/catalog_status. Clientes mantiene su contrato de escritura básico; si comparte tercero con un proveedor, la lectura puede reflejar sus datos comunes. No se admite la extensión en escrituras de cliente para no crear perfiles de proveedor ficticios.
+
+El JSON de contactos canónico de Catálogo es la fuente compartida, no una copia nueva en terceros. Administrar condiciones por empresa no otorga acceso a otros módulos ni sustituye sus permisos. Las condiciones del perfil se versionan usando las entidades existentes, sin alterar ediciones ya acordadas. Una modificación de Catálogo invalida catalog_version. Los bloqueos mantienen el orden proveedor canónico → maestro para evitar invertir el orden de sus comandos existentes.
+
+Ver [ficha y recorrido conectado](SUPPLIER_FORM_DEV.md). Los datos fiscales y contactos no se escriben en logs ni metadatos de auditoría. La huella de idempotencia incluye todo el JSON nuevo y conserva el replay histórico de las solicitudes básicas sin extensión. No hay DELETE ni cambios de rutas/seguridad del API en esta entrega.
