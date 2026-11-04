@@ -1,7 +1,7 @@
 import React, {createContext, useContext, useEffect, useRef, useState} from 'react';
 import {login, logout, completeLogin, authorizedFetch, clearSession, sessionExpiresAt} from '../../shared/auth/cognito.mjs';
 import {flushSync} from 'react-dom';
-import {workspacePath} from './financeRoutes.mjs';
+import {workspacePath,financeUrl} from './financeRoutes.mjs';
 import baseConfig from '../../modules/0-uonify/auth-config.json';
 const SessionContext = createContext(null);
 export const useWorkspace = () => useContext(SessionContext);
@@ -82,7 +82,7 @@ export function WorkspaceProvider({children}) {
     return()=>{clearInterval(timer);window.removeEventListener('focus',check);};
   },[tenant,signedIn]);
   const beginLogin = () => {
-    if(window.location.origin==='https://finanzas-dev.uonify.com'&&new URLSearchParams(window.location.search).get('vista')==='proveedores'){
+    if(window.location.origin==='https://finanzas-dev.uonify.com'&&financeUrl(workspacePath(window.location,true))&&financeUrl(workspacePath(window.location,true))!=='/'){
       // Only a logical, non-sensitive route is retained by the existing one-use PKCE transaction.
       window.history.replaceState(null,'','/#'+workspacePath(window.location,true));
     }
