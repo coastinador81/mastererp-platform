@@ -9,13 +9,14 @@ const groups = [
 export default function FinanceNavigation({allowed,path}) {
   return <nav className="finance-navigation" aria-label="Administración">
     <p className="nav-caption">FINANZAS</p>
-    {allowed ? <a href="#/modulos/finanzas" aria-current={path==='/modulos/finanzas'?'page':undefined}>Resumen de Finanzas</a> : null}
-    <h2 className="finance-nav-heading">Administración</h2>
+    {allowed ? <a href="/" aria-current={path==='/modulos/finanzas'?'page':undefined}>Resumen de Finanzas</a> : null}
+    <details className="administration-nav" open><summary className="administration-nav-title">Administración</summary><div className="administration-nav-children">
     {groups.map(([number,name,items],index)=><details className="finance-nav-group" key={number} open={index<2||items.some(([,route])=>route&&path.includes('/'+route))}>
       <summary>{name}</summary>
       <ul>{items.map(([label,route])=><li key={label}>{route&&allowed?
         <a className="subnav" href={'#/modulos/finanzas/administracion/'+route} aria-current={path.startsWith('/modulos/finanzas/administracion/'+route)?'page':undefined}>{label}</a>:
         <span className="finance-nav-pending" aria-disabled="true">{label}{!route&&<small>Pendiente</small>}</span>}</li>)}</ul>
     </details>)}
+    </div></details>
   </nav>;
 }
