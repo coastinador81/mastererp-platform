@@ -6,7 +6,7 @@ process.env.DEBUG='';process.env.PWDEBUG='';
 const root=path.resolve(__dirname,'..'), output=path.resolve(root,'../mastererp-infrastructure/build/integrated-finance');
 const evidence=path.join(root,'docs/finance-ui-evidence');fs.mkdirSync(evidence,{recursive:true});
 const report={environment:'DEV us-west-1',run:'qa-parties-'+crypto.randomBytes(6).toString('hex'),results:[]};
-let phase='initialize',browser,prepared=false,bundle,ids,currentToken=null;
+let phase='initialize',browser,prepared=false,bundle,ids,currentToken=null,lastPage=null;
 function aws(args){return execFileSync('aws',args.concat(['--region','us-west-1','--profile','mastererp-admin']),{encoding:'utf8',stdio:['ignore','pipe','pipe']});}
 function fixture(operation){
   const file=path.join(output,'browser-fixture-response.json');
@@ -21,15 +21,16 @@ function save(){fs.writeFileSync(path.join(evidence,'results.json'),JSON.stringi
 function check(value){if(!value)throw new Error('assertion_failed');}
 async function login(actor,origin='https://app-dev.uonify.com',deep='/'){
  const context=await browser.newContext({viewport:{width:1440,height:960}}),page=await context.newPage();
- currentToken=null;
- page.on('response',async response=>{if(response.url().includes('/oauth2/token')){try{currentToken=(await response.json()).access_token;}catch{}}});
- page.on('pageerror',()=>{report.browser_errors=(report.browser_errors||0)+1;});
- await page.goto(origin+'/#'+deep,{waitUntil:'domcontentloaded'});
- await page.getByRole('button',{name:'Acceder',exact:true}).click();
- await page.locator('input[name="username"]:visible').waitFor({timeout:30000});
+ currentToken=null;lastPage=page;
+ page.on('response',async response=>{if(response.url().includes('/oauth2/token')){try{const body=await response.json();currentToken=body.access_token;report.oauth_status=response.status();report.oauth_token_present=typeof body.access_token==='string';}catch{}}});
+ page.on('response',async response=>{try{const u=new URL(response.url());if(u.pathname==='/v1/uonify/spaces'){const body=await response.json();report.spaces_http=response.status();report.spaces_error=typeof body.error==='string'&&/^[a-z_]+$/.test(body.error)?body.error:null;}}catch{}});
+ page.on('pageerror',()=>{if(page.url().startsWith(origin+'/'))report.browser_errors=(report.browser_errors||0)+1;});
+ phase='login_open';await page.goto(origin+'/#'+deep,{waitUntil:'domcontentloaded'});
+ phase='login_button';await page.getByRole('button',{name:'Acceder',exact:true}).click();
+ phase='login_username';await page.locator('input[name="username"]:visible').waitFor({timeout:30000});
  await page.locator('input[name="username"]:visible').fill(bundle.actors[actor].email);
  await page.locator('input[name="password"]:visible').fill(bundle.actors[actor].password);
- await page.locator('input[name="signInSubmitButton"]:visible').click();
+ phase='login_submit';await page.locator('input[name="signInSubmitButton"]:visible').click();phase='login_callback';
  await page.getByRole('button',{name:'Salir',exact:true}).waitFor({timeout:45000});
  await page.waitForFunction(()=>!window.location.search,{timeout:10000});
  check(currentToken);return {context,page,origin};
@@ -94,6 +95,13 @@ async function main(){
  await page.screenshot({path:path.join(evidence,'version-conflict.png'),fullPage:true});pass('obsolete_version_rejected',{http:409});
  await page.getByRole('button',{name:'Recargar datos',exact:true}).click();await page.getByLabel('Nombre',{exact:true}).waitFor();
  await page.waitForFunction(value=>document.querySelector('input[name="nombre"]')?.value===value,name+' concurrente');
+ phase='supplier_update_ui';await page.getByLabel('Nombre',{exact:true}).fill(name+' proveedor UI');
+ const supplierPatch=page.waitForResponse(r=>r.request().method()==='PATCH');await page.getByRole('button',{name:'Guardar',exact:true}).click();check((await supplierPatch).status()===200);
+ await page.getByRole('heading',{name:name+' proveedor UI',exact:true}).waitFor();pass('supplier_update_persisted_ui',{http:200});
+ phase='supplier_create_ui';await page.locator('aside').getByRole('link',{name:'Proveedores',exact:true}).click();await page.getByRole('button',{name:'Crear proveedor',exact:true}).click();
+ await page.getByLabel('Código',{exact:true}).fill(report.run+'-supplier');await page.getByLabel('Nombre',{exact:true}).fill('Proveedor QA independiente');
+ const supplierCreate=page.waitForResponse(r=>r.url().endsWith('/proveedores')&&r.request().method()==='POST');await page.getByRole('button',{name:'Guardar',exact:true}).click();check((await supplierCreate).status()===201);
+ await page.getByRole('heading',{name:'Proveedor QA independiente',exact:true}).waitFor();pass('supplier_created_persisted_ui',{http:201});
  const replay=await api(page,'POST','clientes',{company_id:ids.company_a,codigo:code,nombre:name},{key});check(replay.status===200&&replay.body.data.id===id&&replay.body.data.replayed);
  const different=await api(page,'POST','clientes',{company_id:ids.company_a,codigo:code,nombre:name+' diferente'},{key});check(different.status===409);pass('idempotency_replay_and_content_conflict',{replay_http:200,conflict_http:409});
  phase='pagination';for(let n=0;n<11;n++)check((await api(page,'POST','clientes',{company_id:ids.company_a,codigo:report.run+'-'+n,nombre:'Registro QA '+n},{key:'page-'+n})).status===201);
@@ -102,6 +110,14 @@ async function main(){
  check(await page.locator('tbody tr').count()===10);await page.getByRole('button',{name:'Siguiente',exact:true}).click();await page.waitForFunction(()=>document.querySelectorAll('tbody tr').length===2);pass('cursor_pagination_real_records');
  phase='company_switch';await page.getByRole('combobox',{name:'Empresa',exact:true}).selectOption(ids.company_a2);
  await page.getByText('No hay clientes registrados en esta empresa.',{exact:true}).waitFor();check(!(await page.locator('main').innerText()).includes(code));pass('company_switch_clears_previous_data');
+ phase='late_response';await page.getByRole('combobox',{name:'Empresa',exact:true}).selectOption(ids.company_a);
+ await page.waitForFunction(()=>document.querySelectorAll('tbody tr').length>0);await page.locator('aside').getByRole('link',{name:'Finanzas',exact:true}).click();
+ let ready,release;const started=new Promise(resolve=>{ready=resolve;}),gate=new Promise(resolve=>{release=resolve;});
+ const pattern=/\/v1\/administration\/clientes\?/;
+ await page.route(pattern,async route=>{if(new URL(route.request().url()).searchParams.get('company_id')!==ids.company_a){await route.continue();return;}try{const response=await route.fetch();ready();await gate;await route.fulfill({response});}catch{ready();}});
+ await page.locator('aside').getByRole('link',{name:'Clientes',exact:true}).click();await started;
+ await page.getByRole('combobox',{name:'Empresa',exact:true}).selectOption(ids.company_a2);release();
+ await page.getByText('No hay clientes registrados en esta empresa.',{exact:true}).waitFor();await page.waitForTimeout(500);check(!(await page.locator('main').innerText()).includes(code));await page.unroute(pattern);pass('late_real_response_dropped_after_context_change');
  await select(page);await page.locator('aside').getByRole('link',{name:'Clientes',exact:true}).click();
  await page.waitForFunction(()=>document.querySelectorAll('tbody tr').length>0);
  const deep=page.url();await page.reload();await page.getByRole('button',{name:'Salir',exact:true}).waitFor({timeout:45000});
@@ -130,9 +146,9 @@ async function main(){
  phase='member';({page,context}=await login('member_a','https://app-dev.uonify.com','/modulos/finanzas/administracion/clientes'));
  await page.getByRole('combobox',{name:'Espacio',exact:true}).selectOption(ids.tenant_a);await page.getByRole('alert').filter({hasText:'No tienes acceso a Finanzas'}).waitFor();check(await page.locator('aside').getByRole('link',{name:'Finanzas',exact:true}).count()===0);pass('member_without_permissions_denied');await context.close();
  phase='standalone';({page,context}=await login('admin_a','https://finanzas-dev.uonify.com','/modulos/finanzas/administracion/proveedores'));
- await select(page);await page.getByRole('heading',{name:'Proveedores',exact:true}).waitFor();await page.getByRole('link',{name:'Ver detalle',exact:true}).waitFor();check(new URL(page.url()).origin==='https://finanzas-dev.uonify.com');pass('standalone_same_screens_real_api');
+ await select(page);await page.getByRole('heading',{name:'Proveedores',exact:true}).waitFor();await page.getByRole('link',{name:'Ver detalle',exact:true}).first().waitFor();check(new URL(page.url()).origin==='https://finanzas-dev.uonify.com');pass('standalone_same_screens_real_api');
  phase='expiry';await page.clock.install();await page.clock.fastForward(16*60*1000);await page.getByRole('button',{name:'Acceder',exact:true}).waitFor();
  check(!(await page.locator('main').innerText()).includes(code));pass('session_expiry_ui_clock_controlled');await context.close();
- report.audit=fixture('inspect').valid_party_audit_events;check(report.audit>0);report.status='passed';
+ report.audit=fixture('inspect').valid_party_audit_events;check(report.audit>0);check(!report.browser_errors);report.status='passed';
 }
-(async()=>{try{await main();}catch{report.status='failed';report.failed_phase=phase;}finally{if(browser)await browser.close();if(prepared){try{fixture('cleanup');report.cleanup='passed';}catch{report.cleanup='failed';report.status='failed';}}save();console.log(JSON.stringify(report,null,2));if(report.status!=='passed')process.exitCode=1;}})();
+(async()=>{try{await main();}catch(error){report.status='failed';report.failed_phase=phase;report.error_type=error.name;if(lastPage){try{const u=new URL(lastPage.url());report.failed_origin_path=u.origin+u.pathname;if(['https://app-dev.uonify.com','https://finanzas-dev.uonify.com'].includes(u.origin)&&await lastPage.locator('input[type=password]').count()===0)await lastPage.screenshot({path:path.join(evidence,'failure.png'),fullPage:true});}catch{}}}finally{if(browser)await browser.close();if(prepared){try{fixture('cleanup');report.cleanup='passed';}catch{report.cleanup='failed';report.status='failed';}}save();console.log(JSON.stringify(report,null,2));if(report.status!=='passed')process.exitCode=1;}})();

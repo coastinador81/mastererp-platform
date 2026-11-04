@@ -21,7 +21,10 @@ export default function Parties({workspace,capacity,path,navigate}) {
     setLoading(true);
     const query=new URLSearchParams({company_id:company,limit:'10',...(cursor?{after:cursor}:{})});
     request(endpoint+(id?'/'+encodeURIComponent(id):'')+'?'+query,{headers}).then(result=>{
-      if(!live)return;setData(result.data);if(id){setCode(result.data.codigo);setName(result.data.nombre);}
+      if(!live)return;
+      const rows=id?[result.data]:result.data?.items;
+      if(!Array.isArray(rows)||rows.some(x=>!x||typeof x.id!=='string'||typeof x.codigo!=='string'||typeof x.nombre!=='string'||!Array.isArray(x.roles)))throw new Error('invalid_response');
+      setData(result.data);if(id){setCode(result.data.codigo);setName(result.data.nombre);}
     }).catch(e=>{if(live && e.name!=='AbortError'){setError(messages[e.status]||'No se pudo cargar. Vuelve a intentarlo.');if(e.status===403)denied();}})
       .finally(()=>{if(live)setLoading(false);});
     return()=>{live=false;};
