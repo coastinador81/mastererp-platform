@@ -1,6 +1,6 @@
 # Ficha visual de proveedores DEV
 
-Alcance solicitado: ampliar los datos recomendados durante el desarrollo visual sin conexión. La entrada es `https://finanzas-dev.uonify.com/?vista=proveedores`; el menú Administración → Gestión de compras → Proveedores abre la ficha sin autenticación para editar únicamente un borrador en memoria. No consulta proveedores existentes, no muestra datos reales y no guarda en el servidor ni en almacenamiento del navegador. Recargar o salir descarta el borrador. La interfaz lo indica y usa Revisar ficha, nunca un mensaje ficticio de guardado.
+Alcance solicitado: ampliar los datos recomendados durante el desarrollo visual sin conexión. La entrada es `https://finanzas-dev.uonify.com/?vista=proveedores`; el menú Administración → Gestión de compras → Proveedores abre primero un listado visual con Código, Razón social o nombre, Identificación fiscal, Correo y Teléfono. El botón Crear proveedor abre `?vista=proveedores&accion=crear`, sin autenticación para editar únicamente un borrador en memoria. El listado indica que está pendiente de conexión; no se presenta como una consulta vacía real ni contiene proveedores ficticios. La ficha vuelve al listado mediante Volver a Proveedores. No consulta proveedores existentes, no muestra datos reales y no guarda en el servidor ni en almacenamiento del navegador. Recargar o salir descarta el borrador. La interfaz lo indica y usa Revisar ficha, nunca un mensaje ficticio de guardado.
 
 ## Datos incluidos
 

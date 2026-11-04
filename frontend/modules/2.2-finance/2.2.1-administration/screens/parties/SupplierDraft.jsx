@@ -57,9 +57,19 @@ export default function SupplierDraft() {
       pattern={type==='country'?'[A-Z]{2}':type==='currency'?'[A-Z]{3}':name==='sitio_web'?'https?://.*':undefined}
       placeholder={placeholder} onChange={e=>change(name,['country','currency'].includes(type)?e.target.value.toUpperCase():e.target.value)}/>}</label>;
   const textValue=(name,type)=>options[type]?.find(([value])=>value===values[name])?.[1]||values[name]||'Sin especificar';
+  const creating=new URLSearchParams(window.location.search).get('accion')==='crear';
+  if(!creating)return <section aria-labelledby="suppliers-title">
+    <div className="page-heading"><div><p className="eyebrow">Administración / Gestión de compras</p><h1 id="suppliers-title">Proveedores</h1></div>
+      <button type="button" onClick={()=>window.location.assign('/?vista=proveedores&accion=crear')}>Crear proveedor</button></div>
+    <div className="panel"><div className="table-scroll"><table><thead><tr>
+      <th>Código</th><th>Razón social o nombre</th><th>Identificación fiscal</th><th>Correo</th><th>Teléfono</th>
+    </tr></thead><tbody><tr><td colSpan={5}><div className="empty"><h2>Listado pendiente de conexión</h2>
+      <p>Los proveedores guardados se mostrarán aquí cuando se conecte el listado. Por ahora puedes preparar una ficha desde Crear proveedor.</p>
+    </div></td></tr></tbody></table></div></div>
+  </section>;
   return <section aria-labelledby="supplier-draft-title" className="supplier-draft">
     <div className="page-heading"><div><p className="eyebrow">Administración / Gestión de compras</p>
-      <h1 id="supplier-draft-title">{review?'Revisar proveedor':'Ficha de proveedor'}</h1></div><a href="/">Volver a Administración</a></div>
+      <h1 id="supplier-draft-title">{review?'Revisar proveedor':'Ficha de proveedor'}</h1></div><a href="/?vista=proveedores">Volver a Proveedores</a></div>
     <p className="notice" role="status">Ficha en desarrollo. Los datos permanecen solo en esta página y no se guardan. Al recargar o salir se perderán.</p>
     {error&&<p className="notice error" role="alert">{error}</p>}
     {review?<><div className="supplier-sections">{sections.map(([title,fields])=><section className="panel detail" key={title}>
