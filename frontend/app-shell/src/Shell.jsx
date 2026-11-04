@@ -10,7 +10,7 @@ function Shell({independent=false}) {
   const w=useWorkspace(),[path,setPath]=useState(()=>workspacePath(window.location,independent)),[menu,setMenu]=useState(false);
   useEffect(()=>{const change=()=>{const route=workspacePath(window.location,independent);if(independent&&window.location.pathname!=='/auth/callback'&&window.location.hash){const url=financeUrl(route);if(url)window.history.replaceState(null,'',url);}setPath(route);setMenu(false);};window.addEventListener('hashchange',change);window.addEventListener('popstate',change);return()=>{window.removeEventListener('hashchange',change);window.removeEventListener('popstate',change);};},[independent]);
   const navigate=route=>{const url=independent?financeUrl(route):null;if(url){window.history.pushState(null,'',url);setPath(route);setMenu(false);}else if(window.location.hash!=='#'+route)window.location.hash=route;};
-  const finance=w.context?.modules.includes('erp.finance')&&w.context?.permissions.includes('administration.parties.read');
+  const finance=w.context?.modules.includes('erp.finance')&&w.context?.permissions.some(p=>['administration.parties.read','administration.purchases.read'].includes(p));
   const financeRoute=path.startsWith('/modulos/finanzas');
   return <div className="integrated-app"><a className="skip-link" href="#workspace-content" onClick={e=>{e.preventDefault();document.getElementById('workspace-content')?.focus();}}>Saltar al contenido</a>
     <header className="integrated-header"><button className="menu-toggle secondary" aria-label="Abrir menú" aria-expanded={menu} onClick={()=>setMenu(!menu)}>☰</button><a className="brand" href={independent?'/':'#/'}>{independent?'Finanzas':'Uonify'}<span>MasterERP · Desarrollo</span></a>
