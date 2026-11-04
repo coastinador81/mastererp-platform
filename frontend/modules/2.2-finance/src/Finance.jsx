@@ -7,8 +7,8 @@ export default function Finance({workspace,path,navigate}) {
   if(!workspace.company)return <div className="notice" role="status">Selecciona una empresa para trabajar con Finanzas.</div>;
   const match=path.match(/^\/modulos\/finanzas\/administracion\/(clientes|proveedores)(?:\/.*)?$/);
   if(match)return <Parties key={workspace.tenant+':'+workspace.company+':'+match[1]+':'+path} workspace={workspace} capacity={match[1]} path={path} navigate={navigate}/>;
-  return <section><p className="eyebrow">Módulo habilitado</p><h1>Finanzas</h1><p>Administración, Contabilidad y BI, dentro de tu espacio de trabajo.</p><h2>Administración</h2><div className="cards">
-    <a className="panel module-card" href="#/modulos/finanzas/administracion/clientes"><span>01</span><h3>Clientes</h3><p>Consulta y administra terceros por empresa.</p></a>
-    <a className="panel module-card" href="#/modulos/finanzas/administracion/proveedores"><span>02</span><h3>Proveedores</h3><p>Reutiliza el maestro de terceros y sus roles.</p></a></div>
-    <h2>Próximas capacidades</h2><div className="cards">{['Contabilidad','BI','Compras, cartera y tesorería','Gastos y fondos menores','MasterPay'].map(name=><div className="panel" key={name}><h3>{name}</h3><span className="badge">Pendiente de implementación</span></div>)}</div></section>;
+  return <section><p className="eyebrow">Módulo habilitado</p><h1>Finanzas</h1><p>Administración financiera de tu empresa.</p><h2>Administración</h2><div className="cards">
+    <a className="panel module-card" href="#/modulos/finanzas/administracion/clientes"><h3>Clientes</h3><p>Consulta y administra terceros por empresa.</p></a>
+    <a className="panel module-card" href="#/modulos/finanzas/administracion/proveedores"><h3>Proveedores</h3><p>Reutiliza el maestro de terceros y sus roles.</p></a></div>
+    </section>;
 }
