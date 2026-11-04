@@ -1,0 +1,128 @@
+{
+  "run": "qa-parties-609ca02653ac",
+  "environment": "DEV us-west-1",
+  "results": [
+    {
+      "name": "real_cognito_login_and_supplier_list",
+      "status": "passed"
+    },
+    {
+      "name": "clean_supplier_deep_link",
+      "status": "passed"
+    },
+    {
+      "name": "supplier_create_full_fields_persisted",
+      "status": "passed",
+      "http": 201
+    },
+    {
+      "name": "saved_supplier_appears_in_list",
+      "status": "passed"
+    },
+    {
+      "name": "supplier_update_persisted",
+      "status": "passed",
+      "http": 200
+    },
+    {
+      "name": "independent_api_read_matches_ui",
+      "status": "passed",
+      "http": 200
+    },
+    {
+      "name": "master_company_and_catalog_versions_reject_stale_updates",
+      "status": "passed",
+      "http": 409
+    },
+    {
+      "name": "full_payload_idempotency_and_content_conflict",
+      "status": "passed",
+      "replay": 200,
+      "conflict": 409
+    },
+    {
+      "name": "shared_customer_supplier_without_duplicate",
+      "status": "passed",
+      "http": 201
+    },
+    {
+      "name": "concurrent_idempotent_create",
+      "status": "passed",
+      "http": [
+        200,
+        201
+      ]
+    },
+    {
+      "name": "concurrent_versioned_update",
+      "status": "passed",
+      "http": [
+        200,
+        409
+      ]
+    },
+    {
+      "name": "missing_token_foreign_tenant_company_profile_denied",
+      "status": "passed",
+      "http": [
+        401,
+        403,
+        403,
+        404
+      ]
+    },
+    {
+      "name": "override_module_membership_and_tenant_guards",
+      "status": "passed",
+      "http": 403
+    },
+    {
+      "name": "company_switch_and_reload_preserve_authorized_context_only",
+      "status": "passed"
+    },
+    {
+      "name": "live_mobile_layout",
+      "status": "passed"
+    },
+    {
+      "name": "audited_real_sql_writes",
+      "status": "passed"
+    },
+    {
+      "name": "logout_clears_context",
+      "status": "passed"
+    }
+  ],
+  "audit": 6,
+  "status": "passed",
+  "cleanup": "passed",
+  "frontend_commit": "37f2412",
+  "backend_commit": "9952628",
+  "database_application_commit": "6c3a497",
+  "database_migration": "032_party_details.sql",
+  "infrastructure_commit": "8cea82f",
+  "scope": "Real DEV UI/API with separate QA tenants; Tumandaito samples preserved",
+  "not_executed": [
+    "Real owner first login/password change",
+    "Supplier deletion",
+    "Disposable local PostgreSQL",
+    "Snapshot restore rehearsal"
+  ],
+  "tumandaito_readback": {
+    "application_role": "mastererp_app",
+    "inspection_only": true,
+    "total_company_suppliers": 8,
+    "demo_supplier_count": 8
+  },
+  "health_regression": {
+    "clientes": 200,
+    "proveedores": 200,
+    "ventas": 200,
+    "compras": 200,
+    "cartera": 200,
+    "tesoreria": 200,
+    "conciliacion": 200,
+    "gastos": 200
+  },
+  "uonify_previous_ui_preserved": true
+}
