@@ -54,7 +54,7 @@ def handle(event, context):
                 raise ValueError()
             if method == 'PATCH' and (not document or type(body.get('version')) is not int or not 1 <= body['version'] < 9223372036854775807):
                 raise ValueError()
-            operation = 'administration.purchase.' + kind + ('.create' if method == 'POST' else '.update')
+            operation = 'administracion.documento.' + kind + ('.crear' if method == 'POST' else '.actualizar')
         else:
             if set(query) - {'company_id', 'limit', 'after'}:
                 raise ValueError()

@@ -41,6 +41,23 @@ class PurchasesTest(unittest.TestCase):
             self.assertEqual(purchases.handle(event, None)['statusCode'], 400)
             database.assert_not_called()
 
+    def test_create_uses_existing_document_operation_contract(self):
+        calls = []
+        class Connection:
+            def run(self, sql, **values):
+                calls.append((sql, values))
+                if 'purchase_write' in sql:
+                    return [[{'id': '00008704-0000-0000-0000-000000000001', 'replayed': False}]]
+                return [[None]]
+        @contextmanager
+        def connect(**kwargs):
+            self.assertTrue(kwargs['write'])
+            yield Connection()
+        event = self.event('POST', 'solicitudes', {'company_id': '00008703-0000-0000-0000-000000000001', 'documento': {}})
+        with patch.object(purchases, 'authenticated_identity', return_value=('issuer', 'subject')), patch.object(purchases, 'application_connection', connect), patch.object(purchases, '_set_actor', return_value='00008701-0000-0000-0000-000000000001'):
+            self.assertEqual(purchases.handle(event, None)['statusCode'], 201)
+        self.assertEqual(calls[0][1]['operation'], 'administracion.documento.solicitud_compra.crear')
+
 
 if __name__ == '__main__':
     unittest.main()
