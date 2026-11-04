@@ -1,0 +1,96 @@
+/* Espacio · conversación, compositor y menús del compositor.
+ * Origen: app-shell.css del prototipo (líneas 421-558), en el mismo orden.
+ * Sin el antiguo panel de esfuerzo con deslizador ni los paneles del compositor retirados.
+ */
+
+.conversation-dock { flex: 0 0 auto; width: min(calc(100% - 56px),1040px); margin: 0 auto 24px; background: #fff; border: 1px solid #dbe5ef; border-radius: 17px; box-shadow: 0 12px 35px #1d48710e; overflow: visible; }
+.conversation-header { min-height: 45px; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 7px 13px 7px 17px; border-bottom: 1px solid var(--line); }
+.conversation-title { min-width: 0; display: flex; align-items: center; gap: 8px; font-size: 12px; }
+.conversation-title strong { font-weight: 700; }
+.assistant-symbol { color: var(--blue); font-size: 19px; line-height: 1; }
+.conversation-summary { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: var(--muted); }
+.conversation-toggle { width: 31px; height: 31px; display: grid; place-items: center; flex: 0 0 auto; padding: 4px; background: transparent; border: 0; border-radius: 8px; color: var(--muted); }
+.conversation-toggle:hover { background: var(--soft); color: var(--ink); }
+.conversation-toggle svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; transition: transform .18s ease; }
+.conversation-toggle[aria-expanded="true"] svg { transform: rotate(180deg); }
+.conversation-content { display: grid; grid-template-columns: minmax(170px,220px) minmax(0,1fr); max-height: min(36svh,300px); overflow: hidden; border-bottom: 1px solid var(--line); }
+.conversation-empty { align-self: center; margin: auto; color: var(--muted); font-size: 12px; text-align: center; }
+.navigation-empty { margin: 5px 7px; color: #8291a2; font-size: 11px; line-height: 1.45; }
+.conversation-messages { max-height: min(33svh,260px); display: flex; flex-direction: column; gap: 10px; padding: 16px 18px; overflow-y: auto; border-bottom: 1px solid var(--line); }
+.message { max-width: min(78%,620px); padding: 9px 12px; border-radius: 12px; font-size: 13px; line-height: 1.55; white-space: pre-wrap; }
+.message.user { align-self: flex-end; background: #eaf3ff; }
+.message.assistant { align-self: flex-start; background: #f3f6fa; }
+.composer { position: relative; width: 100%; display: flex; flex-direction: column; align-items: stretch; gap: 9px; padding: 15px 16px 12px; background: #fff; }
+.welcome .composer { min-height: 104px; border: 1px solid #d8e4f1; border-radius: 20px; box-shadow: 0 20px 50px #1d487115; text-align: left; }
+.dock-composer-anchor .composer { min-height: 92px; border-radius: 0 0 17px 17px; }
+.composer textarea { width: 100%; min-width: 0; max-height: 120px; min-height: 29px; padding: 2px 0 0; overflow-y: auto; resize: none; background: transparent; border: 0; outline: none; color: var(--ink); font-size: 15px; line-height: 1.5; }
+.composer textarea::placeholder { color: #78899c; }
+.composer:has(textarea:focus-visible) { outline: 2px solid #7aadf2; outline-offset: -2px; }
+.composer-send { width: 35px; height: 35px; display: grid; place-items: center; flex: 0 0 auto; padding: 7px; background: var(--blue); border: 0; border-radius: 10px; color: #fff; }
+.composer-send:hover { background: var(--blue-dark); }
+.composer-send svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.composer-bottom, .composer-bottom-actions { display: flex; align-items: center; gap: 7px; }
+.composer-bottom-actions { margin-left: auto; }
+.composer-navigation { display: inline-flex; align-items: center; gap: 2px; }
+.composer-nav-button { min-height: 30px; display: inline-flex; align-items: center; justify-content: center; gap: 5px; padding: 4px 7px; border: 0; border-radius: 8px; color: #63788b; background: transparent; font-size: 10px; font-weight: 600; }
+.composer-nav-button:hover, .composer-nav-button[aria-expanded="true"] { color: var(--blue-dark); background: #edf5ff; }
+.composer-nav-button svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.composer-plus-button, .composer-voice-button { width: 34px; height: 34px; flex: 0 0 auto; display: grid; place-items: center; padding: 0; border: 1px solid transparent; border-radius: 50%; background: transparent; color: #5b7287; }
+.composer-plus-button { font-size: 24px; line-height: 1; font-weight: 350; }
+.composer-plus-button:hover, .composer-plus-button[aria-expanded="true"], .composer-voice-button:hover, .composer-voice-button[aria-pressed="true"] { background: #edf5ff; border-color: #c9dff7; color: var(--blue-dark); }
+.composer-voice-button svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.composer-ai-picker { position: relative; display: inline-flex; align-items: center; max-width: min(370px,calc(100vw - 120px)); min-height: 36px; border: 1px solid #dce6f0; border-radius: 999px; background: #f4f7fb; color: #29435d; }
+.composer-speed-trigger, .composer-model-trigger, .composer-effort-trigger { display: inline-flex; align-items: center; justify-content: center; gap: 5px; min-width: 0; min-height: 36px; padding: 5px 9px; border: 0; background: transparent; color: inherit; font: inherit; font-size: 12px; white-space: nowrap; cursor: pointer; }
+.composer-speed-trigger { position: relative; width: 36px; flex: 0 0 36px; padding: 0; border-right: 1px solid #dce6f0; border-radius: 999px 0 0 999px; color: #8495a6; }
+.composer-speed-trigger:hover, .composer-speed-trigger:focus-visible { color: #2b75d4; background: #e6f0fc; }
+.composer-speed-trigger[aria-pressed="true"] { color: #fff; background: #347cf0; }
+.composer-model-trigger { max-width: 220px; padding-left: 9px; border-radius: 0; }
+.composer-model-trigger [data-composer-model-label] { overflow: hidden; text-overflow: ellipsis; }
+.composer-effort-trigger { padding-right: 11px; border-left: 1px solid #dce6f0; border-radius: 0 999px 999px 0; color: #61758a; }
+.composer-model-trigger:hover, .composer-effort-trigger:hover, .composer-model-trigger[aria-expanded="true"], .composer-effort-trigger[aria-expanded="true"] { background: #e6f0fc; color: #195eb5; }
+.composer-speed-trigger:focus-visible, .composer-model-trigger:focus-visible, .composer-effort-trigger:focus-visible, .composer-model-option:focus-visible, .composer-effort-range:focus-visible { outline: 2px solid #2977d5; outline-offset: 2px; }
+.composer-ai-bolt { display: inline-grid; width: 16px; height: 19px; flex: 0 0 16px; place-items: center; font-size: 0; color: inherit; }
+.composer-ai-bolt::before { content: ''; display: block; width: 14px; height: 17px; background: currentColor; clip-path: polygon(53% 0, 13% 54%, 42% 54%, 31% 100%, 91% 37%, 61% 37%, 75% 0); }
+.composer-ai-chevron { margin-left: 1px; color: #8292a3; font-size: 16px; line-height: 1; }
+.composer-usage-trigger { --usage-progress: 0%; min-height: 30px; display: inline-flex; align-items: center; gap: 5px; padding: 4px 7px; border: 0; border-radius: 999px; color: #64788a; background: transparent; font-size: 10px; white-space: nowrap; }
+.composer-usage-trigger:hover, .composer-usage-trigger[aria-expanded="true"] { color: var(--blue-dark); background: #edf5ff; }
+.composer-usage-ring { width: 12px; height: 12px; flex: 0 0 auto; border: 1.5px solid #a9b7c4; border-radius: 50%; }
+.composer-usage-trigger.has-usage .composer-usage-ring { border: 0; background: conic-gradient(var(--blue) var(--usage-progress),#dbe4ec 0); mask: radial-gradient(circle at center,transparent 45%,#000 47%); -webkit-mask: radial-gradient(circle at center,transparent 45%,#000 47%); }
+.composer-usage-panel { position: absolute; z-index: 35; right: 10px; bottom: calc(100% - 16px); width: min(338px,calc(100vw - 76px)); padding: 14px; border: 1px solid #d9e3ec; border-radius: 15px; color: #30475d; background: #fff; box-shadow: 0 18px 48px #173a5b28; }
+.composer-usage-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-bottom: 10px; border-bottom: 1px solid #e6ecf1; }
+.composer-usage-heading strong { color: var(--ink); font-size: 12px; }
+.composer-usage-heading span { color: #6d8092; font-size: 10px; }
+.composer-usage-empty { margin: 12px 0 2px; color: #718396; font-size: 11px; line-height: 1.45; }
+.composer-usage-row { display: grid; gap: 5px; padding-top: 11px; }
+.composer-usage-row > div { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 10px; }
+.composer-usage-row > div strong { color: #5c7184; font-weight: 600; }
+.composer-usage-row > i { position: relative; height: 3px; overflow: hidden; border-radius: 999px; background: #e7edf2; }
+.composer-usage-row > i b { position: absolute; inset: 0; width: var(--usage-row); border-radius: inherit; background: linear-gradient(90deg,var(--blue),var(--aqua)); }
+.composer-usage-row small { color: #8a98a5; font-size: 9px; }
+.composer-model-menu, .composer-effort-panel, .composer-effort-menu { position: absolute; z-index: 30; bottom: calc(100% + 10px); left: 0; width: min(304px,calc(100vw - 72px)); padding: 9px; border: 1px solid #d8e3ef; border-radius: 18px; background: #fff; box-shadow: 0 20px 55px #15375b2b; color: #233a50; text-align: left; }
+.composer-popover-below { top: calc(100% + 10px); bottom: auto; }
+.composer-model-menu { max-height: min(470px,65svh); overflow-y: auto; }
+.composer-picker-title { padding: 8px 11px 9px; color: #708398; font-size: 12px; letter-spacing: .03em; }
+.composer-model-option { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; min-height: 42px; padding: 8px 11px; border: 0; border-radius: 11px; background: transparent; color: #243c54; font: inherit; text-align: left; cursor: pointer; }
+.composer-model-option:hover, .composer-model-option:focus-visible { background: #eef5fd; }
+.composer-model-copy { display: grid; gap: 2px; }
+.composer-model-copy strong { font-size: 13px; font-weight: 580; }
+.composer-model-copy small { color: #8493a1; font-size: 11px; }
+.composer-option-check { visibility: hidden; color: #2473cf; font-size: 18px; }
+.composer-model-option[aria-checked="true"] .composer-option-check { visibility: visible; }
+
+.composer-more-menu { position: absolute; z-index: 12; left: 12px; bottom: calc(100% - 10px); width: min(240px,calc(100vw - 56px)); padding: 7px; border: 1px solid #d8e3ee; border-radius: 15px; background: #fff; box-shadow: 0 18px 45px #173d6224; }
+.composer-more-menu button { width: 100%; min-height: 40px; padding: 9px 11px; border: 0; border-radius: 9px; background: transparent; color: var(--ink); text-align: left; font: inherit; font-size: 13px; }
+.composer-more-menu button:hover, .composer-more-menu button:focus-visible { background: #edf5ff; }
+.composer-attachments { display: flex; flex-wrap: wrap; gap: 6px; }
+.composer-attachment { max-width: 100%; display: inline-flex; align-items: center; gap: 5px; padding: 5px 5px 5px 9px; border: 1px solid #d5e3f2; border-radius: 9px; background: #f6faff; color: #35536f; font-size: 11px; }
+.composer-attachment > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.composer-attachment button { width: 19px; height: 19px; padding: 0; border: 0; border-radius: 5px; background: transparent; color: #586f85; font-size: 16px; }
+.composer-live-status { margin: 0; color: #526d83; font-size: 11px; line-height: 1.4; }
+.prompt-suggestions { display: flex; flex-wrap: wrap; justify-content: center; gap: 9px; margin-top: 14px; }
+.prompt-suggestion { display: inline-flex; align-items: center; max-width: 100%; border: 1px solid #d6e3f1; border-radius: 999px; background: #ffffffc9; }
+.prompt-suggestion:hover { border-color: #a9cbed; background: #fff; }
+.prompt-suggestion button { min-height: 34px; border: 0; background: transparent; color: #49637b; font: inherit; font-size: 12px; }
+.prompt-suggestion [data-prompt-suggestion] { padding: 7px 6px 7px 13px; }
+.prompt-suggestion [data-suggestion-dismiss] { width: 29px; padding: 0 7px 0 0; color: #879bad; font-size: 18px; }
+.prompt-suggestion button:hover { color: var(--blue-dark); }

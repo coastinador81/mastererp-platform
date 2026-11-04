@@ -1,2 +1,2 @@
-import {mountWorkspace} from '../../../app-shell/src/Shell.jsx';
-mountWorkspace(document.getElementById('root'));
+// Previous Uonify interface; Finance remains independently deployed.
+import './previous-conversation.jsx';

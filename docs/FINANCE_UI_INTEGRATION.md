@@ -1,5 +1,7 @@
 # Primer recorrido integrado de Finanzas — DEV
 
+> Actualización de publicación: por decisión del propietario, Uonify DEV vuelve a su interfaz conversacional anterior («Hazlo posible»). Finanzas continúa en finanzas-dev.uonify.com. El recorrido integrado y las pruebas descritas abajo corresponden a la versión 187b9e1, conservada en Git; ya no describen la entrada activa de app-dev. El workflow de Uonify deja de observar Finanzas y el shell integrado. No se revierten APIs, datos ni el código financiero.
+
 Estado: primer recorrido desplegado y validado en DEV el 2026-11-04. Se verifican Clientes/Proveedores y los controles descritos abajo; no constituye cierre de todas las capacidades financieras.
 
 ## Integración elegida
@@ -49,3 +51,5 @@ Problemas introducidos y corregidos durante esta entrega: el empaquetador omiti�
 Pendientes: chat/voz/Gemini continúan sin conectar; Contabilidad, BI y otras operaciones financieras no están implementadas; no se ejecutó nuevamente el wizard completo de Onboarding; PostgreSQL desechable local sigue sin validación por motor Docker no disponible; no se ensayó restaurar el snapshot. Se recomienda ampliar pruebas de accesibilidad y automatizar E2E en CI con una identidad de pruebas separada, sin conceder esos permisos al rol publicador. El primer recorrido no acredita cierre de toda la base compartida.
 
 Comprobación adicional de cierre: las rutas completas de ambas APIs coinciden con el inventario previo y el hash de la Lambda coincide con el ZIP publicado. Tras limpiar las fixtures, GET /v1/uonify/spaces devuelve 200 y un espacio para la identidad sintética original; GET /v1/uonify/google/connection/status devuelve 403 tenant_permission_denied para esa pertenencia. No se ampliaron sus permisos. Esta comprobación no acredita éxito funcional del estado de conexión Google ni permite clasificar ese rechazo como regresión sin comparar la autorización previa de esa identidad. El recorrido financiero de 26 casos utiliza sus fixtures propias y permanece aprobado.
+
+Restauración visual solicitada: src/previous-conversation.jsx y src/previous-styles/ conservan el código anterior disponible en screens/conversation/main.jsx y styles/, cambiando únicamente rutas de importación; IdentityAccess.jsx conserva su implementación previa. Se adopta solo ese código necesario para que el build sea reproducible; los demás borradores permanecen sin publicar. El punto de entrada integrado y sus pantallas financieras siguen disponibles en el historial y en el build independiente de Finanzas. No se crean carpetas funcionales nuevas para esta restauración.
