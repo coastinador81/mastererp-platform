@@ -1,0 +1,14 @@
+{
+  "products": ["2.1-catalog/2.1.1-products", "products_api"],
+  "categories": ["2.1-catalog/2.1.2-categories", "categories_api"],
+  "attributes": ["2.1-catalog/2.1.3-attributes", "attributes_api"],
+  "brands": ["2.1-catalog/2.1.4-brands", "brands_api"],
+  "suppliers": ["2.1-catalog/2.1.5-suppliers", "suppliers_api"],
+  "inventory": ["2.1-catalog/2.1.6-inventory", "inventory_api"],
+  "orders": ["2.3-operations/2.3.1-orders", "orders_api"],
+  "preparation": ["2.3-operations/2.3.2-preparation", "preparation_api"],
+  "routes": ["2.3-operations/2.3.3-routes", "routes_api"],
+  "nodes": ["2.3-operations/2.3.4-nodes", "nodes_api"],
+  "drivers": ["2.10-transport/2.10.1-drivers", "drivers_api"],
+  "ecommerce": ["2.4-digital-sales/2.4.2-ecommerce", "ecommerce_api"]
+}
