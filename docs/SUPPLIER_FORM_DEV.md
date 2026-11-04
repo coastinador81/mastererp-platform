@@ -1,31 +1,37 @@
-# Ficha visual de proveedores DEV
+# Proveedores conectados en Finanzas DEV
 
-Alcance solicitado: ampliar los datos recomendados durante el desarrollo visual sin conexión. La entrada es `https://finanzas-dev.uonify.com/?vista=proveedores`; el menú Administración → Gestión de compras → Proveedores abre primero un listado visual con Código, Razón social o nombre, Identificación fiscal, Correo y Teléfono. El botón Crear proveedor abre `?vista=proveedores&accion=crear`, sin autenticación para editar únicamente un borrador en memoria. El listado indica que está pendiente de conexión; no se presenta como una consulta vacía real ni contiene proveedores ficticios. La ficha vuelve al listado mediante Volver a Proveedores. No consulta proveedores existentes, no muestra datos reales y no guarda en el servidor ni en almacenamiento del navegador. Recargar o salir descarta el borrador. La interfaz lo indica y usa Revisar ficha, nunca un mensaje ficticio de guardado.
+La entrega sustituye el borrador sin conexión por el listado y formulario existentes de `Parties.jsx`, con campos ampliados reutilizables en `SupplierFields.jsx`. La entrada es https://finanzas-dev.uonify.com/?vista=proveedores. Exige login Cognito y contexto autorizado de tenant/empresa. No hay proveedores ficticios locales ni un fallback que simule guardado. Los registros DEMO se cargan explícitamente en PostgreSQL, no en el bundle frontend.
 
-## Datos incluidos
+## Recorrido y campos
+
+El menú Administración → Gestión de compras → Proveedores abre primero el listado real, con Crear proveedor. Incluye detalle, creación, edición, paginación y conflictos de versión. Las URLs de lista, crear, detalle y editar usan parámetros en la raíz; soportan recarga y atrás/adelante. PKCE conserva solo la ruta lógica mediante el contrato existente, sin tokens en la URL. La portada permanece en / y no vuelve el bloque promocional retirado.
 
 | Bloque | Campos |
 | --- | --- |
-| Generales | Código interno, razón social o nombre, nombre comercial, tipo de persona |
+| Generales | Código, razón social/nombre, nombre comercial, tipo de persona |
 | Fiscales | País fiscal, tipo y número de identificación |
-| Dirección | Dirección, complemento, ciudad, municipio, estado/provincia, código postal, país |
-| Comunicación | Correo principal, teléfono principal, teléfono alternativo, sitio web |
-| Personas de contacto | Nombre, cargo, correo, teléfono y contacto principal; añadir/quitar hasta diez contactos por ficha |
-| Comerciales | Moneda preferida, condición y medio de pago, plazo en días, descuento y plazo de pronto pago |
+| Dirección | Dirección, complemento, ciudad, municipio, estado/provincia, código postal y país |
+| Comunicación | Correo, teléfono principal y alternativo, sitio web |
+| Contactos | Nombre, cargo, correo, teléfono y principal; hasta diez contactos |
+| Comerciales por empresa | Tipo de suministro (productos, servicios o ambos), moneda preferida, condición/medio de pago, plazo, descuento y plazo de pronto pago |
 | Observaciones | Notas internas |
 
-Solo código y nombre son obligatorios, conforme al maestro existente. Los límites de texto y de contactos son límites técnicos de esta vista. Los demás datos se completan progresivamente; no se imponen reglas fiscales, tasas, condiciones de crédito ni descuentos predeterminados. País/moneda usan códigos en mayúsculas de dos/tres letras, sin acreditar que existan en los catálogos. Identificación fiscal no se valida contra organismos externos. Se validan formatos de correo/URL y valores no negativos de días y porcentaje entre cero y cien; descuento y plazo se capturan juntos. Esto no calcula obligaciones, concede crédito, ejecuta pagos ni altera libros fiscales.
+Solo código y nombre son obligatorios. El resto se completa progresivamente. No se validan identificaciones ante organismos fiscales ni se conceden créditos, calculan impuestos, ejecutan compras o transfieren fondos al registrar preferencias. No se imponen tasas ni descuentos predeterminados.
 
-## Correspondencia y persistencia pendientes
+## Modelo, autorización y alineación
 
-`SupplierDraft.jsx` vive en la pantalla compartida existente `frontend/modules/2.2-finance/2.2.1-administration/screens/parties/`. No se crea otra carpeta funcional ni otro maestro. Código y nombre ya pertenecen a `catalogo.terceros`; los datos generales/fiscales y contactos deberán ampliarse sobre ese mismo maestro sin duplicar cliente/proveedor. Las condiciones comerciales son de empresa/perfil y deben integrarse con `administracion.perfiles_tercero`, `condiciones_comerciales` y `descuentos_pronto_pago`, conservando sus versiones y relaciones. Los nombres de campos del borrador son de presentación y todavía no amplían el contrato API.
+La migración propia se concilió como 032 sobre 001–031 de dev, conservando el trabajo de Andrea. Código/nombre/versión pertenecen a catalogo.terceros; los datos fiscales, de dirección y contacto reutilizan catalogo.proveedores_catalogo.contacto de 024, bajo el mismo tercero_id. No se crea otro maestro ni se duplica contacto en terceros. Los campos desconocidos de contacto se preservan. El segundo rol cliente referencia ese mismo tercero. Las condiciones negociadas por empresa utilizan el perfil administrativo y las entidades existentes de condiciones y pronto pago; no sobrescriben defaults de Catálogo.
 
-El formulario funcional `Parties.jsx` y sus comandos SQL existentes conservan su contrato actual. Esta entrega no envía los campos nuevos a una API que todavía los rechaza. No hay migración ni cambios de Lambda, permisos, RLS, recursos o Database. La restauración automática de sesión se omite únicamente en esta vista de borrador; no se sustituye ni simula una identidad. Los flujos autenticados y callback existentes mantienen su tratamiento.
+La API HTTP administrativa existente usa mastererp-dev-adm-clientes y mastererp-dev-adm-proveedores y el secreto de mastererp_app, con TLS y contexto local a la transacción. Mantiene permisos y overrides, módulos, pertenencia/usuario/tenant/empresa activos. Las funciones v2 no conceden DML general y conservan v1. La creación usa Idempotency-Key y huella de todo el contenido; la edición usa version, profile_version y catalog_version. Un cambio concurrente desde Catálogo también debe producir conflicto. Auditoría y logs no contienen los datos de la ficha.
 
-Antes de persistir estos campos habrá que implementar una migración nueva, autorización del maestro compartido y del perfil de empresa, contratos API, idempotencia sobre todo el contenido relevante, versión, auditoría sin datos sensibles y pruebas de aislamiento. Datos bancarios, adjuntos, reglas tributarias y aprobaciones quedan fuera del alcance recomendado de esta ficha. El Product Owner concretará requisitos fiscales y comerciales al priorizar esas operaciones.
+No se añade DELETE. La eliminación o archivo de un proveedor con relaciones financieras necesita su regla funcional y no se resuelve borrando maestros. La presente capacidad comprende crear, leer y actualizar. La ficha no persiste datos sensibles en localStorage; la sesión y permisos nunca se simulan para mostrar registros reales.
 
-## Build y pruebas
+## Tumandaito y pruebas
 
-Desde Platform: `npm --prefix frontend/modules/2.2-finance run build`, `python scripts/validate_structure.py` y `git diff --check`.
+Tumandaito es un tenant business propio y contiene su empresa Tumandaito (VE, VES, America/Caracas). El propietario fue indicado expresamente; se vinculó por issuer+sub de Cognito y recibió una invitación solicitada por el propietario del proyecto. No se asocian usuarios internos automáticamente por correo ni se asignan cuentas QA a Tumandaito. El primer acceso del propietario requiere cambiar la contraseña temporal; nunca se registra en Git o consola.
 
-Prueba de navegador local: `node scripts/test_supplier_draft.cjs`, con Playwright disponible mediante `MASTERERP_PLAYWRIGHT_MODULE` y Chrome mediante `MASTERERP_CHROME_PATH` cuando corresponda. El test usa un servidor local del build, datos sintéticos en memoria y bloquea conexiones externas; comprueba campos, errores, revisión, contactos, edición, responsive y descarte al recargar. No usa credenciales ni fixtures RDS. La publicación DEV corresponde al workflow existente Publish Finance frontend DEV; Uonify no observa estas fuentes.
+Los ocho proveedores de ejemplo se identifican como DEMO-PROV-001..008, contienen nombres DEMO, contactos example.invalid e identificaciones sin validez fiscal. La carga usa el migrador oficial, transacción como mastererp_app y claves idempotentes; no sobrescribe proveedores existentes ni genera deudas, pagos o inventario. La confirmación de carga y resultados reales se registra al finalizar la validación.
+
+Pruebas locales: build Vite, tests de rutas y autenticación Node, tests del adaptador Python, validadores y diff --check. El Docker instalado no tiene motor Linux disponible; no se declara PostgreSQL desechable aprobado. El candidato SQL corregido se validó en RDS con ROLLBACK antes de la aplicación oficial. `scripts/validate_suppliers_dev.cjs` prueba servicios DEV reales con actores sintéticos existentes y tenants QA nuevos; limpia solo sus fixtures, conservando Tumandaito. No confundir estas pruebas con el primer acceso real del propietario.
+
+La publicación frontend usa Publish Finance frontend DEV con OIDC. Las Lambdas se empaquetan con scripts/package_parties.py y se actualizan por el stack Finanzas → Administración mediante Infrastructure/scripts/deploy_parties.py. No se reimporta el API ni se modifican rutas, JWT, CORS o el hosting de Uonify.

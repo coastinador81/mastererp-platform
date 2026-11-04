@@ -1,3 +1,4 @@
+import SupplierFields,{SupplierSummary,emptySupplier,supplierFromParty,supplierPayload} from './SupplierFields.jsx';
 import React, {useEffect, useRef, useState} from 'react';
 const API=window.location.origin==='https://finanzas-dev.uonify.com'?window.location.origin:'https://qx8nmypdhi.execute-api.us-west-1.amazonaws.com';
 const messages={400:'Revisa los campos de la solicitud.',401:'Tu sesión ha caducado.',403:'Acceso denegado.',404:'El tercero no está disponible en esta empresa.',409:'Conflicto: la versión o el contenido ya cambió. Recarga el detalle antes de volver a editar.',503:'El servicio no está disponible. Puedes volver a intentarlo.'};
@@ -11,12 +12,13 @@ export default function Parties({workspace,capacity,path,navigate}) {
   const [data,setData]=useState(null),[loading,setLoading]=useState(true),[error,setError]=useState(''),[saved,setSaved]=useState('');
   const [cursor,setCursor]=useState(''),[pages,setPages]=useState([]),[reload,setReload]=useState(0);
   const [code,setCode]=useState(''),[name,setName]=useState(''),[existing,setExisting]=useState(''),[busy,setBusy]=useState(false);
+  const [supplier,setSupplier]=useState(emptySupplier);
   const key=useRef(null), active=useRef(true), local=useRef(0);
   useEffect(()=>{active.current=true;return()=>{active.current=false;local.current++;};},[]);
   const endpoint=API+'/v1/administration/'+capacity;
   const headers={'X-MasterERP-Tenant-Id':tenant};
   useEffect(()=>{
-    let live=true;setError('');setSaved('');setData(null);setCode('');setName('');setExisting('');key.current=null;
+    let live=true;setError('');setSaved('');setData(null);setCode('');setName('');setExisting('');setSupplier(emptySupplier());key.current=null;
     if(create){setLoading(false);return()=>{live=false;};}
     setLoading(true);
     const query=new URLSearchParams({company_id:company,limit:'10',...(cursor?{after:cursor}:{})});
@@ -24,7 +26,7 @@ export default function Parties({workspace,capacity,path,navigate}) {
       if(!live)return;
       const rows=id?[result.data]:result.data?.items;
       if(!Array.isArray(rows)||rows.some(x=>!x||typeof x.id!=='string'||typeof x.codigo!=='string'||typeof x.nombre!=='string'||!Array.isArray(x.roles)))throw new Error('invalid_response');
-      setData(result.data);if(id){setCode(result.data.codigo);setName(result.data.nombre);}
+      setData(result.data);if(id){setCode(result.data.codigo);setName(result.data.nombre);setSupplier(supplierFromParty(result.data));}
     }).catch(e=>{if(live && e.name!=='AbortError'){setError(messages[e.status]||'No se pudo cargar. Vuelve a intentarlo.');if(e.status===403)denied();}})
       .finally(()=>{if(live)setLoading(false);});
     return()=>{live=false;};
@@ -33,6 +35,10 @@ export default function Parties({workspace,capacity,path,navigate}) {
     event?.preventDefault();if(busy || !canWrite)return;
     const stamp=++local.current;setBusy(true);setError('');setSaved('');
     const body={company_id:company,...(attach?{tercero_id:data.id}:create&&existing?{tercero_id:existing}:{codigo:code.trim(),nombre:name.trim(),...(!create?{version:data.version}:{})})};
+    if(capacity==='proveedores'&&!attach&&!existing){
+      if(Boolean(supplier.values.descuento_pronto_pago)!==Boolean(supplier.values.plazo_pronto_pago_dias)){setBusy(false);setError('Indica juntos el descuento por pronto pago y su plazo.');return;}
+      Object.assign(body,supplierPayload(supplier),...(!create?[{profile_version:data.profile_version,catalog_version:data.catalog_version}]:[]));
+    }
     const fingerprint=JSON.stringify(body), target=attach?(capacity==='clientes'?'proveedores':'clientes'):capacity;
     const newRecord=create||attach;
     if(!key.current || key.current.fingerprint!==fingerprint || key.current.target!==target)key.current={fingerprint,target,value:crypto.randomUUID()};
@@ -53,10 +59,11 @@ export default function Parties({workspace,capacity,path,navigate}) {
     </div>
     {error&&<div className="notice error" role="alert">{error} <button className="secondary" onClick={()=>setReload(x=>x+1)}>Recargar datos</button></div>}
     {saved&&<p role="status">{saved}</p>}
-    {(create||edit)&&canWrite&&<form className="panel record-form" onSubmit={send}>
+    {(create||edit)&&canWrite&&<form className={capacity==='proveedores'?'supplier-form':'panel record-form'} onSubmit={send}>
       {create&&<label>Vincular tercero existente (UUID, opcional)<input name="tercero_id" value={existing} onChange={e=>setExisting(e.target.value)} pattern="[0-9a-fA-F-]{36}" placeholder="Reutiliza el maestro sin duplicarlo"/></label>}
       {!existing&&<><label>Código<input name="codigo" required maxLength={80} value={code} onChange={e=>setCode(e.target.value)}/></label>
         <label>Nombre<input name="nombre" required maxLength={200} value={name} onChange={e=>setName(e.target.value)}/></label></>}
+      {capacity==='proveedores'&&!existing&&<SupplierFields draft={supplier} onChange={setSupplier}/>}
       {edit&&data&&<p>Versión {data.version}. Los cambios del maestro afectan a sus perfiles vinculados.</p>}
       <div className="actions"><button disabled={busy}>{busy?'Guardando…':'Guardar'}</button><button type="button" className="secondary" onClick={()=>navigate(id?base+'/'+id:base)}>Cancelar</button></div>
     </form>}
@@ -64,8 +71,9 @@ export default function Parties({workspace,capacity,path,navigate}) {
     {id&&!edit&&data&&<div className="panel detail"><dl><dt>Código</dt><dd>{data.codigo}</dd><dt>Nombre</dt><dd>{data.nombre}</dd><dt>Roles en esta empresa</dt><dd>{data.roles.join(', ')}</dd><dt>Versión</dt><dd>{data.version}</dd></dl>
       <div className="actions"><button className="secondary" onClick={()=>navigate(base)}>Volver al listado</button>{canWrite&&<button onClick={()=>navigate(base+'/'+id+'/editar')}>Editar</button>}
       {canWrite&&!data.roles.includes(capacity==='clientes'?'proveedor':'cliente')&&<button className="secondary" disabled={busy} onClick={()=>send(null,true)}>Añadir rol {capacity==='clientes'?'proveedor':'cliente'}</button>}</div></div>}
-    {!id&&!create&&data&&<div className="panel"><div className="table-scroll"><table><thead><tr><th>Código</th><th>Nombre</th><th>Roles</th><th>Acción</th></tr></thead><tbody>
-      {data.items.map(row=><tr key={row.id}><td>{row.codigo}</td><td>{row.nombre}</td><td>{row.roles.join(', ')}</td><td><a href={'#'+base+'/'+row.id}>Ver detalle</a></td></tr>)}</tbody></table></div>
+    {capacity==='proveedores'&&id&&!edit&&data&&<SupplierSummary data={data}/>}
+    {!id&&!create&&data&&<div className="panel"><div className="table-scroll"><table><thead><tr><th>Código</th><th>Nombre</th><th>Roles</th>{capacity==='proveedores'&&<><th>Identificación fiscal</th><th>Correo</th><th>Teléfono</th></>}<th>Acción</th></tr></thead><tbody>
+      {data.items.map(row=><tr key={row.id}><td>{row.codigo}</td><td>{row.nombre}</td><td>{row.roles.join(', ')}</td>{capacity==='proveedores'&&<><td>{row.datos_generales?.numero_identificacion||'—'}</td><td>{row.datos_generales?.email||'—'}</td><td>{row.datos_generales?.telefono||'—'}</td></>}<td><a href={'#'+base+'/'+row.id}>Ver detalle</a></td></tr>)}</tbody></table></div>
       {data.items.length===0&&<p className="empty">No hay {label.toLowerCase()} registrados en esta empresa.</p>}
       <div className="pagination"><button className="secondary" disabled={!pages.length} onClick={()=>{setCursor(pages[pages.length-1]);setPages(p=>p.slice(0,-1));}}>Anterior</button><span>Máximo 10 registros por página</span><button className="secondary" disabled={!data.next_cursor} onClick={()=>{setPages(p=>[...p,cursor]);setCursor(data.next_cursor);}}>Siguiente</button></div>
     </div>}

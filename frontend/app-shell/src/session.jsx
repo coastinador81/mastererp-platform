@@ -1,13 +1,14 @@
 import React, {createContext, useContext, useEffect, useRef, useState} from 'react';
 import {login, logout, completeLogin, authorizedFetch, clearSession, sessionExpiresAt} from '../../shared/auth/cognito.mjs';
 import {flushSync} from 'react-dom';
+import {workspacePath} from './financeRoutes.mjs';
 import baseConfig from '../../modules/0-uonify/auth-config.json';
 const SessionContext = createContext(null);
 export const useWorkspace = () => useContext(SessionContext);
 const allowedOrigins = ['https://app-dev.uonify.com', 'https://finanzas-dev.uonify.com'];
 const origin = allowedOrigins.includes(window.location.origin) ? window.location.origin : 'https://app-dev.uonify.com';
 export const config = {...baseConfig, apiUrl:origin==='https://finanzas-dev.uonify.com'?origin:baseConfig.apiUrl, callbackUrl:origin + '/auth/callback', logoutUrl:origin + '/'};
-export function WorkspaceProvider({children,restoreSession=true}) {
+export function WorkspaceProvider({children}) {
   const [signedIn,setSignedIn] = useState(false), [spaces,setSpaces] = useState([]);
   const [tenant,setTenant] = useState(''), [company,setCompany] = useState(''), [context,setContext] = useState(null);
   const [loading,setLoading] = useState(false), [error,setError] = useState('');
@@ -40,7 +41,7 @@ export function WorkspaceProvider({children,restoreSession=true}) {
     (async()=>{
       try {
         if(window.location.pathname==='/auth/callback') {await completeLogin(config);await discover();window.dispatchEvent(new HashChangeEvent('hashchange'));}
-        else if(restoreSession&&sessionStorage.getItem('mastererp.dev.returning')==='true') await login(config);
+        else if(sessionStorage.getItem('mastererp.dev.returning')==='true') await beginLogin();
       } catch {end('No se pudo validar el acceso. Vuelve a intentarlo.');}
     })();
     return invalidate;
@@ -80,8 +81,15 @@ export function WorkspaceProvider({children,restoreSession=true}) {
     const timer=setInterval(check,60000);
     return()=>{clearInterval(timer);window.removeEventListener('focus',check);};
   },[tenant,signedIn]);
+  const beginLogin = () => {
+    if(window.location.origin==='https://finanzas-dev.uonify.com'&&new URLSearchParams(window.location.search).get('vista')==='proveedores'){
+      // Only a logical, non-sensitive route is retained by the existing one-use PKCE transaction.
+      window.history.replaceState(null,'','/#'+workspacePath(window.location,true));
+    }
+    return login(config);
+  };
   const denied = () => {invalidate();sessionStorage.removeItem('mastererp.dev.selection');setContext(null);setCompany('');setError('Acceso denegado. Tus permisos o el módulo pueden haber cambiado.');};
   return <SessionContext.Provider value={{signedIn,spaces,tenant,company,context,loading,error,request,selectTenant,selectCompany,refresh,denied,
-    startLogin:()=>login(config).catch(()=>end('No se pudo iniciar el acceso.')),
+    startLogin:()=>beginLogin().catch(()=>end('No se pudo iniciar el acceso.')),
     signOut:()=>{flushSync(()=>end(''));logout(config);}}}>{children}</SessionContext.Provider>;
 }

@@ -1,0 +1,6 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';import {workspacePath,financeUrl} from './financeRoutes.mjs';
+const id='00000001-0000-0000-0000-000000000001',base='/modulos/finanzas/administracion/proveedores';
+test('independent supplier deep links round-trip without hash or tokens',()=>{for(const path of ['/modulos/finanzas',base,base+'/nuevo',base+'/'+id,base+'/'+id+'/editar']){const url=financeUrl(path),location=new URL(url,'https://finanzas-dev.uonify.com');assert.equal(workspacePath(location,true),path);assert.ok(!url.includes('#'));assert.ok(!url.includes('token'));}});
+test('PKCE-returned hash routes are interpreted and can be normalized',()=>{const location=new URL('https://finanzas-dev.uonify.com/#'+base+'/'+id+'/editar');assert.equal(financeUrl(workspacePath(location,true)),'/?vista=proveedores&accion=editar&id='+id);});
+test('unknown or external routes are never emitted as redirect targets',()=>{for(const path of ['https://example.invalid','//example.invalid',base+'/not-a-uuid',base+'/'+id+'/other','/auth/callback'])assert.equal(financeUrl(path),null);});
+test('general workspace root remains independent of Finance routing',()=>{assert.equal(workspacePath(new URL('https://app-dev.uonify.com/')), '/');assert.equal(workspacePath(new URL('https://finanzas-dev.uonify.com/'),true),'/modulos/finanzas');});
