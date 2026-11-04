@@ -1,5 +1,5 @@
 import React from 'react';
-import Purchases from './Purchases.jsx';
+import Purchases from '../2.2.1-administration/2.2.1.2-gestion-compras/screens/purchases/Purchases.jsx';
 import Parties from '../2.2.1-administration/screens/parties/Parties.jsx';
 export default function Finance({workspace,path,navigate}) {
   const allowed=workspace.context?.modules.includes('erp.finance')&&workspace.context?.permissions.some(p=>['administration.parties.read','administration.purchases.read'].includes(p));
