@@ -13,8 +13,9 @@ export default function FinanceNavigation({allowed,path}) {
     <details className="administration-nav" open><summary className="administration-nav-title">Administración</summary><div className="administration-nav-children">
     {groups.map(([number,name,items],index)=><details className="finance-nav-group" key={number} open={index<2||items.some(([,route])=>route&&path.includes('/'+route))}>
       <summary>{name}</summary>
-      <ul>{items.map(([label,route])=><li key={label}>{route&&allowed?
-        <a className="subnav" href={'#/modulos/finanzas/administracion/'+route} aria-current={path.startsWith('/modulos/finanzas/administracion/'+route)?'page':undefined}>{label}</a>:
+      <ul>{items.map(([label,route])=><li key={label}>{route==='proveedores'?
+        <a className="subnav" href="/?vista=proveedores" aria-current={new URLSearchParams(window.location.search).get('vista')==='proveedores'?'page':undefined}>{label}</a>:
+        route&&allowed?<a className="subnav" href={'#/modulos/finanzas/administracion/'+route} aria-current={path.startsWith('/modulos/finanzas/administracion/'+route)?'page':undefined}>{label}</a>:
         <span className="finance-nav-pending" aria-disabled="true">{label}{!route&&<small>Pendiente</small>}</span>}</li>)}</ul>
     </details>)}
     </div></details>

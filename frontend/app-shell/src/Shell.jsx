@@ -2,6 +2,7 @@ import React, {useEffect,useState} from 'react';
 import {createRoot} from 'react-dom/client';
 import {WorkspaceProvider,useWorkspace} from './session.jsx';
 import Finance from '../../modules/2.2-finance/src/Finance.jsx';
+import SupplierDraft from '../../modules/2.2-finance/2.2.1-administration/screens/parties/SupplierDraft.jsx';
 import FinanceNavigation from '../../modules/2.2-finance/src/FinanceNavigation.jsx';
 import Conversation from '../../modules/0-uonify/components/Conversation.jsx';
 import './shell.css';
@@ -23,7 +24,8 @@ function Shell({independent=false}) {
       <main id="workspace-content" className="integrated-content" tabIndex={-1}>
         {independent&&<p className="notice">Finanzas · Entorno de desarrollo · Administración</p>}
         {w.error&&<div className="notice error" role="alert">{w.error} {w.signedIn&&<button className="secondary" onClick={()=>w.refresh()}>Revalidar acceso</button>}</div>}
-        {independent&&!w.signedIn?<section><h1>Administración</h1></section>:
+        {independent&&new URLSearchParams(window.location.search).get('vista')==='proveedores'?<SupplierDraft/>:
+         independent&&!w.signedIn?<section><h1>Administración</h1></section>:
          !w.signedIn?<section className="hero"><p className="eyebrow">UN ESPACIO, TUS OPERACIONES</p><h1>Tu trabajo,<br/><em>conectado.</em></h1><p>{independent?'Accede para trabajar con Administración y selecciona tu empresa.':'Accede a tu espacio para abrir los módulos de tu empresa o trabajar con el chat.'}</p><button onClick={w.startLogin}>Acceder a mi espacio</button><p className="muted">Cognito autentica. MasterERP valida cada operación.</p></section>:
          w.loading?<p role="status">Validando espacio y permisos…</p>:
          !w.tenant?<div className="notice" role="status">{w.spaces.length?'Selecciona un espacio para continuar.':'Todavía no tienes un espacio asignado.'}</div>:
@@ -34,4 +36,4 @@ function Shell({independent=false}) {
          <section><p className="eyebrow">TU ESPACIO DE TRABAJO</p><h1>Todo empieza aquí.</h1><p>Abre un módulo desde el menú. También puedes visitar el chat, sin que sea obligatorio conversar.</p><div className="cards">{finance&&<a className="panel module-card" href="#/modulos/finanzas"><span>FINANZAS</span><h2>Finanzas</h2><p>Administración, Clientes y Proveedores.</p><strong>Abrir módulo →</strong></a>}<a className="panel module-card" href="#/chat"><span>UONIFY</span><h2>Chat operativo</h2><p>Espacio conversacional. Asistente aún sin conectar.</p></a></div>{!finance&&<p className="notice">No hay módulos funcionales autorizados para este espacio.</p>}</section>}
       </main></div></div>;
 }
-export function mountWorkspace(element,options={}) {if(options.independent&&window.location.pathname==='/'&&['#/modulos/finanzas','#/'].includes(window.location.hash))window.history.replaceState(null,'','/'+window.location.search);createRoot(element).render(<WorkspaceProvider><Shell {...options}/></WorkspaceProvider>);}
+export function mountWorkspace(element,options={}) {if(options.independent&&window.location.pathname==='/'&&['#/modulos/finanzas','#/'].includes(window.location.hash))window.history.replaceState(null,'','/'+window.location.search);createRoot(element).render(<WorkspaceProvider restoreSession={!(options.independent&&new URLSearchParams(window.location.search).get('vista')==='proveedores')}><Shell {...options}/></WorkspaceProvider>);}

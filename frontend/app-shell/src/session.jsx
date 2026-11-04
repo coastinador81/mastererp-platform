@@ -7,7 +7,7 @@ export const useWorkspace = () => useContext(SessionContext);
 const allowedOrigins = ['https://app-dev.uonify.com', 'https://finanzas-dev.uonify.com'];
 const origin = allowedOrigins.includes(window.location.origin) ? window.location.origin : 'https://app-dev.uonify.com';
 export const config = {...baseConfig, apiUrl:origin==='https://finanzas-dev.uonify.com'?origin:baseConfig.apiUrl, callbackUrl:origin + '/auth/callback', logoutUrl:origin + '/'};
-export function WorkspaceProvider({children}) {
+export function WorkspaceProvider({children,restoreSession=true}) {
   const [signedIn,setSignedIn] = useState(false), [spaces,setSpaces] = useState([]);
   const [tenant,setTenant] = useState(''), [company,setCompany] = useState(''), [context,setContext] = useState(null);
   const [loading,setLoading] = useState(false), [error,setError] = useState('');
@@ -40,7 +40,7 @@ export function WorkspaceProvider({children}) {
     (async()=>{
       try {
         if(window.location.pathname==='/auth/callback') {await completeLogin(config);await discover();window.dispatchEvent(new HashChangeEvent('hashchange'));}
-        else if(sessionStorage.getItem('mastererp.dev.returning')==='true') await login(config);
+        else if(restoreSession&&sessionStorage.getItem('mastererp.dev.returning')==='true') await login(config);
       } catch {end('No se pudo validar el acceso. Vuelve a intentarlo.');}
     })();
     return invalidate;
