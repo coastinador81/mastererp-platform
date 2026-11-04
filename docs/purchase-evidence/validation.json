@@ -1,0 +1,120 @@
+{
+  "run": "qa-parties-7f5f59af9775",
+  "environment": "DEV us-west-1",
+  "results": [
+    {
+      "name": "real_cognito_login",
+      "status": "passed"
+    },
+    {
+      "name": "request_created_from_ui_and_persisted",
+      "status": "passed",
+      "http": 201,
+      "total": "24.7"
+    },
+    {
+      "name": "request_edited_from_ui",
+      "status": "passed",
+      "http": 200
+    },
+    {
+      "name": "order_from_request_created_in_ui",
+      "status": "passed",
+      "http": 201
+    },
+    {
+      "name": "order_edited_before_invoice",
+      "status": "passed",
+      "http": 200
+    },
+    {
+      "name": "invoice_from_order_created_in_ui",
+      "status": "passed",
+      "http": 201
+    },
+    {
+      "name": "all_three_documents_independently_read_from_api",
+      "status": "passed",
+      "http": 200
+    },
+    {
+      "name": "real_keyset_pagination",
+      "status": "passed",
+      "http": 200
+    },
+    {
+      "name": "concurrent_idempotency_and_decimal_precision",
+      "status": "passed",
+      "http": [
+        200,
+        201
+      ],
+      "conflict": 409
+    },
+    {
+      "name": "concurrent_update_rejects_stale_version",
+      "status": "passed",
+      "http": [
+        200,
+        409
+      ]
+    },
+    {
+      "name": "mandatory_chain_and_used_source_protected",
+      "status": "passed",
+      "http": [
+        409,
+        409,
+        400
+      ]
+    },
+    {
+      "name": "invalid_currency_precision_rejected",
+      "status": "passed",
+      "http": 400
+    },
+    {
+      "name": "missing_token_tenant_and_company_isolation",
+      "status": "passed",
+      "http": [
+        401,
+        403,
+        404,
+        403
+      ]
+    },
+    {
+      "name": "override_module_membership_tenant_guards",
+      "status": "passed",
+      "http": 403
+    },
+    {
+      "name": "invoice_update_and_clean_deep_link_reload",
+      "status": "passed",
+      "http": 200
+    },
+    {
+      "name": "company_switch_clears_previous_data",
+      "status": "passed"
+    },
+    {
+      "name": "responsive_browser_render",
+      "status": "passed"
+    },
+    {
+      "name": "eight_existing_health_routes_and_suppliers_preserved",
+      "status": "passed"
+    },
+    {
+      "name": "real_document_audit_events_verified",
+      "status": "passed"
+    },
+    {
+      "name": "logout_clears_context",
+      "status": "passed"
+    }
+  ],
+  "audit": 8,
+  "status": "passed",
+  "cleanup": "passed"
+}

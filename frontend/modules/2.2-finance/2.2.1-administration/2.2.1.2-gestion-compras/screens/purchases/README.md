@@ -4,4 +4,4 @@ Responsabilidad: listado, detalle, creación y edición de borradores de solicit
 
 Frontend implementa las pantallas; Backend enruta en la Lambda propietaria de Gestión de compras; Database reutiliza documentos y comandos controlados. Infrastructure no declara recursos exclusivos para esta pantalla: resources.yml vacío y excluido del despliegue.
 
-Estado: implementación DEV; validación HTTP y visual en curso. Ver [contrato y evidencia](../../../../../../../docs/PURCHASE_DRAFTS_DEV.md).
+Estado: borradores básicos implementados y validados por HTTP/navegador en DEV; efectos financieros y aprobación pendientes. Ver [contrato y evidencia](../../../../../../../docs/PURCHASE_DRAFTS_DEV.md).

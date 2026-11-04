@@ -1,0 +1,30 @@
+{
+  "environment": "DEV us-west-1",
+  "account": "277352717693",
+  "api": "qx8nmypdhi",
+  "api_owner": "mastererp-dev-onboarding",
+  "stack": "mastererp-dev-finance",
+  "child_stack": "mastererp-dev-administration",
+  "routes_before": 53,
+  "routes_after": 66,
+  "integrations": 26,
+  "lambdas": 8,
+  "existing_routes_unchanged": true,
+  "integrations_unchanged": true,
+  "cors_authorizers_unchanged": true,
+  "uonify_entry_unchanged": true,
+  "purchase_lambda": {
+    "FunctionArn": "arn:aws:lambda:us-west-1:277352717693:function:mastererp-dev-adm-compras",
+    "Role": "arn:aws:iam::277352717693:role/mastererp-dev-administration-ComprasRole-uXVDtzn7MAXL",
+    "CodeSha256": "nv5qwFPDlNOctQUzPWmm5QmVkqEu6e+Wv3Y3r0LJRRI="
+  },
+  "source_commits": {
+    "database": "b27b968383a7ff9dc5e10809ce22bdb2c1b06cfd",
+    "platform_backend": "d7841b6",
+    "platform_frontend": "6e148edd9bc4b6e9e8002119c3a8895c937cc62e",
+    "infrastructure": "c5a2539"
+  },
+  "snapshot": "mastererp-dev-before-purchase-drafts-20261105",
+  "sql_workflow": "https://github.com/eticayservicios/mastererp-database/actions/runs/41935397004",
+  "frontend_workflow": "https://github.com/eticayservicios/mastererp-platform/actions/runs/41936494724"
+}
