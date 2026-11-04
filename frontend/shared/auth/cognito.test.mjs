@@ -1,0 +1,74 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {pkceChallenge, authorizationRequest, completeLogin, clearSession, loadSpaces} from './cognito.mjs';
+
+const config = {clientId:'test-client',loginBaseUrl:'https://identity.invalid',
+  callbackUrl:'https://app-dev.uonify.com/auth/callback',logoutUrl:'https://app-dev.uonify.com/',
+  scopes:['openid','mastererp-dev/identity.spaces.read'],apiUrl:'https://api.invalid'};
+
+test('S256 matches RFC 7636 vector', async () => {
+  assert.equal(await pkceChallenge('dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk'),
+    'E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM');
+});
+
+test('public authorization-code request has random state and S256; no secret', async () => {
+  const first=await authorizationRequest(config), second=await authorizationRequest(config);
+  const url=new URL(first.url);
+  assert.notEqual(first.state,second.state);
+  assert.equal(url.searchParams.get('code_challenge_method'),'S256');
+  assert.equal(url.searchParams.get('response_type'),'code');
+  assert.equal(url.searchParams.has('client_secret'),false);
+  assert.equal(url.searchParams.get('code_challenge'),await pkceChallenge(first.verifier));
+});
+
+test('callback validates state, consumes transaction, removes URL; tokens stay in memory', async () => {
+  const store=new Map();
+  globalThis.sessionStorage={getItem:k=>store.get(k)??null,setItem:(k,v)=>store.set(k,v),removeItem:k=>store.delete(k)};
+  let cleaned=false;
+  globalThis.window={history:{replaceState:()=>{cleaned=true;}}};
+  let calls=0;
+  globalThis.fetch=async (url,options)=>{
+    calls++;
+    assert.equal(options.credentials,'omit');
+    assert.equal(options.body.get('code_verifier'),'test-verifier');
+    return {ok:true,json:async()=>({token_type:'Bearer',access_token:'test-only-token',expires_in:900})};
+  };
+  const tx={state:'expected',verifier:'test-verifier',createdAt:Date.now(),
+    clientId:config.clientId,callbackUrl:config.callbackUrl};
+  store.set('mastererp.dev.pkce',JSON.stringify(tx));
+  await assert.rejects(completeLogin(config,config.callbackUrl+'?code=test-code&state=wrong'));
+  assert.equal(calls,0);
+  assert.equal(store.size,0);
+  store.set('mastererp.dev.pkce',JSON.stringify(tx));
+  await completeLogin(config,config.callbackUrl+'?code=test-code&state=expected');
+  assert.equal(calls,1);
+  assert.equal(cleaned,true);
+  assert.deepEqual([...store.entries()],[['mastererp.dev.returning','true']]);
+  await assert.rejects(completeLogin(config,config.callbackUrl+'?code=replay&state=expected'));
+  assert.equal(calls,1);
+  clearSession();
+  await assert.rejects(loadSpaces(config));
+});
+
+test('space discovery uses bearer token and server list; failures never become mock spaces', async () => {
+  const store=new Map();
+  globalThis.sessionStorage={getItem:k=>store.get(k)??null,setItem:(k,v)=>store.set(k,v),removeItem:k=>store.delete(k)};
+  globalThis.window={history:{replaceState:()=>{}}};
+  store.set('mastererp.dev.pkce',JSON.stringify({state:'spaces-state',verifier:'test-verifier',
+    createdAt:Date.now(),clientId:config.clientId,callbackUrl:config.callbackUrl}));
+  globalThis.fetch=async()=>({ok:true,json:async()=>({token_type:'Bearer',access_token:'test-only-token',expires_in:900})});
+  await completeLogin(config,config.callbackUrl+'?code=test-code&state=spaces-state');
+  let spaces=[];
+  globalThis.fetch=async(url,options)=>{
+    assert.equal(url,config.apiUrl+'/v1/uonify/spaces');
+    assert.equal(options.headers.Authorization,'Bearer test-only-token');
+    assert.equal(options.cache,'no-store');
+    return {ok:true,json:async()=>({spaces})};
+  };
+  assert.deepEqual(await loadSpaces(config),[]);
+  spaces=[{id:'test-tenant-a',name:'A'},{id:'test-tenant-b',name:'B'}];
+  assert.deepEqual(await loadSpaces(config),spaces);
+  globalThis.fetch=async()=>({ok:false,status:404});
+  await assert.rejects(loadSpaces(config),/no está disponible/);
+  clearSession();
+});

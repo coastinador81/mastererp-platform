@@ -113,3 +113,20 @@ def user_spaces(issuer, subject):
         _set_actor(connection, issuer, subject)
         return [{"id": str(row[0]), "name": row[1]} for row in connection.run(
             "SELECT tenant_id,tenant_name FROM plataforma.list_current_user_spaces()")]
+
+
+def frontend_context(issuer, subject, tenant_id):
+    try:
+        tenant = str(UUID(tenant_id))
+    except (ValueError, TypeError, AttributeError):
+        raise AccessError(400, "invalid_tenant_context") from None
+    with application_connection() as connection:
+        _set_actor(connection, issuer, subject)
+        connection.run("SELECT set_config('app.current_tenant_id',:tenant,true)", tenant=tenant)
+        try:
+            return connection.run("SELECT plataforma.current_frontend_context()")[0][0]
+        except Exception as error:
+            detail = error.args[0] if error.args and isinstance(error.args[0], dict) else {}
+            if detail.get('C') == '42501':
+                raise AccessError(403, "tenant_context_denied") from None
+            raise

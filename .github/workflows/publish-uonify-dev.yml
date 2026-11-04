@@ -1,0 +1,67 @@
+name: Publish Uonify frontend DEV
+on:
+  workflow_dispatch:
+  push:
+    branches: [dev]
+    paths:
+      - 'frontend/.gitattributes'
+      - 'frontend/modules/0-uonify/index.html'
+      - 'frontend/modules/0-uonify/src/**'
+      - 'frontend/modules/0-uonify/**/*.jsx'
+      - 'frontend/modules/0-uonify/**/*.tsx'
+      - 'frontend/modules/0-uonify/auth-config.json'
+      - 'frontend/modules/2.2-finance/src/**'
+      - 'frontend/modules/2.2-finance/**/*.jsx'
+      - 'frontend/modules/0-uonify/vite.config.js'
+      - 'frontend/app-shell/src/**'
+      - 'frontend/shared/auth/*.mjs'
+      - 'frontend/modules/0-uonify/components/Conversation.jsx'
+      - 'frontend/modules/0-uonify/components/ShellIcons.tsx'
+      - 'frontend/modules/0-uonify/auth-config.json'
+      - 'frontend/modules/0-uonify/package*.json'
+      - 'frontend/modules/0-uonify/.env.dev'
+      - 'frontend/modules/0-uonify/.gitattributes'
+      - '.github/workflows/publish-uonify-dev.yml'
+permissions:
+  contents: read
+  id-token: write
+concurrency:
+  group: mastererp-dev-uonify-frontend
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend/modules/0-uonify
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/modules/0-uonify/package-lock.json
+      - run: npm ci
+      - run: node --test ../../shared/auth/cognito.test.mjs
+      - run: npm run build
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::277352717693:role/mastererp-dev-uonify-frontend-github-role
+          aws-region: us-west-1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: uonify-dev-${{ github.sha }}
+          path: frontend/modules/0-uonify/dist/
+      - name: Publish immutable assets then entry point
+        env:
+          BUCKET: ${{ vars.UONIFY_DEV_BUCKET }}
+          DISTRIBUTION: ${{ vars.UONIFY_DEV_DISTRIBUTION_ID }}
+        run: |
+          set -euo pipefail
+          test -n "$BUCKET" && test -n "$DISTRIBUTION"
+          test "$(aws sts get-caller-identity --query Account --output text)" = 277352717693
+          aws s3 sync dist/ "s3://$BUCKET/" --exclude index.html --cache-control 'public,max-age=31536000,immutable'
+          aws s3 cp dist/index.html "s3://$BUCKET/auth/callback" --content-type 'text/html; charset=utf-8' --cache-control 'no-cache,max-age=0,must-revalidate'
+          aws s3 cp dist/index.html "s3://$BUCKET/index.html" --content-type 'text/html; charset=utf-8' --cache-control 'no-cache,max-age=0,must-revalidate'
+          invalidation=$(aws cloudfront create-invalidation --distribution-id "$DISTRIBUTION" --paths / /index.html /auth/callback --query Invalidation.Id --output text)
+          aws cloudfront wait invalidation-completed --distribution-id "$DISTRIBUTION" --id "$invalidation"

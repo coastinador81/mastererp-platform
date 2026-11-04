@@ -1,6 +1,6 @@
 # Clientes y Proveedores DEV
 
-Estado de implementación: desplegado y validado en DEV; evidencias de publicación y HTTP en Database/docs/parties-dev-validation.json y informes de validación asociados. No hay frontend ni reglas fiscales.
+Estado de implementación: desplegado y validado en DEV; evidencias de publicación y HTTP en Database/docs/parties-dev-validation.json y informes de validación asociados. El primer recorrido UI se registra por separado en [FINANCE_UI_INTEGRATION.md](FINANCE_UI_INTEGRATION.md); no se añaden reglas fiscales.
 
 ## Modelo y autorización
 

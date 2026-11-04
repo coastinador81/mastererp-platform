@@ -4,7 +4,7 @@ import logging
 import re
 import uuid
 
-from tenant_security.identity_access import AccessError, authenticated_identity, connection_access, user_spaces
+from tenant_security.identity_access import AccessError, authenticated_identity, connection_access, user_spaces, frontend_context
 
 ROUTE = "GET /v1/uonify/google/connection/status"
 SPACES_ROUTE = "GET /v1/uonify/spaces"
@@ -23,7 +23,13 @@ def _handle(event, correlation_id):
         scope = "mastererp-dev/" + ("identity.spaces.read" if route == SPACES_ROUTE else "uonify.connections.status")
         issuer, subject = authenticated_identity(event, scope)
         if route == SPACES_ROUTE:
-            return response(200, {"spaces": user_spaces(issuer, subject)})
+            query = event.get("queryStringParameters") or {}
+            if set(query) - {"tenant_id"}:
+                raise AccessError(400, "invalid_context_query")
+            body = {"spaces": user_spaces(issuer, subject)}
+            if query.get("tenant_id"):
+                body["context"] = frontend_context(issuer, subject, query["tenant_id"])
+            return response(200, body)
         headers = {k.lower(): v for k, v in (event.get("headers") or {}).items()}
         tenant = headers.get("x-mastererp-tenant-id")
         if not tenant:

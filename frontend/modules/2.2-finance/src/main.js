@@ -1,1 +1,2 @@
-import './style.css';
+import {mountWorkspace} from '../../../app-shell/src/Shell.jsx';
+mountWorkspace(document.getElementById('root'),{independent:true});

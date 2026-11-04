@@ -1,0 +1,9 @@
+{
+  "issuer": "https://cognito-idp.us-west-1.amazonaws.com/us-west-1_oCn3VipDO",
+  "clientId": "56psiha6rtmsu8qklace85k8m0",
+  "loginBaseUrl": "https://mastererp-dev-uonify-277352717693.auth.us-west-1.amazoncognito.com",
+  "callbackUrl": "https://app-dev.uonify.com/auth/callback",
+  "logoutUrl": "https://app-dev.uonify.com/",
+  "apiUrl": "https://ebn01q74hh.execute-api.us-west-1.amazonaws.com",
+  "scopes": ["openid", "email", "mastererp-dev/identity.spaces.read", "mastererp-dev/uonify.connections.status"]
+}
