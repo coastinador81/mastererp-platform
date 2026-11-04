@@ -94,6 +94,12 @@ def handle(event, context):
         status, code = 400, 'invalid_request'
     except Exception as error:
         detail = error.args[0] if error.args and isinstance(error.args[0], dict) else {}
+        # Fixed SQLSTATE/reason only; never emit database DETAIL, queries, payloads or credentials.
+        reasons = {'Invalid purchase input':'input', 'Invalid purchase currency or reference':'currency_reference',
+                   'Supplier unavailable in company':'supplier_scope', 'Invalid purchase line':'line',
+                   'Line amount exceeds currency precision':'precision', 'Compatible purchase source required':'source'}
+        LOG.info(json.dumps({'event':'purchase_command_failure','sqlstate':detail.get('C','unknown'),
+                             'reason':reasons.get(detail.get('M'),'constraint_or_service'), 'correlation_id':correlation}))
         status, code = {'42501': (403, 'access_denied'), 'P0002': (404, 'not_found'),
                         '23505': (409, 'duplicate_or_idempotency_conflict'), '40001': (409, 'stale_version'),
                         '55000': (409, 'source_in_use'), '22023': (400, 'invalid_request'),
