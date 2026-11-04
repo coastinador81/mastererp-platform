@@ -1,0 +1,143 @@
+{
+  "environment": "DEV us-west-1",
+  "run": "qa-parties-5408f920b084",
+  "results": [
+    {
+      "name": "login_cognito_and_authorized_context",
+      "status": "passed"
+    },
+    {
+      "name": "api_without_token_denied",
+      "status": "passed",
+      "http": 401
+    },
+    {
+      "name": "foreign_tenant_and_company_denied",
+      "status": "passed",
+      "http": 403
+    },
+    {
+      "name": "finance_inside_uonify_without_redirect",
+      "status": "passed"
+    },
+    {
+      "name": "customer_created_and_persisted",
+      "status": "passed",
+      "http": 201
+    },
+    {
+      "name": "same_party_both_roles",
+      "status": "passed",
+      "http": 201
+    },
+    {
+      "name": "customer_update_persisted",
+      "status": "passed",
+      "http": 200
+    },
+    {
+      "name": "supplier_lists_same_master",
+      "status": "passed"
+    },
+    {
+      "name": "obsolete_version_rejected",
+      "status": "passed",
+      "http": 409
+    },
+    {
+      "name": "supplier_update_persisted_ui",
+      "status": "passed",
+      "http": 200
+    },
+    {
+      "name": "supplier_created_persisted_ui",
+      "status": "passed",
+      "http": 201
+    },
+    {
+      "name": "idempotency_replay_and_content_conflict",
+      "status": "passed",
+      "replay_http": 200,
+      "conflict_http": 409
+    },
+    {
+      "name": "cursor_pagination_real_records",
+      "status": "passed"
+    },
+    {
+      "name": "company_switch_clears_previous_data",
+      "status": "passed"
+    },
+    {
+      "name": "late_real_response_dropped_after_context_change",
+      "status": "passed"
+    },
+    {
+      "name": "reload_recovers_session_and_validates_context",
+      "status": "passed"
+    },
+    {
+      "name": "back_forward_navigation",
+      "status": "passed"
+    },
+    {
+      "name": "revoked_write_hidden_and_api_denied",
+      "status": "passed",
+      "http": 403
+    },
+    {
+      "name": "disabled_module_hidden_and_api_denied",
+      "status": "passed",
+      "http": 403
+    },
+    {
+      "name": "inactive_membership_clears_context",
+      "status": "passed",
+      "http": 403
+    },
+    {
+      "name": "inactive_tenant_denied",
+      "status": "passed",
+      "http": 403
+    },
+    {
+      "name": "responsive_mobile",
+      "status": "passed"
+    },
+    {
+      "name": "logout_clears_context",
+      "status": "passed"
+    },
+    {
+      "name": "member_without_permissions_denied",
+      "status": "passed"
+    },
+    {
+      "name": "standalone_same_screens_real_api",
+      "status": "passed"
+    },
+    {
+      "name": "session_expiry_ui_clock_controlled",
+      "status": "passed"
+    }
+  ],
+  "oauth_status": 200,
+  "oauth_token_present": true,
+  "spaces_http": 200,
+  "spaces_error": null,
+  "audit": 17,
+  "status": "passed",
+  "cleanup": "passed",
+  "frontend_commit": "187b9e1",
+  "database_migration_commit": "7ff6edd",
+  "browser": "Chrome headless with real DEV services",
+  "controlled_cases": [
+    "UI expiry: browser clock advanced; not a real 15-minute token-expiry wait",
+    "Late response: real API data delayed in test transport; no mocked data"
+  ],
+  "not_executed": [
+    "Local disposable PostgreSQL: Docker Linux engine unavailable",
+    "Full Onboarding wizard regression",
+    "Functional chat/voice/Gemini"
+  ]
+}

@@ -2,7 +2,7 @@
 
 ## Experiencia integrada objetivo
 
-En DEV, app-dev.uonify.com es la entrada general: dashboard común con chat y menú de módulos habilitados para el tenant y autorizados para el usuario. Las pantallas de Finanzas y otros módulos deben presentarse en ese espacio con navegación, identidad y contexto comunes; conversar es opcional. La integración técnica y las rutas internas siguen pendientes. El alojamiento independiente de Finanzas DEV se conserva para pruebas. Ver [contrato oficial](../../../docs/FRONTEND_ARCHITECTURE.md). Esta decisión no acredita el dashboard integrado ni las pantallas de módulos implementados.
+En DEV, app-dev.uonify.com es la entrada general: dashboard común con chat y menú de módulos habilitados para el tenant y autorizados para el usuario. Las pantallas de Finanzas y otros módulos deben presentarse en ese espacio con navegación, identidad y contexto comunes; conversar es opcional. El primer recorrido usa composición en build y rutas hash; sus 26 comprobaciones reales y límites se documentan en [la guía de integración](../../../docs/FINANCE_UI_INTEGRATION.md). El alojamiento independiente de Finanzas DEV se conserva para pruebas. Ver [contrato oficial](../../../docs/FRONTEND_ARCHITECTURE.md). Esta decisión no acredita el dashboard integrado ni las pantallas de módulos implementados.
 
 Objetivo específico: Canal conversacional y de voz para consultar y coordinar operaciones con los módulos propietarios.
 

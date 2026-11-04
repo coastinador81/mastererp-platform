@@ -1,6 +1,6 @@
 # Primer recorrido integrado de Finanzas — DEV
 
-Estado: código preparado, publicación y validación real de navegador en curso. Este archivo registra el mecanismo; los resultados se incorporan después de ejecutar las pruebas. No constituye cierre completo de Finanzas.
+Estado: primer recorrido desplegado y validado en DEV el 2026-11-04. Se verifican Clientes/Proveedores y los controles descritos abajo; no constituye cierre de todas las capacidades financieras.
 
 ## Integración elegida
 
@@ -34,4 +34,18 @@ Se revisaron los archivos locales de autenticación, configuración pública, ic
 
 RDS: backup mastererp-dev-before-frontend-context-20261104 disponible. 015 aplicada/reaplicada y pruebas como mastererp_app aprobadas por [workflow oficial](https://github.com/eticayservicios/mastererp-database/actions/runs/41850364216). No se reejecutaron SQL 001–014. Docker local no tenía motor Linux disponible; la validación desechable no se declara aprobada. Los tests SQL usan ROLLBACK para fixtures; no revierten la función ya confirmada.
 
-Resultados de navegador y evidencia visual: pendientes de completar tras la publicación; script `scripts/validate_finance_browser.cjs`. Usa cuentas sintéticas existentes, fixtures nuevas qa-parties-* y limpieza acotada por el migrador oficial. No registra credenciales/tokens ni captura la página de login. Los tests de APIs, expiración controlada y UI se identifican por separado.
+Resultados de navegador y evidencia visual: [26 comprobaciones aprobadas](finance-ui-evidence/results.json); script `scripts/validate_finance_browser.cjs`. Usa cuentas sintéticas existentes, fixtures nuevas qa-parties-* y limpieza acotada por el migrador oficial. No registra credenciales/tokens ni captura la página de login. Los tests de APIs, expiración controlada y UI se identifican por separado.
+
+## Resultado real y límites
+
+Frontend validado: 187b9e1. Publicaciones OIDC [Uonify](https://github.com/eticayservicios/mastererp-platform/actions/runs/41867718092) y [Finanzas](https://github.com/eticayservicios/mastererp-platform/actions/runs/41867718718) aprobadas. Infraestructura 3b7365d. Database 7ff6edd y workflow enlazado arriba. ZIP Uonify final SHA-256 164f2ff75ee2ab379bcf4b63c3ee50f83c726b1a9bee1c22a7939ad1cdb5b62a; sin cambios de runtime, red, secreto, rol o rutas. Código y SQL corresponden al recorrido publicado.
+
+Chrome headless contra servicios DEV reales aprobó: login/contexto; ausencia de token 401; tenant/empresa ajenos 403; Finanzas dentro de Uonify sin redirección; alta, listado, detalle y edición de ambos roles con persistencia; doble rol sobre el mismo ID; replay 200 y conflicto por contenido 409; actualización obsoleta 409 y recarga explícita; paginación con 12 clientes reales de prueba; cambio de empresa y descarte de respuesta real retrasada; recarga con recuperación de sesión y contexto; atrás/adelante; override de escritura, módulo deshabilitado y pertenencia/tenant inactivos con denegación real; miembro sin permisos; responsive móvil; logout; acceso independiente con las mismas pantallas; expiración de UI con reloj controlado. Se comprobaron 17 eventos de auditoría propios y la limpieza acotada terminó correctamente. La expiración no representa esperar un token real 15 minutos. La respuesta retrasada modifica solo el transporte del test; sus datos proceden de la API real. Cancelar una petición no revierte una escritura ya confirmada; reintentar conserva la clave de idempotencia.
+
+Capturas: [Finanzas dentro de Uonify](finance-ui-evidence/finance-dashboard.png), [detalle y roles](finance-ui-evidence/party-detail.png), [conflicto de versión](finance-ui-evidence/version-conflict.png), [móvil](finance-ui-evidence/finance-mobile.png), [acceso independiente](finance-ui-evidence/finance-independent.png). Solo contienen datos sintéticos identificados, ya limpiados; no se capturó Cognito ni credenciales.
+
+Problemas introducidos y corregidos durante esta entrega: el empaquetador omitió .dist-info necesario para importlib.metadata de pg8000 y provocó 503 en espacios; se conservaron esos metadatos y se añadió importación aislada del ZIP antes de publicar. Además se detectó estado de listado reutilizado al entrar al detalle: ahora cada ruta monta estado aislado y valida el DTO. Las ejecuciones fallidas limpiaron sus fixtures y no se ampliaron permisos para resolverlas.
+
+Pendientes: chat/voz/Gemini continúan sin conectar; Contabilidad, BI y otras operaciones financieras no están implementadas; no se ejecutó nuevamente el wizard completo de Onboarding; PostgreSQL desechable local sigue sin validación por motor Docker no disponible; no se ensayó restaurar el snapshot. Se recomienda ampliar pruebas de accesibilidad y automatizar E2E en CI con una identidad de pruebas separada, sin conceder esos permisos al rol publicador. El primer recorrido no acredita cierre de toda la base compartida.
+
+Comprobación adicional de cierre: las rutas completas de ambas APIs coinciden con el inventario previo y el hash de la Lambda coincide con el ZIP publicado. Tras limpiar las fixtures, GET /v1/uonify/spaces devuelve 200 y un espacio para la identidad sintética original; GET /v1/uonify/google/connection/status devuelve 403 tenant_permission_denied para esa pertenencia. No se ampliaron sus permisos. Esta comprobación no acredita éxito funcional del estado de conexión Google ni permite clasificar ese rechazo como regresión sin comparar la autorización previa de esa identidad. El recorrido financiero de 26 casos utiliza sus fixtures propias y permanece aprobado.

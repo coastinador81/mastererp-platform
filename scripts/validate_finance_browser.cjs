@@ -48,9 +48,10 @@ async function api(page,method,capacity,body,extra={}){
  },{method,capacity,body,token,tenant:extra.tenant||ids.tenant_a,key:extra.key});
 }
 async function main(){
+ save();check(JSON.parse(aws(['sts','get-caller-identity','--output','json'])).Account==='277352717693');
  bundle=JSON.parse(aws(['secretsmanager','get-secret-value','--secret-id','mastererp/dev/qa/identity-validation','--query','SecretString','--output','text']));
  check(bundle.database_provisioned&&/^qa-identity-[0-9a-f]{12}$/.test(bundle.run));
- phase='prepare_fixtures';ids=fixture('prepare').ids;prepared=true;
+ phase='prepare_fixtures';ids=fixture('prepare').ids;prepared=true;report.fixture_prepared=true;save();
  browser=await chromium.launch({executablePath:process.env.MASTERERP_CHROME_PATH||'C:/Program Files/Google/Chrome/Application/chrome.exe',headless:true,args:['--disable-extensions']});
  phase='login_admin';let {page,context,origin}=await login('admin_a');
  await select(page);pass('login_cognito_and_authorized_context');
@@ -91,7 +92,7 @@ async function main(){
  const external=await api(page,'PATCH','proveedores/'+id,{company_id:ids.company_a,codigo:code,nombre:name+' concurrente',version});check(external.status===200);
  await page.getByLabel('Nombre',{exact:true}).fill(name+' obsoleto');
  const conflictResponse=page.waitForResponse(r=>r.request().method()==='PATCH');await page.getByRole('button',{name:'Guardar',exact:true}).click();
- check((await conflictResponse).status()===409);await page.getByRole('alert').getByText(/Conflicto/).waitFor();
+ check((await conflictResponse).status()===409);await page.getByRole('alert').filter({hasText:'Conflicto'}).waitFor();
  await page.screenshot({path:path.join(evidence,'version-conflict.png'),fullPage:true});pass('obsolete_version_rejected',{http:409});
  await page.getByRole('button',{name:'Recargar datos',exact:true}).click();await page.getByLabel('Nombre',{exact:true}).waitFor();
  await page.waitForFunction(value=>document.querySelector('input[name="nombre"]')?.value===value,name+' concurrente');
@@ -146,7 +147,7 @@ async function main(){
  phase='member';({page,context}=await login('member_a','https://app-dev.uonify.com','/modulos/finanzas/administracion/clientes'));
  await page.getByRole('combobox',{name:'Espacio',exact:true}).selectOption(ids.tenant_a);await page.getByRole('alert').filter({hasText:'No tienes acceso a Finanzas'}).waitFor();check(await page.locator('aside').getByRole('link',{name:'Finanzas',exact:true}).count()===0);pass('member_without_permissions_denied');await context.close();
  phase='standalone';({page,context}=await login('admin_a','https://finanzas-dev.uonify.com','/modulos/finanzas/administracion/proveedores'));
- await select(page);await page.getByRole('heading',{name:'Proveedores',exact:true}).waitFor();await page.getByRole('link',{name:'Ver detalle',exact:true}).first().waitFor();check(new URL(page.url()).origin==='https://finanzas-dev.uonify.com');pass('standalone_same_screens_real_api');
+ await select(page);await page.getByRole('heading',{name:'Proveedores',exact:true}).waitFor();await page.getByRole('link',{name:'Ver detalle',exact:true}).first().waitFor();check(new URL(page.url()).origin==='https://finanzas-dev.uonify.com');await page.screenshot({path:path.join(evidence,'finance-independent.png'),fullPage:true});pass('standalone_same_screens_real_api');
  phase='expiry';await page.clock.install();await page.clock.fastForward(16*60*1000);await page.getByRole('button',{name:'Acceder',exact:true}).waitFor();
  check(!(await page.locator('main').innerText()).includes(code));pass('session_expiry_ui_clock_controlled');await context.close();
  report.audit=fixture('inspect').valid_party_audit_events;check(report.audit>0);check(!report.browser_errors);report.status='passed';
