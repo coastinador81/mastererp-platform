@@ -3,8 +3,9 @@
 Objetivo específico: Gestionar identidad y ficha maestra de productos.
 
 Responsabilidad: Productos, dentro de Catálogo.
-Estado: candidato funcional no desplegado. Incluye listado/filtros, alta y
-edición manual de ficha maestra. No muestra ni modifica stock.
+Estado: componente funcional integrado al código fuente del app-shell Uonify y
+aplicación independiente compilable. Incluye listado/filtros, alta y edición
+manual de ficha maestra. No muestra ni modifica stock.
 
 
 ## Contrato y estado de esta capa
@@ -16,5 +17,5 @@ Capa: frontend. Dependencias: contexto autenticado, tenant y contratos del padre
 Estado verificable: build Vite correcto. La autenticación se obtiene del
 proveedor de sesión del app-shell en runtime; no se materializan tokens.
 
-Validaciones: `npm run build` y `scripts/validate_structure.py`. Pendiente:
-integración efectiva en app-shell y pruebas E2E posteriores al despliegue.
+Validaciones: build independiente y build Uonify correctos. Pendiente:
+publicación DEV y pruebas E2E de navegador con identidad autorizada.
