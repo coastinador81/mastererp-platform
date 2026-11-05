@@ -22,8 +22,10 @@ def lambda_handler(e:dict[str,Any],context:Any):
  from tenant_security.db import db_connection
  cid=_h(e,'x-correlation-id')or str(uuid4())
  try:
-  claims=e.get('requestContext',{}).get('authorizer',{}).get('jwt',{}).get('claims');tenant=_h(e,'x-tenant-id');UUID(tenant or '')
+  claims=e.get('requestContext',{}).get('authorizer',{}).get('jwt',{}).get('claims');tenant=_h(e,'x-tenant-id')
   if not isinstance(claims,dict)or not claims.get('iss')or not claims.get('sub'):raise HttpError(401,'Verified JWT claims are required',code='unauthorized')
+  try:UUID(tenant or '')
+  except ValueError:raise HttpError(400,'Valid X-Tenant-Id is required',code='invalid_request')from None
   m=e.get('requestContext',{}).get('http',{}).get('method','GET').upper();op='catalog.suppliers.read'if m=='GET'else'catalog.suppliers.create'if m=='POST'else'catalog.suppliers.update'
   with db_connection(tenant_id=tenant,correlation_id=cid,operation=op)as c:a=resolve_auth(e,c,verified_claims=claims);c.execute("SELECT set_config('app.current_user_id',%s,true)",(str(a.user_id),));status,body=_request(e,SuppliersRepository(c))
   return api_response(status,body)

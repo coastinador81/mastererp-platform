@@ -50,10 +50,13 @@ def lambda_handler(event: dict[str, Any], context: Any):
     public = path == "/v1/storefront/catalog"
     try:
         tenant = _header(event, "x-tenant-id")
-        UUID(tenant or "")
         claims = event.get("requestContext", {}).get("authorizer", {}).get("jwt", {}).get("claims")
         if not public and (not isinstance(claims, dict) or not claims.get("iss") or not claims.get("sub")):
             raise HttpError(401, "Verified JWT claims are required", code="unauthorized")
+        try:
+            UUID(tenant or "")
+        except ValueError:
+            raise HttpError(400, "Valid X-Tenant-Id is required", code="invalid_request") from None
         method = event.get("requestContext", {}).get("http", {}).get("method")
         operation = "digital_sales.ecommerce.public.read" if public else ("digital_sales.ecommerce.read" if method == "GET" else "digital_sales.ecommerce.configure")
         with db_connection(tenant_id=tenant, correlation_id=correlation_id, operation=operation) as connection:
