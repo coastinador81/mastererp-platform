@@ -2,7 +2,8 @@
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
 const {execFileSync}=require('node:child_process');
 const {chromium}=require(process.env.MASTERERP_PLAYWRIGHT_MODULE||'playwright-core');
-const report={environment:'DEV us-west-1',read_only:true,results:[]};
+const writeMode=process.env.MASTERERP_PHASE8_WRITE_TEST==='true';
+const report={environment:'DEV us-west-1',read_only:!writeMode,results:[]};
 let browser,page,prepared=false,bundle,tenant,company,nonce=crypto.randomUUID(),phase='initialize';
 function aws(args){return execFileSync('aws',args.concat(['--region','us-west-1','--profile','andrea_madriz_mastererp']),{encoding:'utf8',stdio:['ignore','pipe','pipe']});}
 function invoke(action,extra={}){
@@ -78,6 +79,11 @@ async function main(){
   pass('drivers_injected',{count:6});
   phase='stores_link';await page.locator('aside').getByRole('link',{name:'Tiendas',exact:true}).click();
   phase='stores_data';await page.waitForFunction(()=>document.querySelectorAll('.ecommerce-module .store').length===1,{timeout:30000});pass('stores_injected',{count:1});
+  if(writeMode){
+    phase='store_write';await page.locator('.ecommerce-module .store').first().click();let response=page.waitForResponse(r=>r.request().method()==='PATCH'&&new URL(r.url()).pathname.includes('/stores/'));await page.getByRole('button',{name:'Guardar tienda',exact:true}).click();check((await response).status()===200);pass('store_write_noop');
+    phase='driver_write';await page.locator('aside').getByRole('link',{name:'Repartidores',exact:true}).click();await page.locator('.drivers-module .list button').first().click();response=page.waitForResponse(r=>r.request().method()==='PATCH'&&new URL(r.url()).pathname.includes('/drivers/'));await page.getByRole('button',{name:'Guardar perfil',exact:true}).click();check((await response).status()===200);pass('driver_write_noop');
+    phase='node_write';await page.locator('aside').getByRole('link',{name:'Nodos',exact:true}).click();await page.locator('.nodes-module .list button').first().click();response=page.waitForResponse(r=>r.request().method()==='PUT'&&new URL(r.url()).pathname.includes('/nodes/'));await page.getByRole('button',{name:'Guardar configuración',exact:true}).click();check((await response).status()===200);pass('node_write_noop');
+  }
   check(new URL(page.url()).origin==='https://app-dev.uonify.com');check(failures.length===0);pass('single_shell_without_browser_errors');
   await context.close();report.status='passed';
 }
