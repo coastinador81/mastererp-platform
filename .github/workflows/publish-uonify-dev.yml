@@ -24,7 +24,10 @@ on:
       - 'frontend/modules/2.1-catalog/2.1.2-categories/src/**'
       - 'frontend/modules/2.1-catalog/2.1.6-inventory/src/**'
       - 'frontend/modules/2.3-operations/2.3.1-orders/src/**'
+      - 'frontend/modules/2.3-operations/2.3.2-preparation/src/**'
+      - 'frontend/modules/2.3-operations/2.3.3-routes/src/**'
       - 'frontend/modules/2.3-operations/2.3.4-nodes/src/**'
+      - 'frontend/modules/2.10-transport/2.10.1-drivers/src/**'
       - '.github/workflows/publish-uonify-dev.yml'
 permissions:
   contents: read
