@@ -3,7 +3,7 @@
 Objetivo específico: Consultar y controlar existencias; reglas de movimientos pendientes de contrato.
 
 Responsabilidad: Inventario, dentro de Catálogo.
-Estado: candidato funcional no desplegado. Incluye lectura, ajuste versionado,
+Estado: desplegado y validado en DEV. Incluye lectura, ajuste versionado,
 reservas/finalización y paquete Lambda sobre funciones SQL controladas.
 El checkout Storefront usa la misma propiedad de Inventario mediante la función
 transaccional `ventas_digitales.checkout_crear`; no replica stock ni acepta nodo
@@ -19,4 +19,6 @@ Capa: backend. Dependencias: contexto autenticado, tenant y contratos del padre 
 Estado verificable: pruebas unitarias del adapter, ZIP determinista y pruebas
 SQL de stock, reserva, consumo e insuficiencia.
 
-Validaciones: estructura local mediante scripts/validate_structure.py. Pendientes: contratos específicos, responsable nominal y pruebas funcionales antes de habilitar esta capacidad.
+Validaciones: estructura local mediante `scripts/validate_structure.py`, E2E
+Storefront y consistencia Pedido–Reserva. Los escritores legacy del corte están
+retirados reversiblemente; el retiro físico requiere autorización separada.

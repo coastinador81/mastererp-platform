@@ -17,4 +17,5 @@ MasterERP y deben autenticarse nuevamente. Una invitación explícita conserva e
 carrito durante PKCE y vincula exclusivamente por `issuer + sub`; nunca por
 coincidencia de correo. Los access e ID tokens viven solo en memoria. Estado:
 catálogo público validado en DEV; identidad candidata aprobada localmente y
-checkout canónico implementado localmente y pendiente de promoción/prueba DEV.
+checkout canónico desplegado y probado en DEV. Cognito, invitación de un solo
+uso y checkout real aprobaron; MasterERP crea atómicamente reserva y pedido.

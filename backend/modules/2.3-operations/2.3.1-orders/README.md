@@ -3,7 +3,7 @@
 Objetivo específico: Gestionar pedidos y sus transiciones autorizadas.
 
 Responsabilidad: Pedidos, dentro de Operaciones.
-Estado: candidato funcional no desplegado. Incluye reglas de dominio,
+Estado: desplegado y validado en DEV. Incluye reglas de dominio,
 repositorio sobre funciones PostgreSQL controladas, adapter HTTP para API
 Gateway v2 y entrada/paquete reproducible de Lambda.
 
@@ -25,6 +25,5 @@ El checkout Storefront crea esa reserva y el Pedido atómicamente mediante
 servidor. El endpoint administrativo de Pedidos conserva su contrato separado.
 
 Validaciones: `python -m unittest discover -s backend/modules/2.3-operations/2.3.1-orders/tests -p 'test_*.py'`
-y estructura local mediante `scripts/validate_structure.py`. No se ha
-desplegado. La promoción requiere artefacto con dependencias, migración SQL,
-parámetros de infraestructura y smoke test en DEV.
+y estructura local mediante `scripts/validate_structure.py`. El checkout E2E,
+la observación DEV y el retiro reversible de escritores legacy aprobaron.
