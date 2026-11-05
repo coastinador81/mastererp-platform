@@ -62,7 +62,8 @@ function Shell({independent=false}) {
       <main id="workspace-content" className="integrated-content" tabIndex={-1}>
         {independent&&<p className="notice">Finanzas · Entorno de desarrollo · Administración</p>}
         {w.error&&<div className="notice error" role="alert">{w.error} {w.signedIn&&<button className="secondary" onClick={()=>w.refresh()}>Revalidar acceso</button>}</div>}
-        {independent&&!w.signedIn?<section><h1>{path.includes('/proveedores')?'Proveedores':'Administración'}</h1><p>Inicia sesión para consultar y administrar los proveedores de tu empresa.</p></section>:
+        {!independent&&path==='/chat'?<Conversation/>:
+         independent&&!w.signedIn?<section><h1>{path.includes('/proveedores')?'Proveedores':'Administración'}</h1><p>Inicia sesión para consultar y administrar los proveedores de tu empresa.</p></section>:
          !w.signedIn?<section className="hero"><p className="eyebrow">UN ESPACIO, TUS OPERACIONES</p><h1>Tu trabajo,<br/><em>conectado.</em></h1><p>{independent?'Accede para trabajar con Administración y selecciona tu empresa.':'Accede a tu espacio para abrir los módulos de tu empresa o trabajar con el chat.'}</p><button onClick={w.startLogin}>Acceder a mi espacio</button><p className="muted">Cognito autentica. MasterERP valida cada operación.</p></section>:
          w.loading?<p role="status">Validando espacio y permisos…</p>:
          !w.tenant?<div className="notice" role="status">{w.spaces.length?'Selecciona un espacio para continuar.':'Todavía no tienes un espacio asignado.'}</div>:
@@ -80,7 +81,6 @@ function Shell({independent=false}) {
          nodesRoute&&nodes?<Nodes runtime={operationalRuntime}/>:
          driversRoute&&drivers?<Drivers runtime={operationalRuntime}/>:
          ecommerceRoute&&ecommerce?<Ecommerce runtime={operationalRuntime}/>:
-         path==='/chat'?<Conversation/>:
          path!=='/'?<section><h1>Página no disponible</h1><a href="#/">Volver al inicio</a></section>:
          <section><p className="eyebrow">TU ESPACIO DE TRABAJO</p><h1>Todo empieza aquí.</h1><p>Abre un módulo desde el menú. También puedes visitar el chat, sin que sea obligatorio conversar.</p><div className="cards">{finance&&<a className="panel module-card" href="#/modulos/finanzas"><span>FINANZAS</span><h2>Finanzas</h2><p>Administración, Clientes y Proveedores.</p><strong>Abrir módulo →</strong></a>}{products&&<a className="panel module-card" href="#/modulos/catalogo/productos"><span>CATÁLOGO</span><h2>Productos</h2><p>Ficha maestra comercial compartida por todos los canales.</p><strong>Abrir módulo →</strong></a>}{categories&&<a className="panel module-card" href="#/modulos/catalogo/categorias"><span>CATÁLOGO</span><h2>Categorías</h2><p>Clasificación canónica compartida por todos los canales.</p><strong>Abrir módulo →</strong></a>}{orders&&<a className="panel module-card" href="#/modulos/operaciones/pedidos"><span>OPERACIONES</span><h2>Pedidos</h2><p>Ciclo operativo manual sobre el pedido canónico.</p><strong>Abrir módulo →</strong></a>}<a className="panel module-card" href="#/chat"><span>UONIFY</span><h2>Chat operativo</h2><p>Espacio conversacional. Asistente aún sin conectar.</p></a></div>{!finance&&!products&&!categories&&!orders&&<p className="notice">No hay módulos funcionales autorizados para este espacio.</p>}</section>}
       </main></div></div>;
