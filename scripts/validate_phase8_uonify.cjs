@@ -64,6 +64,15 @@ async function main(){
   phase='orders_data';
   await page.waitForFunction(()=>document.querySelectorAll('.orders-module .card').length===9,{timeout:30000});
   check(await page.locator('.orders-module .card').count()===9);pass('orders_injected',{count:9});
+  phase='preparation_link';await page.locator('aside').getByRole('link',{name:'Preparación',exact:true}).click();
+  phase='preparation_data';await page.waitForFunction(()=>document.querySelectorAll('.preparation-module .panel:first-of-type .item').length>0,{timeout:30000});
+  pass('preparation_injected',{count:await page.locator('.preparation-module .panel').first().locator('.item').count()});
+  phase='routes_link';await page.locator('aside').getByRole('link',{name:'Rutas',exact:true}).click();
+  phase='routes_data';await page.waitForFunction(()=>document.querySelectorAll('.routes-module .panel:first-of-type .item').length===3,{timeout:30000});
+  pass('routes_injected',{count:3});
+  phase='drivers_link';await page.locator('aside').getByRole('link',{name:'Repartidores',exact:true}).click();
+  phase='drivers_data';await page.waitForFunction(()=>document.querySelectorAll('.drivers-module .list button').length===6,{timeout:30000});
+  pass('drivers_injected',{count:6});
   check(new URL(page.url()).origin==='https://app-dev.uonify.com');check(failures.length===0);pass('single_shell_without_browser_errors');
   await context.close();report.status='passed';
 }
