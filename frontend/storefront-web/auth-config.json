@@ -1,0 +1,7 @@
+{
+  "clientId": "pkkrco5kfpt1jsjkftlef1pcs",
+  "loginBaseUrl": "https://mastererp-dev-uonify-277352717693.auth.us-west-1.amazoncognito.com",
+  "callbackUrl": "https://tienda-dev.tumandaito.com/auth/callback",
+  "logoutUrl": "https://tienda-dev.tumandaito.com/",
+  "scopes": ["openid", "email"]
+}
