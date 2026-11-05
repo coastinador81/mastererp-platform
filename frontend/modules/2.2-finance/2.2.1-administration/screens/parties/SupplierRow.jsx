@@ -21,7 +21,6 @@ export default function SupplierRow({row,path,navigate}) {
   return <tr className="supplier-row" onClick={openRow}>
     <td>{row.codigo}</td>
     <td><a className="supplier-name" href={'#'+path} onClick={openName}>{row.nombre}</a></td>
-    <td>{row.roles.join(', ')}</td>
     <td>{row.datos_generales?.numero_identificacion||'—'}</td>
     <td>{row.datos_generales?.email||'—'}</td>
     <td>{row.datos_generales?.telefono||'—'}</td>

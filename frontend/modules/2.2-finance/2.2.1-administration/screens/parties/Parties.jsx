@@ -1,5 +1,6 @@
 import SupplierFields,{SupplierSummary,emptySupplier,supplierFromParty,supplierPayload} from './SupplierFields.jsx';
-import SupplierRow from './SupplierRow.jsx';
+import SupplierDirectory from './SupplierDirectory.jsx';
+import FinanceIcon from '../../../src/FinanceIcon.jsx';
 import React, {useEffect, useRef, useState} from 'react';
 const API=window.location.origin==='https://finanzas-dev.uonify.com'?window.location.origin:'https://qx8nmypdhi.execute-api.us-west-1.amazonaws.com';
 const messages={400:'Revisa los campos de la solicitud.',401:'Tu sesión ha caducado.',403:'Acceso denegado.',404:'El tercero no está disponible en esta empresa.',409:'Conflicto: la versión o el contenido ya cambió. Recarga el detalle antes de volver a editar.',503:'El servicio no está disponible. Puedes volver a intentarlo.'};
@@ -54,9 +55,10 @@ export default function Parties({workspace,capacity,path,navigate}) {
     finally{if(active.current && stamp===local.current)setBusy(false);}
   };
   if(loading)return <p role="status">Cargando {label.toLowerCase()}…</p>;
-  return <section aria-labelledby="parties-title">
-    <div className="page-heading"><div><p className="eyebrow">Finanzas / Administración</p><h1 id="parties-title">{create?'Nuevo registro':id?(edit?'Editar tercero':data?.nombre||'Detalle'):label}</h1></div>
-      {!id&&!create&&canWrite&&<button onClick={()=>navigate(base+'/nuevo')}>Crear {capacity==='clientes'?'cliente':'proveedor'}</button>}
+  const supplierListing=capacity==='proveedores'&&!id&&!create;
+  return <section className={supplierListing?'supplier-directory':undefined} aria-labelledby="parties-title">
+    <div className="page-heading"><div>{supplierListing?<nav className="supplier-breadcrumb" aria-label="Ruta de navegación"><a href="/" onClick={event=>{if(!event.ctrlKey&&!event.metaKey&&!event.shiftKey&&!event.altKey){event.preventDefault();navigate('/modulos/finanzas');}}}>Finanzas</a><span>/</span><span>Administración</span><span>/</span><span className="current">Gestión de compras</span></nav>:<p className="eyebrow">Finanzas / Administración</p>}<h1 id="parties-title">{create?'Nuevo registro':id?(edit?'Editar tercero':data?.nombre||'Detalle'):label}</h1>{supplierListing&&<p className="supplier-subtitle">Gestiona la información de tus proveedores.</p>}</div>
+      {!id&&!create&&canWrite&&<button className={supplierListing?'supplier-create':undefined} onClick={()=>navigate(base+'/nuevo')}>{supplierListing&&<FinanceIcon name="plus"/>}Crear {capacity==='clientes'?'cliente':'proveedor'}</button>}
     </div>
     {error&&<div className="notice error" role="alert">{error} <button className="secondary" onClick={()=>setReload(x=>x+1)}>Recargar datos</button></div>}
     {saved&&<p role="status">{saved}</p>}
@@ -73,8 +75,9 @@ export default function Parties({workspace,capacity,path,navigate}) {
       <div className="actions"><button className="secondary" onClick={()=>navigate(base)}>Volver al listado</button>{canWrite&&<button onClick={()=>navigate(base+'/'+id+'/editar')}>Editar</button>}
       {canWrite&&!data.roles.includes(capacity==='clientes'?'proveedor':'cliente')&&<button className="secondary" disabled={busy} onClick={()=>send(null,true)}>Añadir rol {capacity==='clientes'?'proveedor':'cliente'}</button>}</div></div>}
     {capacity==='proveedores'&&id&&!edit&&data&&<SupplierSummary data={data}/>}
-    {!id&&!create&&data&&<div className="panel"><div className="table-scroll"><table className={capacity==='proveedores'?'suppliers-table':undefined}><thead><tr><th>Código</th><th>Nombre</th><th>Roles</th>{capacity==='proveedores'?<><th>Identificación fiscal</th><th>Correo</th><th>Teléfono</th></>:<th>Acción</th>}</tr></thead><tbody>
-      {data.items.map(row=>capacity==='proveedores'?<SupplierRow key={row.id} row={row} path={base+'/'+row.id} navigate={navigate}/>:<tr key={row.id}><td>{row.codigo}</td><td>{row.nombre}</td><td>{row.roles.join(', ')}</td><td><a href={'#'+base+'/'+row.id}>Ver detalle</a></td></tr>)}</tbody></table></div>
+    {supplierListing&&data&&<SupplierDirectory {...{data,workspace,base,navigate,reload,endpoint}} hasPrevious={pages.length>0} onPrevious={()=>{setCursor(pages[pages.length-1]);setPages(p=>p.slice(0,-1));}} onNext={()=>{setPages(p=>[...p,cursor]);setCursor(data.next_cursor);}}/>}
+    {capacity!=='proveedores'&&!id&&!create&&data&&<div className="panel"><div className="table-scroll"><table><thead><tr><th>Código</th><th>Nombre</th><th>Roles</th><th>Acción</th></tr></thead><tbody>
+      {data.items.map(row=><tr key={row.id}><td>{row.codigo}</td><td>{row.nombre}</td><td>{row.roles.join(', ')}</td><td><a href={'#'+base+'/'+row.id}>Ver detalle</a></td></tr>)}</tbody></table></div>
       {data.items.length===0&&<p className="empty">No hay {label.toLowerCase()} registrados en esta empresa.</p>}
       <div className="pagination"><button className="secondary" disabled={!pages.length} onClick={()=>{setCursor(pages[pages.length-1]);setPages(p=>p.slice(0,-1));}}>Anterior</button><span>Máximo 10 registros por página</span><button className="secondary" disabled={!data.next_cursor} onClick={()=>{setPages(p=>[...p,cursor]);setCursor(data.next_cursor);}}>Siguiente</button></div>
     </div>}
