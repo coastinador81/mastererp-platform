@@ -28,3 +28,11 @@ class EcommerceRepository:
             "SELECT ventas_digitales.cliente_identidad_reclamar(%s,%s,%s,%s,%s) value",
             (claims["iss"], claims["sub"], claims["email"], claims.get("name") or claims["email"], token),
         ).fetchone()["value"]
+
+    def checkout(self, claims, payload, idempotency_key):
+        return self.connection.execute(
+            "SELECT ventas_digitales.checkout_crear(%s,%s,%s,%s,%s,%s,%s,%s) value",
+            (claims["iss"], claims["sub"], payload["domain"], payload["items"],
+             payload["delivery"], payload["delivery_method"],
+             payload["payment_method"], idempotency_key),
+        ).fetchone()["value"]

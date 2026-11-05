@@ -3,7 +3,7 @@ from types import SimpleNamespace
 from unittest.mock import Mock
 from unittest.mock import patch
 
-from ecommerce_api.handler import HttpError, _claim, _request, _verified_profile, lambda_handler
+from ecommerce_api.handler import HttpError, _checkout, _claim, _request, _verified_profile, lambda_handler
 
 
 class EcommerceApiTest(unittest.TestCase):
@@ -51,6 +51,24 @@ class EcommerceApiTest(unittest.TestCase):
     def test_claim_rejects_missing_invitation_token(self):
         with self.assertRaises(HttpError):
             _claim({"body": '{}'}, Mock(), {})
+
+    @patch("ecommerce_api.handler._verified_profile")
+    def test_checkout_forwards_only_validated_payload_and_identity(self, verify):
+        claims = {"iss": "issuer", "sub": "subject"}
+        verify.return_value = claims
+        repository = Mock()
+        repository.checkout.return_value = {"id": "order-1"}
+        event = {"headers": {"Idempotency-Key": "checkout-1"}, "body": (
+            '{"domain":"shop.example.invalid","items":[{"product_id":"p","quantity":1}],'
+            '"delivery":{"address":"QA"},"delivery_method":"realtime","payment_method":"cash"}')}
+        self.assertEqual(_checkout(event, repository, claims), (201, {"id": "order-1"}))
+        repository.checkout.assert_called_once_with(claims, unittest.mock.ANY, "checkout-1")
+
+    def test_checkout_requires_idempotency_key(self):
+        event = {"body": '{"domain":"shop","items":[{}],"delivery":{},'
+                         '"delivery_method":"realtime","payment_method":"cash"}'}
+        with self.assertRaises(HttpError):
+            _checkout(event, Mock(), {})
 
     @patch.dict("os.environ", {"COGNITO_ISSUER": "https://issuer.invalid", "STOREFRONT_COGNITO_CLIENT_ID": "store-client"})
     def test_profile_requires_storefront_id_token_claims(self):

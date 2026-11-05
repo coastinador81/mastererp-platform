@@ -5,6 +5,9 @@ Objetivo específico: Consultar y controlar existencias; reglas de movimientos p
 Responsabilidad: Inventario, dentro de Catálogo.
 Estado: candidato funcional no desplegado. Incluye lectura, ajuste versionado,
 reservas/finalización y paquete Lambda sobre funciones SQL controladas.
+El checkout Storefront usa la misma propiedad de Inventario mediante la función
+transaccional `ventas_digitales.checkout_crear`; no replica stock ni acepta nodo
+o disponibilidad enviados por el navegador.
 
 
 ## Contrato y estado de esta capa

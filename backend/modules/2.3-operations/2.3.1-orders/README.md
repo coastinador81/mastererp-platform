@@ -20,6 +20,9 @@ la identidad interna y delega autorización de tenant/empresa a PostgreSQL.
 La creación exige `Idempotency-Key` y una referencia opaca de reserva emitida
 por Inventario. El artefacto se genera con
 `lambdas/mastererp-dev-orders/package.py`.
+El checkout Storefront crea esa reserva y el Pedido atómicamente mediante
+`ventas_digitales.checkout_crear`, resolviendo identidad, tienda y precios en el
+servidor. El endpoint administrativo de Pedidos conserva su contrato separado.
 
 Validaciones: `python -m unittest discover -s backend/modules/2.3-operations/2.3.1-orders/tests -p 'test_*.py'`
 y estructura local mediante `scripts/validate_structure.py`. No se ha

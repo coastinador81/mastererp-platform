@@ -82,6 +82,17 @@ def _claim(event, repository, claims):
     return 200, repository.claim_identity(_verified_profile(claims), token)
 
 
+def _checkout(event, repository, claims):
+    payload = parse_body(event)
+    key = _header(event, "idempotency-key")
+    required = {"domain", "items", "delivery", "delivery_method", "payment_method"}
+    if (not required <= payload.keys() or not isinstance(key, str)
+            or not 1 <= len(key) <= 128 or not isinstance(payload["items"], list)
+            or not payload["items"] or not isinstance(payload["delivery"], dict)):
+        raise HttpError(400, "Checkout fields and Idempotency-Key are required", code="invalid_request")
+    return 201, repository.checkout(_verified_profile(claims), payload, key)
+
+
 def lambda_handler(event: dict[str, Any], context: Any):
     from tenant_security.db import db_connection
 
@@ -89,6 +100,7 @@ def lambda_handler(event: dict[str, Any], context: Any):
     path = event.get("requestContext", {}).get("http", {}).get("path", "")
     public = path == "/v1/storefront/catalog"
     claim = path == "/v1/storefront/identity/claim"
+    checkout = path == "/v1/storefront/checkout"
     try:
         tenant = _header(event, "x-tenant-id")
         claims = None if public else _claims(event)
@@ -101,6 +113,8 @@ def lambda_handler(event: dict[str, Any], context: Any):
             operation = "digital_sales.ecommerce.public.read"
         elif claim:
             operation = "digital_sales.storefront.identity.claim"
+        elif checkout:
+            operation = "digital_sales.storefront.checkout"
         elif path.endswith("/invitations"):
             operation = "digital_sales.storefront.invitation.create"
         else:
@@ -110,7 +124,12 @@ def lambda_handler(event: dict[str, Any], context: Any):
                 auth = resolve_auth(event, connection, verified_claims=claims)
                 connection.execute("SELECT set_config('app.current_user_id',%s,true)", (str(auth.user_id),))
             repository = EcommerceRepository(connection)
-            status, body = _claim(event, repository, claims) if claim else _request(event, repository, public=public)
+            if claim:
+                status, body = _claim(event, repository, claims)
+            elif checkout:
+                status, body = _checkout(event, repository, claims)
+            else:
+                status, body = _request(event, repository, public=public)
         return api_response(status, body)
     except HttpError as error:
         return api_response(error.status, {"error": {"code": error.code, "message": error.message}, "correlation_id": correlation_id})
