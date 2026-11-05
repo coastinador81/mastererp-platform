@@ -10,5 +10,8 @@ resuelva sin acoplar la tienda base a Repartidores u otros módulos. Variables:
 `VITE_STOREFRONT_API_URL`, `VITE_TENANT_ID` y `VITE_STOREFRONT_DOMAIN`. No usa
 access tokens públicos ni secretos.
 
-Estado: candidato local compilado; hosting, dominio, checkout autenticado,
-integración matriz y smoke DEV pendientes de fases posteriores.
+Decisión de identidad para el corte: los clientes migran al Cognito de
+MasterERP y deben autenticarse nuevamente. La vinculación interna se realizará
+exclusivamente por `issuer + sub`; nunca se enlazan cuentas automáticamente por
+coincidencia de correo. Estado: catálogo público validado en DEV; checkout
+autenticado y transición de clientes todavía pendientes de implementación.
