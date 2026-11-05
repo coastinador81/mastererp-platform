@@ -67,20 +67,24 @@ def tokens(actor, scopes=SCOPES):
         "scope": scopes, "state": state, "code_challenge": challenge, "code_challenge_method": "S256"})
     redirect = Redirect()
     opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()), redirect)
-    response = opener.open(DOMAIN + "/oauth2/authorize?" + query, timeout=30)
-    parser = LoginForm()
-    parser.feed(response.read().decode())
-    form = next((f for f in parser.forms if "password" in f["fields"]), None)
-    if not form:
-        raise RuntimeError("managed_login_form_unavailable")
-    form["fields"].update({"username": actor["email"], "password": actor["password"]})
-    request = urllib.request.Request(urllib.parse.urljoin(response.url, form["action"]),
-        data=urllib.parse.urlencode(form["fields"]).encode(),
-        headers={"Content-Type": "application/x-www-form-urlencoded"})
     try:
-        opener.open(request, timeout=30)
+        response = opener.open(DOMAIN + "/oauth2/authorize?" + query, timeout=30)
     except CallbackReached:
-        pass
+        response = None
+    if response is not None:
+        parser = LoginForm()
+        parser.feed(response.read().decode())
+        form = next((f for f in parser.forms if "password" in f["fields"]), None)
+        if not form:
+            raise RuntimeError("managed_login_form_unavailable")
+        form["fields"].update({"username": actor["email"], "password": actor["password"]})
+        request = urllib.request.Request(urllib.parse.urljoin(response.url, form["action"]),
+            data=urllib.parse.urlencode(form["fields"]).encode(),
+            headers={"Content-Type": "application/x-www-form-urlencoded"})
+        try:
+            opener.open(request, timeout=30)
+        except CallbackReached:
+            pass
     if not redirect.callback:
         raise RuntimeError("managed_login_did_not_complete")
     result = urllib.parse.parse_qs(urllib.parse.urlparse(redirect.callback).query)
