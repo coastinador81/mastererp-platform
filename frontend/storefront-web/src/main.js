@@ -1,10 +1,11 @@
 import './style.css'
 import authConfig from '../auth-config.json'
-import {completeLogin, login, logout, sessionExpiresAt} from '../../shared/auth/cognito.mjs'
+import {authorizedIdentityFetch, completeLogin, login, logout, sessionExpiresAt} from '../../shared/auth/cognito.mjs'
 
 const config = {api: import.meta.env.VITE_STOREFRONT_API_URL || '', tenant: import.meta.env.VITE_TENANT_ID || '', domain: import.meta.env.VITE_STOREFRONT_DOMAIN || location.hostname}
 const state = {catalog: null, category: '', cart: new Map(), error: '', authenticated: false}
 const cartKey = 'mastererp.storefront.cart'
+const invitationKey = 'mastererp.storefront.invitation'
 const money = value => new Intl.NumberFormat('es-VE', {style: 'currency', currency: 'USD'}).format(value)
 const escapeHtml = value => String(value ?? '').replace(/[&<>'"]/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]))
 
@@ -27,6 +28,15 @@ function checkout() {
   window.dispatchEvent(new CustomEvent('mastererp:checkout', {detail: {items: [...state.cart].map(([product_id, quantity]) => ({product_id, quantity})), modules: state.catalog.store.modules}}))
 }
 
+async function claimInvitation() {
+  const invitation = sessionStorage.getItem(invitationKey)
+  if (!invitation || !state.authenticated) return
+  await authorizedIdentityFetch(`${config.api}/v1/storefront/identity/claim`, {method: 'POST',
+    headers: {'Content-Type': 'application/json', 'X-Tenant-Id': config.tenant},
+    body: JSON.stringify({invitation_token: invitation})})
+  sessionStorage.removeItem(invitationKey)
+}
+
 function render() {
   if (state.error) return document.querySelector('#app').innerHTML = `<main><p class="error">${escapeHtml(state.error)}</p></main>`
   if (!state.catalog) return document.querySelector('#app').innerHTML = '<main>Cargando tienda…</main>'
@@ -43,10 +53,16 @@ function render() {
 
 async function boot() {
   try {
+    const invitation = new URL(location.href).searchParams.get('invite')
+    if (invitation) {
+      sessionStorage.setItem(invitationKey, invitation)
+      window.history.replaceState(null, '', location.pathname + location.hash)
+    }
     try { state.cart = new Map(JSON.parse(sessionStorage.getItem(cartKey) || '[]')) } catch { sessionStorage.removeItem(cartKey) }
     if (location.pathname === '/auth/callback') await completeLogin(authConfig)
     else if (sessionStorage.getItem('mastererp.dev.returning') === 'true') return startLogin()
     state.authenticated = sessionExpiresAt() > Date.now()
+    await claimInvitation()
   } catch { state.error = 'No se pudo validar el acceso. Intenta nuevamente.' }
   await load()
 }

@@ -1,3 +1,7 @@
+import hashlib
+import os
+import secrets
+from datetime import datetime, timedelta, timezone
 from typing import Any
 from uuid import UUID, uuid4
 
@@ -9,6 +13,23 @@ from .repository import EcommerceRepository
 
 def _header(event, name):
     return {k.lower(): v for k, v in (event.get("headers") or {}).items()}.get(name.lower())
+
+
+def _claims(event):
+    claims = event.get("requestContext", {}).get("authorizer", {}).get("jwt", {}).get("claims")
+    if not isinstance(claims, dict) or not claims.get("iss") or not claims.get("sub"):
+        raise HttpError(401, "Verified JWT claims are required", code="unauthorized")
+    return claims
+
+
+def _verified_profile(claims):
+    verified = claims.get("email_verified")
+    if (claims.get("iss") != os.environ.get("COGNITO_ISSUER")
+            or claims.get("aud") != os.environ.get("STOREFRONT_COGNITO_CLIENT_ID")
+            or claims.get("token_use") != "id" or verified not in (True, "true")
+            or not claims.get("email") or len(claims["email"]) > 254):
+        raise HttpError(401, "Verified customer profile is required", code="unauthorized") from None
+    return claims
 
 
 def _request(event, repository, public=False):
@@ -31,6 +52,17 @@ def _request(event, repository, public=False):
         query = event.get("queryStringParameters") or {}
         return 200, {"items": repository.list(company_id, int(query.get("limit", 50)))}
     payload = parse_body(event)
+    customer_id = params.get("customer_id")
+    if method == "POST" and store_id and customer_id:
+        UUID(customer_id)
+        ttl_hours = payload.get("ttl_hours", 24)
+        if not isinstance(ttl_hours, int) or not 1 <= ttl_hours <= 168:
+            raise HttpError(400, "ttl_hours must be between 1 and 168", code="invalid_request")
+        token = secrets.token_urlsafe(32)
+        token_hash = hashlib.sha256(token.encode()).hexdigest()
+        result = repository.create_invitation(company_id, store_id, customer_id, token_hash,
+                                              datetime.now(timezone.utc) + timedelta(hours=ttl_hours))
+        return 201, {**result, "token": token}
     if method == "POST" and not store_id:
         if not {"node_id", "domain", "name"} <= payload.keys():
             raise HttpError(400, "node_id, domain and name are required", code="invalid_request")
@@ -42,28 +74,43 @@ def _request(event, repository, public=False):
     raise HttpError(404, "Route not found", code="not_found")
 
 
+def _claim(event, repository, claims):
+    payload = parse_body(event)
+    token = payload.get("invitation_token")
+    if not isinstance(token, str) or len(token) < 32:
+        raise HttpError(400, "Invitation token is required", code="invalid_request")
+    return 200, repository.claim_identity(_verified_profile(claims), token)
+
+
 def lambda_handler(event: dict[str, Any], context: Any):
     from tenant_security.db import db_connection
 
     correlation_id = _header(event, "x-correlation-id") or str(uuid4())
     path = event.get("requestContext", {}).get("http", {}).get("path", "")
     public = path == "/v1/storefront/catalog"
+    claim = path == "/v1/storefront/identity/claim"
     try:
         tenant = _header(event, "x-tenant-id")
-        claims = event.get("requestContext", {}).get("authorizer", {}).get("jwt", {}).get("claims")
-        if not public and (not isinstance(claims, dict) or not claims.get("iss") or not claims.get("sub")):
-            raise HttpError(401, "Verified JWT claims are required", code="unauthorized")
+        claims = None if public else _claims(event)
         try:
             UUID(tenant or "")
         except ValueError:
             raise HttpError(400, "Valid X-Tenant-Id is required", code="invalid_request") from None
         method = event.get("requestContext", {}).get("http", {}).get("method")
-        operation = "digital_sales.ecommerce.public.read" if public else ("digital_sales.ecommerce.read" if method == "GET" else "digital_sales.ecommerce.configure")
+        if public:
+            operation = "digital_sales.ecommerce.public.read"
+        elif claim:
+            operation = "digital_sales.storefront.identity.claim"
+        elif path.endswith("/invitations"):
+            operation = "digital_sales.storefront.invitation.create"
+        else:
+            operation = "digital_sales.ecommerce.read" if method == "GET" else "digital_sales.ecommerce.configure"
         with db_connection(tenant_id=tenant, correlation_id=correlation_id, operation=operation) as connection:
-            if not public:
+            if not public and not claim:
                 auth = resolve_auth(event, connection, verified_claims=claims)
                 connection.execute("SELECT set_config('app.current_user_id',%s,true)", (str(auth.user_id),))
-            status, body = _request(event, EcommerceRepository(connection), public=public)
+            repository = EcommerceRepository(connection)
+            status, body = _claim(event, repository, claims) if claim else _request(event, repository, public=public)
         return api_response(status, body)
     except HttpError as error:
         return api_response(error.status, {"error": {"code": error.code, "message": error.message}, "correlation_id": correlation_id})

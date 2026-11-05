@@ -53,11 +53,12 @@ export async function completeLogin(config, href = window.location.href) {
       redirect_uri: config.callbackUrl, code, code_verifier: transaction.verifier})});
   if (!result.ok) throw new Error('No se pudo completar el acceso.');
   const body = await result.json();
-  if (body.token_type !== 'Bearer' || typeof body.access_token !== 'string' ||
+  if (body.token_type !== 'Bearer' || typeof body.access_token !== 'string' || typeof body.id_token !== 'string' ||
       !Number.isFinite(body.expires_in) || body.expires_in <= 0 || body.expires_in > 3600) {
     throw new Error('Respuesta de acceso no válida.');
   }
-  session = {accessToken: body.access_token, expiresAt: Date.now() + body.expires_in * 1000};
+  session = {accessToken: body.access_token, idToken: body.id_token,
+    expiresAt: Date.now() + body.expires_in * 1000};
   if (transaction.returnHash?.startsWith('#/')) window.history.replaceState(null, '', '/' + transaction.returnHash);
   sessionStorage.setItem('mastererp.dev.returning', 'true');
 }
@@ -102,6 +103,11 @@ export class ApiError extends Error {
 
 export function sessionExpiresAt() { return session?.expiresAt || 0; }
 
+export function identityToken() {
+  if (!session || session.expiresAt <= Date.now()) return null;
+  return session.idToken;
+}
+
 export async function authorizedFetch(url, options = {}) {
   if (!session || session.expiresAt <= Date.now()) {
     clearSession();
@@ -112,7 +118,22 @@ export async function authorizedFetch(url, options = {}) {
   const body = await response.json().catch(() => ({}));
   if (!response.ok) {
     if (response.status === 401) clearSession();
-    throw new ApiError(response.status, body.error || 'request_failed');
+    throw new ApiError(response.status, body.error?.code || body.error || 'request_failed');
+  }
+  return body;
+}
+
+export async function authorizedIdentityFetch(url, options = {}) {
+  if (!session || session.expiresAt <= Date.now()) {
+    clearSession();
+    throw new ApiError(401, 'session_expired');
+  }
+  const response = await fetch(url, {...options, cache:'no-store', credentials:'omit',
+    headers:{...options.headers, Authorization:'Bearer ' + session.idToken}});
+  const body = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    if (response.status === 401) clearSession();
+    throw new ApiError(response.status, body.error?.code || body.error || 'request_failed');
   }
   return body;
 }

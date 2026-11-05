@@ -31,7 +31,7 @@ test('callback validates state, consumes transaction, removes URL; tokens stay i
     calls++;
     assert.equal(options.credentials,'omit');
     assert.equal(options.body.get('code_verifier'),'test-verifier');
-    return {ok:true,json:async()=>({token_type:'Bearer',access_token:'test-only-token',expires_in:900})};
+    return {ok:true,json:async()=>({token_type:'Bearer',access_token:'test-only-token',id_token:'test-only-id-token',expires_in:900})};
   };
   const tx={state:'expected',verifier:'test-verifier',createdAt:Date.now(),
     clientId:config.clientId,callbackUrl:config.callbackUrl};
@@ -56,7 +56,7 @@ test('space discovery uses bearer token and server list; failures never become m
   globalThis.window={history:{replaceState:()=>{}}};
   store.set('mastererp.dev.pkce',JSON.stringify({state:'spaces-state',verifier:'test-verifier',
     createdAt:Date.now(),clientId:config.clientId,callbackUrl:config.callbackUrl}));
-  globalThis.fetch=async()=>({ok:true,json:async()=>({token_type:'Bearer',access_token:'test-only-token',expires_in:900})});
+  globalThis.fetch=async()=>({ok:true,json:async()=>({token_type:'Bearer',access_token:'test-only-token',id_token:'test-only-id-token',expires_in:900})});
   await completeLogin(config,config.callbackUrl+'?code=test-code&state=spaces-state');
   let spaces=[];
   globalThis.fetch=async(url,options)=>{

@@ -11,7 +11,8 @@ resuelva sin acoplar la tienda base a Repartidores u otros módulos. Variables:
 access tokens públicos ni secretos.
 
 Decisión de identidad para el corte: los clientes migran al Cognito de
-MasterERP y deben autenticarse nuevamente. La vinculación interna se realizará
-exclusivamente por `issuer + sub`; nunca se enlazan cuentas automáticamente por
-coincidencia de correo. Estado: catálogo público validado en DEV; checkout
-autenticado y transición de clientes todavía pendientes de implementación.
+MasterERP y deben autenticarse nuevamente. Una invitación explícita conserva el
+carrito durante PKCE y vincula exclusivamente por `issuer + sub`; nunca por
+coincidencia de correo. Los access e ID tokens viven solo en memoria. Estado:
+catálogo público validado en DEV; identidad candidata aprobada localmente y
+checkout canónico todavía pendiente.

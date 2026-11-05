@@ -16,3 +16,15 @@ class EcommerceRepository:
 
     def public_catalog(self, domain, limit):
         return self.connection.execute("SELECT ventas_digitales.catalogo_publico(%s,%s) value", (domain, limit)).fetchone()["value"]
+
+    def create_invitation(self, company_id, store_id, customer_id, token_hash, expires_at):
+        return self.connection.execute(
+            "SELECT ventas_digitales.cliente_invitacion_crear(%s,%s,%s,%s,%s) value",
+            (company_id, store_id, customer_id, token_hash, expires_at),
+        ).fetchone()["value"]
+
+    def claim_identity(self, claims, token):
+        return self.connection.execute(
+            "SELECT ventas_digitales.cliente_identidad_reclamar(%s,%s,%s,%s,%s) value",
+            (claims["iss"], claims["sub"], claims["email"], claims.get("name") or claims["email"], token),
+        ).fetchone()["value"]
