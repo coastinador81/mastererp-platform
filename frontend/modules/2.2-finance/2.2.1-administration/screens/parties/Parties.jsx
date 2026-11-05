@@ -1,4 +1,5 @@
 import SupplierFields,{SupplierSummary,emptySupplier,supplierFromParty,supplierPayload} from './SupplierFields.jsx';
+import SupplierRow from './SupplierRow.jsx';
 import React, {useEffect, useRef, useState} from 'react';
 const API=window.location.origin==='https://finanzas-dev.uonify.com'?window.location.origin:'https://qx8nmypdhi.execute-api.us-west-1.amazonaws.com';
 const messages={400:'Revisa los campos de la solicitud.',401:'Tu sesión ha caducado.',403:'Acceso denegado.',404:'El tercero no está disponible en esta empresa.',409:'Conflicto: la versión o el contenido ya cambió. Recarga el detalle antes de volver a editar.',503:'El servicio no está disponible. Puedes volver a intentarlo.'};
@@ -72,8 +73,8 @@ export default function Parties({workspace,capacity,path,navigate}) {
       <div className="actions"><button className="secondary" onClick={()=>navigate(base)}>Volver al listado</button>{canWrite&&<button onClick={()=>navigate(base+'/'+id+'/editar')}>Editar</button>}
       {canWrite&&!data.roles.includes(capacity==='clientes'?'proveedor':'cliente')&&<button className="secondary" disabled={busy} onClick={()=>send(null,true)}>Añadir rol {capacity==='clientes'?'proveedor':'cliente'}</button>}</div></div>}
     {capacity==='proveedores'&&id&&!edit&&data&&<SupplierSummary data={data}/>}
-    {!id&&!create&&data&&<div className="panel"><div className="table-scroll"><table><thead><tr><th>Código</th><th>Nombre</th><th>Roles</th>{capacity==='proveedores'&&<><th>Identificación fiscal</th><th>Correo</th><th>Teléfono</th></>}<th>Acción</th></tr></thead><tbody>
-      {data.items.map(row=><tr key={row.id}><td>{row.codigo}</td><td>{row.nombre}</td><td>{row.roles.join(', ')}</td>{capacity==='proveedores'&&<><td>{row.datos_generales?.numero_identificacion||'—'}</td><td>{row.datos_generales?.email||'—'}</td><td>{row.datos_generales?.telefono||'—'}</td></>}<td><a href={'#'+base+'/'+row.id}>Ver detalle</a></td></tr>)}</tbody></table></div>
+    {!id&&!create&&data&&<div className="panel"><div className="table-scroll"><table className={capacity==='proveedores'?'suppliers-table':undefined}><thead><tr><th>Código</th><th>Nombre</th><th>Roles</th>{capacity==='proveedores'?<><th>Identificación fiscal</th><th>Correo</th><th>Teléfono</th></>:<th>Acción</th>}</tr></thead><tbody>
+      {data.items.map(row=>capacity==='proveedores'?<SupplierRow key={row.id} row={row} path={base+'/'+row.id} navigate={navigate}/>:<tr key={row.id}><td>{row.codigo}</td><td>{row.nombre}</td><td>{row.roles.join(', ')}</td><td><a href={'#'+base+'/'+row.id}>Ver detalle</a></td></tr>)}</tbody></table></div>
       {data.items.length===0&&<p className="empty">No hay {label.toLowerCase()} registrados en esta empresa.</p>}
       <div className="pagination"><button className="secondary" disabled={!pages.length} onClick={()=>{setCursor(pages[pages.length-1]);setPages(p=>p.slice(0,-1));}}>Anterior</button><span>Máximo 10 registros por página</span><button className="secondary" disabled={!data.next_cursor} onClick={()=>{setPages(p=>[...p,cursor]);setCursor(data.next_cursor);}}>Siguiente</button></div>
     </div>}

@@ -11,3 +11,5 @@
 .supplier-form{display:grid;gap:22px}.supplier-form>label{display:grid;gap:8px;font-size:13px;font-weight:600;max-width:680px}.supplier-form>p{margin:0}.supplier-sections{margin-top:20px}
 
 .purchase-form label{display:grid;gap:8px;font-size:13px;font-weight:600;color:#34445a}.purchase-form .panel h2{margin-top:0}.purchase-form fieldset{min-width:0;margin:0 0 18px;padding:20px;border:1px solid #e1e8f1;border-radius:12px}.purchase-form legend{font-size:13px;font-weight:650;padding:0 8px}.purchase-form .supplier-fields>button{align-self:end}.purchase-form input,.purchase-form select{min-width:0;width:100%}
+
+.suppliers-table .supplier-row{cursor:pointer}.suppliers-table .supplier-name{font-weight:600;text-underline-offset:3px}@media(hover:hover){.suppliers-table .supplier-row:hover>td{background:#f3f7fc}}.suppliers-table .supplier-row:focus-within>td{background:#eaf3ff}
