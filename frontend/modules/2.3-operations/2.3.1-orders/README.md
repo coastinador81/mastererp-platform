@@ -5,7 +5,9 @@ Objetivo específico: Gestionar pedidos y sus transiciones autorizadas.
 Responsabilidad: Pedidos, dentro de Operaciones.
 Estado: componente funcional integrado al código fuente del app-shell Uonify y
 aplicación independiente compilable. La UI permite filtrar, listar, consultar
-detalle y ejecutar manualmente las transiciones autorizadas del pedido.
+detalle y ejecutar manualmente las transiciones autorizadas del pedido. El
+rediseño operativo agrega indicadores, búsqueda, tabla ejecutiva, progreso,
+cliente, entrega, pago, productos y totales sin inventar historial no expuesto.
 
 
 ## Contrato y estado de esta capa
@@ -18,5 +20,5 @@ Estado verificable: aplicación Vite compilada con `npm run build`; consume las
 cuatro rutas canónicas con bearer token y contexto tenant/empresa. La interfaz
 no concede permisos: el backend/PostgreSQL vuelve a autorizar cada operación.
 
-Validaciones: build independiente y build Uonify correctos. Pendientes para
-habilitar: publicación DEV y pruebas E2E de navegador con identidad autorizada.
+Validaciones: build independiente y build Uonify correctos. Pendientes para el
+nuevo corte: publicación DEV y pruebas de navegador con identidad autorizada.

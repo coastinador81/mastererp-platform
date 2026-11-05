@@ -2,7 +2,9 @@
 
 Objetivo específico: Coordinar pedidos, preparación, rutas y nodos.
 
-Responsabilidad: pedidos, preparación, rutas y nodos. Estado: planned.
+Responsabilidad: pedidos, preparación, rutas y nodos. Estado: interfaces
+operativas integradas al código fuente de Uonify; promoción del rediseño de
+Pedidos a DEV pendiente.
 
 ## Contrato y estado de esta capa
 
