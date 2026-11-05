@@ -46,6 +46,18 @@ async function main(){
   phase='products_data';
   await page.waitForFunction(()=>document.querySelectorAll('.products-module .card').length===27,{timeout:30000});
   check(await page.locator('.products-module .card').count()===27);pass('products_injected',{count:27});
+  phase='categories_link';await page.locator('aside').getByRole('link',{name:'Categorías',exact:true}).click();
+  phase='categories_data';await page.waitForFunction(()=>document.querySelectorAll('.categories-module .item').length===11,{timeout:30000});
+  check(await page.locator('.categories-module .item').count()===11);pass('categories_injected',{count:11});
+  phase='nodes_link';await page.locator('aside').getByRole('link',{name:'Nodos',exact:true}).click();
+  phase='nodes_data';await page.waitForFunction(()=>document.querySelectorAll('.nodes-module .list button').length===5,{timeout:30000});
+  check(await page.locator('.nodes-module .list button').count()===5);pass('nodes_injected',{count:5});
+  phase='inventory_link';const firstInventory=page.waitForResponse(r=>new URL(r.url()).pathname.endsWith('/inventory'));await page.locator('aside').getByRole('link',{name:'Inventario',exact:true}).click();
+  phase='inventory_data';const inventoryNode=page.getByRole('combobox',{name:'Nodo de inventario',exact:true});await inventoryNode.waitFor();
+  await page.waitForFunction(()=>document.querySelectorAll('select[aria-label="Nodo de inventario"] option').length===5,{timeout:30000});
+  const nodeIds=await inventoryNode.locator('option').evaluateAll(options=>options.map(option=>option.value));let inventoryCount=(await (await firstInventory).json()).items.length;
+  for(const id of nodeIds.slice(1)){const response=page.waitForResponse(r=>new URL(r.url()).pathname.endsWith(`/nodes/${id}/inventory`));await inventoryNode.selectOption(id);inventoryCount+=(await (await response).json()).items.length}
+  report.inventory_observed={nodes:nodeIds.length,count:inventoryCount};check(inventoryCount===42);pass('inventory_injected',report.inventory_observed);
   phase='orders_link';await page.locator('aside').getByRole('link',{name:'Pedidos',exact:true}).click();
   phase='orders_heading';
   await page.getByRole('heading',{name:'Pedidos',exact:true}).waitFor();
