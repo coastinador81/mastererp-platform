@@ -1,0 +1,17 @@
+{
+  "expo": {
+    "name": "MasterERP Storefront",
+    "slug": "mastererp-storefront",
+    "scheme": "mastererp-storefront",
+    "version": "0.2.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "plugins": ["expo-router"],
+    "web": {
+      "bundler": "metro",
+      "output": "single",
+      "name": "Tienda MasterERP",
+      "shortName": "Tienda"
+    }
+  }
+}
