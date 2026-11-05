@@ -25,6 +25,7 @@ async function main(){
   browser=await chromium.launch({executablePath:process.env.MASTERERP_CHROME_PATH||'/usr/bin/google-chrome',headless:true,args:['--disable-extensions','--no-sandbox']});
   const context=await browser.newContext({viewport:{width:1440,height:960}});page=await context.newPage();
   const failures=[];page.on('pageerror',error=>failures.push(error.name));
+  page.on('response',response=>{const pathname=new URL(response.url()).pathname;if(pathname==='/v1/products'||pathname.endsWith('/orders'))report.http={...(report.http||{}),[pathname]:response.status()};});
   phase='open';await page.goto('https://app-dev.uonify.com/',{waitUntil:'domcontentloaded'});
   phase='login_redirect';await page.getByRole('button',{name:'Acceder',exact:true}).click();
   phase='login_form';
@@ -39,17 +40,21 @@ async function main(){
   await page.waitForFunction(id=>[...document.querySelector('select[aria-label="Empresa"]').options].some(option=>option.value===id),company,{timeout:20000});
   await page.getByRole('combobox',{name:'Empresa',exact:true}).selectOption(company);
   pass('tumandaito_context');
-  phase='products';await page.locator('aside').getByRole('link',{name:'Productos',exact:true}).click();
+  phase='products_link';report.navigation=await page.locator('aside a').allTextContents();await page.locator('aside').getByRole('link',{name:'Productos',exact:true}).click();
+  phase='products_heading';
   await page.getByRole('heading',{name:'Productos',exact:true}).waitFor();
+  phase='products_data';
   await page.waitForFunction(()=>document.querySelectorAll('.products-module .card').length===27,{timeout:30000});
   check(await page.locator('.products-module .card').count()===27);pass('products_injected',{count:27});
-  phase='orders';await page.locator('aside').getByRole('link',{name:'Pedidos',exact:true}).click();
+  phase='orders_link';await page.locator('aside').getByRole('link',{name:'Pedidos',exact:true}).click();
+  phase='orders_heading';
   await page.getByRole('heading',{name:'Pedidos',exact:true}).waitFor();
+  phase='orders_data';
   await page.waitForFunction(()=>document.querySelectorAll('.orders-module .card').length===9,{timeout:30000});
   check(await page.locator('.orders-module .card').count()===9);pass('orders_injected',{count:9});
   check(new URL(page.url()).origin==='https://app-dev.uonify.com');check(failures.length===0);pass('single_shell_without_browser_errors');
   await context.close();report.status='passed';
 }
-(async()=>{try{await main();}catch(error){report.status='failed';report.failed_phase=phase;report.error_type=error.name;try{const current=new URL(page?.url()||'https://invalid/');report.failed_origin_path=current.origin+current.pathname;}catch{}}
+(async()=>{try{await main();}catch(error){report.status='failed';report.failed_phase=phase;report.error_type=error.name;try{const current=new URL(page?.url()||'https://invalid/');report.failed_origin_path=current.origin+current.pathname;report.visible_alerts=await page.locator('[role=alert]').allTextContents();}catch{}}
 finally{if(browser)await browser.close();if(prepared){try{invoke('qa_phase8_membership',{run:bundle.run,operation:'cleanup',nonce});pass('temporary_membership_removed');}catch{report.status='failed';report.cleanup='failed';}}
 fs.writeFileSync('/tmp/mastererp-phase8-uonify.json',JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));if(report.status!=='passed')process.exitCode=1;}})();
