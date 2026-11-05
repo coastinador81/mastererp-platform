@@ -76,6 +76,8 @@ async function main(){
   phase='drivers_link';await page.locator('aside').getByRole('link',{name:'Repartidores',exact:true}).click();
   phase='drivers_data';await page.waitForFunction(()=>document.querySelectorAll('.drivers-module .list button').length===6,{timeout:30000});
   pass('drivers_injected',{count:6});
+  phase='stores_link';await page.locator('aside').getByRole('link',{name:'Tiendas',exact:true}).click();
+  phase='stores_data';await page.waitForFunction(()=>document.querySelectorAll('.ecommerce-module .store').length===1,{timeout:30000});pass('stores_injected',{count:1});
   check(new URL(page.url()).origin==='https://app-dev.uonify.com');check(failures.length===0);pass('single_shell_without_browser_errors');
   await context.close();report.status='passed';
 }
