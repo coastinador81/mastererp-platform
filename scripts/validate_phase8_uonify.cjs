@@ -49,6 +49,9 @@ async function main(){
   phase='categories_link';await page.locator('aside').getByRole('link',{name:'Categorías',exact:true}).click();
   phase='categories_data';await page.waitForFunction(()=>document.querySelectorAll('.categories-module .item').length===11,{timeout:30000});
   check(await page.locator('.categories-module .item').count()===11);pass('categories_injected',{count:11});
+  for(const entry of [{name:'Atributos',route:'atributos',path:'/v1/catalog/attributes',selector:'.attributes-module .item'},{name:'Marcas',route:'marcas',path:'/v1/catalog/brands',selector:'.brands-module .item'},{name:'Proveedores',route:'proveedores',path:'/v1/catalog/suppliers',selector:'.suppliers-module .item'}]){
+    phase=entry.route+'_link';const link=page.locator(`aside a[href="#/modulos/catalogo/${entry.route}"]`);check(await link.count()===1);const response=page.waitForResponse(r=>new URL(r.url()).pathname===entry.path);await link.click();const body=await(await response).json();check(Array.isArray(body.items));check(await page.locator(entry.selector).count()===body.items.length);pass(entry.route+'_injected',{count:body.items.length});
+  }
   phase='nodes_link';await page.locator('aside').getByRole('link',{name:'Nodos',exact:true}).click();
   phase='nodes_data';await page.waitForFunction(()=>document.querySelectorAll('.nodes-module .list button').length===5,{timeout:30000});
   check(await page.locator('.nodes-module .list button').count()===5);pass('nodes_injected',{count:5});
