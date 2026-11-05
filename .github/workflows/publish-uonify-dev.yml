@@ -21,6 +21,7 @@ on:
       - 'frontend/modules/0-uonify/.gitattributes'
       - 'frontend/app-shell/src/**'
       - 'frontend/modules/2.1-catalog/2.1.1-products/src/**'
+      - 'frontend/modules/2.1-catalog/2.1.2-categories/src/**'
       - 'frontend/modules/2.3-operations/2.3.1-orders/src/**'
       - '.github/workflows/publish-uonify-dev.yml'
 permissions:

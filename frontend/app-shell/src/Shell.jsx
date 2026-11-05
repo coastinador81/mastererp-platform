@@ -5,6 +5,7 @@ import Finance from '../../modules/2.2-finance/src/Finance.jsx';
 import FinanceNavigation from '../../modules/2.2-finance/src/FinanceNavigation.jsx';
 import Conversation from '../../modules/0-uonify/components/Conversation.jsx';
 import Products from '../../modules/2.1-catalog/2.1.1-products/src/Products.jsx';
+import Categories from '../../modules/2.1-catalog/2.1.2-categories/src/Categories.jsx';
 import Orders from '../../modules/2.3-operations/2.3.1-orders/src/Orders.jsx';
 import './shell.css';
 import {workspacePath,financeUrl} from './financeRoutes.mjs';
@@ -14,11 +15,14 @@ function Shell({independent=false}) {
   const navigate=route=>{const url=independent?financeUrl(route):null;if(url){window.history.pushState(null,'',url);setPath(route);setMenu(false);}else if(window.location.hash!=='#'+route)window.location.hash=route;};
   const finance=w.context?.modules.includes('erp.finance')&&w.context?.permissions.some(p=>['administration.parties.read','administration.purchases.read'].includes(p));
   const products=w.context?.modules.includes('erp.catalog')&&w.context?.permissions.includes('catalog.products.read');
+  const categories=w.context?.modules.includes('erp.catalog')&&w.context?.permissions.includes('catalog.categories.read');
   const orders=w.context?.modules.includes('erp.operations')&&w.context?.permissions.includes('operations.orders.read');
   const financeRoute=path.startsWith('/modulos/finanzas');
   const productsRoute=path==='/modulos/catalogo/productos';
+  const categoriesRoute=path==='/modulos/catalogo/categorias';
   const ordersRoute=path==='/modulos/operaciones/pedidos';
   const productsRuntime=useMemo(()=>({api:config.adminApiUrl,tenant:w.tenant,permissions:w.context?.permissions||[],request:w.request}),[w.tenant,w.context,w.request]);
+  const categoriesRuntime=useMemo(()=>({api:config.adminApiUrl,tenant:w.tenant,permissions:w.context?.permissions||[],request:w.request}),[w.tenant,w.context,w.request]);
   const ordersRuntime=useMemo(()=>({api:config.adminApiUrl,tenant:w.tenant,company:w.company,permissions:w.context?.permissions||[],request:w.request}),[w.tenant,w.company,w.context,w.request]);
   return <div className="integrated-app"><a className="skip-link" href="#workspace-content" onClick={e=>{e.preventDefault();document.getElementById('workspace-content')?.focus();}}>Saltar al contenido</a>
     <header className="integrated-header"><button className="menu-toggle secondary" aria-label="Abrir menú" aria-expanded={menu} onClick={()=>setMenu(!menu)}>☰</button><a className="brand" href={independent?'/':'#/'}>{independent?'Finanzas':'Uonify'}<span>MasterERP · Desarrollo</span></a>
@@ -28,9 +32,9 @@ function Shell({independent=false}) {
     </header>
     <div className="integrated-layout"><aside className={'integrated-nav '+(menu?'is-open':'')} aria-label="Navegación principal">{independent?<FinanceNavigation allowed={Boolean(finance)} path={path} navigate={navigate}/>:<><p className="nav-caption">ESPACIO DE TRABAJO</p><a href="#/" aria-current={path==='/'?'page':undefined}>Inicio</a><a href="#/chat" aria-current={path==='/chat'?'page':undefined}>Chat operativo</a>
       <p className="nav-caption">MÓDULOS HABILITADOS</p>{finance&&<><a href="#/modulos/finanzas" aria-current={financeRoute?'page':undefined}>Finanzas</a><span className="nav-section">Administración</span><a className="subnav" href="#/modulos/finanzas/administracion/clientes">Clientes</a><a className="subnav" href="#/modulos/finanzas/administracion/proveedores">Proveedores</a></>}
-      {products&&<><span className="nav-section">Catálogo</span><a className="subnav" href="#/modulos/catalogo/productos" aria-current={productsRoute?'page':undefined}>Productos</a></>}
+      {(products||categories)&&<><span className="nav-section">Catálogo</span>{products&&<a className="subnav" href="#/modulos/catalogo/productos" aria-current={productsRoute?'page':undefined}>Productos</a>}{categories&&<a className="subnav" href="#/modulos/catalogo/categorias" aria-current={categoriesRoute?'page':undefined}>Categorías</a>}</>}
       {orders&&<><span className="nav-section">Operaciones</span><a className="subnav" href="#/modulos/operaciones/pedidos" aria-current={ordersRoute?'page':undefined}>Pedidos</a></>}
-      {!finance&&!products&&!orders&&<p className="nav-empty">{w.signedIn?'No hay módulos autorizados disponibles.':'Accede para consultar tus módulos.'}</p>}</>}{!independent&&<div className="nav-footer">Identidad compartida<br/>Permisos verificados por MasterERP</div>}</aside>
+      {!finance&&!products&&!categories&&!orders&&<p className="nav-empty">{w.signedIn?'No hay módulos autorizados disponibles.':'Accede para consultar tus módulos.'}</p>}</>}{!independent&&<div className="nav-footer">Identidad compartida<br/>Permisos verificados por MasterERP</div>}</aside>
       <main id="workspace-content" className="integrated-content" tabIndex={-1}>
         {independent&&<p className="notice">Finanzas · Entorno de desarrollo · Administración</p>}
         {w.error&&<div className="notice error" role="alert">{w.error} {w.signedIn&&<button className="secondary" onClick={()=>w.refresh()}>Revalidar acceso</button>}</div>}
@@ -41,10 +45,11 @@ function Shell({independent=false}) {
          !w.context?<div className="notice">El contexto autorizado no está disponible.</div>:
          (financeRoute||independent)?<Finance workspace={w} path={path} navigate={navigate}/>:
          productsRoute&&products?<Products runtime={productsRuntime}/>:
+         categoriesRoute&&categories?<Categories runtime={categoriesRuntime}/>:
          ordersRoute&&orders?<Orders runtime={ordersRuntime}/>:
          path==='/chat'?<Conversation/>:
          path!=='/'?<section><h1>Página no disponible</h1><a href="#/">Volver al inicio</a></section>:
-         <section><p className="eyebrow">TU ESPACIO DE TRABAJO</p><h1>Todo empieza aquí.</h1><p>Abre un módulo desde el menú. También puedes visitar el chat, sin que sea obligatorio conversar.</p><div className="cards">{finance&&<a className="panel module-card" href="#/modulos/finanzas"><span>FINANZAS</span><h2>Finanzas</h2><p>Administración, Clientes y Proveedores.</p><strong>Abrir módulo →</strong></a>}{products&&<a className="panel module-card" href="#/modulos/catalogo/productos"><span>CATÁLOGO</span><h2>Productos</h2><p>Ficha maestra comercial compartida por todos los canales.</p><strong>Abrir módulo →</strong></a>}{orders&&<a className="panel module-card" href="#/modulos/operaciones/pedidos"><span>OPERACIONES</span><h2>Pedidos</h2><p>Ciclo operativo manual sobre el pedido canónico.</p><strong>Abrir módulo →</strong></a>}<a className="panel module-card" href="#/chat"><span>UONIFY</span><h2>Chat operativo</h2><p>Espacio conversacional. Asistente aún sin conectar.</p></a></div>{!finance&&!products&&!orders&&<p className="notice">No hay módulos funcionales autorizados para este espacio.</p>}</section>}
+         <section><p className="eyebrow">TU ESPACIO DE TRABAJO</p><h1>Todo empieza aquí.</h1><p>Abre un módulo desde el menú. También puedes visitar el chat, sin que sea obligatorio conversar.</p><div className="cards">{finance&&<a className="panel module-card" href="#/modulos/finanzas"><span>FINANZAS</span><h2>Finanzas</h2><p>Administración, Clientes y Proveedores.</p><strong>Abrir módulo →</strong></a>}{products&&<a className="panel module-card" href="#/modulos/catalogo/productos"><span>CATÁLOGO</span><h2>Productos</h2><p>Ficha maestra comercial compartida por todos los canales.</p><strong>Abrir módulo →</strong></a>}{categories&&<a className="panel module-card" href="#/modulos/catalogo/categorias"><span>CATÁLOGO</span><h2>Categorías</h2><p>Clasificación canónica compartida por todos los canales.</p><strong>Abrir módulo →</strong></a>}{orders&&<a className="panel module-card" href="#/modulos/operaciones/pedidos"><span>OPERACIONES</span><h2>Pedidos</h2><p>Ciclo operativo manual sobre el pedido canónico.</p><strong>Abrir módulo →</strong></a>}<a className="panel module-card" href="#/chat"><span>UONIFY</span><h2>Chat operativo</h2><p>Espacio conversacional. Asistente aún sin conectar.</p></a></div>{!finance&&!products&&!categories&&!orders&&<p className="notice">No hay módulos funcionales autorizados para este espacio.</p>}</section>}
       </main></div></div>;
 }
 export function mountWorkspace(element,options={}) {if(options.independent&&window.location.pathname==='/'&&window.location.hash){const url=financeUrl(workspacePath(window.location,true));if(url)window.history.replaceState(null,'',url);}createRoot(element).render(<WorkspaceProvider><Shell {...options}/></WorkspaceProvider>);}
