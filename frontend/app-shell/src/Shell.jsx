@@ -6,6 +6,9 @@ import FinanceNavigation from '../../modules/2.2-finance/src/FinanceNavigation.j
 import Conversation from '../../modules/0-uonify/components/Conversation.jsx';
 import Products from '../../modules/2.1-catalog/2.1.1-products/src/Products.jsx';
 import Categories from '../../modules/2.1-catalog/2.1.2-categories/src/Categories.jsx';
+import Attributes from '../../modules/2.1-catalog/2.1.3-attributes/src/Attributes.jsx';
+import Brands from '../../modules/2.1-catalog/2.1.4-brands/src/Brands.jsx';
+import Suppliers from '../../modules/2.1-catalog/2.1.5-suppliers/src/Suppliers.jsx';
 import Inventory from '../../modules/2.1-catalog/2.1.6-inventory/src/Inventory.jsx';
 import Orders from '../../modules/2.3-operations/2.3.1-orders/src/Orders.jsx';
 import Preparation from '../../modules/2.3-operations/2.3.2-preparation/src/Preparation.jsx';
@@ -22,6 +25,7 @@ function Shell({independent=false}) {
   const products=w.context?.modules.includes('erp.catalog')&&w.context?.permissions.includes('catalog.products.read');
   const categories=w.context?.modules.includes('erp.catalog')&&w.context?.permissions.includes('catalog.categories.read');
   const inventory=w.context?.modules.includes('erp.catalog')&&w.context?.permissions.includes('catalog.inventory.read');
+  const attributes=w.context?.permissions.includes('catalog.attributes.read'),brands=w.context?.permissions.includes('catalog.brands.read'),suppliers=w.context?.permissions.includes('catalog.suppliers.read');
   const orders=w.context?.modules.includes('erp.operations')&&w.context?.permissions.includes('operations.orders.read');
   const nodes=w.context?.modules.includes('erp.operations')&&w.context?.permissions.includes('operations.nodes.read');
   const preparation=w.context?.permissions.includes('operations.preparation.read');
@@ -31,6 +35,7 @@ function Shell({independent=false}) {
   const productsRoute=path==='/modulos/catalogo/productos';
   const categoriesRoute=path==='/modulos/catalogo/categorias';
   const inventoryRoute=path==='/modulos/catalogo/inventario';
+  const attributesRoute=path==='/modulos/catalogo/atributos',brandsRoute=path==='/modulos/catalogo/marcas',suppliersRoute=path==='/modulos/catalogo/proveedores';
   const ordersRoute=path==='/modulos/operaciones/pedidos';
   const nodesRoute=path==='/modulos/operaciones/nodos';
   const preparationRoute=path==='/modulos/operaciones/preparacion',routesRoute=path==='/modulos/operaciones/rutas',driversRoute=path==='/modulos/transporte/repartidores';
@@ -46,7 +51,7 @@ function Shell({independent=false}) {
     </header>
     <div className="integrated-layout"><aside className={'integrated-nav '+(menu?'is-open':'')} aria-label="Navegación principal">{independent?<FinanceNavigation allowed={Boolean(finance)} path={path} navigate={navigate}/>:<><p className="nav-caption">ESPACIO DE TRABAJO</p><a href="#/" aria-current={path==='/'?'page':undefined}>Inicio</a><a href="#/chat" aria-current={path==='/chat'?'page':undefined}>Chat operativo</a>
       <p className="nav-caption">MÓDULOS HABILITADOS</p>{finance&&<><a href="#/modulos/finanzas" aria-current={financeRoute?'page':undefined}>Finanzas</a><span className="nav-section">Administración</span><a className="subnav" href="#/modulos/finanzas/administracion/clientes">Clientes</a><a className="subnav" href="#/modulos/finanzas/administracion/proveedores">Proveedores</a></>}
-      {(products||categories||inventory)&&<><span className="nav-section">Catálogo</span>{products&&<a className="subnav" href="#/modulos/catalogo/productos" aria-current={productsRoute?'page':undefined}>Productos</a>}{categories&&<a className="subnav" href="#/modulos/catalogo/categorias" aria-current={categoriesRoute?'page':undefined}>Categorías</a>}{inventory&&<a className="subnav" href="#/modulos/catalogo/inventario" aria-current={inventoryRoute?'page':undefined}>Inventario</a>}</>}
+      {(products||categories||attributes||brands||suppliers||inventory)&&<><span className="nav-section">Catálogo</span>{products&&<a className="subnav" href="#/modulos/catalogo/productos" aria-current={productsRoute?'page':undefined}>Productos</a>}{categories&&<a className="subnav" href="#/modulos/catalogo/categorias" aria-current={categoriesRoute?'page':undefined}>Categorías</a>}{attributes&&<a className="subnav" href="#/modulos/catalogo/atributos" aria-current={attributesRoute?'page':undefined}>Atributos</a>}{brands&&<a className="subnav" href="#/modulos/catalogo/marcas" aria-current={brandsRoute?'page':undefined}>Marcas</a>}{suppliers&&<a className="subnav" href="#/modulos/catalogo/proveedores" aria-current={suppliersRoute?'page':undefined}>Proveedores</a>}{inventory&&<a className="subnav" href="#/modulos/catalogo/inventario" aria-current={inventoryRoute?'page':undefined}>Inventario</a>}</>}
       {(orders||preparation||routes||nodes)&&<><span className="nav-section">Operaciones</span>{orders&&<a className="subnav" href="#/modulos/operaciones/pedidos" aria-current={ordersRoute?'page':undefined}>Pedidos</a>}{preparation&&<a className="subnav" href="#/modulos/operaciones/preparacion" aria-current={preparationRoute?'page':undefined}>Preparación</a>}{routes&&<a className="subnav" href="#/modulos/operaciones/rutas" aria-current={routesRoute?'page':undefined}>Rutas</a>}{nodes&&<a className="subnav" href="#/modulos/operaciones/nodos" aria-current={nodesRoute?'page':undefined}>Nodos</a>}</>}
       {drivers&&<><span className="nav-section">Transporte</span><a className="subnav" href="#/modulos/transporte/repartidores" aria-current={driversRoute?'page':undefined}>Repartidores</a></>}
       {!finance&&!products&&!categories&&!orders&&<p className="nav-empty">{w.signedIn?'No hay módulos autorizados disponibles.':'Accede para consultar tus módulos.'}</p>}</>}{!independent&&<div className="nav-footer">Identidad compartida<br/>Permisos verificados por MasterERP</div>}</aside>
@@ -61,6 +66,9 @@ function Shell({independent=false}) {
          (financeRoute||independent)?<Finance workspace={w} path={path} navigate={navigate}/>:
          productsRoute&&products?<Products runtime={productsRuntime}/>:
          categoriesRoute&&categories?<Categories runtime={categoriesRuntime}/>:
+         attributesRoute&&attributes?<Attributes runtime={categoriesRuntime}/>:
+         brandsRoute&&brands?<Brands runtime={categoriesRuntime}/>:
+         suppliersRoute&&suppliers?<Suppliers runtime={categoriesRuntime}/>:
          inventoryRoute&&inventory?<Inventory runtime={operationalRuntime}/>:
          ordersRoute&&orders?<Orders runtime={ordersRuntime}/>:
          preparationRoute&&preparation?<Preparation runtime={operationalRuntime}/>:
