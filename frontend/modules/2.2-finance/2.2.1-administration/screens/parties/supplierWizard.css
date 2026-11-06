@@ -9,3 +9,64 @@
 .finance-app .supplier-wizard-review dl{display:grid;grid-template-columns:minmax(100px,160px) 1fr;gap:10px}
 .finance-app .supplier-wizard-review dd{margin:0;overflow-wrap:anywhere}
 @media(max-width:640px){.finance-app .supplier-wizard-header ol{gap:6px}.finance-app .supplier-wizard-header li{flex-direction:column;align-items:flex-start;padding:8px;font-size:12px}.finance-app .supplier-wizard-review dl{grid-template-columns:1fr}}
+
+/* The creation flow is one form surface; overrides stay inside this flow. */
+.finance-app .supplier-create-wizard{max-width:none;display:flex;flex-direction:column;gap:20px;padding:24px;background:var(--finance-surface);border:1px solid var(--finance-border);border-radius:16px}
+.finance-app .supplier-create-wizard .supplier-wizard-header{margin:0}
+.finance-app .supplier-create-wizard .supplier-wizard-header ol{margin:0 0 20px;gap:12px}
+.finance-app .supplier-create-wizard .supplier-wizard-header li{padding:8px 4px 12px;gap:8px;font-size:13px;background:transparent;border-radius:0}
+.finance-app .supplier-create-wizard .supplier-wizard-progress{margin:0 0 4px;font-size:12px}
+.finance-app .supplier-create-wizard .supplier-wizard-header h2{margin:0 0 8px;font-size:22px;outline-offset:3px}
+.finance-app .supplier-create-wizard .supplier-wizard-header>p:last-child{margin:0;line-height:1.6;font-size:14px;color:var(--finance-muted)}
+.finance-app .supplier-create-wizard .supplier-sections{margin:0;display:flex;flex-direction:column;gap:20px}
+.finance-app .supplier-create-wizard .supplier-fieldset{margin:0;padding:16px 0 0;border:0;border-top:1px solid var(--finance-border);border-radius:0;box-shadow:none;min-width:0}
+.finance-app .supplier-create-wizard .supplier-fieldset legend{padding:0 8px 0 0;font-size:14px;color:var(--finance-title);font-weight:500}
+.finance-app .supplier-create-wizard .supplier-subtitle{margin:0 0 12px;font-size:12px;line-height:1.6;color:var(--finance-muted)}
+.finance-app .supplier-create-wizard .supplier-fields{gap:16px 20px}
+.finance-app .supplier-create-wizard label{font-size:13px;font-weight:400;line-height:1.5}
+.finance-app .supplier-create-wizard :is(input:not([type=radio]),select,textarea){width:100%;min-width:0;font-size:14px;padding:10px 12px}
+.finance-app .supplier-create-wizard input[type=radio]{width:16px;height:16px;flex:none}
+.finance-app .supplier-create-wizard details.panel{padding:12px 0 0;margin:0;border:0;border-top:1px solid var(--finance-border);border-radius:0;box-shadow:none;color:var(--finance-muted);font-size:13px}
+.finance-app .supplier-create-wizard details summary{cursor:pointer;padding:4px 0}
+.finance-app .supplier-create-wizard details label{display:grid;gap:6px}
+.finance-app .supplier-create-wizard .supplier-wizard-review{padding:16px;margin:0;background:var(--finance-background);border:0;box-shadow:none}
+.finance-app .supplier-create-wizard .supplier-wizard-review h3{margin:0 0 12px;font-size:15px;font-weight:500}
+.finance-app .supplier-create-wizard .supplier-wizard-review p{font-size:13px;line-height:1.6;color:var(--finance-muted);margin:12px 0 0}
+.finance-app .supplier-create-wizard .supplier-wizard-actions{margin:0;padding-top:16px;border-top:1px solid var(--finance-border);display:flex;gap:10px;flex-wrap:wrap}
+@media(max-width:640px){
+ .finance-app .supplier-create-wizard{padding:18px 16px;gap:18px}
+ .finance-app .supplier-create-wizard .supplier-wizard-header ol{gap:8px}
+ .finance-app .supplier-create-wizard .supplier-wizard-header li{font-size:11px;gap:6px}
+ .finance-app .supplier-create-wizard .supplier-wizard-header h2{font-size:20px}
+ .finance-app .supplier-create-wizard .supplier-fields{grid-template-columns:1fr;gap:14px}
+ .finance-app .supplier-create-wizard .supplier-wizard-actions button{min-height:44px}
+}
+
+/* Respond to available form width, including tablet with the sidebar visible. */
+.finance-app .supplier-create-wizard{container-type:inline-size;min-width:0;width:100%;box-sizing:border-box}
+.finance-app .supplier-create-wizard :is(.supplier-fields,.supplier-contact,.supplier-wizard-header,.supplier-wizard-review){min-width:0;max-width:100%}
+.finance-app .supplier-create-wizard .supplier-fields{grid-template-columns:repeat(2,minmax(0,1fr))}
+.finance-app .supplier-create-wizard .supplier-wizard-header li{min-width:0;overflow-wrap:anywhere}
+.finance-app .supplier-create-wizard .supplier-wizard-header h2{max-width:100%;overflow-wrap:anywhere}
+.finance-app .supplier-create-wizard :is(details summary,details p,.supplier-subtitle,.supplier-wizard-review dd){overflow-wrap:anywhere}
+.finance-app .supplier-create-wizard input[type=radio]{min-width:18px;min-height:18px}
+.finance-app .supplier-create-wizard .supplier-contact-heading{flex-wrap:wrap}
+@container(max-width:600px){
+ .finance-app .supplier-create-wizard .supplier-fields{grid-template-columns:minmax(0,1fr)}
+ .finance-app .supplier-create-wizard .supplier-wizard-header ol{gap:10px;margin-bottom:16px}
+ .finance-app .supplier-create-wizard .supplier-wizard-header li{flex-direction:column;align-items:flex-start;padding:4px 0 10px;font-size:13px}
+ .finance-app .supplier-create-wizard .supplier-wizard-header li:not(.current)>span:last-child{display:none}
+ .finance-app .supplier-create-wizard .supplier-wizard-header li.current>span:last-child{display:none}
+ .finance-app .supplier-create-wizard .supplier-wizard-number{width:30px;min-width:30px;height:30px;flex-basis:30px}
+ .finance-app .supplier-create-wizard .supplier-wizard-header h2{font-size:20px;line-height:1.35}
+ .finance-app .supplier-create-wizard .supplier-wizard-review dl{grid-template-columns:minmax(0,1fr);gap:6px}
+ .finance-app .supplier-create-wizard .supplier-wizard-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+ .finance-app .supplier-create-wizard .supplier-wizard-actions button{min-height:44px;width:100%;padding:10px 8px}
+ .finance-app .supplier-create-wizard .supplier-wizard-actions button:last-child:nth-child(3){grid-column:1/-1}
+ .finance-app .supplier-create-wizard .supplier-principal{min-height:44px;gap:10px}
+}
+@media(max-width:720px){
+ .finance-app .supplier-create-wizard :is(input:not([type=radio]),select,textarea){font-size:16px;min-height:44px}
+ .finance-app .supplier-create-wizard label{font-size:14px}
+ .finance-app .supplier-create-wizard .supplier-fieldset legend{font-size:15px}
+}
