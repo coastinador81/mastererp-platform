@@ -12,7 +12,7 @@ Maestro canónico: catalogo.terceros y perfil cliente en administracion.perfiles
 <!-- ux-ui-standard:start -->
 ## UX/UI común
 
-Aplicar el [estándar UX/UI de MasterERP](../../../../../../docs/UX_UI_STANDARD.md) antes de crear o modificar esta interfaz; el README conserva el alcance y estado funcional descritos arriba.
+Aplicar el [estilos compartidos de Finanzas](../../../src/finance.css) antes de crear o modificar esta interfaz; el README conserva el alcance y estado funcional descritos arriba.
 
 - Inter local con fallback sans-serif; fondo #F6F8FC, superficies y menú blancos, texto #4B5563, secundario #667085 y acentos azules.
 - Cuando haya tabla: 14 px, peso 400 y #667085 en todas las celdas; encabezados #F4F7FB y separadores #E8EDF3. Códigos y nombres sin negrita ni subrayado permanente.
