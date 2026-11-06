@@ -1,0 +1,11 @@
+.finance-app .supplier-wizard-header{margin-bottom:var(--finance-space-6,24px);color:var(--finance-text,#4b5563)}
+.finance-app .supplier-wizard-header ol{list-style:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;padding:0;margin:0 0 24px}
+.finance-app .supplier-wizard-header li{display:flex;gap:10px;align-items:center;padding:14px;border-bottom:2px solid var(--finance-border,#e8edf3);color:var(--finance-muted,#667085);font-size:14px}
+.finance-app .supplier-wizard-header li.current{border-color:var(--finance-primary,#096bdc);color:var(--finance-primary,#096bdc);background:#eff6ff;border-radius:12px 12px 0 0}
+.finance-app .supplier-wizard-number{display:grid;place-items:center;flex:0 0 28px;width:28px;min-width:28px;height:28px;border:1px solid currentColor;border-radius:50%}
+.finance-app .supplier-wizard-header h2{font-size:22px;font-weight:500;color:#374151;margin:8px 0}
+.finance-app .supplier-wizard-header h2:focus-visible{outline:2px solid #3b82f6;outline-offset:4px}
+.finance-app .supplier-wizard-progress{font-size:14px;color:#667085}
+.finance-app .supplier-wizard-review dl{display:grid;grid-template-columns:minmax(100px,160px) 1fr;gap:10px}
+.finance-app .supplier-wizard-review dd{margin:0;overflow-wrap:anywhere}
+@media(max-width:640px){.finance-app .supplier-wizard-header ol{gap:6px}.finance-app .supplier-wizard-header li{flex-direction:column;align-items:flex-start;padding:8px;font-size:12px}.finance-app .supplier-wizard-review dl{grid-template-columns:1fr}}
