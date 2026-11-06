@@ -5,7 +5,8 @@ import { assertStorefrontContext, storefrontConfig, storefrontScope } from './co
 const invitationKey = () => `mastererp.storefront.invitation:${storefrontScope()}`;
 
 export const isAuthenticated = () => sessionExpiresAt() > Date.now();
-export const startLogin = () => login(authConfig);
+export const startLogin = (provider?: 'Google') => login(authConfig, provider ? { identityProvider: provider } : {});
+export const startRegistration = () => login(authConfig, { screen: 'signup' });
 export const signOut = () => logout(authConfig);
 
 export async function completeLoginIfNeeded() {
@@ -28,6 +29,13 @@ export async function completeLoginIfNeeded() {
       body: JSON.stringify({ invitation_token: pendingInvitation }),
     });
     sessionStorage.removeItem(invitationKey());
+  }
+  if (authenticated && !pendingInvitation) {
+    await authorizedIdentityFetch(`${storefrontConfig.api}/v1/storefront/identity/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Tenant-Id': storefrontConfig.tenant },
+      body: JSON.stringify({ domain: storefrontConfig.domain }),
+    });
   }
   return authenticated;
 }

@@ -13,7 +13,8 @@ MasterERP. No autoriza copiar APIs legacy, secretos ni tokens al cliente.
 - [x] Consumir Catálogo, Inventario y Pedidos canónicos, sin copias paralelas.
 - [ ] Ejecutar pruebas E2E multi-tenant, autenticación, checkout y aislamiento.
 - [ ] Aprobar revisión visual móvil, tablet y escritorio de todas las rutas.
-- [ ] Preparar publicación DEV reproducible y rollback antes de desplegar.
+- [x] Preparar workflow DEV manual con OIDC mínimo; falta desplegar el rol y
+  aprobar prueba visual antes de ejecutarlo.
 
 ## 1. Configuración multitenant DEV
 
@@ -39,38 +40,43 @@ MasterERP. No autoriza copiar APIs legacy, secretos ni tokens al cliente.
 - [x] Cliente DEV `mastererp-dev-storefront-web` con callback y logout propios.
 - [x] Tokens de 15 minutos, refresh de un día y sesión administrada por Cognito.
 - [x] Invitación de un solo uso y reclamación idempotente por `issuer + sub`.
-- [ ] Configurar Google como Identity Provider del User Pool MasterERP.
-- [ ] Añadir Google a `SupportedIdentityProviders` del cliente Storefront.
-- [ ] Mapear claims mínimos verificados: `sub`, `email`, `email_verified`,
+- [x] Declarar Google como Identity Provider del User Pool MasterERP; pendiente
+  aplicar el change set con credenciales OAuth administradas.
+- [x] Declarar Google en `SupportedIdentityProviders` del cliente Storefront.
+- [x] Mapear claims mínimos verificados: `sub`, `email`, `email_verified`,
   `given_name`, `family_name`, `name` y `picture`, según contrato aprobado.
-- [ ] Exponer “Continuar con Google” mediante Hosted UI Cognito; el cliente no
+- [x] Exponer “Continuar con Google” mediante Hosted UI Cognito; el cliente no
   recibe ni persiste access/refresh tokens de Google.
-- [ ] Recuperar login, registro, confirmación, reenvío, logout, expiración,
+- [x] Recuperar login, registro/confirmación administrados por Hosted UI,
+  logout y expiración local. Pendientes reenvío, cancelación y matriz completa
+  de errores del `customer-app`.
   cancelación y errores del `customer-app`.
 - [ ] Probar primer acceso, usuario existente, email no verificado, proveedor
   duplicado, invitación vencida y cambio de usuario.
 
 ## 3. Perfil de cliente por tenant
 
-- [ ] Definir contrato canónico `GET/PATCH /v1/storefront/me`.
+- [x] Definir contrato canónico `GET/PATCH /v1/storefront/me` y alta idempotente
+  por `issuer + sub` + dominio, sin unir clientes por email.
 - [ ] Persistir por tenant/empresa/cliente: nombre, nombres, apellidos, teléfono,
   fecha de nacimiento y foto; email e identidad externa siguen gobernados por
   Cognito y `issuer + sub`.
 - [ ] Migrar validación de teléfono venezolano `+58` y fecha de nacimiento.
 - [ ] Recuperar pantalla de perfil, edición, seguridad, notificaciones, ayuda y
   políticas con configuración propia del tenant.
-- [ ] Corregir “Mi cuenta” para abrir Perfil; logout debe ser una acción aparte.
+- [x] Corregir “Mi cuenta” para abrir Perfil; logout es una acción aparte.
 - [ ] Evitar que caché o respuestas tardías sobrevivan al cambio de tenant o
   usuario.
 
 ## 4. Direcciones por tenant
 
-- [ ] Definir contrato de listar/crear/editar dirección del cliente.
+- [x] Definir contrato de listar/crear/editar dirección del cliente; el primer
+  corte persiste etiqueta, dirección, referencia y predeterminada.
 - [ ] Conservar campos: `label`, `address`, `zone`, `unit`, `reference`,
   `latitude`, `longitude` e `isDefault`.
 - [ ] Recuperar autocompletado y selector de punto en mapa sin exponer llaves.
 - [ ] Validar dirección, zona, coordenadas y pertenencia al cliente en API.
-- [ ] Permitir varias direcciones y una predeterminada por tenant/empresa.
+- [x] Permitir varias direcciones y una predeterminada por tenant/empresa.
 
 ## 5. Checkout completo por configuración del tenant
 
@@ -101,8 +107,9 @@ MasterERP. No autoriza copiar APIs legacy, secretos ni tokens al cliente.
 
 ## 7. Pedidos y seguimiento
 
-- [ ] Implementar lista y detalle de pedidos del cliente autenticado.
-- [ ] Mostrar estados, líneas, totales, entrega, pago y eventos autorizados.
+- [x] Implementar lista y detalle de pedidos del cliente autenticado.
+- [x] Mostrar estados, líneas, totales, entrega y pago. Eventos autorizados
+  siguen pendientes de contrato Storefront.
 - [ ] Recuperar seguimiento y repetición de compra cuando producto lo apruebe.
 - [ ] Probar aislamiento por tenant, cliente y empresa.
 
@@ -123,8 +130,8 @@ MasterERP. No autoriza copiar APIs legacy, secretos ni tokens al cliente.
 - [x] Inventariar hosting restaurado: cuenta propietaria `941751053509`, bucket
   versionado `tmi-dev-client`, distribución `E2PLU72V9YKM01` y dominio
   `tienda-dev.tumandaito.com`.
-- [ ] Crear rol OIDC de publicación limitado al bucket y distribución antes del
-  workflow `publish-storefront-dev.yml`.
+- [x] Declarar rol OIDC de publicación limitado al bucket y distribución y
+  workflow manual `publish-storefront-dev.yml`; falta desplegar el rol.
 - [x] Publicar el primer corte DEV con backup recuperable del índice anterior.
 - [x] Ejecutar smoke real de índice, bundle y catálogo; registrar evidencia.
 - [ ] Completar revisión visual manual del build publicado en móvil y escritorio.

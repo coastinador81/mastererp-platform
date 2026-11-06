@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState, type PropsWithChildren } from 'react';
-import { completeLoginIfNeeded } from '../auth';
+import { completeLoginIfNeeded, isAuthenticated } from '../auth';
 import { loadCatalog } from '../api';
 import { storefrontScope } from '../config';
 import type { CartLine, Product, StorefrontCatalog } from '../types';
@@ -37,6 +37,14 @@ export function StoreProvider({ children }: PropsWithChildren) {
       .catch((reason: Error) => setError(reason.message || 'No se pudo abrir la tienda.'))
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    if (!authenticated) return;
+    const timer = window.setInterval(() => {
+      if (!isAuthenticated()) setAuthenticated(false);
+    }, 15000);
+    return () => window.clearInterval(timer);
+  }, [authenticated]);
 
   useEffect(() => { if (!loading && typeof sessionStorage !== 'undefined') sessionStorage.setItem(cartKey(), JSON.stringify(cart)); }, [cart, loading]);
 

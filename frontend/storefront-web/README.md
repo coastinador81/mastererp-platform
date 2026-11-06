@@ -38,6 +38,11 @@ La exportación web usa `npm run build` y genera `dist/`. Android/iOS comparten
 los componentes React Native; el flujo Cognito universal y su almacenamiento
 seguro nativo forman parte de la siguiente entrega antes de distribuir binarios.
 
+Perfil, direcciones y pedidos cuentan con un candidato canónico protegido por
+el ID token Storefront. El servidor deriva cliente, empresa y tienda desde
+`issuer + sub`, tenant y dominio; el navegador no envía `customer_id`. El alta
+nueva crea una identidad de cliente por tienda sin asociar cuentas por email.
+
 ## Fase 9 — recuperación visual
 
 Inicio, asistente de compra, navegación, catálogo, producto, carrito y checkout

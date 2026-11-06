@@ -7,8 +7,8 @@ import { useStore } from '../store/StoreProvider';
 const items = [
   { label: 'Inicio', icon: 'home-outline', activeIcon: 'home', path: '/' },
   { label: 'Categorías', icon: 'grid-outline', activeIcon: 'grid', path: '/catalog' },
-  { label: 'Ofertas', icon: 'pricetag-outline', activeIcon: 'pricetag', path: '/catalog?offers=1' },
   { label: 'Mi compra', icon: 'bag-handle-outline', activeIcon: 'bag-handle', path: '/cart' },
+  { label: 'Mi cuenta', icon: 'person-outline', activeIcon: 'person', path: '/account' },
 ] as const;
 
 export function BottomNav() {

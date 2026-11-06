@@ -1,6 +1,9 @@
 import { authorizedIdentityFetch } from '../../shared/auth/cognito.mjs';
 import { assertStorefrontContext, storefrontConfig } from './config';
-import type { CartLine, StorefrontCatalog } from './types';
+import type { CartLine, CustomerAddress, CustomerOrder, CustomerProfile, StorefrontCatalog } from './types';
+
+const portalUrl = (path: string) => `${storefrontConfig.api}${path}?domain=${encodeURIComponent(storefrontConfig.domain)}`;
+const portalOptions = (options: RequestInit = {}) => ({ ...options, headers: { 'X-Tenant-Id': storefrontConfig.tenant, ...options.headers } });
 
 export async function loadCatalog(): Promise<StorefrontCatalog> {
   assertStorefrontContext();
@@ -10,6 +13,13 @@ export async function loadCatalog(): Promise<StorefrontCatalog> {
   if (!response.ok) throw new Error(body.error?.message || 'No se pudo abrir la tienda.');
   return body as StorefrontCatalog;
 }
+
+export const loadProfile = () => authorizedIdentityFetch(portalUrl('/v1/storefront/me'), portalOptions()) as Promise<CustomerProfile>;
+export const saveProfile = (name: string) => authorizedIdentityFetch(portalUrl('/v1/storefront/me'), portalOptions({ method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name }) })) as Promise<CustomerProfile>;
+export const loadAddresses = async () => (await authorizedIdentityFetch(portalUrl('/v1/storefront/me/addresses'), portalOptions()) as { items: CustomerAddress[] }).items;
+export const saveAddress = (address: Omit<CustomerAddress, 'id' | 'version'>) => authorizedIdentityFetch(portalUrl('/v1/storefront/me/addresses'), portalOptions({ method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(address) }));
+export const loadOrders = async () => (await authorizedIdentityFetch(portalUrl('/v1/storefront/orders'), portalOptions()) as { items: CustomerOrder[] }).items;
+export const loadOrder = (id: string) => authorizedIdentityFetch(portalUrl(`/v1/storefront/orders/${encodeURIComponent(id)}`), portalOptions()) as Promise<CustomerOrder>;
 
 export async function submitCheckout(lines: CartLine[], address: string) {
   assertStorefrontContext();

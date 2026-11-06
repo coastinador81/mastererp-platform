@@ -29,10 +29,36 @@ class EcommerceRepository:
             (claims["iss"], claims["sub"], claims["email"], claims.get("name") or claims["email"], token),
         ).fetchone()["value"]
 
+    def register_identity(self, claims, domain):
+        return self.connection.execute(
+            "SELECT ventas_digitales.cliente_identidad_registrar(%s,%s,%s,%s,%s) value",
+            (claims["iss"], claims["sub"], claims["email"], claims.get("name") or claims["email"], domain),
+        ).fetchone()["value"]
+
     def checkout(self, claims, payload, idempotency_key):
         return self.connection.execute(
             "SELECT ventas_digitales.checkout_crear(%s,%s,%s,%s,%s,%s,%s,%s) value",
             (claims["iss"], claims["sub"], payload["domain"], payload["items"],
              payload["delivery"], payload["delivery_method"],
              payload["payment_method"], idempotency_key),
+        ).fetchone()["value"]
+
+    def customer_read(self, claims, domain, section, item_id=None, limit=25):
+        return self.connection.execute(
+            "SELECT ventas_digitales.cliente_portal_leer(%s,%s,%s,%s,%s,%s) value",
+            (claims["iss"], claims["sub"], domain, section, item_id, limit),
+        ).fetchone()["value"]
+
+    def update_profile(self, claims, domain, name):
+        return self.connection.execute(
+            "SELECT ventas_digitales.cliente_perfil_actualizar(%s,%s,%s,%s) value",
+            (claims["iss"], claims["sub"], domain, name),
+        ).fetchone()["value"]
+
+    def save_address(self, claims, domain, payload, address_id=None):
+        return self.connection.execute(
+            "SELECT ventas_digitales.cliente_direccion_guardar(%s,%s,%s,%s,%s,%s,%s,%s,%s) value",
+            (claims["iss"], claims["sub"], domain, address_id, payload.get("label"),
+             payload.get("address"), payload.get("reference"), payload.get("default", False),
+             payload.get("version")),
         ).fetchone()["value"]

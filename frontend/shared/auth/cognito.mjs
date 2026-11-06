@@ -10,21 +10,24 @@ export async function pkceChallenge(verifier) {
   return base64url(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier))));
 }
 
-export async function authorizationRequest(config) {
+export async function authorizationRequest(config, options = {}) {
   const verifier = base64url(crypto.getRandomValues(new Uint8Array(32)));
   const state = base64url(crypto.getRandomValues(new Uint8Array(32)));
   const url = new URL('/oauth2/authorize', config.loginBaseUrl);
-  url.search = new URLSearchParams({client_id: config.clientId, response_type: 'code',
+  const params = {client_id: config.clientId, response_type: 'code',
     redirect_uri: config.callbackUrl, scope: config.scopes.join(' '), state,
-    code_challenge: await pkceChallenge(verifier), code_challenge_method: 'S256'}).toString();
+    code_challenge: await pkceChallenge(verifier), code_challenge_method: 'S256'};
+  if (options.identityProvider) params.identity_provider = options.identityProvider;
+  if (options.screen === 'signup') params.lang = 'es';
+  url.search = new URLSearchParams(params).toString();
   return {url: url.href, verifier, state, createdAt: Date.now()};
 }
 
-export async function login(config) {
+export async function login(config, options = {}) {
   const selection = sessionStorage.getItem('mastererp.dev.selection');
   clearSession();
   if (selection) sessionStorage.setItem('mastererp.dev.selection', selection);
-  const transaction = await authorizationRequest(config);
+  const transaction = await authorizationRequest(config, options);
   sessionStorage.setItem(transactionKey, JSON.stringify({...transaction,
     clientId: config.clientId, callbackUrl: config.callbackUrl, returnHash: window.location.hash?.startsWith('#/') ? window.location.hash : '#/'}));
   window.location.assign(transaction.url);

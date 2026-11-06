@@ -3,7 +3,7 @@ from types import SimpleNamespace
 from unittest.mock import Mock
 from unittest.mock import patch
 
-from ecommerce_api.handler import HttpError, _checkout, _claim, _request, _verified_profile, lambda_handler
+from ecommerce_api.handler import HttpError, _checkout, _claim, _customer_portal, _request, _verified_profile, lambda_handler
 
 
 class EcommerceApiTest(unittest.TestCase):
@@ -69,6 +69,26 @@ class EcommerceApiTest(unittest.TestCase):
                          '"delivery_method":"realtime","payment_method":"cash"}'}
         with self.assertRaises(HttpError):
             _checkout(event, Mock(), {})
+
+    @patch("ecommerce_api.handler._verified_profile")
+    def test_customer_orders_are_derived_from_identity_and_domain(self, verify):
+        claims = {"iss": "issuer", "sub": "subject"}
+        verify.return_value = claims
+        repository = Mock()
+        repository.customer_read.return_value = []
+        event = {"requestContext": {"http": {"method": "GET"}},
+                 "queryStringParameters": {"domain": "shop.example.invalid"}}
+        self.assertEqual(_customer_portal(event, repository, claims, "/v1/storefront/orders"),
+                         (200, {"items": []}))
+        repository.customer_read.assert_called_once_with(
+            claims, "shop.example.invalid", "orders", limit=25)
+
+    @patch("ecommerce_api.handler._verified_profile")
+    def test_customer_portal_requires_store_domain(self, verify):
+        verify.return_value = {"iss": "issuer", "sub": "subject"}
+        with self.assertRaises(HttpError):
+            _customer_portal({"requestContext": {"http": {"method": "GET"}}}, Mock(), {},
+                             "/v1/storefront/me")
 
     @patch.dict("os.environ", {"COGNITO_ISSUER": "https://issuer.invalid", "STOREFRONT_COGNITO_CLIENT_ID": "store-client"})
     def test_profile_requires_storefront_id_token_claims(self):

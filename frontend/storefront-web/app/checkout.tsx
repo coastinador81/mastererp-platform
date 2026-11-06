@@ -1,9 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Screen } from '@/components/Screen';
-import { submitCheckout } from '@/api';
+import { loadAddresses, submitCheckout } from '@/api';
 import { startLogin } from '@/auth';
 import { useStore } from '@/store/StoreProvider';
 import { colors, radii, spacing } from '@/theme';
@@ -18,6 +18,13 @@ export default function CheckoutPage() {
   const [error, setError] = useState('');
   const [orderNumber, setOrderNumber] = useState('');
   const subtotal = cart.reduce((total, line) => total + line.product.price * line.quantity, 0);
+
+  useEffect(() => {
+    if (authenticated) loadAddresses().then(items => {
+      const selected = items.find(item => item.default) || items[0];
+      if (selected) setAddress(selected.address);
+    }).catch(() => undefined);
+  }, [authenticated]);
 
   const confirm = async () => {
     if (!authenticated) return startLogin();

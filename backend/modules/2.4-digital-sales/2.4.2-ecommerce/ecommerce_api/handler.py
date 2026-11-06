@@ -82,6 +82,14 @@ def _claim(event, repository, claims):
     return 200, repository.claim_identity(_verified_profile(claims), token)
 
 
+def _register(event, repository, claims):
+    payload = parse_body(event)
+    domain = payload.get("domain")
+    if not isinstance(domain, str) or not domain:
+        raise HttpError(400, "Store domain is required", code="invalid_request")
+    return 200, repository.register_identity(_verified_profile(claims), domain)
+
+
 def _checkout(event, repository, claims):
     payload = parse_body(event)
     key = _header(event, "idempotency-key")
@@ -93,6 +101,45 @@ def _checkout(event, repository, claims):
     return 201, repository.checkout(_verified_profile(claims), payload, key)
 
 
+def _customer_portal(event, repository, claims, path):
+    method = event.get("requestContext", {}).get("http", {}).get("method", "GET").upper()
+    query = event.get("queryStringParameters") or {}
+    domain = query.get("domain")
+    if not isinstance(domain, str) or not domain:
+        raise HttpError(400, "Store domain is required", code="invalid_request")
+    profile = _verified_profile(claims)
+    if path == "/v1/storefront/me":
+        if method == "GET":
+            return 200, repository.customer_read(profile, domain, "profile")
+        if method != "PATCH":
+            raise HttpError(404, "Route not found", code="not_found")
+        payload = parse_body(event)
+        if not isinstance(payload.get("name"), str):
+            raise HttpError(400, "Name is required", code="invalid_request")
+        return 200, repository.update_profile(profile, domain, payload["name"])
+    if path == "/v1/storefront/me/addresses":
+        if method == "GET":
+            return 200, {"items": repository.customer_read(profile, domain, "addresses")}
+        if method != "POST":
+            raise HttpError(404, "Route not found", code="not_found")
+        payload = parse_body(event)
+        if not isinstance(payload.get("label"), str) or not isinstance(payload.get("address"), str):
+            raise HttpError(400, "Address fields are required", code="invalid_request")
+        return 201, repository.save_address(profile, domain, payload)
+    if path.startswith("/v1/storefront/me/addresses/") and method == "PATCH":
+        address_id = UUID((event.get("pathParameters") or {}).get("address_id") or "")
+        payload = parse_body(event)
+        if not isinstance(payload.get("version"), int):
+            raise HttpError(400, "Address version is required", code="invalid_request")
+        return 200, repository.save_address(profile, domain, payload, address_id)
+    if path == "/v1/storefront/orders" and method == "GET":
+        return 200, {"items": repository.customer_read(profile, domain, "orders", limit=int(query.get("limit", 25)))}
+    if path.startswith("/v1/storefront/orders/") and method == "GET":
+        order_id = UUID((event.get("pathParameters") or {}).get("order_id") or "")
+        return 200, repository.customer_read(profile, domain, "orders", item_id=order_id, limit=1)
+    raise HttpError(404, "Route not found", code="not_found")
+
+
 def lambda_handler(event: dict[str, Any], context: Any):
     from tenant_security.db import db_connection
 
@@ -100,7 +147,9 @@ def lambda_handler(event: dict[str, Any], context: Any):
     path = event.get("requestContext", {}).get("http", {}).get("path", "")
     public = path == "/v1/storefront/catalog"
     claim = path == "/v1/storefront/identity/claim"
+    registration = path == "/v1/storefront/identity/register"
     checkout = path == "/v1/storefront/checkout"
+    portal = path == "/v1/storefront/me" or path.startswith("/v1/storefront/me/") or path.startswith("/v1/storefront/orders")
     try:
         tenant = _header(event, "x-tenant-id")
         claims = None if public else _claims(event)
@@ -113,21 +162,29 @@ def lambda_handler(event: dict[str, Any], context: Any):
             operation = "digital_sales.ecommerce.public.read"
         elif claim:
             operation = "digital_sales.storefront.identity.claim"
+        elif registration:
+            operation = "digital_sales.storefront.identity.register"
         elif checkout:
             operation = "digital_sales.storefront.checkout"
+        elif portal:
+            operation = "digital_sales.storefront.customer.read" if method == "GET" else "digital_sales.storefront.customer.write"
         elif path.endswith("/invitations"):
             operation = "digital_sales.storefront.invitation.create"
         else:
             operation = "digital_sales.ecommerce.read" if method == "GET" else "digital_sales.ecommerce.configure"
         with db_connection(tenant_id=tenant, correlation_id=correlation_id, operation=operation) as connection:
-            if not public and not claim:
+            if not public and not claim and not registration:
                 auth = resolve_auth(event, connection, verified_claims=claims)
                 connection.execute("SELECT set_config('app.current_user_id',%s,true)", (str(auth.user_id),))
             repository = EcommerceRepository(connection)
             if claim:
                 status, body = _claim(event, repository, claims)
+            elif registration:
+                status, body = _register(event, repository, claims)
             elif checkout:
                 status, body = _checkout(event, repository, claims)
+            elif portal:
+                status, body = _customer_portal(event, repository, claims, path)
             else:
                 status, body = _request(event, repository, public=public)
         return api_response(status, body)
