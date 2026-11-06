@@ -1,5 +1,7 @@
 # Storefront Expo
 
+Seguimiento de recuperación: [checklist de Fase 9](../../docs/PHASE9_STOREFRONT_CHECKLIST.md).
+
 App universal Expo/React Native Web, pública, multi-tenant y configurable. La
 primera recuperación visual conserva la experiencia de TuMandadito para inicio,
 catálogo, producto, carrito y checkout, usando la paleta de MasterERP. Consume
