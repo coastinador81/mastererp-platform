@@ -1,3 +1,4 @@
+import SupplierWizardHeader from '../../../screens/parties/SupplierWizardHeader.jsx';
 import React,{useState} from 'react';
 export const purchaseKinds={
  'solicitudes-compra':{title:'Solicitudes de compra',singular:'solicitud',api:'solicitudes'},
@@ -10,10 +11,13 @@ export function purchasePayload(row){return Object.fromEntries(['proveedor_id','
 
 export default function PurchaseForm({kind,draft,setDraft,options,sources,onSource,moreSuppliers,moreSources,save,busy,cancel,editing}){
  const [loadingSource,setLoadingSource]=useState(false);
+ const [step,setStep]=useState(0);
+ const wizard=!editing&&kind.api==='ordenes';
  const update=(key,value)=>setDraft(d=>({...d,[key]:value}));
  const line=(index,key,value)=>setDraft(d=>({...d,lineas:d.lineas.map((l,i)=>i===index?{...l,[key]:value}:l)}));
- return <form className="supplier-form purchase-form" onSubmit={save}>
-  <section className="panel"><h2>Datos del borrador</h2><div className="supplier-fields">
+ return <form className={'supplier-form purchase-form'+(wizard?' supplier-create-wizard':'')} onSubmit={event=>{if(wizard&&step<2){event.preventDefault();setStep(value=>value+1);}else save(event);}}>
+  {wizard&&<SupplierWizardHeader step={step} variant="orden"/>}
+  {(!wizard||step===0)&&<section className="panel"><h2>Datos del borrador</h2><div className="supplier-fields">
    {kind.source&&<label>{kind.sourceLabel}<select aria-label={kind.sourceLabel} required disabled={editing||busy||loadingSource} value={draft.origen_id} onChange={async e=>{setLoadingSource(true);try{await onSource(e.target.value);}finally{setLoadingSource(false);}}}><option value="">Selecciona el documento</option>{sources.map(s=><option key={s.id} value={s.id}>{s.numero||s.id} · {s.proveedor} · {s.moneda} {s.total}</option>)}</select></label>}
    {kind.source&&moreSources&&<button type="button" className="secondary" disabled={busy} onClick={moreSources}>Cargar más documentos</button>}
    <label>Proveedor<select aria-label="Proveedor" required value={draft.proveedor_id} disabled={Boolean(kind.source)||busy} onChange={e=>update('proveedor_id',e.target.value)}><option value="">Selecciona un proveedor</option>{options.proveedores.map(s=><option key={s.id} value={s.id}>{s.codigo} · {s.nombre}</option>)}</select></label>
@@ -25,8 +29,8 @@ export default function PurchaseForm({kind,draft,setDraft,options,sources,onSour
    <label>Tipo de cambio a {options.moneda_base}<input required inputMode="decimal" pattern="[0-9]+([.][0-9]{1,12})?" value={draft.tipo_cambio} readOnly={draft.moneda===options.moneda_base} onChange={e=>update('tipo_cambio',e.target.value)}/></label>
    <label>Fecha del cambio<input type="date" required value={draft.cambio_fecha} onChange={e=>update('cambio_fecha',e.target.value)}/></label>
    <label>Fuente del cambio<input required maxLength={120} value={draft.cambio_fuente} onChange={e=>update('cambio_fuente',e.target.value)}/></label>
-  </div></section>
-  <section className="panel"><h2>Detalles</h2><p className="muted">Importes en {draft.moneda}. Usa punto decimal. El servidor calcula el total y valida la precisión de la moneda; no se calculan impuestos.</p>
+  </div></section>}
+  {(!wizard||step===1)&&<section className="panel"><h2>Detalles</h2><p className="muted">Importes en {draft.moneda}. Usa punto decimal. El servidor calcula el total y valida la precisión de la moneda; no se calculan impuestos.</p>
    {draft.lineas.map((l,i)=><fieldset key={i}><legend>Línea {i+1}</legend><div className="supplier-fields">
     <label>Descripción<input required maxLength={500} value={l.descripcion} onChange={e=>line(i,'descripcion',e.target.value)}/></label>
     <label>Cantidad<input required inputMode="decimal" pattern="[0-9]+([.][0-9]{1,6})?" value={l.cantidad} onChange={e=>line(i,'cantidad',e.target.value)}/></label>
@@ -34,8 +38,9 @@ export default function PurchaseForm({kind,draft,setDraft,options,sources,onSour
     <button type="button" className="secondary" disabled={draft.lineas.length===1||busy} onClick={()=>setDraft(d=>({...d,lineas:d.lineas.filter((_,j)=>j!==i)}))}>Quitar línea {i+1}</button>
    </div></fieldset>)}
    <button type="button" className="secondary" disabled={draft.lineas.length>=100||busy} onClick={()=>setDraft(d=>({...d,lineas:[...d.lineas,{descripcion:'',cantidad:'1',precio_unitario:'0'}]}))}>Añadir línea</button>
-  </section>
+  </section>}
+  {wizard&&step===2&&<section className="supplier-wizard-review panel" aria-label="Resumen de la orden"><h3>Resumen de la orden</h3><dl><dt>Solicitud de origen</dt><dd>{sources.find(source=>source.id===draft.origen_id)?.numero||draft.origen_id}</dd><dt>Proveedor</dt><dd>{options.proveedores.find(supplier=>supplier.id===draft.proveedor_id)?.nombre||'Sin proveedor'}</dd><dt>Referencia</dt><dd>{draft.numero||'Sin referencia'}</dd><dt>Fecha</dt><dd>{draft.fecha}</dd><dt>Moneda</dt><dd>{draft.moneda}</dd><dt>Líneas</dt><dd>{draft.lineas.length}</dd></dl><div className="table-scroll"><table><thead><tr><th>Descripción</th><th>Cantidad</th><th>Precio unitario</th></tr></thead><tbody>{draft.lineas.map((row,index)=><tr key={index}><td>{row.descripcion}</td><td>{row.cantidad}</td><td>{row.precio_unitario}</td></tr>)}</tbody></table></div><p>Los totales definitivos los calcula el servidor al guardar. Puedes volver atrás sin perder los datos.</p></section>}
   <p className="notice">Se guarda un borrador. No aprueba, emite, mueve inventario ni crea cuentas por pagar.</p>
-  <div className="actions"><button disabled={busy||loadingSource}>{busy?'Guardando…':'Guardar borrador'}</button><button type="button" className="secondary" disabled={busy} onClick={cancel}>Cancelar</button></div>
+  <div className={wizard?'actions supplier-wizard-actions':'actions'}>{wizard&&step>0&&<button type="button" className="secondary" disabled={busy||loadingSource} onClick={()=>setStep(value=>value-1)}>Anterior</button>}<button disabled={busy||loadingSource}>{busy?'Guardando…':wizard&&step<2?'Continuar':'Guardar borrador'}</button><button type="button" className="secondary" disabled={busy} onClick={cancel}>Cancelar</button></div>
  </form>;
 }

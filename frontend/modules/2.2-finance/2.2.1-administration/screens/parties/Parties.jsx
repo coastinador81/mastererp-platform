@@ -18,7 +18,7 @@ export default function Parties({workspace,capacity,path,navigate}) {
   const [code,setCode]=useState(''),[name,setName]=useState(''),[existing,setExisting]=useState(''),[busy,setBusy]=useState(false);
   const [supplier,setSupplier]=useState(emptySupplier);
   const [supplierStep,setSupplierStep]=useState(0);
-  const supplierWizard=create&&capacity==='proveedores';
+  const supplierWizard=create&&(capacity==='proveedores'||capacity==='clientes');
   const key=useRef(null), active=useRef(true), local=useRef(0);
   useEffect(()=>{active.current=true;return()=>{active.current=false;local.current++;};},[]);
   const endpoint=API+'/v1/administration/'+capacity;
@@ -69,15 +69,15 @@ export default function Parties({workspace,capacity,path,navigate}) {
     {error&&<div className="notice error" role="alert">{error} <button className="secondary" onClick={()=>setReload(x=>x+1)}>Recargar datos</button></div>}
     {saved&&<p role="status">{saved}</p>}
     {(create||edit)&&canWrite&&<form className={'supplier-form'+(supplierWizard?' supplier-create-wizard':'')+(capacity==='clientes'?' customer-form':'')} onSubmit={event=>{if(supplierWizard&&supplierStep<2){event.preventDefault();setSupplierStep(step=>step+1);}else send(event);}}>
-      {supplierWizard&&<SupplierWizardHeader step={supplierStep}/>}
+      {supplierWizard&&<SupplierWizardHeader step={supplierStep} variant={capacity==='clientes'?'cliente':'proveedor'}/>}
 
       {!existing&&(!supplierWizard||supplierStep===0)&&(supplierWizard||capacity==='clientes'?<div className="supplier-fields supplier-wizard-identity">{identityFields}</div>:identityFields)}
       {!existing&&<SupplierFields draft={supplier} onChange={setSupplier} role={capacity==='clientes'?'cliente':'proveedor'} step={supplierWizard?supplierStep:undefined}/>}
       {create&&(!supplierWizard||supplierStep===0)&&<details className="panel"><summary>Usar una ficha existente (opcional)</summary><p>Vincula su identificador para reutilizar la misma ficha, sin duplicarla.</p><label>Identificador de la ficha existente<input name="tercero_id" value={existing} onChange={e=>setExisting(e.target.value)} pattern="[0-9a-fA-F-]{36}" placeholder="Reutiliza el maestro sin duplicarlo"/></label></details>}
       {supplierWizard&&existing&&supplierStep>0&&<div className="panel"><p>Se vinculará la ficha existente. Sus datos se conservan; podrás consultarlos después de crear el vínculo.</p></div>}
-      {supplierWizard&&supplierStep===2&&<section className="panel supplier-wizard-review" aria-label="Resumen del proveedor"><h3>Antes de crear el proveedor</h3><dl><dt>{existing?'Ficha existente':'Proveedor'}</dt><dd>{existing||name}</dd>{!existing&&<><dt>Código interno</dt><dd>{code}</dd><dt>Contactos</dt><dd>{supplier.contacts.filter(contact=>Object.values(contact).some(value=>String(value).trim())).length} · {supplier.principal>=0?'Principal seleccionado':'Sin principal'}</dd></>}</dl><p>Puedes volver a los pasos anteriores para revisar los datos. No se guardará nada hasta pulsar «Crear proveedor».</p></section>}
+      {supplierWizard&&supplierStep===2&&<section className="panel supplier-wizard-review" aria-label="Resumen del proveedor"><h3>Antes de crear {capacity==='clientes'?'el cliente':'el proveedor'}</h3><dl><dt>{existing?'Ficha existente':capacity==='clientes'?'Cliente':'Proveedor'}</dt><dd>{existing||name}</dd>{!existing&&<><dt>Código interno</dt><dd>{code}</dd><dt>Contactos</dt><dd>{supplier.contacts.filter(contact=>Object.values(contact).some(value=>String(value).trim())).length} · {supplier.principal>=0?'Principal seleccionado':'Sin principal'}</dd></>}</dl><p>Puedes volver a los pasos anteriores para revisar los datos. No se guardará nada hasta confirmar la creación.</p></section>}
       {edit&&data&&<p>Versión {data.version}. Los cambios del maestro afectan a sus perfiles vinculados.</p>}
-      <div className={supplierWizard?'actions supplier-wizard-actions':'actions'}>{supplierWizard&&supplierStep>0&&<button type="button" className="secondary" disabled={busy} onClick={()=>setSupplierStep(step=>step-1)}>Anterior</button>}<button disabled={busy}>{busy?'Guardando…':supplierWizard?(supplierStep<2?'Continuar':'Crear proveedor'):'Guardar'}</button><button type="button" className="secondary" onClick={()=>navigate(id?base+'/'+id:base)}>Cancelar</button></div>
+      <div className={supplierWizard?'actions supplier-wizard-actions':'actions'}>{supplierWizard&&supplierStep>0&&<button type="button" className="secondary" disabled={busy} onClick={()=>setSupplierStep(step=>step-1)}>Anterior</button>}<button disabled={busy}>{busy?'Guardando…':supplierWizard?(supplierStep<2?'Continuar':capacity==='clientes'?'Crear cliente':'Crear proveedor'):'Guardar'}</button><button type="button" className="secondary" onClick={()=>navigate(id?base+'/'+id:base)}>Cancelar</button></div>
     </form>}
     {(create||edit)&&!canWrite&&<p className="notice" role="alert">No tienes permiso para modificar terceros.</p>}
     {id&&!edit&&data&&<div className="panel detail"><dl><dt>Código</dt><dd>{data.codigo}</dd><dt>Nombre</dt><dd>{data.nombre}</dd><dt>Roles en esta empresa</dt><dd>{data.roles.join(', ')}</dd><dt>Versión</dt><dd>{data.version}</dd></dl>

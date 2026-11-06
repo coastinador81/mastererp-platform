@@ -70,3 +70,9 @@
  .finance-app .supplier-create-wizard label{font-size:14px}
  .finance-app .supplier-create-wizard .supplier-fieldset legend{font-size:15px}
 }
+
+/* Shared creation pattern: legacy module CSS must not change these surfaces. */
+.finance-app .supplier-create-wizard .supplier-wizard-header{display:block;position:static;min-height:0;width:100%}
+.finance-app .supplier-create-wizard .panel{min-height:0;height:auto}
+.finance-app .supplier-create-wizard .supplier-wizard-actions{justify-content:flex-start}
+@container(max-width:600px){.finance-app .customer-view .customer-form.supplier-create-wizard .supplier-fields{grid-template-columns:minmax(0,1fr)}}

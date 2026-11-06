@@ -57,3 +57,7 @@ La API vigente solo admite company_id, limit y after: no se envían parámetros 
 Esta estrategia mantiene el alcance frontend y funciona con la API existente. Para catálogos grandes queda pendiente incorporar búsqueda en servidor en su módulo propietario; no es una búsqueda escalable de base de datos ni se afirma que haya sido probada en DEV por estas pruebas locales. No se ejecutan SQL, cambios de IAM ni recursos AWS.
 
 Validación de esta revisión: 26 comprobaciones locales de navegador y seis pruebas del lector/buscador. Incluyen coincidencias fuera de la primera página, nombre/código/fiscal, tildes, vacío, limpiar, paginación de coincidencias, cambio de empresa sin caché anterior, interacción de filas, teclado, nueva pestaña, contraste y móvil. Las ocho filas DEMO de las capturas son exclusivamente fixtures del arnés, nunca un fallback del frontend desplegable.
+
+## Creación guiada en Administración
+
+Desarrolladores e IA deben consultar el [patrón común de tres pasos](../../../docs/ADMINISTRATION_FORM_UX.md). Clientes/Proveedores: Datos básicos → Dirección y contactos → Condiciones. Órdenes: Datos de la orden → Detalles → Revisión. Reutilizar componentes y conservar contratos, permisos y datos. Candidato local; publicación pendiente.

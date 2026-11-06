@@ -22,3 +22,7 @@ Aplicar el [estilos compartidos de Finanzas](../../../src/finance.css) antes de 
 
 Esta sección orienta el diseño; no acredita implementación ni añade requisitos funcionales. Ver la guía para composición aplicable, pruebas y variantes justificadas.
 <!-- ux-ui-standard:end -->
+
+## Creación guiada en Administración
+
+Desarrolladores e IA deben consultar el [patrón común de tres pasos](../../../../../../docs/ADMINISTRATION_FORM_UX.md). Clientes/Proveedores: Datos básicos → Dirección y contactos → Condiciones. Órdenes: Datos de la orden → Detalles → Revisión. Reutilizar componentes y conservar contratos, permisos y datos. Candidato local; publicación pendiente.

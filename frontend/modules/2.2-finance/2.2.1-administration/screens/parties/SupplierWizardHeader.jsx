@@ -7,16 +7,25 @@ const steps=[
  ['Condiciones y revisión','Completa las preferencias de la empresa activa y revisa antes de crear.'],
 ];
 
-export default function SupplierWizardHeader({step}){
+export default function SupplierWizardHeader({step,variant='proveedor'}){
  const heading=useRef(null);
- const labels=['Datos básicos','Dirección y contactos','Condiciones'];
+ const labels=variant==='orden'?['Datos de la orden','Detalles','Revisión']:['Datos básicos','Dirección y contactos','Condiciones'];
+ const content=variant==='orden'?[
+  ['Datos de la orden','Selecciona la solicitud de origen y revisa los datos del borrador.'],
+  ['Detalles de la orden','Revisa las descripciones, cantidades y precios. El servidor valida los importes.'],
+  ['Revisar y guardar','Comprueba la información antes de guardar el borrador.'],
+ ]:variant==='cliente'?[
+  ['Identidad del cliente','Indica su código interno, nombre y datos fiscales. Solo código y nombre son obligatorios.'],
+  ['Dirección y contactos','Añade los datos administrativos disponibles. Los contactos y el principal son opcionales.'],
+  ['Condiciones y revisión','Completa las preferencias de la empresa activa y revisa antes de crear.'],
+ ]:steps;
  useEffect(()=>{heading.current?.focus({preventScroll:true});},[step]);
  return <header className="supplier-wizard-header">
-  <ol aria-label="Pasos para crear proveedor">{steps.map(([title],index)=><li key={title} aria-current={index===step?'step':undefined} aria-label={'Paso '+(index+1)+': '+title} className={index===step?'current':index<step?'complete':''}>
+  <ol aria-label={'Pasos para crear '+variant}>{content.map(([title],index)=><li key={title} aria-current={index===step?'step':undefined} aria-label={'Paso '+(index+1)+': '+title} className={index===step?'current':index<step?'complete':''}>
    <span className="supplier-wizard-number" aria-hidden="true">{index<step?'✓':index+1}</span><span>{labels[index]}</span>
   </li>)}</ol>
   <p className="supplier-wizard-progress" role="status">Paso {step+1} de 3</p>
-  <h2 ref={heading} tabIndex={-1}>{steps[step][0]}</h2>
-  <p>{steps[step][1]}</p>
+  <h2 ref={heading} tabIndex={-1}>{content[step][0]}</h2>
+  <p>{content[step][1]}</p>
  </header>;
 }

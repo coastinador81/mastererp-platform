@@ -37,3 +37,7 @@ Se conserva la ruta y responsabilidad funcional. La composición Finanzas → Ad
 ## Ubicación frontend objetivo
 
 Administración pertenece al frontend de Finanzas junto con Contabilidad, BI y capacidades asociadas. Sus pantallas deben presentarse dentro del espacio general de Uonify, con menú, identidad y contexto comunes. No tiene frontend, build desplegable o subdominio propio. Las rutas internas y enlaces directos se definirán con la navegación; no se impone una URL bajo un dominio financiero. El mecanismo de integración está pendiente y las APIs/datos no acreditan esta UI. Ver [contrato frontend común](../../../../docs/FRONTEND_ARCHITECTURE.md); el backend autoriza cada operación.
+
+## Creación guiada en Administración
+
+Desarrolladores e IA deben consultar el [patrón común de tres pasos](../../../../docs/ADMINISTRATION_FORM_UX.md). Clientes/Proveedores: Datos básicos → Dirección y contactos → Condiciones. Órdenes: Datos de la orden → Detalles → Revisión. Reutilizar componentes y conservar contratos, permisos y datos. Candidato local; publicación pendiente.
