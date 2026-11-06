@@ -10,6 +10,7 @@ const paths={
   order:<><path d="m12 3 9 5-9 5-9-5 9-5Zm-9 5v9l9 5 9-5V8m-9 5v9"/></>,
   invoice:<><path d="M7 7H3v14h12v-4M8 3h9l4 4v10H8V3Zm9 0v5h4M11 11h6m-6 3h6"/></>,
   search:<><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></>,
+  eye:<><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.5"/></>,
   plus:<path d="M12 4v16M4 12h16"/>,
 };
 export default function FinanceIcon({name,className=''}){
