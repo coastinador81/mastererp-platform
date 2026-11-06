@@ -1,6 +1,6 @@
 import authConfig from '../auth-config.json';
 import { authorizedIdentityFetch, completeLogin, login, logout, sessionExpiresAt } from '../../shared/auth/cognito.mjs';
-import { storefrontConfig, storefrontScope } from './config';
+import { assertStorefrontContext, storefrontConfig, storefrontScope } from './config';
 
 const invitationKey = () => `mastererp.storefront.invitation:${storefrontScope()}`;
 
@@ -10,6 +10,7 @@ export const signOut = () => logout(authConfig);
 
 export async function completeLoginIfNeeded() {
   if (typeof window === 'undefined') return false;
+  assertStorefrontContext();
   const invitation = new URL(window.location.href).searchParams.get('invite');
   if (invitation) {
     sessionStorage.setItem(invitationKey(), invitation);

@@ -3,6 +3,7 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { contentWidth, colors, spacing } from '../theme';
 import { StoreHeader } from './StoreHeader';
+import { BottomNav } from './BottomNav';
 
 export function Screen({ children, scroll = true }: PropsWithChildren<{ scroll?: boolean }>) {
   const content = <View style={styles.content}>{children}</View>;
@@ -10,6 +11,7 @@ export function Screen({ children, scroll = true }: PropsWithChildren<{ scroll?:
     <SafeAreaView style={styles.safe}>
       <StoreHeader />
       {scroll ? <ScrollView contentContainerStyle={styles.scroll}>{content}</ScrollView> : content}
+      <BottomNav />
     </SafeAreaView>
   );
 }

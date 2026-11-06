@@ -1,8 +1,9 @@
 import { authorizedIdentityFetch } from '../../shared/auth/cognito.mjs';
-import { storefrontConfig } from './config';
+import { assertStorefrontContext, storefrontConfig } from './config';
 import type { CartLine, StorefrontCatalog } from './types';
 
 export async function loadCatalog(): Promise<StorefrontCatalog> {
+  assertStorefrontContext();
   const url = `${storefrontConfig.api}/v1/storefront/catalog?domain=${encodeURIComponent(storefrontConfig.domain)}`;
   const response = await fetch(url, { headers: { 'X-Tenant-Id': storefrontConfig.tenant } });
   const body = await response.json();
@@ -11,6 +12,7 @@ export async function loadCatalog(): Promise<StorefrontCatalog> {
 }
 
 export async function submitCheckout(lines: CartLine[], address: string) {
+  assertStorefrontContext();
   const storageKey = `mastererp.storefront.checkout-key:${storefrontConfig.tenant}:${storefrontConfig.domain}`;
   let key = sessionStorage.getItem(storageKey);
   if (!key) {

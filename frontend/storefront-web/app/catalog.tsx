@@ -8,17 +8,18 @@ import { useStore } from '@/store/StoreProvider';
 import { colors, radii, spacing } from '@/theme';
 
 export default function CatalogPage() {
-  const params = useLocalSearchParams<{ category?: string }>();
+  const params = useLocalSearchParams<{ category?: string; q?: string; offers?: string }>();
   const { width } = useWindowDimensions();
   const { catalog } = useStore();
   const [category, setCategory] = useState(params.category || '');
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState(params.q || '');
   const products = useMemo(() => (catalog?.products || []).filter(product => {
     const matchesCategory = !category || product.category_ref === category;
     const term = query.trim().toLocaleLowerCase('es');
     const matchesQuery = !term || `${product.name} ${product.description || ''} ${product.brand_ref || ''}`.toLocaleLowerCase('es').includes(term);
-    return matchesCategory && matchesQuery;
-  }), [catalog?.products, category, query]);
+    const matchesOffers = params.offers !== '1' || product.price > 0;
+    return matchesCategory && matchesQuery && matchesOffers;
+  }), [catalog?.products, category, params.offers, query]);
   const cardWidth = width < 620 ? '100%' : width < 940 ? '47%' : '23%';
   return (
     <Screen>
