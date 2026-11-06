@@ -1,4 +1,5 @@
 import React from 'react';
+import './customerProfile.css';
 
 const labels={contado:'Contado',credito:'Crédito',por_acordar:'Por acordar',transferencia:'Transferencia bancaria',efectivo:'Efectivo',tarjeta:'Tarjeta',otro:'Otro'};
 const show=value=>value===undefined||value===null||value===''?'Sin especificar':String(value);

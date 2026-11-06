@@ -1,0 +1,19 @@
+/* Prevent legacy global module styles from imposing empty 420px panels here. */
+.finance-app .customer-view .panel{min-height:0;height:auto;min-width:0}
+.finance-app .customer-view .actions{justify-content:flex-start;gap:12px;flex-wrap:wrap}
+.finance-app .customer-overview{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;align-items:start}
+.finance-app .customer-overview>section:first-child,.finance-app .customer-overview>section:last-child{grid-column:1/-1}
+.finance-app .customer-overview h2{margin:0 0 12px;font-weight:500;font-size:18px;color:var(--finance-title)}
+.finance-app .customer-overview p{margin:0 0 14px;font-size:14px}
+.finance-app .customer-overview .detail dl{grid-template-columns:minmax(110px,.8fr) minmax(0,1fr);gap:10px 16px;margin:0}
+.finance-app .customer-view :is(dd,p){overflow-wrap:anywhere}
+.finance-app .customer-view .customer-form .supplier-fields{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 20px}
+.finance-app .customer-view .customer-form label{margin:0}
+.finance-app .customer-view .customer-form :is(input:not([type=radio]),select,textarea){width:100%;min-width:0}
+@media(max-width:1000px){.finance-app .customer-overview{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:640px){
+ .finance-app .customer-view .customer-form .supplier-fields{grid-template-columns:minmax(0,1fr)}
+ .finance-app .customer-view .customer-form :is(input:not([type=radio]),select,textarea){font-size:16px;min-height:44px}
+ .finance-app .customer-overview .detail dl{grid-template-columns:minmax(0,1fr);gap:6px}
+ .finance-app .customer-overview dd{margin-bottom:8px}
+}
