@@ -120,9 +120,13 @@ MasterERP. No autoriza copiar APIs legacy, secretos ni tokens al cliente.
 - [x] Prueba visual local de Inicio y Producto.
 - [ ] Añadir tests unitarios de resolución dominio → tenant y estado aislado.
 - [ ] Añadir E2E de Inicio, catálogo, producto, carrito, Cognito y checkout.
-- [ ] Inventariar hosting restaurado: la distribución histórica documentada ya
-  no existe en la cuenta MasterERP y el dominio responde desde CloudFront/S3.
-- [ ] Definir propiedad del bucket, distribución y rol OIDC antes de crear el
+- [x] Inventariar hosting restaurado: cuenta propietaria `941751053509`, bucket
+  versionado `tmi-dev-client`, distribución `E2PLU72V9YKM01` y dominio
+  `tienda-dev.tumandaito.com`.
+- [ ] Crear rol OIDC de publicación limitado al bucket y distribución antes del
   workflow `publish-storefront-dev.yml`.
-- [ ] Publicar DEV solo después de build, E2E, revisión visual y rollback.
-- [ ] Ejecutar smoke real y registrar evidencia antes de cerrar Fase 9.
+- [x] Publicar el primer corte DEV con backup recuperable del índice anterior.
+- [x] Ejecutar smoke real de índice, bundle y catálogo; registrar evidencia.
+- [ ] Completar revisión visual manual del build publicado en móvil y escritorio.
+- [ ] Retirar o desactivar la publicación legacy de `customer-app` al mismo
+  bucket para impedir que un push posterior revierta el cutover.

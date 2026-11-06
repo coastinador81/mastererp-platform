@@ -1,6 +1,7 @@
 # Storefront Expo
 
 Seguimiento de recuperación: [checklist de Fase 9](../../docs/PHASE9_STOREFRONT_CHECKLIST.md).
+Evidencia DEV: [publicación y rollback](../../docs/PHASE9_STOREFRONT_DEV_DEPLOYMENT.md).
 
 App universal Expo/React Native Web, pública, multi-tenant y configurable. La
 primera recuperación visual conserva la experiencia de TuMandadito para inicio,
