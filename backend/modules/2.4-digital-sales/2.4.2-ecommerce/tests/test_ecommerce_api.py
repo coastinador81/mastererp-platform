@@ -71,6 +71,25 @@ class EcommerceApiTest(unittest.TestCase):
             _checkout(event, Mock(), {})
 
     @patch("ecommerce_api.handler._verified_profile")
+    def test_checkout_accepts_tenant_bank_payment_reference(self, verify):
+        claims = {"iss": "issuer", "sub": "subject"}
+        verify.return_value = claims
+        repository = Mock()
+        repository.checkout.return_value = {"id": "order-1"}
+        event = {"headers": {"Idempotency-Key": "checkout-mobile"}, "body": (
+            '{"domain":"shop.example.invalid","items":[{"product_id":"p","quantity":1}],'
+            '"delivery":{"address":"QA"},"delivery_method":"realtime",'
+            '"payment_method":"mobile","payment_reference":"12345678"}')}
+        self.assertEqual(_checkout(event, repository, claims)[0], 201)
+
+    def test_checkout_rejects_bank_payment_without_reference(self):
+        event = {"headers": {"Idempotency-Key": "checkout-mobile"}, "body": (
+            '{"domain":"shop.example.invalid","items":[{}],"delivery":{"address":"QA"},'
+            '"delivery_method":"realtime","payment_method":"mobile"}')}
+        with self.assertRaises(HttpError):
+            _checkout(event, Mock(), {})
+
+    @patch("ecommerce_api.handler._verified_profile")
     def test_customer_orders_are_derived_from_identity_and_domain(self, verify):
         claims = {"iss": "issuer", "sub": "subject"}
         verify.return_value = claims

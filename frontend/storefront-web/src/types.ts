@@ -15,11 +15,30 @@ export type StorefrontCatalog = {
   store: {
     name: string;
     modules?: string[];
-    configuration?: { headline?: string };
+    configuration?: StoreConfiguration;
     branding?: { primaryColor?: string };
   };
   categories: Category[];
   products: Product[];
+};
+
+export type PaymentMethod = 'cash' | 'mobile' | 'transfer';
+export type PaymentRecipient = {
+  document: string;
+  phone?: string;
+  bankCode: string;
+  bankName?: string;
+  accountNumber?: string;
+  accountHolder?: string;
+};
+export type StoreConfiguration = {
+  headline?: string;
+  exchangeRate?: { rate?: number };
+  payments?: Record<string, boolean>;
+  paymentDetails?: {
+    mobilePayment?: PaymentRecipient | null;
+    bankTransfer?: PaymentRecipient | null;
+  };
 };
 
 export type CartLine = { product: Product; quantity: number };

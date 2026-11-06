@@ -98,6 +98,11 @@ def _checkout(event, repository, claims):
             or not 1 <= len(key) <= 128 or not isinstance(payload["items"], list)
             or not payload["items"] or not isinstance(payload["delivery"], dict)):
         raise HttpError(400, "Checkout fields and Idempotency-Key are required", code="invalid_request")
+    method = payload.get("payment_method")
+    reference = payload.get("payment_reference")
+    if method not in ("cash", "mobile", "transfer") or (method != "cash" and (
+            not isinstance(reference, str) or not reference.isdigit() or not 4 <= len(reference) <= 40)):
+        raise HttpError(400, "Valid payment method and reference are required", code="invalid_request")
     return 201, repository.checkout(_verified_profile(claims), payload, key)
 
 

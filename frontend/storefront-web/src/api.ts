@@ -1,6 +1,6 @@
 import { authorizedIdentityFetch } from '../../shared/auth/cognito.mjs';
 import { assertStorefrontContext, storefrontConfig } from './config';
-import type { CartLine, CustomerAddress, CustomerOrder, CustomerProfile, StorefrontCatalog } from './types';
+import type { CartLine, CustomerAddress, CustomerOrder, CustomerProfile, PaymentMethod, StorefrontCatalog } from './types';
 
 const portalUrl = (path: string) => `${storefrontConfig.api}${path}?domain=${encodeURIComponent(storefrontConfig.domain)}`;
 const portalOptions = (options: RequestInit = {}) => ({ ...options, headers: { 'X-Tenant-Id': storefrontConfig.tenant, ...options.headers } });
@@ -21,7 +21,7 @@ export const saveAddress = (address: Omit<CustomerAddress, 'id' | 'version'>) =>
 export const loadOrders = async () => (await authorizedIdentityFetch(portalUrl('/v1/storefront/orders'), portalOptions()) as { items: CustomerOrder[] }).items;
 export const loadOrder = (id: string) => authorizedIdentityFetch(portalUrl(`/v1/storefront/orders/${encodeURIComponent(id)}`), portalOptions()) as Promise<CustomerOrder>;
 
-export async function submitCheckout(lines: CartLine[], address: string | CustomerAddress) {
+export async function submitCheckout(lines: CartLine[], address: string | CustomerAddress, paymentMethod: PaymentMethod, paymentReference?: string) {
   assertStorefrontContext();
   const storageKey = `mastererp.storefront.checkout-key:${storefrontConfig.tenant}:${storefrontConfig.domain}`;
   let key = sessionStorage.getItem(storageKey);
@@ -36,7 +36,8 @@ export async function submitCheckout(lines: CartLine[], address: string | Custom
       reference: address.reference, latitude: address.latitude, longitude: address.longitude,
     },
     delivery_method: 'realtime',
-    payment_method: 'cash',
+    payment_method: paymentMethod,
+    payment_reference: paymentReference || undefined,
   };
   window.dispatchEvent(new CustomEvent('mastererp:checkout', { detail }));
   const result = await authorizedIdentityFetch(`${storefrontConfig.api}/v1/storefront/checkout`, {

@@ -40,7 +40,7 @@ class EcommerceRepository:
             "SELECT ventas_digitales.checkout_crear(%s,%s,%s,%s,%s,%s,%s,%s) value",
             (claims["iss"], claims["sub"], payload["domain"], payload["items"],
              payload["delivery"], payload["delivery_method"],
-             payload["payment_method"], idempotency_key),
+             {"method": payload["payment_method"], "reference": payload.get("payment_reference")}, idempotency_key),
         ).fetchone()["value"]
 
     def customer_read(self, claims, domain, section, item_id=None, limit=25):
