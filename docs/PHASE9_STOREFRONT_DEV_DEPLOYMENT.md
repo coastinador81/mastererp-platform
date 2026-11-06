@@ -46,10 +46,11 @@ del propietario continúa siendo puerta de aprobación.
 
 ## Riesgo pendiente de cutover
 
-El workflow legacy `tumandaito-frontends/.github/workflows/publish-dev.yml`
-publica todavía `frontends/customer-app/dist` al mismo bucket ante cambios en
-la rama `dev`. Debe retirarse o redirigirse explícitamente cuando se apruebe el
-cutover de Fase 9; de lo contrario puede sobrescribir este build.
+El publicador legacy fue retirado de
+`tumandaito-frontends/.github/workflows/publish-dev.yml` en el commit `5861a87`.
+También se desactivó el job manual equivalente de Infrastructure en `cf9bfed`.
+Admin y Landing conservan sus publicaciones; `customer-app` ya no puede
+sobrescribir automáticamente `tmi-dev-client`.
 
 La automatización nueva debe usar un rol OIDC de permisos mínimos en la cuenta
 propietaria. No se copiarán access keys legacy al repositorio MasterERP.

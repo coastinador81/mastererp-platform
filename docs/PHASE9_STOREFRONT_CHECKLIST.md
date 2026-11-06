@@ -128,5 +128,6 @@ MasterERP. No autoriza copiar APIs legacy, secretos ni tokens al cliente.
 - [x] Publicar el primer corte DEV con backup recuperable del índice anterior.
 - [x] Ejecutar smoke real de índice, bundle y catálogo; registrar evidencia.
 - [ ] Completar revisión visual manual del build publicado en móvil y escritorio.
-- [ ] Retirar o desactivar la publicación legacy de `customer-app` al mismo
-  bucket para impedir que un push posterior revierta el cutover.
+- [x] Retirar la publicación legacy de `customer-app` en
+  `tumandaito-frontends` y desactivar el job manual equivalente en
+  `tumandaito-infrastructure`, sin afectar Admin ni Landing.
