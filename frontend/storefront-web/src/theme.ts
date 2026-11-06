@@ -1,7 +1,7 @@
 export const colors = {
-  primary: '#0d9b8a',
-  primaryDark: '#0b8576',
-  primarySoft: '#e8f8f5',
+  primary: '#096bdc',
+  primaryDark: '#0758b3',
+  primarySoft: '#eff6ff',
   accent: '#ffcf5a',
   ink: '#0f172a',
   text: '#334155',
@@ -10,7 +10,7 @@ export const colors = {
   canvas: '#f4f6f9',
   surface: '#ffffff',
   danger: '#b91c1c',
-  success: '#0b8576',
+  success: '#0f6b45',
   offer: '#e11d48',
   navy: '#0b1f33',
 } as const;

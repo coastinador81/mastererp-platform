@@ -2,6 +2,7 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StoreProvider } from '@/store/StoreProvider';
+import '../src/storefront-theme.css';
 
 export default function RootLayout() {
   return (

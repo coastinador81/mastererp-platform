@@ -27,10 +27,10 @@ export function ShoppingAssistant() {
 }
 
 const styles = StyleSheet.create({
-  root: { marginTop: spacing.md }, userMessage: { flexDirection: 'row', alignItems: 'center', gap: 13, padding: 15, borderWidth: 1, borderColor: '#0d9b8a2e', borderRadius: radii.lg, backgroundColor: '#e2f6f2' },
-  userCopy: { flex: 1, color: colors.ink, fontSize: 14, lineHeight: 20 }, userAvatar: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center', borderRadius: 20, backgroundColor: '#c8efe8' },
+  root: { marginTop: spacing.md }, userMessage: { flexDirection: 'row', alignItems: 'center', gap: 13, padding: 15, borderWidth: 1, borderColor: '#096bdc2e', borderRadius: radii.lg, backgroundColor: colors.primarySoft },
+  userCopy: { flex: 1, color: colors.ink, fontSize: 14, lineHeight: 20 }, userAvatar: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center', borderRadius: 20, backgroundColor: '#dbeafe' },
   assistantMessage: { flexDirection: 'row', gap: 14, marginTop: 12, padding: spacing.md, borderWidth: 1, borderColor: colors.line, borderRadius: radii.lg, backgroundColor: colors.surface },
   assistantAvatar: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center', borderRadius: 22, backgroundColor: colors.primarySoft }, assistantBody: { flex: 1, minWidth: 0 }, assistantCopy: { marginBottom: 14, color: colors.ink, fontSize: 14 }, strong: { fontWeight: '900' },
-  suggestions: { gap: 8 }, chip: { minHeight: 38, paddingHorizontal: 17, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: '#0d9b8a33', borderRadius: radii.pill, backgroundColor: colors.primarySoft }, chipText: { color: colors.primaryDark, fontSize: 12, fontWeight: '800' },
+  suggestions: { gap: 8 }, chip: { minHeight: 38, paddingHorizontal: 17, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: '#096bdc33', borderRadius: radii.pill, backgroundColor: colors.primarySoft }, chipText: { color: colors.primaryDark, fontSize: 12, fontWeight: '800' },
   composer: { flexDirection: 'row', alignItems: 'center', gap: 9, marginTop: 12, padding: 8, borderRadius: radii.lg, backgroundColor: colors.surface }, add: { width: 42, height: 42, alignItems: 'center', justifyContent: 'center', borderRadius: 21, backgroundColor: colors.canvas }, field: { flex: 1, minWidth: 0, height: 44, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 14, borderWidth: 1, borderColor: colors.line, borderRadius: 22, backgroundColor: '#fbfcfd' }, input: { flex: 1, color: colors.ink, outlineStyle: 'none' } as never, send: { width: 42, height: 42, alignItems: 'center', justifyContent: 'center', borderRadius: 21, backgroundColor: colors.primary },
 });
