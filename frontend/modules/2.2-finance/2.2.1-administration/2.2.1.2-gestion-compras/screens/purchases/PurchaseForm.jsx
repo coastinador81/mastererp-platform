@@ -1,7 +1,7 @@
 import SupplierWizardHeader from '../../../screens/parties/SupplierWizardHeader.jsx';
 import React,{useState} from 'react';
 export const purchaseKinds={
- 'solicitudes-compra':{title:'Solicitudes de compra',singular:'solicitud',api:'solicitudes'},
+ 'solicitudes-compra':{title:'Compras',singular:'compra',api:'solicitudes'},
  'ordenes-compra':{title:'Órdenes de compra',singular:'orden',api:'ordenes',source:'solicitudes',sourceLabel:'Solicitud de origen'},
  'facturas-proveedores':{title:'Facturas de proveedores',singular:'factura',api:'facturas',source:'ordenes',sourceLabel:'Orden de origen'},
 };
