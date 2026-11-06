@@ -1,0 +1,8 @@
+.ecommerce-app .environment {margin:0 0 var(--finance-space-5);padding:var(--finance-space-4);border:1px solid var(--finance-border);border-radius:var(--finance-radius);background:var(--finance-selected);color:var(--finance-text);font-size:var(--finance-font-body)}
+.ecommerce-app .finance-navigation,.ecommerce-app .administration-nav {width:100%}
+.ecommerce-app .administration-nav ul {margin:0;padding:0;list-style:none}
+.ecommerce-app .administration-nav-children {padding-top:var(--finance-space-2)}
+.ecommerce-app .administration-nav a {display:flex;align-items:center;gap:var(--finance-space-3);padding:var(--finance-space-3);text-decoration:none}
+.ecommerce-app .ecommerce-welcome {max-width:680px;padding:56px 0}
+.ecommerce-app .ecommerce-welcome h1 {font-size:clamp(36px,6vw,56px);letter-spacing:-.04em;line-height:1.08}
+.ecommerce-app .ecommerce-welcome p {font-size:16px;line-height:1.6}

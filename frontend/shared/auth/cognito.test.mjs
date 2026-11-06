@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {pkceChallenge, authorizationRequest, completeLogin, clearSession, loadSpaces} from './cognito.mjs';
+import {pkceChallenge, authorizationRequest, completeLogin, restoreSession, clearSession, loadSpaces} from './cognito.mjs';
 
 const config = {clientId:'test-client',loginBaseUrl:'https://identity.invalid',
   callbackUrl:'https://app-dev.uonify.com/auth/callback',logoutUrl:'https://app-dev.uonify.com/',
@@ -31,7 +31,7 @@ test('callback validates state, consumes transaction, removes URL; tokens stay i
     calls++;
     assert.equal(options.credentials,'omit');
     assert.equal(options.body.get('code_verifier'),'test-verifier');
-    return {ok:true,json:async()=>({token_type:'Bearer',access_token:'test-only-token',id_token:'test-only-id-token',expires_in:900})};
+    return {ok:true,json:async()=>({token_type:'Bearer',access_token:'test-only-token',id_token:'test-only-id-token',refresh_token:'test-refresh',expires_in:900})};
   };
   const tx={state:'expected',verifier:'test-verifier',createdAt:Date.now(),
     clientId:config.clientId,callbackUrl:config.callbackUrl};
@@ -43,7 +43,8 @@ test('callback validates state, consumes transaction, removes URL; tokens stay i
   await completeLogin(config,config.callbackUrl+'?code=test-code&state=expected');
   assert.equal(calls,1);
   assert.equal(cleaned,true);
-  assert.deepEqual([...store.entries()],[['mastererp.dev.returning','true']]);
+  assert.equal(store.get('mastererp.dev.returning'),'true');
+  assert.match(store.get('mastererp.dev.refresh'),/test-refresh/);
   await assert.rejects(completeLogin(config,config.callbackUrl+'?code=replay&state=expected'));
   assert.equal(calls,1);
   clearSession();
@@ -56,7 +57,7 @@ test('space discovery uses bearer token and server list; failures never become m
   globalThis.window={history:{replaceState:()=>{}}};
   store.set('mastererp.dev.pkce',JSON.stringify({state:'spaces-state',verifier:'test-verifier',
     createdAt:Date.now(),clientId:config.clientId,callbackUrl:config.callbackUrl}));
-  globalThis.fetch=async()=>({ok:true,json:async()=>({token_type:'Bearer',access_token:'test-only-token',id_token:'test-only-id-token',expires_in:900})});
+  globalThis.fetch=async()=>({ok:true,json:async()=>({token_type:'Bearer',access_token:'test-only-token',id_token:'test-only-id-token',refresh_token:'test-refresh',expires_in:900})});
   await completeLogin(config,config.callbackUrl+'?code=test-code&state=spaces-state');
   let spaces=[];
   globalThis.fetch=async(url,options)=>{
@@ -71,4 +72,23 @@ test('space discovery uses bearer token and server list; failures never become m
   globalThis.fetch=async()=>({ok:false,status:404});
   await assert.rejects(loadSpaces(config),/no está disponible/);
   clearSession();
+});
+
+test('reload restores tokens with Cognito refresh and logout removes persistence', async () => {
+  const store=new Map([['mastererp.dev.refresh',JSON.stringify({refreshToken:'saved-refresh',clientId:config.clientId,callbackUrl:config.callbackUrl,createdAt:Date.now()})]]);
+  globalThis.sessionStorage={getItem:k=>store.get(k)??null,setItem:(k,v)=>store.set(k,v),removeItem:k=>store.delete(k)};
+  globalThis.fetch=async(url,options)=>{
+    assert.equal(new URL(url).pathname,'/oauth2/token');
+    assert.equal(options.body.get('grant_type'),'refresh_token');
+    assert.equal(options.body.get('refresh_token'),'saved-refresh');
+    return {ok:true,json:async()=>({token_type:'Bearer',access_token:'restored-access',id_token:'restored-id',expires_in:900})};
+  };
+  assert.equal(await restoreSession(config),true);
+  globalThis.fetch=async(url,options)=>{
+    assert.equal(options.headers.Authorization,'Bearer restored-access');
+    return {ok:true,json:async()=>({spaces:[{id:'tenant',name:'Tenant'}]})};
+  };
+  assert.equal((await loadSpaces(config))[0].id,'tenant');
+  clearSession();
+  assert.equal(store.has('mastererp.dev.refresh'),false);
 });

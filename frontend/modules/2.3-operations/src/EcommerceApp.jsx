@@ -1,0 +1,55 @@
+import React, {useEffect, useMemo, useState} from 'react';
+import {config, useWorkspace} from '../../../app-shell/src/session.jsx';
+import Orders from '../2.3.1-orders/src/Orders.jsx';
+import Preparation from '../2.3.2-preparation/src/Preparation.jsx';
+import Routes from '../2.3.3-routes/src/Routes.jsx';
+import Nodes from '../2.3.4-nodes/src/Nodes.jsx';
+import Products from '../../2.1-catalog/2.1.1-products/src/Products.jsx';
+import Categories from '../../2.1-catalog/2.1.2-categories/src/Categories.jsx';
+import Attributes from '../../2.1-catalog/2.1.3-attributes/src/Attributes.jsx';
+import Brands from '../../2.1-catalog/2.1.4-brands/src/Brands.jsx';
+import Suppliers from '../../2.1-catalog/2.1.5-suppliers/src/Suppliers.jsx';
+import Inventory from '../../2.1-catalog/2.1.6-inventory/src/Inventory.jsx';
+import OperationsNavigation from './OperationsNavigation.jsx';
+import EcommerceSummary from './EcommerceSummary.jsx';
+import {canOpenOperationsRoute, operationsModule} from './access.mjs';
+
+const routes = new Set(['summary','orders','preparation','routes','nodes','products','categories','attributes','brands','suppliers','inventory']);
+const currentRoute = () => {
+  const value = window.location.hash.replace(/^#\/?/, '').split(/[/?]/)[0];
+  return routes.has(value) ? value : 'summary';
+};
+
+export default function EcommerceApp() {
+  const workspace = useWorkspace();
+  const [route, setRoute] = useState(currentRoute), [menu, setMenu] = useState(false);
+  useEffect(() => {const change = () => {setRoute(currentRoute()); setMenu(false);}; window.addEventListener('hashchange', change); return () => window.removeEventListener('hashchange', change);}, []);
+  const permissions = workspace.context?.permissions || [];
+  const enabled = workspace.context?.modules.some(module=>[operationsModule,'erp.catalog'].includes(module));
+  const runtime = useMemo(() => ({api: config.adminApiUrl, tenant: workspace.tenant, company: workspace.company, permissions, request: workspace.request}), [workspace.tenant, workspace.company, permissions, workspace.request]);
+  const navigate = value => {window.location.hash = `/${value}`;};
+  const allowed = value => canOpenOperationsRoute(workspace.context, value);
+  let content = null;
+  if (!workspace.signedIn) content = <section className="ecommerce-welcome"><p className="eyebrow">MASTERERP · E-COMMERCE</p><h1>Controla tus pedidos y operaciones.</h1><p>Accede con Cognito para consultar únicamente las empresas y datos autorizados para tu tenant.</p><button disabled={workspace.authenticating} onClick={workspace.startLogin}>{workspace.authenticating ? 'Redirigiendo…' : 'Acceder a E-commerce'}</button></section>;
+  else if (workspace.loading) content = <p role="status">Validando espacio y permisos…</p>;
+  else if (!workspace.tenant) content = <div className="notice">Selecciona un espacio para continuar.</div>;
+  else if (!workspace.company) content = <div className="notice">Selecciona una empresa para consultar sus operaciones.</div>;
+  else if (!enabled) content = <div className="notice error">E-commerce no está habilitado para este espacio.</div>;
+  else if (route === 'summary' && allowed('summary')) content = <EcommerceSummary context={workspace.context} navigate={navigate}/>;
+  else if (route === 'orders' && allowed('orders')) content = <Orders runtime={runtime}/>;
+  else if (route === 'preparation' && allowed('preparation')) content = <Preparation runtime={runtime}/>;
+  else if (route === 'routes' && allowed('routes')) content = <Routes runtime={runtime}/>;
+  else if (route === 'nodes' && allowed('nodes')) content = <Nodes runtime={runtime}/>;
+  else if (route === 'products' && allowed('products')) content = <Products runtime={runtime}/>;
+  else if (route === 'categories' && allowed('categories')) content = <Categories runtime={runtime}/>;
+  else if (route === 'attributes' && allowed('attributes')) content = <Attributes runtime={runtime}/>;
+  else if (route === 'brands' && allowed('brands')) content = <Brands runtime={runtime}/>;
+  else if (route === 'suppliers' && allowed('suppliers')) content = <Suppliers runtime={runtime}/>;
+  else if (route === 'inventory' && allowed('inventory')) content = <Inventory runtime={runtime}/>;
+  else content = <div className="notice error">No tienes permiso para consultar esta capacidad.</div>;
+  return <div className="integrated-app"><a className="skip-link" href="#content">Saltar al contenido</a>
+    <header className="integrated-header"><button className="menu-toggle secondary" aria-label="Abrir menú" aria-expanded={menu} onClick={() => setMenu(!menu)}>☰</button><a className="brand" href="#/summary">E-commerce<span>MasterERP · Desarrollo</span></a>
+      <div className="context-controls"><button className="secondary" disabled={workspace.authenticating} onClick={workspace.signedIn ? workspace.signOut : workspace.startLogin}>{workspace.signedIn ? 'Salir' : workspace.authenticating ? 'Redirigiendo…' : 'Acceder'}</button></div>
+    </header><div className="integrated-layout"><aside className={`integrated-nav ${menu ? 'is-open' : ''}`}><OperationsNavigation permissions={permissions} route={route} navigate={navigate}/></aside><main id="content" className="integrated-content" tabIndex={-1}><p className="environment">E-commerce · Entorno de desarrollo · Operaciones</p>{workspace.error && <div className="notice error" role="alert">{workspace.error}</div>}{content}</main></div>
+  </div>;
+}

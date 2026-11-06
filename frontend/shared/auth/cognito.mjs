@@ -1,6 +1,8 @@
 // Access tokens live only in memory. PKCE transaction data is one-use session storage.
 const transactionKey = 'mastererp.dev.pkce';
+const refreshKey = 'mastererp.dev.refresh';
 let session = null;
+let refreshing = null;
 
 function base64url(bytes) {
   return btoa(String.fromCharCode(...bytes)).replaceAll('+', '-').replaceAll('/', '_').replace(/=+$/, '');
@@ -56,19 +58,38 @@ export async function completeLogin(config, href = window.location.href) {
       redirect_uri: config.callbackUrl, code, code_verifier: transaction.verifier})});
   if (!result.ok) throw new Error('No se pudo completar el acceso.');
   const body = await result.json();
-  if (body.token_type !== 'Bearer' || typeof body.access_token !== 'string' || typeof body.id_token !== 'string' ||
+  if (body.token_type !== 'Bearer' || typeof body.access_token !== 'string' || typeof body.id_token !== 'string' || typeof body.refresh_token !== 'string' ||
       !Number.isFinite(body.expires_in) || body.expires_in <= 0 || body.expires_in > 3600) {
     throw new Error('Respuesta de acceso no válida.');
   }
   session = {accessToken: body.access_token, idToken: body.id_token,
     expiresAt: Date.now() + body.expires_in * 1000};
+  sessionStorage.setItem(refreshKey, JSON.stringify({refreshToken:body.refresh_token,
+    clientId:config.clientId,callbackUrl:config.callbackUrl,createdAt:Date.now()}));
   if (transaction.returnHash?.startsWith('#/')) window.history.replaceState(null, '', '/' + transaction.returnHash);
   sessionStorage.setItem('mastererp.dev.returning', 'true');
+}
+
+export async function restoreSession(config) {
+  let saved=null;try{saved=JSON.parse(sessionStorage.getItem(refreshKey)||'null');}catch{}
+  if(!saved || typeof saved.refreshToken!=='string' || saved.clientId!==config.clientId || saved.callbackUrl!==config.callbackUrl){clearSession();return false;}
+  if(refreshing)return refreshing;
+  refreshing=(async()=>{
+    const result=await fetch(new URL('/oauth2/token',config.loginBaseUrl),{method:'POST',credentials:'omit',cache:'no-store',
+      headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({grant_type:'refresh_token',client_id:config.clientId,refresh_token:saved.refreshToken})});
+    if(!result.ok){clearSession();return false;}
+    const body=await result.json();
+    if(body.token_type!=='Bearer'||typeof body.access_token!=='string'||typeof body.id_token!=='string'||!Number.isFinite(body.expires_in)||body.expires_in<=0||body.expires_in>3600){clearSession();return false;}
+    session={accessToken:body.access_token,idToken:body.id_token,expiresAt:Date.now()+body.expires_in*1000};
+    return true;
+  })().finally(()=>{refreshing=null;});
+  return refreshing;
 }
 
 export function clearSession() {
   session = null;
   sessionStorage.removeItem(transactionKey);
+  sessionStorage.removeItem(refreshKey);
   sessionStorage.removeItem('mastererp.dev.returning');
   sessionStorage.removeItem('mastererp.dev.selection');
 }
