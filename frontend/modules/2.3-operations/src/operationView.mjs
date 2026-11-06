@@ -6,3 +6,10 @@ const labels={
 
 export const readableStatus=value=>labels[value]||'Pendiente';
 export const shortReference=(value,prefix='')=>`${prefix}${String(value||'').replaceAll('-','').slice(-6).toUpperCase()||'—'}`;
+export {
+  closeDetail,
+  detailFromHash,
+  detailHref,
+  listHref,
+  openDetail,
+} from '../../../app-shell/src/detailRoutes.mjs';

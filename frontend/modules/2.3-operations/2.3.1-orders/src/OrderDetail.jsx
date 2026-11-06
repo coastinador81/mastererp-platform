@@ -1,9 +1,8 @@
 import React from 'react';
 import { FLOW, NEXT, STATUS, dateTime, money, paymentMethodLabel, paymentStatusLabel, statusLabel } from './orderView.js';
-import {shortReference} from '../../src/operationView.mjs';
 
 const fieldLabels={name:'Nombre',email:'Correo',phone:'Teléfono',document:'Documento',company:'Empresa',recipient:'Recibe',address:'Dirección',address_line_1:'Dirección',address_line_2:'Complemento',city:'Ciudad',state:'Estado',postal_code:'Código postal',country:'País',reference:'Referencia',transaction_id:'Transacción',bank:'Banco'};
-function SnapshotFields({value,exclude=[]}){const fields=Object.entries(value||{}).filter(([key,item])=>!exclude.includes(key)&&item!=null&&item!==''&&typeof item!=='object');return fields.length?<dl className="snapshot-fields">{fields.map(([key,item])=><div key={key}><dt>{fieldLabels[key]||key.replaceAll('_',' ')}</dt><dd>{String(item)}</dd></div>)}</dl>:<p>Sin información adicional registrada.</p>}
+function SnapshotFields({value,exclude=[]}){const fields=Object.entries(value||{}).filter(([key,item])=>!exclude.includes(key)&&!/(^id$|_id$|uuid|customer.?id)/i.test(key)&&item!=null&&item!==''&&typeof item!=='object'&&!/^[0-9a-f]{8}-[0-9a-f-]{27}$/i.test(String(item)));return fields.length?<dl className="snapshot-fields">{fields.map(([key,item])=><div key={key}><dt>{fieldLabels[key]||key.replaceAll('_',' ')}</dt><dd>{String(item)}</dd></div>)}</dl>:<p>Sin información adicional registrada.</p>}
 
 function Progress({ status }) {
   const current = FLOW.indexOf(status);
@@ -25,7 +24,7 @@ export default function OrderDetail({ order, writable, transition, close }) {
       <section><small>COMPRA</small><h3>{order.items.length} {order.items.length === 1 ? 'producto' : 'productos'}</h3><p>{order.items.reduce((sum,item)=>sum+Number(item.quantity),0)} unidades en total</p></section>
     </div>
     <section className="products-detail"><div className="section-heading"><h3>Productos</h3><span>{order.items.reduce((sum, item) => sum + Number(item.quantity), 0)} unidades</span></div>
-      <div className="table-scroll"><table className="commerce-table detail-products"><thead><tr><th>Producto</th><th>Referencia</th><th>Precio unitario</th><th>Cantidad</th><th>Total</th></tr></thead><tbody>{order.items.map((item,index)=><tr key={item.id||item.position||index}><td><strong>{item.product_name||'Producto sin nombre'}</strong></td><td>{item.product_id?shortReference(item.product_id):'—'}</td><td>{money(item.unit_price,order.currency)}</td><td>{item.quantity}</td><td><strong>{money(item.subtotal,order.currency)}</strong></td></tr>)}</tbody></table></div>
+      <div className="table-scroll"><table className="commerce-table detail-products"><thead><tr><th>Producto</th><th>Referencia</th><th>Precio unitario</th><th>Cantidad</th><th>Total</th></tr></thead><tbody>{order.items.map((item,index)=><tr key={item.id||item.position||index}><td><strong>{item.product_name||'Producto sin nombre'}</strong></td><td>{item.product_code||'—'}</td><td>{money(item.unit_price,order.currency)}</td><td>{item.quantity}</td><td><strong>{money(item.subtotal,order.currency)}</strong></td></tr>)}</tbody></table></div>
       <dl className="totals"><div><dt>Subtotal</dt><dd>{money(order.subtotal, order.currency)}</dd></div><div><dt>Entrega</dt><dd>{money(order.delivery_fee, order.currency)}</dd></div><div className="grand-total"><dt>Total</dt><dd>{money(order.total, order.currency)}</dd></div></dl>
     </section>
     <div className="actions">{writable ? (NEXT[order.status] || []).map(value => <button key={value} className={value === 'CANCELLED' ? 'danger' : 'primary'} onClick={() => transition(value)}>{value === 'CANCELLED' ? 'Cancelar pedido' : `Marcar: ${statusLabel(value)}`}</button>) : <span>Acceso de solo lectura</span>}{writable && !(NEXT[order.status] || []).length ? <span>Ciclo finalizado</span> : null}</div>

@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import "./style.css";
-import { readableStatus } from "../../src/operationView.mjs";
+import { DetailBackLink, DetailLink } from "../../../../app-shell/src/CommerceDetailLinks.jsx";
+import { detailFromHash, readableStatus } from "../../src/operationView.mjs";
 const call = (r, p, o = {}) =>
   r.request(r.api + p, {
     ...o,
@@ -20,8 +21,9 @@ export default function Nodes({ runtime, onSelect }) {
       const rows = (
         await call(runtime, `/v1/companies/${runtime.company}/nodes`)
       ).items;
+      const requested = detailFromHash("nodes");
       setItems(rows);
-      setSelected((old) => rows.find((x) => x.id === old?.id) || null);
+      setSelected(requested ? rows.find((x) => x.id === requested) || null : null);
       setError("");
     } catch (e) {
       setError(e.message);
@@ -55,7 +57,7 @@ export default function Nodes({ runtime, onSelect }) {
     }
   }
   return (
-    <section className="canonical-module nodes-module operation-directory">
+    <section className={`canonical-module nodes-module operation-directory ${selected ? "detail-open" : "list-open"}`}>
       <div className="page-heading">
         <div>
           <nav className="supplier-breadcrumb"><span>E-commerce</span><span>/</span><span className="current">Gestión de e-Commerce</span></nav>
@@ -68,23 +70,20 @@ export default function Nodes({ runtime, onSelect }) {
       <div className="operation-master-detail">
         <div className="panel operation-list">
           {items.map((n) => (
-            <button className="operation-list-item"
+            <div className="operation-list-item"
               key={n.id}
-              onClick={() => {
-                setSelected(n);
-                onSelect?.(n);
-              }}
             >
               <span>
                 <strong>{n.name}</strong>
                 <small>{n.code}</small>
               </span>
-              <span className="row-action"><b className="status">{readableStatus(n.status)}</b><em>Ver detalle</em></span>
-            </button>
+              <span className="row-action"><b className="status">{readableStatus(n.status)}</b><span onClick={() => onSelect?.(n)}><DetailLink route="nodes" id={n.id}/></span></span>
+            </div>
           ))}
           {!items.length && <p>No hay nodos configurados.</p>}
         </div>
         <aside className="panel operation-detail">
+          {selected && <DetailBackLink route="nodes" label="nodos"/>}
           {selected ? (
             write ? (
               <form onSubmit={save}>

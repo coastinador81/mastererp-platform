@@ -15,15 +15,16 @@ import EcommerceSummary from './EcommerceSummary.jsx';
 import {canOpenOperationsRoute, operationsModule} from './access.mjs';
 
 const routes = new Set(['summary','orders','preparation','routes','nodes','products','categories','attributes','brands','suppliers','inventory']);
-const currentRoute = () => {
-  const value = window.location.hash.replace(/^#\/?/, '').split(/[/?]/)[0];
-  return routes.has(value) ? value : 'summary';
+const currentPath = () => {
+  const value = window.location.hash.replace(/^#\/?/, '').split('?')[0];
+  return routes.has(value.split('/')[0]) ? value : 'summary';
 };
 
 export default function EcommerceApp() {
   const workspace = useWorkspace();
-  const [route, setRoute] = useState(currentRoute), [menu, setMenu] = useState(false);
-  useEffect(() => {const change = () => {setRoute(currentRoute()); setMenu(false);}; window.addEventListener('hashchange', change); return () => window.removeEventListener('hashchange', change);}, []);
+  const [path, setPath] = useState(currentPath), [menu, setMenu] = useState(false);
+  const route=path.split('/')[0];
+  useEffect(() => {const change = () => {setPath(currentPath()); setMenu(false);}; window.addEventListener('hashchange', change); return () => window.removeEventListener('hashchange', change);}, []);
   const permissions = workspace.context?.permissions || [];
   const enabled = workspace.context?.modules.some(module=>[operationsModule,'erp.catalog'].includes(module));
   const runtime = useMemo(() => ({api: config.adminApiUrl, tenant: workspace.tenant, company: workspace.company, permissions, request: workspace.request}), [workspace.tenant, workspace.company, permissions, workspace.request]);
@@ -36,16 +37,16 @@ export default function EcommerceApp() {
   else if (!workspace.company) content = <div className="notice">Selecciona una empresa para consultar sus operaciones.</div>;
   else if (!enabled) content = <div className="notice error">E-commerce no está habilitado para este espacio.</div>;
   else if (route === 'summary' && allowed('summary')) content = <EcommerceSummary context={workspace.context} navigate={navigate}/>;
-  else if (route === 'orders' && allowed('orders')) content = <Orders runtime={runtime}/>;
-  else if (route === 'preparation' && allowed('preparation')) content = <Preparation runtime={runtime}/>;
-  else if (route === 'routes' && allowed('routes')) content = <Routes runtime={runtime}/>;
-  else if (route === 'nodes' && allowed('nodes')) content = <Nodes runtime={runtime}/>;
-  else if (route === 'products' && allowed('products')) content = <Products runtime={runtime}/>;
-  else if (route === 'categories' && allowed('categories')) content = <Categories runtime={runtime}/>;
-  else if (route === 'attributes' && allowed('attributes')) content = <Attributes runtime={runtime}/>;
-  else if (route === 'brands' && allowed('brands')) content = <Brands runtime={runtime}/>;
-  else if (route === 'suppliers' && allowed('suppliers')) content = <Suppliers runtime={runtime}/>;
-  else if (route === 'inventory' && allowed('inventory')) content = <Inventory runtime={runtime}/>;
+  else if (route === 'orders' && allowed('orders')) content = <Orders key={path} runtime={runtime}/>;
+  else if (route === 'preparation' && allowed('preparation')) content = <Preparation key={path} runtime={runtime}/>;
+  else if (route === 'routes' && allowed('routes')) content = <Routes key={path} runtime={runtime}/>;
+  else if (route === 'nodes' && allowed('nodes')) content = <Nodes key={path} runtime={runtime}/>;
+  else if (route === 'products' && allowed('products')) content = <Products key={path} runtime={runtime}/>;
+  else if (route === 'categories' && allowed('categories')) content = <Categories key={path} runtime={runtime}/>;
+  else if (route === 'attributes' && allowed('attributes')) content = <Attributes key={path} runtime={runtime}/>;
+  else if (route === 'brands' && allowed('brands')) content = <Brands key={path} runtime={runtime}/>;
+  else if (route === 'suppliers' && allowed('suppliers')) content = <Suppliers key={path} runtime={runtime}/>;
+  else if (route === 'inventory' && allowed('inventory')) content = <Inventory key={path} runtime={runtime}/>;
   else content = <div className="notice error">No tienes permiso para consultar esta capacidad.</div>;
   return <div className="integrated-app ecommerce-app"><a className="skip-link" href="#content">Saltar al contenido</a>
     <header className="integrated-header"><button className="menu-toggle secondary" aria-label="Abrir menú" aria-expanded={menu} onClick={() => setMenu(!menu)}>☰</button><a className="brand" href="#/summary">E-commerce<span>MasterERP · Desarrollo</span></a>

@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import "./style.css";
+import { detailFromHash } from "../../../../app-shell/src/detailRoutes.mjs";
 const call = (r, p, o = {}) =>
   r.request(r.api + p, {
     ...o,
@@ -20,15 +21,15 @@ export default function Inventory({ runtime }) {
     async (id = node) => {
       if (!id) return;
       try {
-        setItems(
-          (
+        const rows = (
             await call(
               runtime,
               `/v1/companies/${runtime.company}/nodes/${id}/inventory`,
             )
-          ).items,
-        );
-        setSelected(null);
+          ).items;
+        const requested = detailFromHash("inventory");
+        setItems(rows);
+        setSelected(requested ? rows.find((item) => item.product_id === requested) || null : null);
         setError("");
       } catch (e) {
         setError(e.message);
@@ -70,7 +71,7 @@ export default function Inventory({ runtime }) {
     }
   }
   return (
-    <section className="canonical-module inventory-module">
+    <section className={`canonical-module inventory-module commerce-directory ${selected ? "detail-open" : "list-open"}`}>
       <header>
         <div>
           <small>CATÁLOGO · INVENTARIO</small>
@@ -104,7 +105,7 @@ export default function Inventory({ runtime }) {
       <div className="layout">
         <div className="list">
           {items.map((i) => (
-            <button key={i.product_id} onClick={() => setSelected(i)}>
+            <a className="inventory-row" key={i.product_id} href={`#/inventory/${encodeURIComponent(i.product_id)}/view`}>
               <span>
                 <strong>{i.product_name}</strong>
                 <small>{i.product_code}</small>
@@ -113,10 +114,11 @@ export default function Inventory({ runtime }) {
                 {i.stock} / {i.reserved} / <b>{i.available}</b>
                 <em>Ver detalle</em>
               </span>
-            </button>
+            </a>
           ))}
         </div>
-        <aside>
+        <aside className="panel operation-detail prestashop-detail">
+          {selected && <a className="quiet detail-back" href="#/inventory">← Volver a inventario</a>}
           {selected ? (
             write ? (
               <form onSubmit={save}>
