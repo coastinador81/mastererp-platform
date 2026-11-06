@@ -79,8 +79,9 @@ export async function restoreSession(config) {
       headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({grant_type:'refresh_token',client_id:config.clientId,refresh_token:saved.refreshToken})});
     if(!result.ok){clearSession();return false;}
     const body=await result.json();
-    if(body.token_type!=='Bearer'||typeof body.access_token!=='string'||typeof body.id_token!=='string'||!Number.isFinite(body.expires_in)||body.expires_in<=0||body.expires_in>3600){clearSession();return false;}
-    session={accessToken:body.access_token,idToken:body.id_token,expiresAt:Date.now()+body.expires_in*1000};
+    if(body.token_type!=='Bearer'||typeof body.access_token!=='string'||!Number.isFinite(body.expires_in)||body.expires_in<=0||body.expires_in>3600){clearSession();return false;}
+    session={accessToken:body.access_token,idToken:typeof body.id_token==='string'?body.id_token:null,expiresAt:Date.now()+body.expires_in*1000};
+    if(typeof body.refresh_token==='string'&&body.refresh_token)sessionStorage.setItem(refreshKey,JSON.stringify({...saved,refreshToken:body.refresh_token,rotatedAt:Date.now()}));
     return true;
   })().finally(()=>{refreshing=null;});
   return refreshing;
@@ -128,7 +129,7 @@ export class ApiError extends Error {
 export function sessionExpiresAt() { return session?.expiresAt || 0; }
 
 export function identityToken() {
-  if (!session || session.expiresAt <= Date.now()) return null;
+  if (!session || session.expiresAt <= Date.now() || !session.idToken) return null;
   return session.idToken;
 }
 
@@ -148,7 +149,7 @@ export async function authorizedFetch(url, options = {}) {
 }
 
 export async function authorizedIdentityFetch(url, options = {}) {
-  if (!session || session.expiresAt <= Date.now()) {
+  if (!session || session.expiresAt <= Date.now() || !session.idToken) {
     clearSession();
     throw new ApiError(401, 'session_expired');
   }

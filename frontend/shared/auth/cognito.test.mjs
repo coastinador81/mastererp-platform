@@ -92,3 +92,14 @@ test('reload restores tokens with Cognito refresh and logout removes persistence
   clearSession();
   assert.equal(store.has('mastererp.dev.refresh'),false);
 });
+
+test('refresh accepts an OAuth response without id token and persists token rotation', async () => {
+  const store=new Map([['mastererp.dev.refresh',JSON.stringify({refreshToken:'old-refresh',clientId:config.clientId,callbackUrl:config.callbackUrl,createdAt:Date.now()})]]);
+  globalThis.sessionStorage={getItem:key=>store.get(key)??null,setItem:(key,value)=>store.set(key,value),removeItem:key=>store.delete(key)};
+  globalThis.fetch=async()=>({ok:true,json:async()=>({token_type:'Bearer',access_token:'rotated-access',refresh_token:'new-refresh',expires_in:900})});
+  assert.equal(await restoreSession(config),true);
+  assert.equal(JSON.parse(store.get('mastererp.dev.refresh')).refreshToken,'new-refresh');
+  globalThis.fetch=async(url,options)=>{assert.equal(options.headers.Authorization,'Bearer rotated-access');return{ok:true,json:async()=>({spaces:[]})}};
+  assert.deepEqual(await loadSpaces(config),[]);
+  clearSession();
+});

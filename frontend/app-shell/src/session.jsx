@@ -12,7 +12,7 @@ export const config = {...baseConfig, apiUrl:standalone?origin:baseConfig.apiUrl
 export function WorkspaceProvider({children}) {
   const [signedIn,setSignedIn] = useState(false), [spaces,setSpaces] = useState([]);
   const [tenant,setTenant] = useState(''), [company,setCompany] = useState(''), [context,setContext] = useState(null);
-  const [loading,setLoading] = useState(false), [authenticating,setAuthenticating] = useState(false), [error,setError] = useState('');
+  const [loading,setLoading] = useState(false), [authenticating,setAuthenticating] = useState(true), [error,setError] = useState('');
   const requests = useRef(new Set()), generation = useRef(0), started = useRef(false);
   const invalidate = () => { generation.current++; for (const c of requests.current) c.abort(); requests.current.clear(); };
   const end = (message='Tu sesión ha finalizado. Vuelve a acceder.') => {
@@ -44,6 +44,7 @@ export function WorkspaceProvider({children}) {
         if(window.location.pathname==='/auth/callback') {await completeLogin(config);await discover();window.dispatchEvent(new HashChangeEvent('hashchange'));}
         else if(await restoreSession(config)) await discover();
       } catch {end('No se pudo validar el acceso. Vuelve a intentarlo.');}
+      finally {setAuthenticating(false);}
     })();
     return invalidate;
   },[]);

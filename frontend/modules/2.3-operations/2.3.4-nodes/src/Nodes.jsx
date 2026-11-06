@@ -79,7 +79,7 @@ export default function Nodes({ runtime, onSelect }) {
                 <strong>{n.name}</strong>
                 <small>{n.code}</small>
               </span>
-              <b className="status">{readableStatus(n.status)}</b>
+              <span className="row-action"><b className="status">{readableStatus(n.status)}</b><em>Ver detalle</em></span>
             </button>
           ))}
           {!items.length && <p>No hay nodos configurados.</p>}

@@ -109,8 +109,9 @@ export default function Inventory({ runtime }) {
                 <strong>{i.product_name}</strong>
                 <small>{i.product_code}</small>
               </span>
-              <span>
+              <span className="row-action">
                 {i.stock} / {i.reserved} / <b>{i.available}</b>
+                <em>Ver detalle</em>
               </span>
             </button>
           ))}

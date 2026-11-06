@@ -47,7 +47,7 @@ export default function EcommerceApp() {
   else if (route === 'suppliers' && allowed('suppliers')) content = <Suppliers runtime={runtime}/>;
   else if (route === 'inventory' && allowed('inventory')) content = <Inventory runtime={runtime}/>;
   else content = <div className="notice error">No tienes permiso para consultar esta capacidad.</div>;
-  return <div className="integrated-app"><a className="skip-link" href="#content">Saltar al contenido</a>
+  return <div className="integrated-app ecommerce-app"><a className="skip-link" href="#content">Saltar al contenido</a>
     <header className="integrated-header"><button className="menu-toggle secondary" aria-label="Abrir menú" aria-expanded={menu} onClick={() => setMenu(!menu)}>☰</button><a className="brand" href="#/summary">E-commerce<span>MasterERP · Desarrollo</span></a>
       <div className="context-controls"><button className="secondary" disabled={workspace.authenticating} onClick={workspace.signedIn ? workspace.signOut : workspace.startLogin}>{workspace.signedIn ? 'Salir' : workspace.authenticating ? 'Redirigiendo…' : 'Acceder'}</button></div>
     </header><div className="integrated-layout"><aside className={`integrated-nav ${menu ? 'is-open' : ''}`}><OperationsNavigation permissions={permissions} route={route} navigate={navigate}/></aside><main id="content" className="integrated-content" tabIndex={-1}><p className="environment">E-commerce · Entorno de desarrollo · Operaciones</p>{workspace.error && <div className="notice error" role="alert">{workspace.error}</div>}{content}</main></div>
