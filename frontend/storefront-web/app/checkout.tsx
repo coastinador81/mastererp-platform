@@ -7,6 +7,7 @@ import { loadAddresses, submitCheckout } from '@/api';
 import { startLogin } from '@/auth';
 import { useStore } from '@/store/StoreProvider';
 import { colors, radii, spacing } from '@/theme';
+import type { CustomerAddress } from '@/types';
 
 const money = (value: number) => new Intl.NumberFormat('es-VE', { style: 'currency', currency: 'USD' }).format(value);
 
@@ -14,6 +15,7 @@ export default function CheckoutPage() {
   const router = useRouter();
   const { cart, authenticated, clearCart } = useStore();
   const [address, setAddress] = useState('');
+  const [savedAddress, setSavedAddress] = useState<CustomerAddress | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [orderNumber, setOrderNumber] = useState('');
@@ -22,7 +24,7 @@ export default function CheckoutPage() {
   useEffect(() => {
     if (authenticated) loadAddresses().then(items => {
       const selected = items.find(item => item.default) || items[0];
-      if (selected) setAddress(selected.address);
+      if (selected) { setSavedAddress(selected); setAddress([selected.address, selected.unit, selected.zone].filter(Boolean).join(', ')); }
     }).catch(() => undefined);
   }, [authenticated]);
 
@@ -31,7 +33,7 @@ export default function CheckoutPage() {
     if (!address.trim()) return setError('Indica la dirección de entrega.');
     setSubmitting(true); setError('');
     try {
-      const order = await submitCheckout(cart, address.trim());
+      const order = await submitCheckout(cart, savedAddress || address.trim());
       clearCart(); setOrderNumber(order.number);
     } catch (reason) {
       const status = typeof reason === 'object' && reason && 'status' in reason ? Number(reason.status) : 0;
@@ -49,7 +51,7 @@ export default function CheckoutPage() {
         <View style={styles.form}>
           <View style={styles.sectionTitle}><View style={styles.step}><Text style={styles.stepText}>1</Text></View><View><Text style={styles.sectionHeading}>Entrega</Text><Text style={styles.sectionHint}>Indica dónde quieres recibir tu compra.</Text></View></View>
           <Text style={styles.label}>Dirección de entrega</Text>
-          <TextInput value={address} onChangeText={setAddress} placeholder="Calle, edificio, apartamento y referencia" placeholderTextColor={colors.muted} multiline maxLength={300} style={styles.address} />
+          <TextInput value={address} onChangeText={value => { setSavedAddress(null); setAddress(value); }} placeholder="Calle, edificio, apartamento y referencia" placeholderTextColor={colors.muted} multiline maxLength={500} style={styles.address} />
           <View style={styles.sectionTitle}><View style={styles.step}><Text style={styles.stepText}>2</Text></View><View><Text style={styles.sectionHeading}>Pago</Text><Text style={styles.sectionHint}>Método disponible para este primer corte.</Text></View></View>
           <View style={styles.payment}><Ionicons name="cash-outline" size={25} color={colors.primary} /><View><Text style={styles.paymentTitle}>Pago al recibir</Text><Text style={styles.paymentHint}>Coordina el pago durante la entrega.</Text></View><Ionicons name="checkmark-circle" size={22} color={colors.success} /></View>
           {!authenticated ? <View style={styles.notice}><Ionicons name="person-outline" size={21} color={colors.primaryDark} /><Text style={styles.noticeText}>Para proteger tu pedido, inicia sesión con tu cuenta MasterERP antes de confirmar.</Text></View> : null}

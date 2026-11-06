@@ -114,16 +114,17 @@ def _customer_portal(event, repository, claims, path):
         if method != "PATCH":
             raise HttpError(404, "Route not found", code="not_found")
         payload = parse_body(event)
-        if not isinstance(payload.get("name"), str):
-            raise HttpError(400, "Name is required", code="invalid_request")
-        return 200, repository.update_profile(profile, domain, payload["name"])
+        if not all(isinstance(payload.get(field), str) for field in ("name", "phone", "birthDate")):
+            raise HttpError(400, "Profile fields are required", code="invalid_request")
+        return 200, repository.update_profile(profile, domain, payload)
     if path == "/v1/storefront/me/addresses":
         if method == "GET":
             return 200, {"items": repository.customer_read(profile, domain, "addresses")}
         if method != "POST":
             raise HttpError(404, "Route not found", code="not_found")
         payload = parse_body(event)
-        if not isinstance(payload.get("label"), str) or not isinstance(payload.get("address"), str):
+        required = ("label", "address", "zone", "latitude", "longitude")
+        if any(payload.get(field) in (None, "") for field in required):
             raise HttpError(400, "Address fields are required", code="invalid_request")
         return 201, repository.save_address(profile, domain, payload)
     if path.startswith("/v1/storefront/me/addresses/") and method == "PATCH":

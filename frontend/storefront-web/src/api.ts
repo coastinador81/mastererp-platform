@@ -15,13 +15,13 @@ export async function loadCatalog(): Promise<StorefrontCatalog> {
 }
 
 export const loadProfile = () => authorizedIdentityFetch(portalUrl('/v1/storefront/me'), portalOptions()) as Promise<CustomerProfile>;
-export const saveProfile = (name: string) => authorizedIdentityFetch(portalUrl('/v1/storefront/me'), portalOptions({ method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name }) })) as Promise<CustomerProfile>;
+export const saveProfile = (profile: Pick<CustomerProfile, 'name' | 'phone' | 'birthDate' | 'photoUrl'>) => authorizedIdentityFetch(portalUrl('/v1/storefront/me'), portalOptions({ method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(profile) })) as Promise<CustomerProfile>;
 export const loadAddresses = async () => (await authorizedIdentityFetch(portalUrl('/v1/storefront/me/addresses'), portalOptions()) as { items: CustomerAddress[] }).items;
 export const saveAddress = (address: Omit<CustomerAddress, 'id' | 'version'>) => authorizedIdentityFetch(portalUrl('/v1/storefront/me/addresses'), portalOptions({ method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(address) }));
 export const loadOrders = async () => (await authorizedIdentityFetch(portalUrl('/v1/storefront/orders'), portalOptions()) as { items: CustomerOrder[] }).items;
 export const loadOrder = (id: string) => authorizedIdentityFetch(portalUrl(`/v1/storefront/orders/${encodeURIComponent(id)}`), portalOptions()) as Promise<CustomerOrder>;
 
-export async function submitCheckout(lines: CartLine[], address: string) {
+export async function submitCheckout(lines: CartLine[], address: string | CustomerAddress) {
   assertStorefrontContext();
   const storageKey = `mastererp.storefront.checkout-key:${storefrontConfig.tenant}:${storefrontConfig.domain}`;
   let key = sessionStorage.getItem(storageKey);
@@ -31,7 +31,10 @@ export async function submitCheckout(lines: CartLine[], address: string) {
   }
   const detail = {
     items: lines.map(({ product, quantity }) => ({ product_id: product.id, quantity })),
-    delivery: { address },
+    delivery: typeof address === 'string' ? { address } : {
+      address: address.address, label: address.label, zone: address.zone, unit: address.unit,
+      reference: address.reference, latitude: address.latitude, longitude: address.longitude,
+    },
     delivery_method: 'realtime',
     payment_method: 'cash',
   };

@@ -58,10 +58,10 @@ MasterERP. No autoriza copiar APIs legacy, secretos ni tokens al cliente.
 
 - [x] Definir contrato canónico `GET/PATCH /v1/storefront/me` y alta idempotente
   por `issuer + sub` + dominio, sin unir clientes por email.
-- [ ] Persistir por tenant/empresa/cliente: nombre, nombres, apellidos, teléfono,
+- [x] Persistir por tenant/empresa/cliente: nombre, teléfono,
   fecha de nacimiento y foto; email e identidad externa siguen gobernados por
   Cognito y `issuer + sub`.
-- [ ] Migrar validación de teléfono venezolano `+58` y fecha de nacimiento.
+- [x] Migrar validación de teléfono venezolano `+58` y fecha de nacimiento.
 - [ ] Recuperar pantalla de perfil, edición, seguridad, notificaciones, ayuda y
   políticas con configuración propia del tenant.
 - [x] Corregir “Mi cuenta” para abrir Perfil; logout es una acción aparte.
@@ -72,10 +72,10 @@ MasterERP. No autoriza copiar APIs legacy, secretos ni tokens al cliente.
 
 - [x] Definir contrato de listar/crear/editar dirección del cliente; el primer
   corte persiste etiqueta, dirección, referencia y predeterminada.
-- [ ] Conservar campos: `label`, `address`, `zone`, `unit`, `reference`,
+- [x] Conservar campos: `label`, `address`, `zone`, `unit`, `reference`,
   `latitude`, `longitude` e `isDefault`.
 - [ ] Recuperar autocompletado y selector de punto en mapa sin exponer llaves.
-- [ ] Validar dirección, zona, coordenadas y pertenencia al cliente en API.
+- [x] Validar dirección, zona, coordenadas y pertenencia al cliente en API.
 - [x] Permitir varias direcciones y una predeterminada por tenant/empresa.
 
 ## 5. Checkout completo por configuración del tenant

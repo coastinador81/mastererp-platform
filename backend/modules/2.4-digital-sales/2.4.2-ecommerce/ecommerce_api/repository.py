@@ -49,16 +49,17 @@ class EcommerceRepository:
             (claims["iss"], claims["sub"], domain, section, item_id, limit),
         ).fetchone()["value"]
 
-    def update_profile(self, claims, domain, name):
+    def update_profile(self, claims, domain, payload):
         return self.connection.execute(
-            "SELECT ventas_digitales.cliente_perfil_actualizar(%s,%s,%s,%s) value",
-            (claims["iss"], claims["sub"], domain, name),
+            "SELECT ventas_digitales.cliente_perfil_actualizar(%s,%s,%s,%s,%s,%s,%s) value",
+            (claims["iss"], claims["sub"], domain, payload["name"], payload["phone"],
+             payload["birthDate"], payload.get("photoUrl")),
         ).fetchone()["value"]
 
     def save_address(self, claims, domain, payload, address_id=None):
         return self.connection.execute(
-            "SELECT ventas_digitales.cliente_direccion_guardar(%s,%s,%s,%s,%s,%s,%s,%s,%s) value",
+            "SELECT ventas_digitales.cliente_direccion_guardar(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) value",
             (claims["iss"], claims["sub"], domain, address_id, payload.get("label"),
-             payload.get("address"), payload.get("reference"), payload.get("default", False),
-             payload.get("version")),
+             payload.get("address"), payload.get("zone"), payload.get("unit"), payload.get("reference"),
+             payload.get("latitude"), payload.get("longitude"), payload.get("default", False), payload.get("version")),
         ).fetchone()["value"]
