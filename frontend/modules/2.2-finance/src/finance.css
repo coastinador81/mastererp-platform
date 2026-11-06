@@ -280,3 +280,12 @@
   .finance-app .supplier-pagination { align-items: flex-start; }
   .finance-app .supplier-page-controls { width: 100%; justify-content: flex-end; }
 }
+
+/* Temporary Finance presentation: keep authorized context internally, hide selectors. */
+.finance-app .context-controls label{display:none}
+@media(max-width:800px){
+ :root.finance-app{--finance-mobile-header-height:80px}
+ .finance-app .integrated-header{display:flex;flex-wrap:nowrap;align-items:center}
+ .finance-app .integrated-header .brand{flex:1;min-width:0;font-size:22px}
+ .finance-app .integrated-header .context-controls{width:auto;flex:none;margin:0}
+}
