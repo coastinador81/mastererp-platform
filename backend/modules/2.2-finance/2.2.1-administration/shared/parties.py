@@ -117,7 +117,8 @@ def handle(event, context, *, role, capability):
         if method=='PATCH' and 'condiciones' in body and 'profile_version' not in body:raise ValueError()
         if 'catalog_version' in body and (method!='PATCH' or type(body['catalog_version']) is not int or not 0<=body['catalog_version']<9223372036854775807):raise ValueError()
         if method=='PATCH' and any(k in body for k in ('datos_generales','contactos')) and 'catalog_version' not in body:raise ValueError()
-        if role!='proveedor' and details:raise ValueError()
+        # Approved common administrative identity/contact for customer and supplier.
+        if role not in ('cliente','proveedor') and details:raise ValueError()
         if method == 'POST':
             if third_id or 'version' in body or 'profile_version' in body or 'catalog_version' in body:
                 raise ValueError()
