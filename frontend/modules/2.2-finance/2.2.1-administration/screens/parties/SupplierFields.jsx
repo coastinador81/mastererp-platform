@@ -46,7 +46,7 @@ export function supplierPayload(draft){
  const conditions={};for(const [key] of supplierSections.find(([title])=>title==='Condiciones comerciales')[1])conditions[key]=draft.values[key]||'';
  return {datos_generales:general,contactos:contactPayload(draft.contacts,draft.principal),condiciones:conditions};
 }
-export default function SupplierFields({draft,onChange,step}){
+export default function SupplierFields({draft,onChange,step,role='proveedor'}){
  const {values,contacts,principal}=draft;
  const change=(name,value)=>onChange({...draft,values:{...values,[name]:value}});
  const contactChange=(index,name,value)=>onChange({...draft,contacts:contacts.map((row,i)=>i===index?{...row,[name]:value}:row)});
@@ -58,14 +58,14 @@ export default function SupplierFields({draft,onChange,step}){
     pattern={type==='country'?'[A-Z]{2}':type==='currency'?'[A-Z]{3}':name==='sitio_web'?'https?://.*':undefined} placeholder={placeholder}
     onChange={e=>change(name,['country','currency'].includes(type)?e.target.value.toUpperCase():e.target.value)}/>}</label>;
  return <div className="supplier-sections">{supplierSections.filter(([title])=>step===undefined||(step===0?['Datos generales','Identificación fiscal']:step===1?['Dirección','Comunicación']:['Condiciones comerciales']).includes(title)).map(([title,fields])=><fieldset className="panel supplier-fieldset" key={title}><legend>{title}</legend>
-  <p className="supplier-subtitle">{title==='Condiciones comerciales'?'Solo para la empresa activa: estas preferencias de pago y suministro pueden ser diferentes en cada empresa.':'Compartido entre las empresas de este espacio: los cambios actualizan la ficha común del proveedor.'}</p><div className="supplier-fields">{fields.filter(([key])=>!['codigo','nombre'].includes(key)).map(field)}</div>
+  <p className="supplier-subtitle">{title==='Condiciones comerciales'?'Solo para la empresa activa: estas preferencias de pago y suministro pueden ser diferentes en cada empresa.':'Compartido entre las empresas de este espacio: los cambios actualizan la ficha común del tercero, también si es cliente y proveedor.'}</p><div className="supplier-fields">{fields.filter(([key])=>!['codigo','nombre'].includes(key)).filter(([key])=>role!=='cliente'||key!=='tipo_suministro').map(field)}</div>
  </fieldset>)}
  {(step===undefined||step===1)&&<fieldset className="panel supplier-fieldset"><legend>Personas de contacto</legend><p className="supplier-subtitle">Contactos compartidos entre las empresas de este espacio. Puedes guardar sin contactos y sin principal.</p>{contacts.length===0&&<p>Sin contactos.</p>}{contacts.length>0&&<label><input type="radio" name="contacto_principal" checked={principal===-1} onChange={()=>onChange({...draft,principal:-1})}/>Sin contacto principal</label>}{contacts.map((contact,index)=><div className="supplier-contact" key={index}>
   <div className="supplier-contact-heading"><h3>Contacto {index+1}</h3>{<button className="secondary" type="button" aria-label={'Quitar contacto '+(index+1)} onClick={()=>remove(index)}>Quitar</button>}</div>
   <div className="supplier-fields">{[['nombre','Nombre del contacto','text',150],['cargo','Cargo','text',100],['email','Correo del contacto','email',254],['telefono','Teléfono del contacto','tel',40]].map(([key,label,type,max])=><label key={key}>{label}<input name={'contactos.'+index+'.'+key} type={type} maxLength={max} value={contact[key]||''} onChange={e=>contactChange(index,key,e.target.value)}/></label>)}</div>
   <label className="supplier-principal"><input type="radio" name="contacto_principal" disabled={!contactHasData(contact)} checked={principal===index} onChange={()=>onChange({...draft,principal:index})}/>Contacto principal</label>
  </div>)}<button className="secondary" type="button" disabled={contacts.length>=10} onClick={()=>onChange({...draft,contacts:[...contacts,blankContact()]})}>Añadir contacto</button></fieldset>}
- {(step===undefined||step===2)&&<fieldset className="panel supplier-fieldset"><legend>Observaciones</legend><p className="supplier-subtitle">Notas compartidas entre las empresas de este espacio.</p><label>Notas internas<textarea name="observaciones" rows={4} maxLength={2000} value={values.observaciones||''} onChange={e=>change('observaciones',e.target.value)}/></label></fieldset>}
+ {(step===undefined||step===2)&&<fieldset className="panel supplier-fieldset"><legend>Observaciones</legend><p className="supplier-subtitle">Notas compartidas entre las empresas de este espacio para ambos roles.</p><label>Notas internas<textarea name="observaciones" rows={4} maxLength={2000} value={values.observaciones||''} onChange={e=>change('observaciones',e.target.value)}/></label></fieldset>}
  </div>;
 }
 export function SupplierSummary({data}){
