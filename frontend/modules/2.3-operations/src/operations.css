@@ -6,3 +6,18 @@
 .ecommerce-app .ecommerce-welcome {max-width:680px;padding:56px 0}
 .ecommerce-app .ecommerce-welcome h1 {font-size:clamp(36px,6vw,56px);letter-spacing:-.04em;line-height:1.08}
 .ecommerce-app .ecommerce-welcome p {font-size:16px;line-height:1.6}
+.ecommerce-app .operation-directory .page-heading{margin-bottom:var(--finance-space-5)}
+.ecommerce-app .operation-directory .page-heading>button{border:1px solid var(--finance-border);border-radius:var(--finance-radius-sm);background:#fff;color:var(--finance-text);padding:10px 16px;font-weight:600}
+.ecommerce-app .operation-master-detail{display:grid;grid-template-columns:minmax(280px,.8fr) minmax(420px,1.2fr);gap:var(--finance-space-5)}
+.ecommerce-app .operation-master-detail .panel{min-height:440px;padding:0;border:1px solid var(--finance-border);border-radius:var(--finance-radius);background:#fff;overflow:hidden}
+.ecommerce-app .operation-list-item{display:flex;width:100%;align-items:center;justify-content:space-between;gap:16px;padding:16px;border:0;border-bottom:1px solid var(--finance-border);border-radius:0;background:#fff;color:var(--finance-text);text-align:left}
+.ecommerce-app .operation-list-item:hover,.ecommerce-app .operation-list-item:focus-visible{background:var(--finance-selected)}
+.ecommerce-app .operation-list-item>span{display:grid;gap:5px}.ecommerce-app .operation-list-item small{color:var(--finance-muted)}
+.ecommerce-app .operation-detail{padding:24px!important}.ecommerce-app .operation-detail>header,.ecommerce-app .node-form-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding-bottom:18px;border-bottom:1px solid var(--finance-border)}
+.ecommerce-app .operation-detail h2,.ecommerce-app .node-form-heading h2{margin:4px 0;font-size:24px}.ecommerce-app .operation-detail>p{color:var(--finance-muted)}
+.ecommerce-app .operation-empty{display:grid;min-height:360px;place-content:center;text-align:center}.ecommerce-app .operation-empty h2{margin-bottom:0}
+.ecommerce-app .checklist,.ecommerce-app .route-stops{display:grid;margin-top:20px}.ecommerce-app .checklist-row,.ecommerce-app .route-stops article{display:flex;align-items:center;gap:14px;padding:15px 0;border-bottom:1px solid var(--finance-border)}
+.ecommerce-app .checklist-row>div,.ecommerce-app .route-stops article>div{display:grid;flex:1;gap:4px}.ecommerce-app .checklist-row small,.ecommerce-app .route-stops small{color:var(--finance-muted)}
+.ecommerce-app .check,.ecommerce-app .stop-number{display:grid;width:34px;height:34px;flex:0 0 34px;place-items:center;border:1px solid var(--finance-border);border-radius:50%;color:var(--finance-muted);font-weight:700}
+.ecommerce-app .check.done{border-color:#16845b;background:#eaf6ef;color:#16845b}.ecommerce-app .checklist-row .secondary{border:1px solid var(--finance-border);border-radius:8px;background:#fff;padding:8px 11px;color:var(--finance-text)}
+@media(max-width:900px){.ecommerce-app .operation-master-detail{grid-template-columns:1fr}.ecommerce-app .operation-master-detail .panel{min-height:unset}}

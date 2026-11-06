@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import "./style.css";
+import { readableStatus } from "../../src/operationView.mjs";
 const call = (r, p, o = {}) =>
   r.request(r.api + p, {
     ...o,
@@ -54,24 +55,20 @@ export default function Nodes({ runtime, onSelect }) {
     }
   }
   return (
-    <section className="canonical-module nodes-module">
-      <header>
+    <section className="canonical-module nodes-module operation-directory">
+      <div className="page-heading">
         <div>
-          <small>OPERACIONES · NODOS</small>
-          <h1>Nodos operativos</h1>
-          <p>Cada nodo amplía una sucursal existente.</p>
+          <nav className="supplier-breadcrumb"><span>E-commerce</span><span>/</span><span className="current">Gestión de e-Commerce</span></nav>
+          <h1>Nodos</h1>
+          <p className="supplier-subtitle">Configura las ubicaciones que atienden tus pedidos.</p>
         </div>
         <button onClick={load}>Actualizar</button>
-      </header>
-      {error && (
-        <p className="error" role="alert">
-          {error}
-        </p>
-      )}
-      <div className="layout">
-        <div className="list">
+      </div>
+      {error && <p className="error" role="alert">No se pudieron cargar los nodos. Intenta nuevamente.</p>}
+      <div className="operation-master-detail">
+        <div className="panel operation-list">
           {items.map((n) => (
-            <button
+            <button className="operation-list-item"
               key={n.id}
               onClick={() => {
                 setSelected(n);
@@ -82,15 +79,16 @@ export default function Nodes({ runtime, onSelect }) {
                 <strong>{n.name}</strong>
                 <small>{n.code}</small>
               </span>
-              <b>{n.status}</b>
+              <b className="status">{readableStatus(n.status)}</b>
             </button>
           ))}
+          {!items.length && <p>No hay nodos configurados.</p>}
         </div>
-        <aside>
+        <aside className="panel operation-detail">
           {selected ? (
             write ? (
               <form onSubmit={save}>
-                <h2>{selected.name}</h2>
+                <div className="node-form-heading"><div><small>UBICACIÓN OPERATIVA</small><h2>{selected.name}</h2></div><span className="status">{readableStatus(selected.status)}</span></div>
                 <label>
                   <input
                     name="accepts"
@@ -100,7 +98,7 @@ export default function Nodes({ runtime, onSelect }) {
                   Acepta pedidos
                 </label>
                 <label>
-                  Radio cobertura km
+                  Cobertura de entrega (km)
                   <input
                     name="radius"
                     type="number"
@@ -129,7 +127,7 @@ export default function Nodes({ runtime, onSelect }) {
                   />
                 </label>
                 <label>
-                  Tarifa entrega
+                  Tarifa de entrega
                   <input
                     name="fee"
                     type="number"
@@ -140,11 +138,9 @@ export default function Nodes({ runtime, onSelect }) {
                 </label>
                 <button className="primary">Guardar configuración</button>
               </form>
-            ) : (
-              <p>Acceso de solo lectura.</p>
-            )
+            ) : <div><div className="node-form-heading"><div><small>UBICACIÓN OPERATIVA</small><h2>{selected.name}</h2></div><span className="status">{readableStatus(selected.status)}</span></div><dl className="node-summary"><div><dt>Acepta pedidos</dt><dd>{selected.accepts_orders ? "Sí" : "No"}</dd></div><div><dt>Cobertura</dt><dd>{selected.coverage_radius_km} km</dd></div><div><dt>Capacidad diaria</dt><dd>{selected.daily_capacity}</dd></div><div><dt>Pedido mínimo</dt><dd>{selected.minimum_order}</dd></div><div><dt>Tarifa de entrega</dt><dd>{selected.delivery_fee}</dd></div></dl></div>
           ) : (
-            <p>Selecciona un nodo.</p>
+            <div className="operation-empty"><h2>Selecciona un nodo</h2><p>Verás aquí su configuración operativa.</p></div>
           )}
         </aside>
       </div>
