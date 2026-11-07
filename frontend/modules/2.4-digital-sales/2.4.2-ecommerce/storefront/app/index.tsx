@@ -1,19 +1,20 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { ImageBackground, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { ImageBackground, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Screen } from '@/components/Screen';
 import { ShoppingAssistant } from '@/components/ShoppingAssistant';
 import { ProductCard } from '@/components/ProductCard';
 import { useStore } from '@/store/StoreProvider';
+import { useLayoutWidth } from '@/useLayoutWidth';
 import { colors, radii, spacing } from '@/theme';
 
 const categoryImages = ['/storefront/cat-frutas.jpg', '/storefront/cat-despensa.jpg', '/storefront/cat-hogar.jpg'];
 
 export default function HomePage() {
   const router = useRouter();
-  const { width } = useWindowDimensions();
+  const width = useLayoutWidth();
   const { catalog, loading, error } = useStore();
-  const cardWidth = width < 620 ? '47%' : width < 940 ? '31%' : '23%';
+  const cardWidth = width < 520 ? '47%' : '31%';
   if (loading) return <Screen><Text style={styles.message}>Preparando tu tienda…</Text></Screen>;
   if (!catalog) return <Screen><Text style={styles.error}>{error || 'No se pudo abrir la tienda.'}</Text></Screen>;
   return <Screen>

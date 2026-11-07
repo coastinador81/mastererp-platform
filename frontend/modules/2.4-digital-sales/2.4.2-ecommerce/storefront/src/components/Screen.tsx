@@ -17,7 +17,7 @@ export function Screen({ children, scroll = true }: PropsWithChildren<{ scroll?:
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.canvas },
+  safe: { flex: 1, backgroundColor: colors.surface },
   scroll: { flexGrow: 1, paddingBottom: 96 },
   content: { width: '100%', maxWidth: contentWidth, alignSelf: 'center', paddingHorizontal: spacing.md },
 });

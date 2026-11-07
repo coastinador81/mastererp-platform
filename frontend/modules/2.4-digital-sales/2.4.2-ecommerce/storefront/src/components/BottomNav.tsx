@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { usePathname, useRouter } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { colors, spacing } from '../theme';
+import { colors, contentWidth, spacing } from '../theme';
 import { useStore } from '../store/StoreProvider';
 
 const items = [
@@ -29,7 +29,7 @@ export function BottomNav() {
 
 const styles = StyleSheet.create({
   shell: { borderTopWidth: 1, borderTopColor: colors.line, backgroundColor: colors.surface },
-  nav: { width: '100%', maxWidth: 1180, minHeight: 64, alignSelf: 'center', flexDirection: 'row', paddingHorizontal: spacing.sm },
+  nav: { width: '100%', maxWidth: contentWidth, minHeight: 64, alignSelf: 'center', flexDirection: 'row', paddingHorizontal: spacing.sm },
   item: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 4 },
   label: { color: colors.muted, fontSize: 10, fontWeight: '700' }, active: { color: colors.primaryDark },
   badge: { position: 'absolute', top: -7, right: -10, minWidth: 18, height: 18, paddingHorizontal: 4, alignItems: 'center', justifyContent: 'center', borderRadius: 9, backgroundColor: colors.offer, borderWidth: 2, borderColor: colors.surface },

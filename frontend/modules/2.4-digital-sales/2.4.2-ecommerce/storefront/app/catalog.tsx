@@ -1,15 +1,16 @@
 import { useLocalSearchParams } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Screen } from '@/components/Screen';
 import { ProductCard } from '@/components/ProductCard';
 import { useStore } from '@/store/StoreProvider';
+import { useLayoutWidth } from '@/useLayoutWidth';
 import { colors, radii, spacing } from '@/theme';
 
 export default function CatalogPage() {
   const params = useLocalSearchParams<{ category?: string; q?: string; offers?: string }>();
-  const { width } = useWindowDimensions();
+  const width = useLayoutWidth();
   const { catalog } = useStore();
   const [category, setCategory] = useState(params.category || '');
   const [query, setQuery] = useState(params.q || '');
@@ -20,7 +21,7 @@ export default function CatalogPage() {
     const matchesOffers = params.offers !== '1' || product.price > 0;
     return matchesCategory && matchesQuery && matchesOffers;
   }), [catalog?.products, category, params.offers, query]);
-  const cardWidth = width < 620 ? '100%' : width < 940 ? '47%' : '23%';
+  const cardWidth = width < 520 ? '47%' : '31%';
   return (
     <Screen>
       <View style={styles.intro}><Text style={styles.eyebrow}>CATÁLOGO</Text><Text style={styles.title}>Encuentra lo que necesitas</Text><Text style={styles.subtitle}>Disponibilidad y precios actualizados para esta tienda.</Text></View>

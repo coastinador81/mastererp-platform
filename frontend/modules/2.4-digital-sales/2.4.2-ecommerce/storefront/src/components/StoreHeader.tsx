@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Link, usePathname, useRouter } from 'expo-router';
-import { Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { isAuthenticated, signOut, startLogin } from '../auth';
 import { colors, contentWidth, radii, spacing } from '../theme';
 import { useStore } from '../store/StoreProvider';
@@ -8,7 +8,7 @@ import { useStore } from '../store/StoreProvider';
 export function StoreHeader() {
   const router = useRouter();
   const { width } = useWindowDimensions();
-  const compact = width < 700;
+  const compact = Platform.OS === 'web' || width < 700;
   const pathname = usePathname();
   const { catalog, cart, authenticated } = useStore();
   const count = cart.reduce((total, line) => total + line.quantity, 0);
