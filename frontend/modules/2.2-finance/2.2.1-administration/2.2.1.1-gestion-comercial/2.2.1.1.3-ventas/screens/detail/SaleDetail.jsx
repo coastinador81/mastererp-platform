@@ -1,0 +1,9 @@
+import React from 'react';
+import {amount,date,state,origin} from '../list/salesFormat.mjs';
+export default function SaleDetail({sale}){
+ return <>
+  <div className="sales-summary-grid"><section className="panel"><div className="sale-number-state"><h2>{sale.numero}</h2><span className={'sale-badge '+(sale.estado==='CANCELLED'?'cancelled':'')}>{state(sale.estado)}</span></div><dl className="sales-fields"><dt>Fecha</dt><dd>{date(sale.fecha)}</dd><dt>Cliente</dt><dd>{sale.cliente.nombre}</dd><dt>Código de referencia del cliente</dt><dd>{sale.cliente.codigo}</dd><dt>Origen</dt><dd>{origin(sale.origen)}</dd><dt>Pedido de origen</dt><dd>{sale.pedido.numero}</dd></dl></section>
+   <section className="panel sales-total"><h2>Importe de la venta</h2><p className="sale-grand-total">{amount(sale.total,sale.decimales)} <span>{sale.moneda}</span></p>{sale.moneda!==sale.moneda_base&&<dl className="sales-fields"><dt>Total en {sale.moneda_base}</dt><dd>{amount(sale.total_base,sale.decimales_base)}</dd><dt>Tipo de cambio</dt><dd>{amount(sale.tipo_cambio,0)}</dd><dt>Fecha del cambio</dt><dd>{date(sale.cambio_fecha)}</dd><dt>Fuente del cambio</dt><dd>{sale.cambio_fuente}</dd></dl>}</section></div>
+  <section className="panel sales-lines"><h2>Detalle de la venta</h2><p>Importes en {sale.moneda}</p><div className="table-scroll"><table><thead><tr><th>Descripción</th><th>Cantidad</th><th>Precio unitario</th><th>Subtotal</th><th>Descuento</th><th>Recargo</th><th>Tributos</th><th>Total</th></tr></thead><tbody>{sale.lineas.map(line=><tr key={line.posicion}><td>{line.descripcion}</td><td>{amount(line.cantidad,0)}</td><td>{amount(line.precio_unitario,sale.decimales)}</td><td>{amount(line.subtotal,sale.decimales)}</td><td>{amount(line.descuento,sale.decimales)}</td><td>{amount(line.recargo,sale.decimales)}</td><td>{amount(line.tributos,sale.decimales)}</td><td>{amount(line.total,sale.decimales)}</td></tr>)}</tbody></table></div></section>
+ </>;
+}
