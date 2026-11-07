@@ -3,6 +3,7 @@ import {createRoot} from 'react-dom/client';
 import {config,WorkspaceProvider,useWorkspace} from './session.jsx';
 import Finance from '../../modules/2.2-finance/src/Finance.jsx';
 import FinanceNavigation from '../../modules/2.2-finance/src/FinanceNavigation.jsx';
+import ModuleLauncher from '../../modules/2.2-finance/src/ModuleLauncher.jsx';
 import Conversation from '../../modules/0-uonify/components/Conversation.jsx';
 import Products from '../../modules/2.1-catalog/2.1.1-products/src/Products.jsx';
 import Categories from '../../modules/2.1-catalog/2.1.2-categories/src/Categories.jsx';
@@ -48,7 +49,7 @@ function Shell({independent=false}) {
   const ordersRuntime=useMemo(()=>({api:config.adminApiUrl,tenant:w.tenant,company:w.company,permissions:w.context?.permissions||[],request:w.request}),[w.tenant,w.company,w.context,w.request]);
   return <div className="integrated-app"><a className="skip-link" href="#workspace-content" onClick={e=>{e.preventDefault();document.getElementById('workspace-content')?.focus();}}>Saltar al contenido</a>
     <header className="integrated-header"><button className="menu-toggle secondary" aria-label="Abrir menú" aria-expanded={menu} onClick={()=>setMenu(!menu)}>☰</button><a className="brand" href={independent?'/':'#/'}>{independent?'Finanzas':'Uonify'}<span>MasterERP · Desarrollo</span></a>
-      <div className="context-controls"><button className="secondary" disabled={w.authenticating} onClick={w.signedIn?w.signOut:w.startLogin}>{w.signedIn?'Salir':w.authenticating?'Redirigiendo…':'Acceder'}</button></div>
+      <div className="context-controls">{independent&&<ModuleLauncher context={w.context} signedIn={w.signedIn}/>}<button className="secondary" disabled={w.authenticating} onClick={w.signedIn?w.signOut:w.startLogin}>{w.signedIn?'Salir':w.authenticating?'Redirigiendo…':'Acceder'}</button></div>
     </header>
     <div className="integrated-layout"><aside className={'integrated-nav '+(menu?'is-open':'')} aria-label="Navegación principal">{independent?<FinanceNavigation permissions={w.context?.permissions||[]} allowed={Boolean(finance)} path={path} navigate={navigate}/>:<><p className="nav-caption">ESPACIO DE TRABAJO</p><a href="#/" aria-current={path==='/'?'page':undefined}>Inicio</a><a href="#/chat" aria-current={path==='/chat'?'page':undefined}>Chat operativo</a>
       <p className="nav-caption">MÓDULOS HABILITADOS</p>{finance&&<><a href="#/modulos/finanzas" aria-current={financeRoute?'page':undefined}>Finanzas</a><span className="nav-section">Administración</span><a className="subnav" href="#/modulos/finanzas/administracion/clientes">Clientes</a><a className="subnav" href="#/modulos/finanzas/administracion/proveedores">Proveedores</a></>}
