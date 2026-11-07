@@ -12,15 +12,16 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--dependencies', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
-    parser.add_argument('--capabilities', nargs='+', choices=['clientes','proveedores','compras'], default=['clientes','proveedores'])
+    parser.add_argument('--capabilities', nargs='+', choices=['clientes','proveedores','compras','ventas'], default=['clientes','proveedores'])
     args = parser.parse_args()
     owners = json.loads((ROOT/'scripts/administration_lambdas.json').read_text())
     args.output.mkdir(parents=True, exist_ok=True)
     manifest = []
     for cap in args.capabilities:
         source = ROOT/'backend/modules'/owners[cap]/'lambdas'/('mastererp-dev-adm-'+cap)/'handler.py'
-        files = {'handler.py': source,
-                 'parties.py': ROOT/'backend/modules/2.2-finance/2.2.1-administration/shared/parties.py'}
+        files = {'handler.py': source}
+        if cap != 'ventas':
+            files['parties.py'] = ROOT/'backend/modules/2.2-finance/2.2.1-administration/shared/parties.py'
         if cap == 'compras':
             files['purchases.py'] = ROOT/'backend/modules/2.2-finance/2.2.1-administration/shared/purchases.py'
         shared = ROOT/'backend/shared/tenant-security/tenant_security'

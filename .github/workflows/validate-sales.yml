@@ -1,0 +1,30 @@
+name: Validate Sales read API
+on:
+  push:
+    branches: [dev]
+    paths:
+      - 'backend/modules/2.2-finance/2.2.1-administration/2.2.1.1-gestion-comercial/2.2.1.1.3-ventas/**'
+      - 'scripts/package_parties.py'
+      - '.github/workflows/validate-sales.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install existing pure Python runtime dependencies in CI
+        run: pip install --no-compile --target /tmp/sales-deps -r backend/modules/2.2-finance/2.2.1-administration/2.2.1.1-gestion-comercial/2.2.1.1.3-ventas/lambdas/mastererp-dev-adm-ventas/requirements-package.txt
+      - name: Unit contracts on remote runner
+        env:
+          PYTHONPATH: /tmp/sales-deps:backend/shared/tenant-security:backend/modules/2.2-finance/2.2.1-administration/2.2.1.1-gestion-comercial/2.2.1.1.3-ventas/lambdas/mastererp-dev-adm-ventas
+        run: python -m unittest discover -s backend/modules/2.2-finance/2.2.1-administration/2.2.1.1-gestion-comercial/2.2.1.1.3-ventas/tests -p 'test_*.py'
+      - name: Reproducible application package without deployment
+        run: python scripts/package_parties.py --dependencies /tmp/sales-deps --output /tmp/sales-package --capabilities ventas
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sales-api-${{ github.sha }}
+          path: /tmp/sales-package/
