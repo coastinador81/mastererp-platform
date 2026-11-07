@@ -1,0 +1,30 @@
+name: Validate Orders backend candidate
+on:
+  push:
+    branches: [dev]
+    paths:
+      - 'backend/modules/2.3-operations/2.3.1-orders/**'
+      - 'backend/shared/tenant-security/**'
+      - '.github/workflows/validate-orders.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install existing project runtime dependencies on Linux
+        run: pip install --no-compile --target /tmp/orders-deps -r backend/modules/2.3-operations/2.3.1-orders/lambdas/mastererp-dev-orders/requirements-package.txt
+      - name: Run contract unit tests remotely
+        env:
+          PYTHONPATH: /tmp/orders-deps:backend/shared/tenant-security:backend/modules/2.3-operations/2.3.1-orders
+        run: python -m unittest discover -s backend/modules/2.3-operations/2.3.1-orders/tests -p 'test_*.py'
+      - name: Build Linux artifact without deployment
+        run: python backend/modules/2.3-operations/2.3.1-orders/lambdas/mastererp-dev-orders/package.py orders.zip --dependencies /tmp/orders-deps
+      - uses: actions/upload-artifact@v4
+        with:
+          name: orders-candidate-${{ github.sha }}
+          path: orders.zip

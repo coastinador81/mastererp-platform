@@ -16,7 +16,7 @@ def package(destination: pathlib.Path, dependencies: pathlib.Path | None = None)
     if dependencies:
         for source in dependencies.rglob("*"):
             relative = source.relative_to(dependencies)
-            if (source.is_file() and relative.parts[0].startswith("psycopg")
+            if (source.is_file() and relative.parts[0].startswith(("psycopg", "jwt", "cryptography", "cffi", "pycparser", "_cffi_backend"))
                     and "__pycache__" not in relative.parts and source.suffix != ".pyc"):
                 sources[relative.as_posix()] = source
     with zipfile.ZipFile(destination, "w") as archive:

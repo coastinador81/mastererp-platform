@@ -33,6 +33,32 @@ class OrdersRepository:
         return row["value"]
 
     def transition(self, company_id: str, order_id: str, payload: dict[str, Any]) -> dict[str, Any]:
+        if payload["status"] == "CONFIRMED":
+            origin = self.connection.execute(
+                "SELECT operaciones.pedido_origen_ecommerce(%s,%s) AS value",
+                (company_id, order_id),
+            ).fetchone()["value"]
+            if origin:
+                self.connection.execute(
+                    "SELECT set_config('app.current_operation',%s,true)",
+                    ("administracion.documento.venta.crear",),
+                )
+                # Deterministic fallback preserves the existing transition HTTP contract.
+                key = payload.get("_idempotency_key") or f"sv:{order_id}:{payload['version']}"
+                sale = self.connection.execute(
+                    """SELECT administracion.venta_desde_pedido(
+                    %s,%s,%s,%s,%s::date,%s::numeric,%s::date,%s) AS value""",
+                    (company_id, order_id, payload["version"], key, payload.get("sale_date"),
+                     payload.get("exchange_rate"), payload.get("exchange_date"),
+                     payload.get("exchange_source")),
+                ).fetchone()["value"]
+                self.connection.execute(
+                    "SELECT set_config('app.current_operation',%s,true)",
+                    ("operations.orders.transition",),
+                )
+                result = self.get(company_id, order_id)
+                result["sale"] = sale
+                return result
         row = self.connection.execute(
             "SELECT operaciones.pedido_transicionar(%s,%s,%s,%s,%s,%s) AS value",
             (company_id, order_id, payload["version"], payload["status"],

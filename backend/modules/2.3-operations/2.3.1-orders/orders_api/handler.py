@@ -46,6 +46,12 @@ def _request(event: dict[str, Any], repository: OrdersRepository) -> tuple[int, 
         payload = parse_body(event)
         if not {"version", "status", "reason"} <= payload.keys():
             raise HttpError(400, "version, status and reason are required", code="invalid_request")
+        if type(payload["version"]) is not int or payload["version"] < 1:
+            raise HttpError(400, "A positive integer version is required", code="invalid_request")
+        key = _header(event, "idempotency-key")
+        if key is not None and not 1 <= len(key) <= 100:
+            raise HttpError(400, "Invalid Idempotency-Key", code="invalid_request")
+        payload["_idempotency_key"] = key
         return 200, repository.transition(company_id, order_id, payload)
     if method == "POST" and not order_id:
         payload = parse_body(event)
@@ -59,7 +65,8 @@ def _request(event: dict[str, Any], repository: OrdersRepository) -> tuple[int, 
 
 def _sql_error(error: Exception) -> HttpError:
     state = getattr(error, "sqlstate", None)
-    mapping = {"22023": (400, "invalid_request"), "23514": (409, "invalid_transition"),
+    mapping = {"22023": (400, "invalid_request"), "22P02": (400, "invalid_request"),
+               "22007": (400, "invalid_request"), "22008": (400, "invalid_request"), "23514": (409, "invalid_transition"),
                "23505": (409, "idempotency_conflict"), "40001": (409, "stale_version"),
                "42501": (403, "forbidden"), "P0002": (404, "not_found")}
     status, code = mapping.get(state, (500, "internal_error"))
