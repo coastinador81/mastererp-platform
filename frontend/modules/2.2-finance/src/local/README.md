@@ -34,3 +34,11 @@ Desde la raíz de Finanzas: `npm run dev -- --port 5180 --strictPort`. El guard 
 Resumen reutiliza `../../2.2.1-administration/2.2.1.2-gestion-compras/screens/purchases/PurchasesSummary.jsx`. Los archivos de esta carpeta son soporte técnico de diseño, no nuevas rutas funcionales entre capas.
 
 Pendientes: reglas IA, contrato autorizado de stock/nodos, autorización de ambas revisiones, persistencia, auditoría y transición revisada para publicar interfaces funcionales. Consultar el estándar UX/UI y contratos antes de conectar datos.
+
+## Publicación DEMO DEV autorizada
+
+Excepción explícita del propietario: incluir estas pantallas DEMO en el build DEV, aisladas del producto conectado. Abrir `https://finanzas-dev.uonify.com/?demo=compras&vista=resumen-compras`. El parámetro `demo=compras` se conserva en enlaces, fichas e historial. Sin parámetro, las rutas conectadas mantienen su comportamiento y autorización. No se cambia ninguna API ni se usa la demo como fallback ante errores.
+
+El build con modo `dev` incluye esta demostración, identificada permanentemente como DEMO sin datos reales; otros modos no habilitan su entrada. Los ejemplos son públicos y ficticios; las observaciones no se envían ni persisten. No introducir información sensible. Revisiones y borradores siguen en memoria y desaparecen al recargar. Los apartados anteriores que describen exclusión del build son el estado previo a esta autorización.
+
+Recuperación: revertir este commit mediante un nuevo commit en dev y dejar que el pipeline vuelva a publicar. No se alteran hosting, datos o recursos.

@@ -20,7 +20,7 @@ export default function FinanceNavigation({allowed,path,navigate,permissions=[],
     {groups.map(([number,name,groupItems],index)=>{const items=previewOnly&&number==='2.2.1.2'?[['Resumen','resumen-compras'],...groupItems.flatMap(item=>item[1]==='solicitudes-compra'?[item,['Sugerencias de compras','sugerencias-compras']]:[item])]:groupItems;return <details className="finance-nav-group" key={number} open={index<2||items.some(([,route])=>route&&path.includes('/'+route))}>
       <summary><ChevronDownIcon className="finance-disclosure-icon"/>{name}</summary>
       <ul>{items.map(([label,route])=><li key={label}>{route&&canOpen(route)?
-        <a className="subnav" href={'/?vista='+route} onClick={e=>{if(navigate&&!e.ctrlKey&&!e.metaKey&&!e.shiftKey&&!e.altKey){e.preventDefault();navigate('/modulos/finanzas/administracion/'+route);}}} aria-current={path.includes('/administracion/'+route)?'page':undefined}><FinanceIcon name={itemIcons[route]||itemIcons[label]||'document'}/><span>{label}</span></a>:
+        <a className="subnav" href={'/?'+(previewOnly?'demo=compras&':'')+'vista='+route} onClick={e=>{if(navigate&&!e.ctrlKey&&!e.metaKey&&!e.shiftKey&&!e.altKey){e.preventDefault();navigate('/modulos/finanzas/administracion/'+route);}}} aria-current={path.includes('/administracion/'+route)?'page':undefined}><FinanceIcon name={itemIcons[route]||itemIcons[label]||'document'}/><span>{label}</span></a>:
         <span className="finance-nav-pending" aria-disabled="true"><FinanceIcon name={itemIcons[route]||itemIcons[label]||'document'}/><span>{label}</span><small>{previewOnly?'Vista previa':route?'Sin acceso':'Pendiente'}</small></span>}</li>)}</ul>
     </details>;})}
     </div></details>
