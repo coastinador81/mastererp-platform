@@ -38,3 +38,10 @@ Se conserva el endpoint y cuerpo de transiciones. Idempotency-Key es opcional aq
 Necesita el permiso nuevo administration.sales.write, cuya asignación al rol funcional está pendiente de decisión del propietario. No se amplían roles existentes automáticamente. El backend candidato todavía NO está desplegado: primero revisar permisos, auditoría y pruebas HTTP. Pagos mobile/transfer del checkout mantienen la incompatibilidad previa con mobile_payment/bank_transfer de la transición; no se transforman pagos pendientes en validados.
 
 El workflow Validate Orders backend candidate ejecuta pruebas unitarias y empaquetado en Linux remoto, sin AWS deploy. El empaquetador incluye PyJWT/cryptography y dependencias como el ZIP actual; antes omitía esos paquetes aunque el ZIP ya desplegado sí los contenía. Son las mismas versiones utilizadas por eCommerce, sin instalación local. Pruebas de doubles no acreditan persistencia HTTP. La publicación AWS futura pertenece al stack mastererp-dev-operations, modificando solo OrdersArtifactKey y verificando change set/IDs; nunca reimportar APIs con SAM.
+
+
+### Contrato ampliado 047 y aprobación del rol
+
+El propietario aprobó Administradores de Finanzas. La dependencia para este candidato es ahora 046 + 047: 047 conserva reason/detail y los incluye en la idempotencia cuando existen. La confirmación financiera usa un helper privado acotado, sin conceder operations.orders.write al rol de Finanzas. No hay asignación automática a usuarios reales ni pérdida del rol de propietario existente. La validación de pagos admite alias actuales/legacy solo con VALIDATED; efectivo pendiente de cobro conserva el contrato vigente.
+
+Las notas anteriores sobre motivo pendiente describen el candidato anterior y quedan superadas por 047. El backend no se considera desplegado hasta registrar el change set del stack propietario y las verificaciones HTTP. Las pruebas HTTP crearán únicamente un tenant DEV de fixture identificado, que quedará inactivo al terminar si contiene ventas selladas; no se desactivan triggers para borrar su historial.

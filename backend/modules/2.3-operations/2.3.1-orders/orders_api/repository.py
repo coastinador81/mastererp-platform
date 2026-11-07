@@ -40,8 +40,10 @@ class OrdersRepository:
             ).fetchone()["value"]
             if origin:
                 self.connection.execute(
-                    "SELECT set_config('app.current_operation',%s,true)",
-                    ("administracion.documento.venta.crear",),
+                    """SELECT set_config('app.current_operation',%s,true),
+                    set_config('app.sale_confirmation_reason',%s,true),
+                    set_config('app.sale_confirmation_detail',%s,true)""",
+                    ("administracion.documento.venta.crear", payload.get("reason") or "", payload.get("detail") or ""),
                 )
                 # Deterministic fallback preserves the existing transition HTTP contract.
                 key = payload.get("_idempotency_key") or f"sv:{order_id}:{payload['version']}"

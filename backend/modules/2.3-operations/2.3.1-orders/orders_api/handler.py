@@ -48,6 +48,10 @@ def _request(event: dict[str, Any], repository: OrdersRepository) -> tuple[int, 
             raise HttpError(400, "version, status and reason are required", code="invalid_request")
         if type(payload["version"]) is not int or payload["version"] < 1:
             raise HttpError(400, "A positive integer version is required", code="invalid_request")
+        if not isinstance(payload["reason"], str) or not 1 <= len(payload["reason"].strip()) <= 80:
+            raise HttpError(400, "A valid confirmation reason is required", code="invalid_request")
+        if payload.get("detail") is not None and (not isinstance(payload["detail"], str) or len(payload["detail"]) > 500):
+            raise HttpError(400, "Invalid confirmation detail", code="invalid_request")
         key = _header(event, "idempotency-key")
         if key is not None and not 1 <= len(key) <= 100:
             raise HttpError(400, "Invalid Idempotency-Key", code="invalid_request")
