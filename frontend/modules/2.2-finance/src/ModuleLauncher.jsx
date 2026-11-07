@@ -2,7 +2,6 @@ import React,{useEffect,useId,useRef,useState} from 'react';
 import './moduleLauncher.css';
 
 const modules=[
- {name:'Plataforma base',color:'slate',icon:'platform',routes:[]},
  {name:'Inventario',code:'erp.catalog',color:'teal',icon:'inventory',routes:[['catalog.inventory.read','catalogo/inventario']]},
  {name:'Operaciones',code:'erp.operations',color:'orange',icon:'operations',routes:[['operations.orders.read','operaciones/pedidos'],['operations.preparation.read','operaciones/preparacion'],['operations.routes.read','operaciones/rutas'],['operations.nodes.read','operaciones/nodos']]},
  {name:'Ecommerce',code:'digital_sales.ecommerce',color:'violet',icon:'sales',routes:[['digital_sales.ecommerce.read','ventas-digitales/tiendas']]},
