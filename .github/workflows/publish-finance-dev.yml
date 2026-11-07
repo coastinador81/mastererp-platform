@@ -11,6 +11,7 @@ on:
       - 'frontend/modules/2.2-finance/vite.config.js'
       - 'frontend/app-shell/src/**'
       - 'frontend/shared/auth/*.mjs'
+      - 'frontend/shared/module-launcher/**'
       - 'frontend/modules/0-uonify/components/Conversation.jsx'
       - 'frontend/modules/0-uonify/components/ShellIcons.tsx'
       - 'frontend/modules/0-uonify/auth-config.json'
