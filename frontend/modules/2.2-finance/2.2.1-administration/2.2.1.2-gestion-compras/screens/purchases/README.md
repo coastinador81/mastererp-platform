@@ -8,4 +8,4 @@ Estado: borradores básicos implementados y validados por HTTP/navegador en DEV;
 
 ## Harness local de validación visual (aislado)
 
-Para revisar `Purchases.jsx` sin usar la app con autenticación real: en `frontend/modules/2.2-finance` ejecutar `npm run dev:harness`, abrir en el navegador `http://127.0.0.1:5173/purchases-harness.html` (el puerto lo indica la consola de Vite) y usar los atajos numerados. El script `mockRequest` intercepta solo las llamadas del harness; no altera Cognito, el app-shell productivo ni `index.html` de Finanzas.
+Para revisar `Purchases.jsx` sin usar la app con autenticación real: en `frontend/modules/2.2-finance` ejecutar `npm run dev:harness`, abrir en el navegador `http://127.0.0.1:5173/purchases-harness.html` (el puerto lo indica la consola de Vite) y usar los atajos numerados. Los datos ficticios viven en `purchasesDemoFixtures.mjs` (escenario **Catálogo demo**: solicitudes, órdenes y facturas enlazadas). El mock intercepta solo el harness; no altera Cognito ni la app productiva.

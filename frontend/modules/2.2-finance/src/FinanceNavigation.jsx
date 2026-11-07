@@ -2,11 +2,11 @@ import React from 'react';
 import FinanceIcon from './FinanceIcon.jsx';
 import {ChevronDownIcon} from '../../0-uonify/components/ShellIcons.tsx';
 const itemIcons={clientes:'clients',proveedores:'supplier',
- 'Solicitudes de compra':'document','Órdenes de compra':'order','Facturas de proveedores':'invoice',
+ 'Solicitudes de compra':'document','Órdenes':'order','Facturas de proveedores':'invoice',
  Cotizaciones:'quote',Ventas:'sales',Facturación:'document'};
 const groups = [
   ['2.2.1.1', 'Gestión comercial', [['Clientes','clientes'],['Cotizaciones'],['Ventas'],['Facturación']]],
-  ['2.2.1.2', 'Gestión de compras', [['Proveedores','proveedores'],['Solicitudes de compra','solicitudes-compra'],['Órdenes de compra','ordenes-compra'],['Facturas de proveedores','facturas-proveedores']]],
+  ['2.2.1.2', 'Gestión de compras', [['Proveedores','proveedores'],['Solicitudes de compra','solicitudes-compra'],['Órdenes','ordenes-compra'],['Facturas de proveedores','facturas-proveedores']]],
   ['2.2.1.3', 'Cartera y obligaciones', [['Cuentas por cobrar'],['Cuentas por pagar']]],
   ['2.2.1.4', 'Tesorería', [['Cobros'],['Pagos'],['Caja'],['Bancos'],['Transferencias'],['Conciliación']]],
   ['2.2.1.5', 'Gastos y fondos menores', [['Gastos operativos'],['Caja chica'],['Anticipos y rendiciones']]],
