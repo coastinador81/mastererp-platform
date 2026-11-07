@@ -32,10 +32,28 @@ export function StoreProvider({ children }: PropsWithChildren) {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    Promise.all([loadCatalog(), completeLoginIfNeeded()])
-      .then(([nextCatalog, session]) => { setCatalog(nextCatalog); setAuthenticated(session); })
-      .catch((reason: Error) => setError(reason.message || 'No se pudo abrir la tienda.'))
-      .finally(() => setLoading(false));
+    let cancelled = false;
+    (async () => {
+      try {
+        const [nextCatalog, session] = await Promise.all([
+          loadCatalog(),
+          completeLoginIfNeeded().catch((reason: Error) => {
+            if (isAuthenticated()) return true;
+            throw reason;
+          }),
+        ]);
+        if (cancelled) return;
+        setCatalog(nextCatalog);
+        setAuthenticated(session);
+      } catch (reason) {
+        if (!cancelled) {
+          setError(reason instanceof Error ? reason.message : 'No se pudo abrir la tienda.');
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
   }, []);
 
   useEffect(() => {

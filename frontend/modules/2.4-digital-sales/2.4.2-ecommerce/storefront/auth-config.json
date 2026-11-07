@@ -3,5 +3,5 @@
   "loginBaseUrl": "https://mastererp-dev-uonify-277352717693.auth.us-west-1.amazoncognito.com",
   "callbackUrl": "https://tienda-dev.uonify.com/auth/callback",
   "logoutUrl": "https://tienda-dev.uonify.com/",
-  "scopes": ["openid", "email"]
+  "scopes": ["openid", "email", "profile"]
 }

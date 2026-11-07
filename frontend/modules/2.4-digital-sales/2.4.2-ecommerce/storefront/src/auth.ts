@@ -1,8 +1,35 @@
 import authConfig from '../auth-config.json';
-import { authorizedIdentityFetch, completeLogin, login, logout, sessionExpiresAt } from '../../../../../shared/auth/cognito.mjs';
+import {
+  ApiError,
+  authorizedIdentityFetch,
+  completeLogin,
+  identityToken,
+  login,
+  logout,
+  sessionExpiresAt,
+} from '../../../../../shared/auth/cognito.mjs';
 import { assertStorefrontContext, storefrontConfig, storefrontScope } from './config';
 
 const invitationKey = () => `mastererp.storefront.invitation:${storefrontScope()}`;
+
+async function postStorefrontIdentity(path: string, body: Record<string, unknown>) {
+  const token = identityToken();
+  if (!token) return { ok: false, status: 401, code: 'session_expired' as const };
+  const response = await fetch(`${storefrontConfig.api}${path}`, {
+    method: 'POST',
+    cache: 'no-store',
+    credentials: 'omit',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Tenant-Id': storefrontConfig.tenant,
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(body),
+  });
+  const payload = await response.json().catch(() => ({}));
+  const code = typeof payload?.error?.code === 'string' ? payload.error.code : 'request_failed';
+  return { ok: response.ok, status: response.status, code };
+}
 
 export const isAuthenticated = () => sessionExpiresAt() > Date.now();
 export const startLogin = (provider?: 'Google') => login(authConfig, provider ? { identityProvider: provider } : {});
@@ -23,19 +50,34 @@ export async function completeLoginIfNeeded() {
   const authenticated = isAuthenticated();
   const pendingInvitation = sessionStorage.getItem(invitationKey());
   if (authenticated && pendingInvitation) {
-    await authorizedIdentityFetch(`${storefrontConfig.api}/v1/storefront/identity/claim`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-Tenant-Id': storefrontConfig.tenant },
-      body: JSON.stringify({ invitation_token: pendingInvitation }),
+    const claim = await postStorefrontIdentity('/v1/storefront/identity/claim', {
+      invitation_token: pendingInvitation,
     });
+    if (!claim.ok) {
+      throw new ApiError(claim.status, claim.code);
+    }
     sessionStorage.removeItem(invitationKey());
   }
   if (authenticated && !pendingInvitation) {
-    await authorizedIdentityFetch(`${storefrontConfig.api}/v1/storefront/identity/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-Tenant-Id': storefrontConfig.tenant },
-      body: JSON.stringify({ domain: storefrontConfig.domain }),
+    const register = await postStorefrontIdentity('/v1/storefront/identity/register', {
+      domain: storefrontConfig.domain,
     });
+    if (!register.ok && register.status !== 401) {
+      throw new ApiError(register.status, register.code);
+    }
+    if (!register.ok && register.status === 401) {
+      sessionStorage.setItem(
+        `mastererp.storefront.identity-hint:${storefrontScope()}`,
+        'Verifica tu correo en Cognito (email_verified) para usar checkout y tu perfil.',
+      );
+    } else {
+      sessionStorage.removeItem(`mastererp.storefront.identity-hint:${storefrontScope()}`);
+    }
   }
   return authenticated;
+}
+
+export function identityRegistrationHint() {
+  if (typeof sessionStorage === 'undefined') return '';
+  return sessionStorage.getItem(`mastererp.storefront.identity-hint:${storefrontScope()}`) || '';
 }
