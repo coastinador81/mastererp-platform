@@ -1,5 +1,8 @@
 # Finance backend
 
+> Organización vigente: Finanzas conserva toda la numeración de Administración y añade 2.2.5-hr para empleados, nómina y ausencias, con permisos específicos. Los apartados históricos conservados describen el contrato/estado previo cuando difieran; no modifican el mapa nuevo.
+
+
 Objetivo específico: Coordinar los dominios financieros sin mezclar ejecución operativa.
 
 Responsabilidad: finanzas. Estado: planned.

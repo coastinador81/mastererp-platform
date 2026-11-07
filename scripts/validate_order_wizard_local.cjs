@@ -47,7 +47,7 @@ function Harness(){
 fs.writeFileSync(path.join(temporary,'harness.jsx'),`
 import React from 'react';import {createRoot} from 'react-dom/client';
 import Purchases from ${JSON.stringify(source(path.join(finance,'2.2.1-administration/2.2.1.2-gestion-compras/screens/purchases/Purchases.jsx')))};
-import ${JSON.stringify(source(path.join(frontend,'modules/2.3-operations/2.3.2-preparation/src/style.css')))};
+import ${JSON.stringify(source(path.join(frontend,'modules/2.1-inventory/2.1.3-preparation/src/style.css')))};
 import ${JSON.stringify(source(path.join(frontend,'app-shell/src/shell.css')))};
 import ${JSON.stringify(source(path.join(finance,'src/finance.css')))};
 window.__requests=[];window.__navigations=[];

@@ -16,7 +16,7 @@ import Nav from ${JSON.stringify(url(path.join(finance,'src/FinanceNavigation.js
 import {workspacePath,financeUrl} from ${JSON.stringify(url(path.join(frontend,'app-shell/src/financeRoutes.mjs')))};
 import ${JSON.stringify(url(path.join(frontend,'app-shell/src/shell.css')))};
 import ${JSON.stringify(url(path.join(finance,'src/finance.css')))};
-import ${JSON.stringify(url(path.join(frontend,'modules/2.3-operations/2.3.2-preparation/src/style.css')))};
+import ${JSON.stringify(url(path.join(frontend,'modules/2.1-inventory/2.1.3-preparation/src/style.css')))};
 window.__requests=[];window.__mode='normal';
 const records=Array.from({length:13},(_,i)=>({id:'00005000-0000-0000-0000-'+String(i+1).padStart(12,'0'),numero:'VEN-QA-'+String(i+1).padStart(3,'0'),fecha:'2026-11-07',estado:i===1?'CANCELLED':'ACTIVE',origen:'ecommerce',version:1,cliente:{id:'client',codigo:'CLI-QA-'+i,nombre:'Cliente QA '+(i+1)},pedido:{id:'order-'+i,numero:'PED-QA-'+(i+1)},moneda:'USD',decimales:2,total:'1250.50',moneda_base:'USD',decimales_base:2,total_base:'1250.50',tipo_cambio:'1',cambio_fecha:'2026-11-07',cambio_fuente:'same_currency',lineas:[{posicion:1,descripcion:'Producto de prueba local',cantidad:'2',precio_unitario:'625.25',subtotal:'1250.50',descuento:'0',recargo:'0',tributos:'0',total:'1250.50'}]}));
 function Harness(){const [route,setRoute]=useState(()=>workspacePath(location,true)),[company,setCompany]=useState('company-a'),[permitted,setPermitted]=useState(true),[menu,setMenu]=useState(false);

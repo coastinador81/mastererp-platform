@@ -1,5 +1,8 @@
 # Transport backend
 
+> Organización vigente: Transporte añade 2.10.5-routes para rutas de reparto, conservando repartidores, transportistas, Chipipro y MRW. Los apartados históricos conservados describen el contrato/estado previo cuando difieran; no modifican el mapa nuevo.
+
+
 Objetivo específico: Gestionar repartidores y proveedores de transporte.
 
 Responsabilidad: repartidores, transportistas, Chipipro y MRW. Estado: planned.

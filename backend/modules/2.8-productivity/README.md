@@ -1,5 +1,8 @@
 # Productivity backend
 
+> Organización vigente: Productividad conserva Opsphere, Google Workspace y Microsoft 365. Marketing pertenece a 2.4-marketing y MasterCRM a 2.7-crm. Los apartados históricos conservados describen el contrato/estado previo cuando difieran; no modifican el mapa nuevo.
+
+
 Objetivo específico: Agrupar herramientas de productividad y relación con clientes.
 
 Responsabilidad: productividad, marketing y CRM. Estado: planned.

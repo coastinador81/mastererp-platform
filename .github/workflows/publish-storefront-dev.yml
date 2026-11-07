@@ -4,7 +4,7 @@ on:
   push:
     branches: [dev]
     paths:
-      - 'frontend/modules/2.4-digital-sales/2.4.2-ecommerce/storefront/**'
+      - 'frontend/modules/2.3-ecommerce/2.3.2-stores/storefront/**'
       - 'frontend/shared/auth/**'
       - '.github/workflows/publish-storefront-dev.yml'
 permissions:
@@ -18,14 +18,14 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: frontend/modules/2.4-digital-sales/2.4.2-ecommerce/storefront
+        working-directory: frontend/modules/2.3-ecommerce/2.3.2-stores/storefront
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
           cache: npm
-          cache-dependency-path: frontend/modules/2.4-digital-sales/2.4.2-ecommerce/storefront/package-lock.json
+          cache-dependency-path: frontend/modules/2.3-ecommerce/2.3.2-stores/storefront/package-lock.json
       - run: npm ci
       - run: npm run typecheck
       - run: npm run lint

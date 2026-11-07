@@ -1,0 +1,18 @@
+# Catalog frontend
+
+> Organización vigente: Catálogo conserva un único maestro de productos, categorías, atributos, marcas y referencias de proveedores, reutilizado por Ecommerce, Inventario, POS y Finanzas. Inventario físico pertenece a 2.1-inventory. Los apartados históricos conservados describen el contrato/estado previo cuando difieran; no modifican el mapa nuevo.
+
+
+Objetivo específico: Mantener datos maestros de productos e inventario.
+
+Responsabilidad: experiencia de catálogo e inventario. Estado: planned.
+
+## Contrato y estado de esta capa
+
+Código: 2.3.4. Nombre/ruta: `2.3-ecommerce/2.3.4-catalog`. Objetivo y alcance: los descritos arriba; esta carpeta no amplía las responsabilidades de su módulo padre. Propietario funcional: dominio Ecommerce / Catálogo compartido; responsable nominal pendiente de asignación. Propietario de los datos: módulo que define sus entidades; no copiar datos de otros dominios.
+
+Capa: frontend. Dependencias: contexto autenticado, tenant y contratos del padre cuando correspondan; contratos adicionales pendientes de definición. Exclusiones: lógica y recursos de otros módulos; conectores técnicos fuera de Digital Sales. APIs/eventos/MCP: no declarar disponibles por existir esta carpeta; revisar implementación y contrato antes de consumir. Propuestas sin contrato confirmado permanecen pendientes.
+
+Estado verificable: la reserva documental no acredita implementación; conservar cualquier código/plantilla existente y revisar evidencia específica antes de marcar implementado.
+
+Validaciones: estructura local mediante scripts/validate_structure.py. Pendientes: contratos específicos, responsable nominal y pruebas funcionales antes de habilitar esta capacidad.

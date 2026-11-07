@@ -3,15 +3,15 @@ import './moduleLauncher.css';
 
 const modules=[
  {name:'Inventario',code:'erp.catalog',color:'teal',icon:'inventory',routes:[['catalog.inventory.read','catalogo/inventario']]},
- {name:'Operaciones',code:'erp.operations',color:'orange',icon:'operations',routes:[['operations.orders.read','operaciones/pedidos'],['operations.preparation.read','operaciones/preparacion'],['operations.routes.read','operaciones/rutas'],['operations.nodes.read','operaciones/nodos']]},
+ {name:'Marketing',color:'orange',icon:'marketing',routes:[]},
  {name:'Ecommerce',code:'digital_sales.ecommerce',color:'violet',icon:'sales',routes:[['digital_sales.ecommerce.read','ventas-digitales/tiendas']]},
  {name:'Servicios',color:'teal',icon:'services',routes:[]},
  {name:'Centro de Agentes',code:'agent_center',color:'violet',icon:'agents',routes:[]},
- {name:'Recursos humanos',color:'rose',icon:'people',routes:[]},
+ {name:'CRM',color:'rose',icon:'people',routes:[]},
  {name:'Productividad',color:'indigo',icon:'productivity',routes:[]},
  {name:'Punto de venta',color:'orange',icon:'pos',routes:[]},
  {name:'Transporte',code:'erp.transport',color:'rose',icon:'transport',routes:[['transport.drivers.read','transporte/repartidores']]},
- {name:'Seguridad',color:'slate',icon:'security',routes:[]},
+ {name:'Estudio',color:'slate',icon:'studio',routes:[]},
 ];
 const paths={
  uonify:<><path d="M5 5v8a7 7 0 0 0 14 0V5M9 5v8a3 3 0 0 0 6 0V5"/><path d="m18 3 1 2 2 1-2 1-1 2-1-2-2-1 2-1 1-2Z"/></>,
@@ -27,6 +27,8 @@ const paths={
  productivity:<><rect x="4" y="4" width="16" height="17" rx="3"/><path d="M8 3v3m8-3v3M4 10h16m-12 5 3 3 5-5"/></>,
  pos:<><rect x="3" y="3" width="18" height="12" rx="2"/><path d="M9 15v5m6-5v5M6 21h12M7 7h5m-5 4h9"/></>,
  security:<><path d="m12 3 8 3v6c0 5-8 9-8 9s-8-4-8-9V6l8-3Z"/><path d="m8 12 3 3 5-6"/></>,
+ marketing:<><path d="m4 10 13-5v14L4 14v-4Zm13 0h4v4h-4M7 15l2 6h4l-2-5"/></>,
+ studio:<><rect x="3" y="4" width="18" height="16" rx="3"/><path d="m10 9 5 3-5 3V9ZM3 8h18"/></>,
 };
 function ModuleIcon({name}){return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{paths[name]}</svg>;}
 

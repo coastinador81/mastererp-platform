@@ -7,7 +7,7 @@ import zipfile
 def package(destination):
     folder = pathlib.Path(__file__).parent
     module = folder.parents[1]
-    shared = folder.parents[4] / "shared/tenant-security/tenant_security"
+    shared = next(parent for parent in folder.parents if parent.name == 'backend') / "shared/tenant-security/tenant_security"
     sources = {"handler.py": folder / "handler.py"}
     for source in sorted((module / "drivers_api").glob("*.py")):
         sources[f"drivers_api/{source.name}"] = source
