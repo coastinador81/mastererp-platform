@@ -62,13 +62,15 @@ export async function completeLoginIfNeeded() {
     const register = await postStorefrontIdentity('/v1/storefront/identity/register', {
       domain: storefrontConfig.domain,
     });
-    if (!register.ok && register.status !== 401) {
+    if (!register.ok && register.status !== 401 && register.status !== 403) {
       throw new ApiError(register.status, register.code);
     }
-    if (!register.ok && register.status === 401) {
+    if (!register.ok && (register.status === 401 || register.status === 403)) {
       sessionStorage.setItem(
         `mastererp.storefront.identity-hint:${storefrontScope()}`,
-        'Verifica tu correo en Cognito (email_verified) para usar checkout y tu perfil.',
+        register.status === 401
+          ? 'Verifica tu correo en Cognito (email_verified) para usar checkout y tu perfil.'
+          : 'No se pudo vincular tu cuenta con la tienda. Intenta cerrar sesión o contacta soporte.',
       );
     } else {
       sessionStorage.removeItem(`mastererp.storefront.identity-hint:${storefrontScope()}`);

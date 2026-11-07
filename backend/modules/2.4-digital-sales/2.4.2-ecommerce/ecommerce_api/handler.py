@@ -198,4 +198,5 @@ def lambda_handler(event: dict[str, Any], context: Any):
         return api_response(error.status, {"error": {"code": error.code, "message": error.message}, "correlation_id": correlation_id})
     except Exception as error:
         status, code = {"22023": (400, "invalid_request"), "23505": (409, "conflict"), "40001": (409, "stale_version"), "42501": (403, "forbidden"), "P0002": (404, "not_found")}.get(getattr(error, "sqlstate", None), (500, "internal_error"))
-        return api_response(status, {"error": {"code": code, "message": "E-commerce request failed"}, "correlation_id": correlation_id})
+        detail = str(error).split("\n", 1)[0] if status != 500 else "E-commerce request failed"
+        return api_response(status, {"error": {"code": code, "message": detail}, "correlation_id": correlation_id})

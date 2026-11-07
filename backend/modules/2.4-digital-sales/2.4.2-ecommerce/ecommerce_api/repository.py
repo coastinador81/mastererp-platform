@@ -30,6 +30,10 @@ class EcommerceRepository:
         ).fetchone()["value"]
 
     def register_identity(self, claims, domain):
+        self.connection.execute(
+            "SELECT set_config('app.current_operation', %s, true)",
+            ("digital_sales.storefront.identity.register",),
+        )
         return self.connection.execute(
             "SELECT ventas_digitales.cliente_identidad_registrar(%s,%s,%s,%s,%s) value",
             (claims["iss"], claims["sub"], claims["email"], claims.get("name") or claims["email"], domain),
