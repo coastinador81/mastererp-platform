@@ -14,7 +14,7 @@ Código: 2.3.1. Nombre/ruta: `2.3.1-orders`. Objetivo y alcance: los descritos a
 
 Capa: backend. Dependencias: contexto autenticado, tenant y contratos del padre cuando correspondan; contratos adicionales pendientes de definición. Exclusiones: lógica y recursos de otros módulos; conectores técnicos fuera de Digital Sales. APIs/eventos/MCP: no declarar disponibles por existir esta carpeta; revisar implementación y contrato antes de consumir. Propuestas sin contrato confirmado permanecen pendientes.
 
-Estado verificable: 14 pruebas en `tests/` cubren dominio y adapter HTTP. La
+Estado verificable: 18 pruebas en `tests/` cubren dominio y adapter HTTP. La
 Lambda exige claims verificados de API Gateway, resuelve `issuer + sub` contra
 la identidad interna y delega autorización de tenant/empresa a PostgreSQL.
 La creación exige `Idempotency-Key` y una referencia opaca de reserva emitida
@@ -28,20 +28,18 @@ Validaciones: `python -m unittest discover -s backend/modules/2.3-operations/2.3
 y estructura local mediante `scripts/validate_structure.py`. El checkout E2E,
 la observación DEV y el retiro reversible de escritores legacy aprobaron.
 
+## Confirmación eCommerce y Ventas — AWS DEV validado
 
-## Candidato de conexión con Ventas — 7 noviembre 2026
+Al confirmar un pedido de eCommerce, el adapter resuelve su origen en PostgreSQL y ejecuta `administracion.venta_desde_pedido` en la misma transacción mastererp_app/SSL. Devuelve el pedido y un bloque `sale`. Otros orígenes/transiciones mantienen su comando previo. Depende de 046 y 047 de Database, aplicadas/reaplicadas en DEV. Ver [contrato oficial de datos](https://github.com/eticayservicios/mastererp-database/blob/dev/docs/SALES_ORDER_COMMAND.md).
 
-Dependencia SQL: 046 de Database, ya aplicada/reaplicada en DEV. El candidato del repositorio resuelve el origen con `operaciones.pedido_origen_ecommerce`. Solo al confirmar un pedido eCommerce usa `administracion.venta_desde_pedido` en la misma transacción de aplicación y devuelve el pedido vigente con un bloque adicional `sale`. Otros orígenes y otras transiciones conservan la función operativa existente. No hay dos commits ni una escritura directa desde el navegador.
+Endpoint existente: `POST /v1/companies/{company_id}/orders/{order_id}/transitions`. JWT, `X-Tenant-Id` y cuerpo `{version,status:"CONFIRMED",reason,detail?}`. Idempotency-Key opcional; fallback estable `sv:<pedido_id>:<version>`. Campos opcionales: sale_date, exchange_rate, exchange_date, exchange_source. Fecha omitida: zona horaria de empresa; moneda distinta requiere cambio explícito. Reason/detail se conservan y participan en idempotencia.
 
-Se conserva el endpoint y cuerpo de transiciones. Idempotency-Key es opcional aquí; si falta, la clave estable es `sv:<pedido_id>:<version>`. Campos opcionales: sale_date, exchange_rate, exchange_date, exchange_source. Sin fecha se usa la zona horaria de la empresa; moneda distinta requiere cambio explícito. La razón técnica registrada por el comando de venta es SALE_CONFIRMED; el reason/detail del endpoint antiguo no se traslada todavía a ese evento y debe resolverse antes del despliegue para no degradar auditoría.
+Rol aprobado `tenant.finance_admin` (Administradores de Finanzas): administration.sales.write + administration.read + operations.orders.read, sin escritura operativa general. No se modificaron pertenencias de usuarios reales ni se reemplazó su rol de propietario. El helper privado confirma únicamente PENDING→CONFIRMED, con pago efectivo pendiente de cobro o métodos actuales/legacy VALIDATED. No verifica pagos bancarios por sí mismo ni inventa su validación.
 
-Necesita el permiso nuevo administration.sales.write, cuya asignación al rol funcional está pendiente de decisión del propietario. No se amplían roles existentes automáticamente. El backend candidato todavía NO está desplegado: primero revisar permisos, auditoría y pruebas HTTP. Pagos mobile/transfer del checkout mantienen la incompatibilidad previa con mobile_payment/bank_transfer de la transición; no se transforman pagos pendientes en validados.
+Despliegue: source e2013ad, artefacto CI 42318856201, ZIP ARM64 SHA-256 61f69a11947e9fe16f0070f846f366c3d2d17a8801c2aa09d289e68c447aadc8; stack propietario mastererp-dev-operations. Se conservaron IDs, rol de ejecución, entorno, red, rutas, integración, JWT y CORS. El workflow Validate Orders backend candidate prueba y empaqueta en Linux remoto; no despliega automáticamente. Infrastructure usa scripts/deploy_orders_sales.py y change set revisado; no reimporta la API.
 
-El workflow Validate Orders backend candidate ejecuta pruebas unitarias y empaquetado en Linux remoto, sin AWS deploy. El empaquetador incluye PyJWT/cryptography y dependencias como el ZIP actual; antes omitía esos paquetes aunque el ZIP ya desplegado sí los contenía. Son las mismas versiones utilizadas por eCommerce, sin instalación local. Pruebas de doubles no acreditan persistencia HTTP. La publicación AWS futura pertenece al stack mastererp-dev-operations, modificando solo OrdersArtifactKey y verificando change set/IDs; nunca reimportar APIs con SAM.
+Resultados: 18 pruebas unitarias remotas; importación del driver y comprobación de binarios/dependencias; 14 casos HTTP reales, incluidos datos persistidos, replay, contenido distinto, versión, denegaciones y concurrencia con commit. Misma clave: 200/200 con mismo ID; distinta clave para el mismo pedido: 200/409 y una sola venta. Tres pedidos CONFIRMED, tres ventas y auditoría comprobados. Ver [evidencia HTTP](../../../../docs/sales-dev-evidence/sales-http-result-v2.json) y [persistencia](../../../../docs/sales-dev-evidence/sales-final-persisted-evidence.json).
 
+Se conservan ventas selladas de prueba en un tenant DEV suspendido con pertenencia inactiva; no se desactivan triggers para borrarlas. No son un ambiente QA nuevo. Hubo un fallo inicial de empaquetado por typing_extensions.py ausente: se restauró el ZIP previo por CloudFormation, se corrigió el paquete y se repitió la suite con éxito. El artefacto x86 inicial se bloqueó antes de desplegar; el runtime real es Python 3.12 ARM64.
 
-### Contrato ampliado 047 y aprobación del rol
-
-El propietario aprobó Administradores de Finanzas. La dependencia para este candidato es ahora 046 + 047: 047 conserva reason/detail y los incluye en la idempotencia cuando existen. La confirmación financiera usa un helper privado acotado, sin conceder operations.orders.write al rol de Finanzas. No hay asignación automática a usuarios reales ni pérdida del rol de propietario existente. La validación de pagos admite alias actuales/legacy solo con VALIDATED; efectivo pendiente de cobro conserva el contrato vigente.
-
-Las notas anteriores sobre motivo pendiente describen el candidato anterior y quedan superadas por 047. El backend no se considera desplegado hasta registrar el change set del stack propietario y las verificaciones HTTP. Las pruebas HTTP crearán únicamente un tenant DEV de fixture identificado, que quedará inactivo al terminar si contiene ventas selladas; no se desactivan triggers para borrar su historial.
+Pendientes: asignar roles a personas reales sin perder propiedad, frontend propio de Ventas, otros orígenes, captura/verificación de cambio en consumidores, validación real de pagos y cancelaciones coordinadas. No hay facturación ni cobros automáticos.
