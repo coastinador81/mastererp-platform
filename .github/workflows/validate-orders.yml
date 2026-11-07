@@ -17,13 +17,16 @@ jobs:
         with:
           python-version: '3.12'
       - name: Install existing project runtime dependencies on Linux
-        run: pip install --no-compile --target /tmp/orders-deps -r backend/modules/2.3-operations/2.3.1-orders/lambdas/mastererp-dev-orders/requirements-package.txt
+        run: pip install --no-compile --target /tmp/orders-test-deps -r backend/modules/2.3-operations/2.3.1-orders/lambdas/mastererp-dev-orders/requirements-package.txt
       - name: Run contract unit tests remotely
         env:
-          PYTHONPATH: /tmp/orders-deps:backend/shared/tenant-security:backend/modules/2.3-operations/2.3.1-orders
+          PYTHONPATH: /tmp/orders-test-deps:backend/shared/tenant-security:backend/modules/2.3-operations/2.3.1-orders
         run: python -m unittest discover -s backend/modules/2.3-operations/2.3.1-orders/tests -p 'test_*.py'
       - name: Build Linux artifact without deployment
-        run: python backend/modules/2.3-operations/2.3.1-orders/lambdas/mastererp-dev-orders/package.py orders.zip --dependencies /tmp/orders-deps
+        run: |
+          pip install --no-compile --platform manylinux_2_34_aarch64 --platform manylinux_2_28_aarch64 --platform manylinux2014_aarch64 --implementation cp --python-version 3.12 --abi cp312 --only-binary=:all: --target /tmp/orders-deps -r backend/modules/2.3-operations/2.3.1-orders/lambdas/mastererp-dev-orders/requirements-package.txt
+          python backend/modules/2.3-operations/2.3.1-orders/lambdas/mastererp-dev-orders/package.py orders.zip --dependencies /tmp/orders-deps
+          python -c "import zipfile,struct; z=zipfile.ZipFile('orders.zip'); libs=[n for n in z.namelist() if '.so' in n]; assert libs; assert all(struct.unpack('<H',z.read(n)[18:20])[0]==183 for n in libs); print('All packaged native binaries are Linux ARM64')"
       - uses: actions/upload-artifact@v4
         with:
           name: orders-candidate-${{ github.sha }}
