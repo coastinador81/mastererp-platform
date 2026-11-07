@@ -1,4 +1,4 @@
-import { authorizedIdentityFetch } from '../../shared/auth/cognito.mjs';
+import { authorizedIdentityFetch } from '../../../../../shared/auth/cognito.mjs';
 import { assertStorefrontContext, storefrontConfig } from './config';
 import type { CartLine, CustomerAddress, CustomerOrder, CustomerProfile, PaymentMethod, StorefrontCatalog } from './types';
 

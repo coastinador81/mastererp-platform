@@ -21,3 +21,10 @@ Estado verificable: build Vite local y composición Uonify aprobados. Smoke del
 nuevo panel en DEV pendiente.
 
 Validaciones: estructura local mediante scripts/validate_structure.py. Pendientes: contratos específicos, responsable nominal y pruebas funcionales antes de habilitar esta capacidad.
+
+## Storefront público (comprador)
+
+- **Código:** `storefront/` (Expo Web; migrado desde `frontend/storefront-web`).
+- **DEV:** https://tienda-dev.uonify.com
+- **Build:** `cd storefront && npm ci && npm run build` (ver `.env.dev`).
+- **CI:** `.github/workflows/publish-storefront-dev.yml`

@@ -1,5 +1,5 @@
 import authConfig from '../auth-config.json';
-import { authorizedIdentityFetch, completeLogin, login, logout, sessionExpiresAt } from '../../shared/auth/cognito.mjs';
+import { authorizedIdentityFetch, completeLogin, login, logout, sessionExpiresAt } from '../../../../../shared/auth/cognito.mjs';
 import { assertStorefrontContext, storefrontConfig, storefrontScope } from './config';
 
 const invitationKey = () => `mastererp.storefront.invitation:${storefrontScope()}`;
