@@ -1,5 +1,6 @@
 import productosCss from '../../styles/pages/productos.css?inline';
 import preciosCss from '../../styles/pages/precios.css?inline';
+import richCss from '../../styles/pages/rich.css?inline';
 import { viewSheets } from '../../styles/sheets';
 import { PATHS, PUBLIC_VIEWS } from '../../model/views';
 import { formatEuros, MONTHLY_NET_EUR, MONTHLY_PRICE_EUR, YEARLY_NET_EUR, YEARLY_PRICE_EUR } from '../../model/seo/plans';
@@ -8,7 +9,7 @@ import { PageFooter, SITE_FOOTER_LINKS } from '../common/PageFooter';
 import { PageHeader } from '../common/PageHeader';
 import { PublicView } from '../common/PublicView';
 
-const SHEETS = viewSheets(productosCss, preciosCss);
+const SHEETS = viewSheets(productosCss, preciosCss, richCss);
 
 /** Lo que incluye la suscripción. */
 const INCLUDES: readonly string[] = [
@@ -41,10 +42,15 @@ export function PreciosPage() {
     <PublicView view={PUBLIC_VIEWS.precios} sheets={SHEETS}>
       <PageHeader current="precios" loginLabel="Tu espacio Uonify" />
       <main id="contenido" tabIndex={-1}>
-        <section className="price-hero wrap" aria-labelledby="price-title">
-          <p className="eyebrow">PRECIO DE UONIFY</p>
-          <h1 id="price-title">Un plan. <span>Claro desde el principio.</span></h1>
-          <p className="lead">Entra en Uonify y empieza a trabajar con Uony. Eliges pago mensual o anual, y tienes 14 días para darte de baja. Las imágenes y los vídeos los pagas a Google con tu proyecto, a sus precios.</p>
+        <section className="hero-split wrap" aria-labelledby="price-title">
+          <div className="hero-copy">
+            <p className="eyebrow">PRECIO DE UONIFY</p>
+            <h1 id="price-title">Un plan. <span>Claro desde el principio.</span></h1>
+            <p className="lead">Entra en Uonify y empieza a trabajar con Uony. Eliges pago mensual o anual, y tienes 14 días para darte de baja. Las imágenes y los vídeos los pagas a Google con tu proyecto, a sus precios.</p>
+          </div>
+          <div className="hero-illo hero-glow">
+            <img src="/assets/product-icons/analitica.png" width="320" height="320" alt="Personaje de analítica de Uonify" fetchPriority="high" />
+          </div>
         </section>
 
         <div className="plan-wrap wrap">

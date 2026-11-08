@@ -1,3 +1,5 @@
+import { DeviceFrame } from '../common/DeviceFrame';
+
 /** Administración (ERP) dentro de Uonify: capacidades reales ya disponibles en DEV
  *  (Clientes, Proveedores, Ventas, Compras). Ilustración: el personaje ERP del manual. */
 const ADMIN: ReadonlyArray<{ t: string; d: string }> = [
@@ -27,6 +29,21 @@ export function AdminErpSection() {
             <span className="erp-pill">Disponible</span>
           </article>
         ))}
+      </div>
+      <div className="alt-section">
+        <div className="alt-copy">
+          <p className="kicker">Administración</p>
+          <h2>Una ficha común para clientes y proveedores.</h2>
+          <p>Datos, contactos y condiciones comerciales por empresa, con el mismo rigor que el resto de Uonify y bajo tu control.</p>
+          <ul>
+            <li>Alta, edición y búsqueda, con persistencia real.</li>
+            <li>Ventas y compras (solicitud, orden y factura).</li>
+            <li>Seguridad y aislamiento por empresa.</li>
+          </ul>
+        </div>
+        <div className="alt-media">
+          <DeviceFrame illo="erp" label="Administración en Uonify" alt="Administración en Uonify" />
+        </div>
       </div>
     </section>
   );

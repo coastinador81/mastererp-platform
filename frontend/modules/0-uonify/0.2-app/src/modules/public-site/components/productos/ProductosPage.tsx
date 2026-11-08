@@ -2,6 +2,7 @@ import productosCss from '../../styles/pages/productos.css?inline';
 import juegoCss from '../../styles/pages/juego-uonify.css?inline';
 import galeriaCss from '../../styles/pages/galeria-imagenes.css?inline';
 import adminErpCss from '../../styles/pages/admin-erp.css?inline';
+import richCss from '../../styles/pages/rich.css?inline';
 import { viewSheets } from '../../styles/sheets';
 import { PUBLIC_VIEWS } from '../../model/views';
 import { PageFooter, SITE_FOOTER_LINKS } from '../common/PageFooter';
@@ -16,7 +17,7 @@ import { SectionNav } from './SectionNav';
 import { ReviewStory, WritingStory } from './StoryPanels';
 import { UniverseSection } from './UniverseSection';
 
-const SHEETS = viewSheets(productosCss, juegoCss, galeriaCss, adminErpCss);
+const SHEETS = viewSheets(productosCss, juegoCss, galeriaCss, adminErpCss, richCss);
 const FOOTER = SITE_FOOTER_LINKS;
 
 /** Productos (`/productos`, #view-producto): el universo Uonify y la ficha de ejemplo. */
