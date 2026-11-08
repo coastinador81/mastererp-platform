@@ -20,3 +20,11 @@ La infraestructura de `mastererp-infrastructure/modules/2.6-agent-center` solo c
 El dominio DEV es `https://agentes-dev.uonify.com/`. La publicación debe construir o empaquetar esta entrada desde Platform; Infrastructure conserva el dominio y los recursos AWS asociados.
 
 Antes de habilitar operaciones reales, definir contratos de tenant, empresa, permisos, APIs y auditoría. La navegación no concede acceso.
+
+## Regla obligatoria de propiedad del frontend
+
+**Todo código editable del Centro de Agentes vive exclusivamente en este módulo de Platform:** `frontend/modules/2.6-agent-center/`. La entrada publicada es `agents-web/index.html`.
+
+Antes de editar una interfaz, un agente debe comprobar esta regla e informar al desarrollador si la petición apunta a Infrastructure. `mastererp-infrastructure` no es una fuente de frontend: solo mantiene CloudFront, S3, DNS, certificado, permisos OIDC y la infraestructura necesaria para publicar el artefacto generado desde Platform. No crear, copiar ni corregir HTML, CSS, JavaScript, assets o builds del Centro de Agentes en Infrastructure.
+
+Una modificación de hosting no autoriza a cambiar la interfaz; una modificación de interfaz no autoriza a cambiar DNS, AWS, permisos ni despliegues. Si se requieren ambos cambios, deben tratarse como dos tareas coordinadas, indicando al desarrollador qué repositorio, recurso y publicación están implicados.
