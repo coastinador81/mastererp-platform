@@ -32,3 +32,7 @@ Ver `docs/UX_UI_STANDARD.md` y `docs/FRONTEND_ARCHITECTURE.md` desde la raíz. L
 ## Verificación de esta entrega
 
 Publicado por bootstrap AWS CLI en https://inventario-dev.uonify.com, 2026-11-08. Build aprobado; navegación, recarga, historial y móvil probados localmente y en el dominio DEV. Sin llamadas API, sin selector de nodos. YAML/Bash del workflow validados, pero el workflow todavía no está publicado ni ejecutado. Validadores estructurales y git diff --check aprobados. Este resultado corresponde al bootstrap inicial, anterior a la publicación del código en dev. El commit de publicación incorpora también el pipeline OIDC y los accesos compartidos de Inventario y Chat principal.
+
+## Barra lateral de servicios relacionados
+
+Inventario incorpora una barra estrecha a la izquierda del menú funcional: Chat, Ecommerce, Finanzas e Inventario activo. Reutiliza catálogo e iconos del lanzador mediante RelatedServicesRail; no añade servicios ni otro catálogo. En escritorio quedan dos niveles de navegación; en móvil los servicios aparecen en una franja horizontal bajo el encabezado, y el menú funcional continúa en panel lateral. Enlaces nativos, misma pestaña, etiquetas accesibles y títulos; Inventario activo se identifica sin enlace de recarga. No concede permisos ni implementa SSO. Publicación mediante el pipeline DEV propietario de Inventario; no modifica backend, datos ni permisos.

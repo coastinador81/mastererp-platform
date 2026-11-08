@@ -22,3 +22,7 @@ Los pipelines de Finanzas y Ecommerce observan esta carpeta. Cambiar un icono/en
 Navegación principal: los enlaces de aplicaciones fijan target=_self, por lo que un clic normal sustituye la aplicación en la misma pestaña. Se preserva la apertura voluntaria con Ctrl/Cmd o menú contextual. Finanzas incorpora un icono de chat junto al lanzador para volver a https://dev.uonify.com/ sin tokens ni contexto en la URL. El acceso no implementa SSO ni modifica autorizaciones. Publicación mediante los pipelines DEV propietarios de las aplicaciones.
 
 Inventario está habilitado en el catálogo fuente con https://inventario-dev.uonify.com/. El Chat principal se muestra dentro de la cuadrícula, además del acceso del encabezado financiero. Ambos fijan target=_self y no transfieren contexto ni tokens. La visibilidad de estos accesos se actualiza al publicar los artefactos de cada aplicación mediante sus pipelines.
+
+## Servicios relacionados
+
+RelatedServicesRail.jsx adapta mastererp-related-services. Usa el mismo catálogo y los mismos iconos del lanzador, sin duplicarlos. related-apps selecciona IDs conocidos con enlace disponible; current-app marca la aplicación actual. Inventario lo monta con Chat, Ecommerce, Finanzas e Inventario. Navegación en la misma pestaña, foco visible y etiquetas accesibles; móvil en horizontal. No identifica módulos contratados ni sustituye autorización backend. Su copia estática se genera con el mismo mecanismo anterior.
