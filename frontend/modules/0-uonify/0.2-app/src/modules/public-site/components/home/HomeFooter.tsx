@@ -13,7 +13,7 @@ export function HomeFooter() {
   };
   return (
     <>
-      <footer className="footer">
+      <footer className="site-footer">
         <nav aria-label="Descubrir Uonify">
           <Link to={PATHS.paraEmpresas}>Para equipos y marcas</Link>
           <Link to={PATHS.comoFunciona}>Cómo funciona Uonify</Link>

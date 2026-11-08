@@ -14,6 +14,8 @@ const MAIN_NAV: ReadonlyArray<{ view?: PublicViewKey; to: string; label: string 
   { view: 'como-funciona', to: PATHS.comoFunciona, label: 'Cómo funciona' },
   { view: 'producto', to: PATHS.productos, label: 'Servicios' },
   { view: 'lo-que-puedes-hacer', to: PATHS.loQuePuedesHacer, label: 'Lo que puedes hacer' },
+  { view: 'partners', to: PATHS.partners, label: 'Partners' },
+  { view: 'clientes', to: PATHS.clientes, label: 'Clientes' },
   { view: 'precios', to: PATHS.precios, label: 'Precios' },
   { to: '/ayuda', label: 'Ayuda' },
 ];

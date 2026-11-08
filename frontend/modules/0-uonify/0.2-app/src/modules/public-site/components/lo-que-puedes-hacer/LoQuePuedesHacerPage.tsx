@@ -235,7 +235,7 @@ export function LoQuePuedesHacerPage() {
         <section className="cd-close wrap" aria-labelledby="cd-close-title">
           <div className="chars"><img src="/assets/product-icons/catalogo.png" width="84" height="84" alt="" loading="lazy" /><img src="/assets/product-icons/hive.png" width="84" height="84" alt="" loading="lazy" /><img src="/assets/product-icons/nexus.png" width="84" height="84" alt="" loading="lazy" /></div>
           <h2 id="cd-close-title">Empieza con una conversación. <span>Lo demás, paso a paso.</span></h2>
-          <p className="lead">Entra en Uonify desde 11,98 € al mes o 143,75 € al año (IVA de España incluido; el IVA final depende de tu país) y empieza a trabajar con Uony. Tienes 14 días para darte de baja. Las imágenes y los vídeos los paga tu proyecto de Google, a sus precios, y ves su precio antes de crear cada pieza.</p>
+          <p className="lead">Entra en Uonify desde 9,90 € al mes + IVA (en España, 11,98 € al mes con el IVA incluido; el IVA final depende de tu país) y empieza a trabajar con Uony. Tienes 14 días para darte de baja. Las imágenes y los vídeos los paga tu proyecto de Google, a sus precios, y ves su precio antes de crear cada pieza.</p>
           <p className="note">¿Nuevo en Google Cloud? Google ofrece a sus clientes nuevos 300 $ de crédito de prueba durante 90 días, según sus condiciones.</p>
           <div className="actions">
             <HomeLink className="button primary" to={PATHS.composer}>Empieza con Uony <I id="arrow-right" /></HomeLink>
