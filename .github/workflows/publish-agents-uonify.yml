@@ -6,6 +6,8 @@ on:
     paths:
       - 'frontend/modules/2.6-agent-center/agents-web/**'
       - 'frontend/shared/module-launcher/**'
+      - 'frontend/modules/2.2-finance/src/assets/fonts/Inter-latin-variable.woff2'
+      - 'frontend/modules/2.2-finance/public/fonts/Inter-OFL.txt'
       - '.github/workflows/publish-agents-uonify.yml'
 
 permissions:
@@ -30,6 +32,8 @@ jobs:
           cp frontend/modules/2.6-agent-center/agents-web/index.html index.html
           mkdir -p publish/shared
           cp frontend/shared/module-launcher/module-launcher.mjs publish/shared/module-launcher.mjs
+          cp frontend/modules/2.2-finance/src/assets/fonts/Inter-latin-variable.woff2 publish/shared/Inter-latin-variable.woff2
+          cp frontend/modules/2.2-finance/public/fonts/Inter-OFL.txt publish/shared/Inter-OFL.txt
       - name: Publish to the existing frontend bucket
         env:
           BUCKET: ${{ vars.AGENTS_UONIFY_BUCKET }}
@@ -39,6 +43,8 @@ jobs:
           test -n "${BUCKET:-}" && test -n "${DISTRIBUTION:-}"
           test "$(aws sts get-caller-identity --query Account --output text)" = 277352717693
           aws s3 cp publish/shared/module-launcher.mjs "s3://$BUCKET/shared/module-launcher.mjs" --content-type 'text/javascript; charset=utf-8' --cache-control 'no-cache,max-age=0,must-revalidate'
+          aws s3 cp publish/shared/Inter-latin-variable.woff2 "s3://$BUCKET/shared/Inter-latin-variable.woff2" --content-type 'font/woff2' --cache-control 'public,max-age=86400'
+          aws s3 cp publish/shared/Inter-OFL.txt "s3://$BUCKET/shared/Inter-OFL.txt" --content-type 'text/plain; charset=utf-8' --cache-control 'no-cache,max-age=0,must-revalidate'
           aws s3 cp index.html "s3://$BUCKET/index.html" --content-type 'text/html; charset=utf-8' --cache-control 'no-cache,max-age=0,must-revalidate'
-          invalidation=$(aws cloudfront create-invalidation --distribution-id "$DISTRIBUTION" --paths / /index.html /shared/module-launcher.mjs --query Invalidation.Id --output text)
+          invalidation=$(aws cloudfront create-invalidation --distribution-id "$DISTRIBUTION" --paths / /index.html "/shared/*" --query Invalidation.Id --output text)
           aws cloudfront wait invalidation-completed --distribution-id "$DISTRIBUTION" --id "$invalidation"

@@ -42,3 +42,15 @@ Aplicar el [estándar UX/UI de MasterERP](../../../docs/UX_UI_STANDARD.md) antes
 
 Esta sección orienta el diseño; no acredita implementación ni añade requisitos funcionales. Ver la guía para composición aplicable, pruebas y variantes justificadas.
 <!-- ux-ui-standard:end -->
+
+## Navegación visual — doble barra
+
+La entrada de Platform reutiliza `frontend/shared/module-launcher/module-launcher.mjs` para los nueve puntos de la esquina superior derecha y para la barra de servicios relacionados (Chat, Finanzas, Ecommerce, Inventario y Agentes activo). Enlaces en la misma pestaña, sin tokens ni contexto en URL. No se modifica ninguna copia de Infrastructure.
+
+El segundo nivel conserva las secciones existentes de Agentes. En escritorio parte compacto (64 px) y se expande sobre el contenido (256 px) al pasar el cursor o enfocar sus enlaces con teclado; se recoge al salir cuando no queda foco dentro. No desplaza el contenido. Las etiquetas y títulos siguen siendo accesibles en modo compacto. Respeta movimiento reducido.
+
+En móvil, servicios en horizontal y menú funcional por botón; cierre por selección, fondo y Escape. Navegación interna mediante `?vista=...`, con recarga, historial y enlaces nativos. Las pantallas y operaciones existentes se conservan; la base no añade autenticación, permisos ni capacidades de agentes.
+
+Vista local sin herramientas nuevas: `node scripts/preview_agents_frontend.mjs --port 5183` desde Platform, URL http://127.0.0.1:5183/. El servidor local solo expone la entrada y assets compartidos expresamente permitidos. Inter y su licencia se toman de la fuente ya existente de Finanzas, sin duplicar el archivo fuente.
+
+El workflow propietario prepara HTML, lanzador, Inter y licencia desde Platform. Se modificó únicamente su empaquetado/publicación de archivos; no cambian roles, bucket, CloudFront, DNS o certificados. Validación local completada. Publicación mediante el workflow DEV propietario; su resultado se verifica en GitHub Actions y en el dominio, sin cambios de recursos AWS.
