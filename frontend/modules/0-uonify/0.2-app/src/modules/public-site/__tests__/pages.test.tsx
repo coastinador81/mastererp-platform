@@ -208,7 +208,7 @@ describe('páginas legales', () => {
   test('con sesión, «Volver a Uonify» lleva al espacio', () => {
     authState.status = 'ready';
     renderPage(<LegalPage doc="terminos" />, '/terminos');
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Información sobre el acceso.');
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Aviso legal y condiciones.');
     expect(screen.getByRole('link', { name: 'Volver a Uonify' })).toHaveAttribute('href', '/espacio');
   });
 });

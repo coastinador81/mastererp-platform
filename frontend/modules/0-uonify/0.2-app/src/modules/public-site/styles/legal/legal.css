@@ -1,16 +1,203 @@
-/* Copia fiel de ../home-v21-propuesta/legal.css del prototipo (home-v22-propuesta).
-   Se inyecta solo mientras la vista está montada (hooks/useViewStyles), como el PROTO. */
+/* Páginas legales de Uonify (Privacidad y Condiciones). Identidad del manual:
+   azul #0178F7 solo para titular, foco y decoración; azul 600 #006AE1 para el texto
+   azul pequeño y los enlaces (regla del 600). Tinta #152438. Inter.
+   Se inyecta solo mientras la vista está montada (useViewStyles). */
 * { box-sizing: border-box; }
-body { margin: 0; color: #223b50; background: #f7fbff; font-family: system-ui, sans-serif; line-height: 1.7; }
-header { max-width: 1060px; padding: 28px 24px; margin: auto; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+body {
+  margin: 0;
+  color: #34445a;
+  background: #f7fbff;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+header {
+  max-width: 1060px;
+  padding: 24px max(24px, env(safe-area-inset-left, 0px));
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
 header img { display: block; }
-a { color: #075db5; text-underline-offset: 4px; }
-header > a:last-child { font-size: 13px; }
-main { max-width: 760px; margin: 34px auto 80px; padding: 0 24px; }
-.eyebrow { color: #47657c; font-size: 11px; letter-spacing: .08em; font-weight: 700; }
-h1 { color: #102b40; font-size: clamp(32px,5vw,46px); line-height: 1.14; letter-spacing: -.04em; margin: 20px 0; }
-.lead { font-size: 19px; color: #476174; }
-h2 { margin-top: 32px; font-size: 20px; color: #18394f; }
-p { font-size: 15px; }
-.back { display: inline-block; margin-top: 22px; font-weight: 650; }
-:focus-visible { outline: 3px solid #0178f7; outline-offset: 5px; }
+header > a:last-child {
+  font-size: 13px;
+  color: #006AE1;
+  text-decoration: none;
+  font-weight: 600;
+}
+header > a:last-child:hover { text-decoration: underline; }
+
+main {
+  max-width: 788px;
+  margin: 28px auto 56px;
+  padding: 0 max(24px, env(safe-area-inset-left, 0px));
+}
+
+.eyebrow {
+  color: #006AE1;
+  font-size: 12px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  font-weight: 700;
+  margin: 0;
+}
+h1 {
+  color: #152438;
+  font-size: clamp(30px, 5vw, 44px);
+  line-height: 1.12;
+  letter-spacing: -.03em;
+  margin: 14px 0 16px;
+  text-wrap: balance;
+}
+.lead {
+  font-size: 18px;
+  color: #4a5a6e;
+  margin: 0 0 8px;
+  max-width: 62ch;
+}
+
+/* Índice (los apartados) */
+.legal-toc {
+  margin: 28px 0 8px;
+  padding: 20px 24px;
+  background: #fff;
+  border: 1px solid #e1e8f1;
+  border-radius: 16px;
+  box-shadow: 0 10px 28px rgba(21, 36, 56, .06);
+}
+.legal-toc-title {
+  margin: 0 0 12px;
+  font-size: 12px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: #8595a6;
+  font-weight: 700;
+}
+.legal-toc ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: toc;
+  columns: 2;
+  column-gap: 32px;
+}
+.legal-toc li {
+  break-inside: avoid;
+  margin: 0 0 7px;
+  padding-left: 4px;
+}
+.legal-toc a {
+  color: #006AE1;
+  text-decoration: none;
+  font-size: 14px;
+}
+.legal-toc a:hover { text-decoration: underline; }
+
+/* Cuerpo del documento */
+.legal-body { margin-top: 10px; }
+.legal-body h2 {
+  margin: 40px 0 10px;
+  font-size: 22px;
+  color: #152438;
+  letter-spacing: -.02em;
+  scroll-margin-top: 20px;
+}
+.legal-body h3 {
+  margin: 24px 0 8px;
+  font-size: 17px;
+  color: #1c3550;
+  scroll-margin-top: 20px;
+}
+.legal-body p { font-size: 15.5px; margin: 10px 0; }
+.legal-body strong { color: #223b50; font-weight: 650; }
+.legal-body a { color: #006AE1; text-underline-offset: 3px; }
+
+.legal-body ul {
+  margin: 10px 0;
+  padding: 0;
+  list-style: none;
+}
+.legal-body li {
+  position: relative;
+  padding-left: 20px;
+  margin: 6px 0;
+  font-size: 15.5px;
+}
+.legal-body li::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 10px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #0178F7;
+}
+.legal-body li ul { margin: 6px 0 6px; }
+.legal-body li ul li::before { background: #9fb6cc; }
+
+.legal-rule {
+  border: 0;
+  border-top: 1px solid #e1e8f1;
+  margin: 24px 0;
+}
+
+blockquote {
+  margin: 14px 0;
+  padding: 12px 18px;
+  border-left: 3px solid #0178F7;
+  background: #f2f7ff;
+  border-radius: 0 10px 10px 0;
+  color: #47657c;
+  font-size: 14.5px;
+}
+
+/* Tablas (datos, bases legales, plazos) */
+.legal-table-wrap { overflow-x: auto; margin: 14px 0; }
+.legal-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  min-width: 440px;
+}
+.legal-table th,
+.legal-table td {
+  text-align: left;
+  vertical-align: top;
+  padding: 10px 14px;
+  border-bottom: 1px solid #e8edf3;
+}
+.legal-table thead th {
+  background: #f4f7fb;
+  color: #374151;
+  font-weight: 600;
+  border-bottom: 1px solid #dbe4ee;
+}
+.legal-table tbody tr:nth-child(even) { background: #fafcff; }
+
+.back {
+  display: inline-block;
+  margin-top: 30px;
+  font-weight: 600;
+  color: #006AE1;
+  text-decoration: none;
+}
+.back:hover { text-decoration: underline; }
+
+:focus-visible { outline: 3px solid #0178F7; outline-offset: 4px; border-radius: 3px; }
+
+@media (max-width: 640px) {
+  .legal-toc ol { columns: 1; }
+  main { margin-top: 18px; }
+}
+
+/* Pie global de la Home (HomeFooter), idéntico en todas las páginas públicas.
+   Copia fiel del bloque de styles.css/productos.css (decisión del dueño, 08-11-2026). */
+.site-footer { width: 100%; max-width: none; min-height: 52px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 24px; margin: 0; padding: 14px max(32px, env(safe-area-inset-right,0px)) 14px max(32px, env(safe-area-inset-left,0px)); background: #edf1f5; border-top: 1px solid #e0e6ec; color: #536272; font-size: 12px; }
+.site-footer nav { display: flex; flex-wrap: wrap; gap: 22px; }
+.site-footer a, .site-footer button { color: #536272; text-decoration: none; background: transparent; border: 0; font: inherit; cursor: pointer; padding: 0; }
+.site-footer a:hover, .site-footer button:hover { color: #0052bc; }
+@media (max-width: 560px) { .site-footer { justify-content: center; gap: 10px 18px; } }

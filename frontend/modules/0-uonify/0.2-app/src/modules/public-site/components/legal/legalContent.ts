@@ -1,30 +1,37 @@
-/** Textos de las páginas legales del prototipo (#view-privacidad, #view-terminos). */
+import privacidadMd from './privacidad.md?raw';
+import condicionesMd from './condiciones.md?raw';
+import { fillLegal } from './legalData';
+import { tocFromMarkdown, type TocItem } from './LegalMarkdown';
+
+/** Textos de las páginas legales públicas (#view-privacidad, #view-terminos).
+ *  El cuerpo es la copia fiel de los textos de Legal (platform/docs/legal), con los
+ *  datos de la empresa rellenados desde legalData.ts. */
 export type LegalKey = 'privacidad' | 'terminos';
 
 export interface LegalDocument {
   eyebrow: string;
   title: string;
   lead: string;
-  sections: ReadonlyArray<{ heading: string; body: string }>;
+  body: string;
+  toc: TocItem[];
 }
+
+const privacidad = fillLegal(privacidadMd);
+const condiciones = fillLegal(condicionesMd);
 
 export const LEGAL_DOCUMENTS: Record<LegalKey, LegalDocument> = {
   privacidad: {
     eyebrow: 'UONIFY · PRIVACIDAD',
     title: 'Tu información, bajo tu control.',
-    lead: 'Consulta y gestiona tus preferencias de privacidad.',
-    sections: [
-      { heading: 'Preferencias', body: 'Si cambias las preferencias visuales, se conservan en el almacenamiento de sesión de esta pestaña. Puedes restablecerlas desde Preferencias o cerrar la pestaña.' },
-      { heading: 'Contacto', body: 'Para consultas sobre privacidad y el tratamiento de tus datos, escríbenos a hola@uonify.com.' },
-    ],
+    lead: 'La política de privacidad completa de Uonify: qué datos tratamos, para qué, con quién los compartimos y cómo ejerces tus derechos.',
+    body: privacidad,
+    toc: tocFromMarkdown(privacidad),
   },
   terminos: {
     eyebrow: 'UONIFY · CONDICIONES',
-    title: 'Información sobre el acceso.',
-    lead: 'Consulta las condiciones desde tu cuenta de Uonify.',
-    sections: [
-      { heading: 'Tus aceptaciones', body: 'Encontrarás los documentos aceptados, sus versiones y sus fechas en Configuración › Privacidad y legal.' },
-      { heading: 'Contacto', body: 'Si tienes alguna duda sobre las condiciones del servicio, escríbenos a hola@uonify.com.' },
-    ],
+    title: 'Aviso legal y condiciones.',
+    lead: 'El aviso legal de Uonify y las condiciones aplicables a los recursos adicionales de cada servicio.',
+    body: condiciones,
+    toc: tocFromMarkdown(condiciones),
   },
 };
