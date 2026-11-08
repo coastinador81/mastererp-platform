@@ -15,3 +15,5 @@ Antes de modificar una interfaz, leer [el estándar UX/UI](../docs/UX_UI_STANDAR
 - Añadir el resumen y enlace a la guía en el README de nuevos módulos/pantallas. No copiar este AGENTS para crear versiones contradictorias por módulo.
 
 Ante una discrepancia, explicar advertencia, archivo, consecuencia y recomendación; resolver cambios técnicos autorizados dentro del estándar y consultar las decisiones funcionales pendientes al Product Owner. Conservar trabajo ajeno y no publicar ni desplegar por una tarea documental.
+
+Excepción del propietario (08-11-2026), documentada con su alcance: todo lo visual de Uonify (`modules/0-uonify`) y de Finanzas (`modules/2.2-finance`, capa de tema `uonify-brand`, fase 1 visual) se rige por el manual de identidad corporativa de Uonify (`modules/0-uonify/identidad-corporativa/Uonify_Identidad_Corporativa.pdf`). La regla completa está en el `README.md` de la raíz. El resto de interfaces mantiene estas reglas.
