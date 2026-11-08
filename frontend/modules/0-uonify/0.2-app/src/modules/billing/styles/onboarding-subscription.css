@@ -11,6 +11,7 @@
 .bil-onboard-offer > button { margin: 8px 12px 8px 0; }
 .bil-onboard-offer button:disabled { opacity: .6; cursor: default; }
 .bil-onboard-offer p[role="status"] { min-height: 44px; font-size: 12px; }
+.bil-onboard-offer .bil-onboard-legal { margin-top: 14px; font-size: 12.5px; line-height: 1.5; color: var(--uon-auth-muted); }
 .bil-onboard-summary { display: grid; gap: 10px; padding: 16px; margin: 16px 0; border: 1px solid var(--uon-auth-line); border-radius: 12px; }
 .bil-onboard-summary > div { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 12px; }
 .bil-onboard-summary dd { margin: 0; }
