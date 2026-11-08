@@ -11,3 +11,9 @@ Finanzas mantiene componentes y entrega propios; `finanzas-dev.uonify.com` es un
 ## Primera implementación DEV
 
 Shell React compartido en src/Shell.jsx, sesión/contexto en src/session.jsx. Composición en build con el módulo Finanzas: un código de pantallas y dos artefactos publicables. Rutas hash internas, recuperación PKCE de sesión y contexto revalidado; la API autoriza cada operación. Ver [mecanismo, publicación y pruebas](../../docs/FINANCE_UI_INTEGRATION.md). El estado de validación se informa allí; no se acredita por compilar.
+
+<!-- ux-ui-standard:start -->
+## UX/UI compartida
+
+Antes de diseñar o implementar pantallas administrativas, consultar el [estándar UX/UI](../../docs/UX_UI_STANDARD.md) y el README funcional. Reutilizar la identidad Inter/gris/azul, componentes y tokens de la referencia de Finanzas, respetando la composición del shell y los contratos del módulo. Las instrucciones heredables se encuentran en frontend/AGENTS.md dentro de Platform.
+<!-- ux-ui-standard:end -->

@@ -1,5 +1,6 @@
 import React,{useEffect,useState} from 'react';
 import ReviewTime from './ReviewTime.jsx';
+import SuggestionComparison from './SuggestionComparison.jsx';
 
 // Fixtures exclusivas del montaje local DEV; nunca respaldo del servicio.
 const demoPurchases=[
@@ -41,7 +42,7 @@ function PurchaseDetail({purchase,nodes,back,orders=false}){
     ['Nombre',purchase.supplier],['Código interno','DEMO-PROV-'+purchase.reference.slice(-3)],['Identificación fiscal','DEMO · no válida para uso fiscal'],['Dirección','Dirección de ejemplo · sin datos reales'],['Contacto','Contacto de compras DEMO'],['Correo','compras@example.invalid'],['Teléfono','No especificado']
    ]}/></section>
   </div>
-  <section className="panel"><h2>Productos y servicios</h2><div className="table-scroll"><table><thead><tr>{['Código','Descripción','Tipo','Cantidad','Unidad','Precio unitario','Descuento','Impuestos','Total'].map(label=><th scope="col" key={label}>{label}</th>)}</tr></thead><tbody>{lines.map(line=><tr key={line.code}><td>{line.code}</td><td>{line.description}</td><td>{service?'Servicio':'Producto'}</td><td>{line.quantity||1}</td><td>{service?'Servicio':'Unidad'}</td><td>{currency} {money(line.price??line.amount)}</td><td>Sin definir</td><td>Sin definir</td><td>{currency} {money(line.amount)}</td></tr>)}</tbody></table></div><p className="purchase-summary-footnote">Distribución ilustrativa del importe. Descuentos e impuestos sin configurar; no se asumen tasas ni reglas fiscales.</p></section>
+  <section className="panel"><h2>Productos y servicios</h2><div className="table-scroll"><table><thead><tr>{['Código','Descripción','Tipo','Cantidad','Unidad','Precio unitario','Descuento','Impuestos','Total'].map(label=><th scope="col" key={label}>{label}</th>)}</tr></thead><tbody>{lines.map(line=><tr key={line.code}><td>{line.code}</td><td>{line.description}</td><td>{service?'Servicio':'Producto'}</td><td>{line.quantity||1}</td><td>{service?'Servicio':'Unidad'}</td><td>{currency} {money(line.price??line.amount)}</td><td>Sin definir</td><td>Sin definir</td><td>{currency} {money(line.amount)}</td></tr>)}</tbody></table></div><p className="purchase-summary-footnote">{purchase.suggestion?'Valores finales de la propuesta revisada.':'Distribución ilustrativa del importe.'} Descuentos e impuestos sin configurar; no se asumen tasas ni reglas fiscales.</p></section>
   <div className="demo-purchase-detail-grid">
    <section className="panel"><h2>Condiciones y entrega</h2><DetailFields items={[
     ['Forma de pago','Pendiente de acordar'],['Plazo y vencimiento','Sin definir'],['Pronto pago','Sin condiciones definidas'],['Entrega prevista','Sin programar'],['Destino',nodes.find(node=>node.id===purchase.node)?.name||'Nodo de ejemplo'],['Dirección de entrega','Por confirmar'],['Recepción',orders?'Consultar detalle de recepción · no conectado':'No registrada'],['Reserva financiera','No vinculada']
@@ -53,8 +54,9 @@ function PurchaseDetail({purchase,nodes,back,orders=false}){
   <section className="panel"><h2>Documentos relacionados y soportes</h2><DetailFields items={[
    ['Compra de origen',purchase.source||'No vinculada'],['Orden de compra',orders?purchase.reference:'No vinculada'],['Factura de proveedor','No vinculada'],['Recepciones','Sin documentos'],['Notas de crédito y devoluciones','Sin documentos'],['Archivos adjuntos','Sin archivos']
   ]}/></section>
+  {purchase.originalProposal&&<SuggestionComparison original={purchase.originalProposal} node={purchase.nodeProposal} final={purchase.suggestion}/>}
   <section className="panel"><h2>Observaciones y trazabilidad</h2><p>Compra ficticia para revisar la ficha y su navegación. No representa una operación real.</p><DetailFields items={[
-   ['Creado por','Usuario DEMO'],['Fecha de ejemplo',dateLabel(purchase.date)],['Última modificación','Sin modificaciones'],['Aprobación',purchase.suggestion?'Operador del nodo + Jefe de compras · DEMO sin identidad autenticada':orders?'Estado ilustrativo · sin aprobación real':'Sin registrar'],['Fecha y hora · revisión del nodo DEMO',purchase.suggestion?<ReviewTime value={purchase.nodeReviewedAt}/>:'No aplica'],['Observaciones del Jefe de nodo',purchase.nodeObservation||'Sin observaciones'],['Fecha y hora · Jefe de compras DEMO',purchase.suggestion?<ReviewTime value={purchase.approvedAt}/>:'No aplica']
+   ['Creado por','Usuario DEMO'],['Fecha de ejemplo',dateLabel(purchase.date)],['Última modificación','Sin modificaciones'],['Aprobación',purchase.suggestion?'Jefe de nodo + Jefe de compras · DEMO sin identidad autenticada':orders?'Estado ilustrativo · sin aprobación real':'Sin registrar'],['Fecha y hora · revisión del nodo DEMO',purchase.suggestion?<ReviewTime value={purchase.nodeReviewedAt}/>:'No aplica'],['Observaciones del Jefe de nodo',purchase.nodeObservation||'Sin observaciones'],['Observaciones del Jefe de compras',purchase.purchasingObservation||'Sin observaciones'],['Prioridad',purchase.priority?'Prioritaria':'Normal'],['Fecha y hora · Jefe de compras DEMO',purchase.suggestion?<ReviewTime value={purchase.approvedAt}/>:'No aplica']
   ]}/></section>
  </section>;
 }

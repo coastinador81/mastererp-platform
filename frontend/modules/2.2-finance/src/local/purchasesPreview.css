@@ -13,3 +13,5 @@
 .demo-suggestion-review textarea{display:block;width:100%;box-sizing:border-box;margin-top:8px;resize:vertical;min-height:112px;font:inherit;color:#4b5563;padding:12px;border:1px solid #d0d5dd;border-radius:10px;background:#fff}.demo-suggestion-review textarea:focus-visible{outline:2px solid #2563eb;outline-offset:2px}.demo-suggestion-review textarea[readonly]{background:#f9fafb}
 
 .demo-review-time{display:block;margin-top:6px;color:#667085;font-size:12px;white-space:nowrap}
+
+.demo-review-changed{background:#fffaeb!important}.demo-review-editor input:not([type=checkbox]),.demo-review-editor textarea{display:block;width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid #d0d5dd;border-radius:8px;background:#fff;color:#4b5563;font:inherit;margin-top:8px}.demo-review-editor textarea{resize:vertical}.demo-review-editor input:focus-visible,.demo-review-editor textarea:focus-visible{outline:2px solid #2563eb;outline-offset:2px}.demo-priority{display:block;margin:24px 0 16px}.demo-suggestion-comparison h2,.demo-review-editor h2{font-size:18px;font-weight:500;color:#374151}.demo-suggestion-comparison th[scope=row]{font-weight:400;color:#667085}
