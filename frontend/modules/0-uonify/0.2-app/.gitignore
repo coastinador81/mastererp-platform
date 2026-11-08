@@ -51,3 +51,16 @@ edge/test/tmp/
 /public/assets/sobre-uonify/trabajo-cotidiano.png
 /public/assets/video-uonify-v63/poster-apertura.png
 /public/assets/video-uonify-v63/uonify-juego-propuesta-v63.mp4
+
+# 0.2-app · frontend de Uonify: lo que nunca sube a git (Reglas comunes, sección 8)
+dist-ssr/
+.eslintcache
+*.log
+# Entorno: solo .env.example, con valores falsos
+# Artefactos de QA del árbol local y del sistema
+# Claves y certificados
+*.pem
+*.key
+# Puerta (edge/): copias reales de la distribución, sin el secreto (deploy_edge.mjs backup), y temporales de pruebas
+E4N1UCPZZ2F0-*.json
+# Media de más de 1 MiB: vive en el bucket (media-fuera-de-git.sha256); se restaura a mano para publicar y nunca se sube

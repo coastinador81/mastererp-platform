@@ -13,3 +13,49 @@ venv/
 *.p12
 *.dump
 *.log
+
+# 0.2-app (backend): lo que nunca se versiona. Completa el .gitignore de la raíz del repo.
+# Python: bytecode y cachés de herramientas
+*$py.class
+.hypothesis/
+.tox/
+.nox/
+.coverage
+.coverage.*
+htmlcov/
+# Entornos virtuales
+# Configuración local y secretos: solo se versiona .env.example con valores falsos
+.local/
+*.pfx
+client_secret*.json
+google-oauth.json
+encryption-key
+postgres-password
+stripe-test-*
+stripe-webhook-secret
+amazon-client-secret
+amazon-config.json
+jev-api-key
+.pgpass
+pgpass
+# Listas piloto (UUID de usuarios) y tarifas: viven en Parameter Store
+*-pilot-users.json
+live-adk-users.json
+live-gateway-users.json
+semantic-model-pilot.json
+creative-clips-only-rate-snapshots.json
+# Enlace local a las migraciones de database (D4): nunca se versiona aquí
+/migrations
+# Volcados y copias de bases de datos, imágenes exportadas y logs
+*.pgdump
+*.sql.gz
+*.sqlite
+*.sqlite3
+*.db
+*.tar
+# Trabajo local: spool del lector Blender y overlays de imagen locales
+.native-spool/
+Dockerfile.*-overlay
+# Sistema
+.DS_Store
+._*
