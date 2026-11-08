@@ -1,5 +1,6 @@
 import React,{createContext,useContext,useEffect,useRef,useState} from 'react';
 import FinanceIcon from './FinanceIcon.jsx';
+import isotipo from './assets/brands/uonify-isotipo.svg';
 const AssistantContext=createContext(null);
 const labels={'resumen-compras':'Resumen de compras','solicitudes-compra':'Compras','sugerencias-compras':'Sugerencias de compras','ordenes-compra':'Órdenes de compra','facturas-proveedores':'Facturas de proveedores',clientes:'Clientes',proveedores:'Proveedores',ventas:'Ventas'};
 export function FinanceAssistantProvider({children,enabled=true,path=''}){
@@ -11,7 +12,7 @@ export function FinanceAssistantProvider({children,enabled=true,path=''}){
 }
 export function FinanceAssistantToggle(){
  const a=useContext(AssistantContext);if(!a)return null;
- return <button ref={a.trigger} type="button" className="finance-assistant-toggle secondary" aria-label="Asistente IA de Finanzas" title="Asistente IA" aria-expanded={a.open} aria-controls="finance-assistant" onClick={()=>a.open?a.close():a.setOpen(true)}><FinanceIcon name="sparkles"/></button>;
+ return <button ref={a.trigger} type="button" className="finance-assistant-toggle secondary" aria-label="Uony en Finanzas" title="Uony" aria-expanded={a.open} aria-controls="finance-assistant" onClick={()=>a.open?a.close():a.setOpen(true)}><img src={isotipo} alt="" aria-hidden="true"/></button>;
 }
 export function FinanceAssistantPanel(){
  const a=useContext(AssistantContext),panel=useRef(null);
@@ -34,8 +35,8 @@ export function FinanceAssistantPanel(){
  },[opened,modal]);
  if(!opened)return null;
  return <>{modal&&<div className="finance-assistant-scrim" onClick={a.close} aria-hidden="true"/>}<aside ref={panel} id="finance-assistant" className="finance-assistant-panel" role={modal?'dialog':'complementary'} aria-modal={modal?true:undefined} aria-labelledby="finance-assistant-title">
-  <header className="finance-assistant-heading"><div><span className="finance-assistant-symbol"><FinanceIcon name="sparkles"/></span><h2 id="finance-assistant-title">Asistente IA<span>Tu contexto de trabajo</span></h2></div><button type="button" className="secondary" aria-label="Cerrar asistente IA" onClick={a.close}><FinanceIcon name="close"/></button></header>
-  <div className="finance-assistant-body"><p className="finance-assistant-context">Estás viendo <strong>{a.label}</strong>.</p><p>Selecciona un registro para trabajar con un contexto específico.</p><div className="finance-assistant-empty"><FinanceIcon name="sparkles"/><h3>Una ayuda, en tu espacio</h3><p>Aquí podrás consultar y trabajar sobre la pantalla que tienes abierta.</p><span>Conexión de IA pendiente</span></div></div>
-  <form className="finance-assistant-composer" onSubmit={e=>e.preventDefault()}><label htmlFor="finance-ai-draft">Escribe a tu asistente</label><textarea id="finance-ai-draft" value={a.draft} onChange={e=>a.setDraft(e.target.value)} maxLength={2000} placeholder="Escribe tu consulta..." aria-describedby="finance-ai-status"/><div><small id="finance-ai-status">Vista de interfaz. Los mensajes no se envían.</small><button disabled type="submit" aria-label="Enviar mensaje (IA sin conectar)"><FinanceIcon name="send"/></button></div></form>
+  <header className="finance-assistant-heading"><div><span className="finance-assistant-symbol"><img src={isotipo} alt="" aria-hidden="true"/></span><h2 id="finance-assistant-title">Uony<span>Tu contexto de trabajo</span></h2></div><button type="button" className="secondary" aria-label="Cerrar Uony" onClick={a.close}><FinanceIcon name="close"/></button></header>
+  <div className="finance-assistant-body"><p className="finance-assistant-context">Estás viendo <strong>{a.label}</strong>.</p><p>Selecciona un registro para trabajar con un contexto específico.</p><div className="finance-assistant-empty"><img src={isotipo} alt="" aria-hidden="true"/><h3>Una ayuda, en tu espacio</h3><p>Aquí podrás consultar y trabajar sobre la pantalla que tienes abierta.</p><span>Uony aún no está conectado aquí</span></div></div>
+  <form className="finance-assistant-composer" onSubmit={e=>e.preventDefault()}><label htmlFor="finance-ai-draft">Escribe a Uony</label><textarea id="finance-ai-draft" value={a.draft} onChange={e=>a.setDraft(e.target.value)} maxLength={2000} placeholder="Escribe tu consulta..." aria-describedby="finance-ai-status"/><div><small id="finance-ai-status">Vista de interfaz. Los mensajes no se envían.</small><button disabled type="submit" aria-label="Enviar mensaje (IA sin conectar)"><FinanceIcon name="send"/></button></div></form>
  </aside></>;
 }

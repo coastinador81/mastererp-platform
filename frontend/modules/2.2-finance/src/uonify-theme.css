@@ -39,6 +39,11 @@
      Mono aún no está autohospedada (la carpeta de fuentes la comparte Inventario); se usa la pila mono del
      sistema hasta añadir su woff2. */
   --finance-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+
+  /* Acento de IA = aqua (manual §16: aqua solo para IA; sobre claro el texto/icono IA usa Aqua 600, §12). */
+  --finance-ai-text: #008376;   /* Aqua 600 */
+  --finance-ai-tint: #E9FBF7;   /* tinte aqua claro (fondo IA) */
+  --finance-ai-line: #BFEDE5;   /* borde aqua claro */
 }
 
 /* Iconos de KPI neutros (el manual: el color no decora; un acento por pantalla). Se neutralizan solo bajo
@@ -53,4 +58,24 @@
 :root.finance-app.uonify-brand .finance-tech {
   font-family: var(--finance-mono);
   font-variant-numeric: tabular-nums;
+}
+
+/* Panel «Asistente IA» = Uony (incremento 3). El acento de IA pasa a aqua y el isotipo «ON» (SVG oficial) marca
+   la IA. Solo override bajo uonify-brand; finance.css no se toca. El aqua solo tiñe superficies; el texto/icono
+   de IA sobre claro usa Aqua 600 (§12 asimetría). */
+:root.finance-app.uonify-brand .finance-assistant-toggle img,
+:root.finance-app.uonify-brand .finance-assistant-symbol img { display: block; width: 22px; height: auto; }
+:root.finance-app.uonify-brand .finance-assistant-toggle[aria-expanded="true"] {
+  color: var(--finance-ai-text);
+  background: var(--finance-ai-tint);
+  border-color: var(--finance-ai-line);
+}
+:root.finance-app.uonify-brand .finance-assistant-symbol {
+  background: var(--finance-ai-tint);
+  color: var(--finance-ai-text);
+}
+:root.finance-app.uonify-brand .finance-assistant-empty > img { display: block; width: 30px; height: auto; }
+:root.finance-app.uonify-brand .finance-assistant-empty > span {
+  background: var(--finance-ai-tint);
+  color: var(--finance-ai-text);
 }
