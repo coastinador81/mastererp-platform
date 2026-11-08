@@ -90,3 +90,13 @@ En el build DEV, la raiz de Finanzas abre el Resumen de Compras y su menu permit
 ## Panel contextual de IA
 
 El icono de destellos del encabezado abre el asistente de Finanzas, tanto en las vistas demo como en las pantallas reales. En escritorio amplio reserva una columna derecha y el contenido central ajusta su ancho; en tablet/movil se presenta como dialogo con fondo inactivo, foco contenido, cierre por Escape, cierre exterior y retorno al boton. Identifica la pantalla activa sin leer ni enviar registros. El borrador se conserva en memoria al cerrar/abrir durante esa visita; no hay almacenamiento persistente ni envio de mensajes. Estado: interfaz preparada, IA sin conectar. El boton de enviar permanece deshabilitado; no hay respuestas ficticias ni nuevas llamadas a APIs, modelos o secretos. La integracion real requiere una entrega y contrato posteriores.
+
+## Identidad de Uonify en Finanzas (capa `uonify-brand`)
+
+Excepción del propietario (08-11-2026): Finanzas adopta el manual de identidad corporativa de Uonify. La regla y su alcance están en el [`README.md` de la raíz](../../../README.md) y en [`frontend/AGENTS.md`](../../AGENTS.md); este README solo la resume y no define identidad.
+
+Mecanismo: la hoja [src/uonify-theme.css](src/uonify-theme.css) re-mapea los tokens de color `--finance-*` a la paleta del manual, bajo el selector `:root.finance-app.uonify-brand` (más específico que el tema base) e importada después de `finance.css` en `src/main.js`. Se activa solo con la clase marcadora `uonify-brand` en el `<html>` de esta aplicación (`index.html`). No edita `finance.css` ni los estilos compartidos; Ecommerce usa `.finance-app` pero no `uonify-brand`, así que conserva sus tokens.
+
+Mapeo (fase 1, solo color): azul de acción Azul 600 `#006AE1` (cumple AA como texto y como relleno; §12 «regla del 600»), aro de foco Azul Uonify `#0178F7`, titulares Tinta `#0A0B0D`, cuerpo y apoyo en Neutros del manual, error semántico `#B3261E`. El espaciado (retícula de 8), los radios (8/12) y la tipografía (Inter) del tema base ya cumplían el manual. En fases siguientes: datos técnicos en monoespaciada, iconos neutros y el panel de IA en aqua con el isotipo «ON».
+
+Alcance: fase 1, solo visual, en la Finanzas independiente (finanzas-dev). No cambia funcionalidad, APIs, rutas, permisos ni datos.

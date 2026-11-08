@@ -1,5 +1,6 @@
 import {mountWorkspace} from '../../../app-shell/src/Shell.jsx';
 import './finance.css';
+import './uonify-theme.css';
 const query=new URLSearchParams(window.location.search);
 const devPreview=import.meta.env.DEV||import.meta.env.MODE==='dev';
 const designEntry=window.location.pathname==='/'&&!window.location.hash&&!query.has('id')&&!query.has('accion')&&(query.get('demo')==='compras'||['resumen-compras','sugerencias-compras'].includes(query.get('vista'))||(!query.has('vista')&&query.get('datos')!=='reales'));
