@@ -45,7 +45,7 @@ body { min-height: 100svh; display: flex; flex-direction: column; }
 .composer-tool-group-right { margin-left: auto; }
 .composer-plus-button, .composer-voice-button { width: 36px; height: 36px; flex: 0 0 auto; display: grid; place-items: center; padding: 0; border: 1px solid transparent; border-radius: 50%; background: transparent; color: #49657d; cursor: pointer; }
 .composer-plus-button { font-size: 25px; line-height: 1; font-weight: 350; }
-.composer-plus-button:hover, .composer-plus-button[aria-expanded="true"], .composer-voice-button:hover, .composer-voice-button[aria-pressed="true"] { background: #e8f2ff; border-color: #c7dff8; color: #075fc4; }
+.composer-plus-button:hover, .composer-plus-button[aria-expanded="true"], .composer-voice-button:hover, .composer-voice-button[aria-pressed="true"] { background: #e8f2ff; border-color: #c7dff8; color: #0052bc; }
 .composer-voice-button svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
 .composer-ai-picker { position: relative; display: inline-flex; align-items: center; max-width: min(370px,calc(100vw - 120px)); min-height: 36px; border: 1px solid #dce6f0; border-radius: 999px; background: #f4f7fb; color: #29435d; }
 .composer-speed-trigger, .composer-model-trigger, .composer-effort-trigger { display: inline-flex; align-items: center; justify-content: center; gap: 5px; min-width: 0; min-height: 36px; padding: 5px 9px; border: 0; background: transparent; color: inherit; font: inherit; font-size: 12px; white-space: nowrap; cursor: pointer; }
@@ -118,9 +118,9 @@ body { min-height: 100svh; display: flex; flex-direction: column; }
 .prompt-suggestion button { min-height: 34px; border: 0; background: transparent; color: #405b73; font: inherit; font-size: 12px; cursor: pointer; }
 .prompt-suggestion [data-prompt-suggestion] { padding: 7px 6px 7px 13px; }
 .prompt-suggestion [data-suggestion-dismiss] { width: 29px; padding: 0 7px 0 0; color: #889bac; font-size: 18px; }
-.prompt-suggestion button:hover { color: #075fc4; }
+.prompt-suggestion button:hover { color: #0052bc; }
 .composer-option { height: 36px; min-height: 36px; gap: 7px; padding: 7px 11px; color: #314152; background: rgba(255,255,255,.6); border: 1px solid rgba(111,137,162,.22); border-radius: 999px; font-size: 11px; font-weight: 500; }
-.composer-option[aria-pressed="true"] { color: #075fc4; background: rgba(235,245,255,.82); border-color: rgba(8,117,245,.25); }
+.composer-option[aria-pressed="true"] { color: #0052bc; background: rgba(235,245,255,.82); border-color: rgba(1,120,247,.25); }
 .composer-option svg { width: 14px; height: 14px; }
 .send-button { width: 42px; height: 42px; background: #3476f6; box-shadow: 0 5px 16px rgba(52,118,246,.14); }
 .send-button:hover { transform: none; }

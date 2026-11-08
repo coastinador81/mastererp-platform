@@ -10,7 +10,7 @@
 .pim-textarea { min-height: 72px; resize: vertical; }
 .pim-select { height: 36px; appearance: none; padding-right: 32px; background: var(--pim-surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235e7186' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") right 10px center / 15px no-repeat; }
 .pim-input:hover:not(:disabled), .pim-textarea:hover:not(:disabled), .pim-select:hover:not(:disabled) { border-color: #b9c8d6; }
-.pim-input:focus, .pim-textarea:focus, .pim-select:focus { outline: none; border-color: var(--pim-blue); box-shadow: 0 0 0 3px #096bdc2e; }
+.pim-input:focus, .pim-textarea:focus, .pim-select:focus { outline: none; border-color: var(--pim-blue); box-shadow: 0 0 0 3px #0178f72e; }
 .pim-input::placeholder, .pim-textarea::placeholder { color: var(--pim-subtle); }
 .pim-input:disabled, .pim-textarea:disabled, .pim-select:disabled { background: var(--pim-surface-muted); color: var(--pim-muted); cursor: not-allowed; }
 .pim-input.is-invalid, .pim-textarea.is-invalid { border-color: var(--pim-error); box-shadow: 0 0 0 3px #b3261e1f; }

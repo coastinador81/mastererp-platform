@@ -10,7 +10,7 @@
 .focus-hero h1 { font-size: clamp(50px, 4.3vw, 68px); }
 .composer { margin-top: 24px; }
 .truth-note { color: #526577; }
-.composer-field textarea:focus-visible { outline: 2px solid #0875f5; outline-offset: 5px; border-radius: 3px; }
+.composer-field textarea:focus-visible { outline: 2px solid #0178f7; outline-offset: 5px; border-radius: 3px; }
 .local-label { color: #526577; }
 .result em { color: #526577; }
 @media (max-width: 760px) {
