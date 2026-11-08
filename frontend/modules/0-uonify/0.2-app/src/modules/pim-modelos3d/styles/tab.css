@@ -1,0 +1,166 @@
+/* Pestaña «3D» (módulo pim-modelos3d) · base, lista, bloque del modelo y estado vacío.
+   Copia de pim/modelos3d.css del prototipo (líneas 12-170). Todas las clases
+   propias empiezan por pim-modelos3d-; solo tokens --pim-* (los hex de la escena
+   3D y del lienzo AR viven en model/constants.ts y model/ar.ts). */
+
+.pim-modelos3d-root { container: pim-modelos3d / inline-size; }
+.pim-modelos3d-root > div:empty { display: none; }
+.pim-modelos3d-root *, .pim-modelos3d-root *::before, .pim-modelos3d-root *::after,
+.pim-modelos3d-dlg *, .pim-modelos3d-dlg *::before, .pim-modelos3d-dlg *::after { box-sizing: border-box; }
+
+/* ---------------------------------------------------------------- común */
+.pim-modelos3d-grow { flex: 1 1 0; min-width: 0; }
+.pim-modelos3d-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.pim-modelos3d-between { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+.pim-modelos3d-center, .pim-modelos3d-centered { display: grid; justify-items: center; gap: 8px; text-align: center; }
+.pim-modelos3d-centered > p, .pim-modelos3d-centered > h4 { margin: 0; }
+.pim-modelos3d-center-text { text-align: center; }
+.pim-modelos3d-capitalize { text-transform: capitalize; }
+.pim-modelos3d-xs { color: var(--pim-muted); font-size: 12px; }
+.pim-modelos3d-text { margin: 0; color: var(--pim-muted); font-size: 13px; line-height: 1.5; }
+.pim-modelos3d-h4 { margin: 0; color: var(--pim-ink); font-size: 14px; font-weight: 650; line-height: 1.35; }
+.pim-modelos3d-subtitle { display: flex; align-items: center; gap: 8px; margin: 0; color: var(--pim-ink); font-size: 13px; font-weight: 650; line-height: 1.35; }
+.pim-modelos3d-subtitle .pim-icon { color: var(--pim-subtle); }
+.pim-modelos3d-badges { display: flex; flex-wrap: wrap; gap: 8px; }
+.pim-modelos3d-badges.is-center { justify-content: center; }
+.pim-modelos3d-group { display: grid; align-content: start; gap: 12px; min-width: 0; }
+
+/* Iconos de estado: tamaño contenido; el color solo cuando dice algo. */
+.pim-modelos3d-statusicon { display: inline-grid; flex: none; place-items: center; color: var(--pim-subtle); }
+.pim-modelos3d-statusicon.is-ai { color: var(--pim-ai-text); }
+.pim-modelos3d-statusicon.is-success { color: var(--pim-success); }
+.pim-modelos3d-statusicon.is-warning { color: var(--pim-warning); }
+.pim-modelos3d-statusicon.is-error { color: var(--pim-error); }
+.pim-modelos3d-ai-icon { display: inline-flex; flex: none; color: var(--pim-ai-text); }
+/* Los contenedores del núcleo (pim-empty, pim-dropzone, pim-section-title)
+   apagan sus iconos; dentro de botones, insignias e iconos de estado, el
+   icono vuelve a tomar el color de su control. */
+.pim-modelos3d-statusicon .pim-icon, .pim-modelos3d-ai-icon .pim-icon,
+.pim-modelos3d-empty-actions .pim-icon, .pim-modelos3d-drop .pim-btn .pim-icon,
+.pim-modelos3d-drop .pim-badge .pim-icon { color: inherit; }
+.pim-section-head .pim-modelos3d-text { margin-top: 4px; }
+
+/* Puntos de estado (lo único redondo junto a los avatares). */
+.pim-modelos3d-dot { display: inline-block; flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--pim-subtle); }
+.pim-modelos3d-dot.is-live { background: var(--pim-aqua); }
+.pim-modelos3d-dot.is-warning { background: var(--pim-warning); }
+
+.pim-modelos3d-pulse { animation: pim-modelos3d-pulse 2s var(--pim-ease) infinite; }
+@keyframes pim-modelos3d-pulse { 50% { opacity: .45; } }
+@keyframes pim-modelos3d-spin { to { transform: rotate(360deg); } }
+@keyframes pim-modelos3d-rotate-y { to { transform: rotateY(360deg); } }
+@keyframes pim-modelos3d-reveal { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+.pim-modelos3d-reveal { animation: pim-modelos3d-reveal var(--pim-mid) var(--pim-ease); }
+
+.pim-modelos3d-spinner { display: inline-block; flex: none; width: 24px; height: 24px; border: 2px solid var(--pim-blue-line); border-top-color: var(--pim-blue); border-radius: 50%; animation: pim-modelos3d-spin 1s linear infinite; }
+.pim-modelos3d-spinner.is-small { width: 20px; height: 20px; }
+.pim-modelos3d-spinner.is-large { width: 40px; height: 40px; border-width: 3px; }
+.pim-modelos3d-spinner.is-warning { border-color: var(--pim-warning-line); border-top-color: var(--pim-warning); }
+
+/* Acción destructiva de icono: ghost; el rojo solo aparece al señalarla. */
+.pim-btn.pim-modelos3d-btn-remove:hover:not(:disabled) { background: var(--pim-error-tint); color: var(--pim-error); }
+
+/* Notas informativas: texto pequeño y apagado con su icono, sin tarjetas. */
+.pim-modelos3d-notes { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px 24px; }
+@container pim-modelos3d (min-width: 560px) { .pim-modelos3d-notes { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@container pim-modelos3d-dlg (min-width: 560px) { .pim-modelos3d-notes { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.pim-modelos3d-note { display: flex; align-items: flex-start; gap: 8px; min-width: 0; }
+.pim-modelos3d-note > .pim-icon { flex: none; margin-top: 1px; color: var(--pim-subtle); }
+.pim-modelos3d-note h4, .pim-modelos3d-note h6 { margin: 0; color: var(--pim-ink); font-size: 12px; font-weight: 600; line-height: 1.45; }
+.pim-modelos3d-note p { margin: 2px 0 0; color: var(--pim-muted); font-size: 12px; line-height: 1.5; }
+
+/* Tiras de datos (metadatos del modelo, estadísticas): celdas separadas por
+   una línea fina dentro de un único marco. */
+.pim-modelos3d-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; width: 100%; margin: 0; overflow: hidden; border: 1px solid var(--pim-line); border-radius: var(--pim-r-card); background: var(--pim-line); }
+.pim-modelos3d-stats > div { display: grid; align-content: start; gap: 2px; min-width: 0; padding: 8px 12px; background: var(--pim-surface); text-align: left; }
+.pim-modelos3d-stats span, .pim-modelos3d-stats dt { color: var(--pim-muted); font-size: 12px; }
+.pim-modelos3d-stats strong, .pim-modelos3d-stats dd { margin: 0; overflow-wrap: anywhere; color: var(--pim-ink); font-size: 13px; font-weight: 650; font-variant-numeric: tabular-nums; }
+
+/* ------------------------------------------------ cabecera (E02) */
+.pim-modelos3d-headrow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.pim-modelos3d-live-head { position: sticky; top: 0; z-index: 2; padding: 8px 0; border-bottom: 1px solid var(--pim-line); background: var(--pim-surface); }
+.pim-modelos3d-live-head .pim-modelos3d-product-label { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 12px; }
+.pim-modelos3d-count { font-variant-numeric: tabular-nums; }
+
+/* ------------------------------ Imágenes Generadas (E04-E08) */
+/* Los .glb no tienen vista previa: filas compactas (icono, nombre en mono,
+   tamaño apagado, acción ghost al final) con la selección azul de pim-option.
+   Una columna por debajo de 560 px; dos o tres por encima. */
+.pim-modelos3d-files, .pim-modelos3d-gfiles { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; margin: 0; padding: 0; list-style: none; }
+@container pim-modelos3d (min-width: 560px) { .pim-modelos3d-files { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@container pim-modelos3d (min-width: 900px) { .pim-modelos3d-files { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@container pim-modelos3d-dlg (min-width: 560px) { .pim-modelos3d-gfiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.pim-modelos3d-gfiles { max-height: 24rem; overflow-y: auto; padding: 4px; }
+.pim-modelos3d-file { display: flex; align-items: center; gap: 4px; min-width: 0; padding-right: 8px; border: 1px solid var(--pim-line); border-radius: var(--pim-r-control); background: var(--pim-surface); transition: border-color var(--pim-fast) var(--pim-ease), background var(--pim-fast) var(--pim-ease), box-shadow var(--pim-fast) var(--pim-ease); }
+.pim-modelos3d-file:hover { border-color: var(--pim-line-strong); background: var(--pim-surface-soft); }
+.pim-modelos3d-file.is-selected { border-color: var(--pim-blue); background: var(--pim-blue-tint); box-shadow: inset 0 0 0 1px var(--pim-blue); }
+.pim-modelos3d-file:has(.pim-modelos3d-file-select:focus-visible) { border-color: var(--pim-blue); box-shadow: var(--pim-focus); }
+.pim-modelos3d-file.is-selected:has(.pim-modelos3d-file-select:focus-visible) { box-shadow: inset 0 0 0 1px var(--pim-blue), var(--pim-focus); }
+.pim-modelos3d-file-select { display: flex; flex: 1 1 auto; align-items: center; gap: 12px; min-width: 0; padding: 8px 4px 8px 12px; border: 0; border-radius: var(--pim-r-control); background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.pim-modelos3d-file-select:focus-visible { outline: none; }
+.pim-option.pim-modelos3d-gfile { display: flex; align-items: center; gap: 12px; width: 100%; min-width: 0; padding: 8px 12px; }
+.pim-option.pim-modelos3d-gfile:focus-visible { outline: none; border-color: var(--pim-blue); box-shadow: var(--pim-focus); }
+.pim-option.pim-modelos3d-gfile[aria-pressed="true"]:focus-visible { box-shadow: inset 0 0 0 1px var(--pim-blue), var(--pim-focus); }
+.pim-modelos3d-file-icon { display: grid; flex: none; place-items: center; width: 32px; height: 32px; border: 1px solid var(--pim-line); border-radius: var(--pim-r-control); background: var(--pim-surface-soft); color: var(--pim-subtle); transition: color var(--pim-fast) var(--pim-ease), border-color var(--pim-fast) var(--pim-ease); }
+.pim-modelos3d-file.is-selected .pim-modelos3d-file-icon, .pim-modelos3d-gfile[aria-pressed="true"] .pim-modelos3d-file-icon { border-color: var(--pim-blue-line); background: var(--pim-surface); color: var(--pim-blue); }
+.pim-modelos3d-file-meta { display: grid; flex: 1 1 auto; gap: 2px; min-width: 0; }
+.pim-modelos3d-file-name { overflow: hidden; color: var(--pim-ink); font-family: var(--pim-mono); font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+.pim-modelos3d-file-size { color: var(--pim-muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+/* Sobre el tinte azul de la selección el gris apagado baja de 4.5:1: texto. */
+.pim-modelos3d-file.is-selected .pim-modelos3d-file-size, .pim-modelos3d-gfile[aria-pressed="true"] .pim-modelos3d-file-size { color: var(--pim-text); }
+.pim-modelos3d-file-actions { flex: none; }
+.pim-modelos3d-file-actions .pim-btn-icon { color: var(--pim-muted); }
+.pim-modelos3d-gcheck { display: grid; flex: none; place-items: center; width: 20px; height: 20px; border-radius: var(--pim-r-tag); background: var(--pim-blue); color: var(--pim-surface); }
+
+/* --------------------------------------- bloque con modelo (E09) */
+.pim-modelos3d-block { display: grid; gap: 16px; min-width: 0; }
+.pim-modelos3d-block > div:empty, .pim-modelos3d-viewer-slot[hidden] { display: none; }
+.pim-modelos3d-viewer-slot { height: 500px; min-width: 0; }
+.pim-modelos3d-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+.pim-modelos3d-actions-main { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* Metadatos (E21) */
+.pim-modelos3d-meta { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@container pim-modelos3d (min-width: 560px) { .pim-modelos3d-meta { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.pim-modelos3d-meta > div { gap: 4px; padding: 12px 16px; }
+.pim-modelos3d-meta dt { display: flex; align-items: center; gap: 8px; }
+.pim-modelos3d-meta dt .pim-icon { color: var(--pim-subtle); }
+.pim-modelos3d-meta dd { font-size: 15px; }
+/* Sublínea apagada bajo el valor: más específica que «.pim-modelos3d-stats dd». */
+.pim-modelos3d-meta dd.pim-modelos3d-metasub { color: var(--pim-muted); font-family: inherit; font-size: 12px; font-weight: 400; }
+
+/* Generando (E22) */
+.pim-modelos3d-gen { display: grid; gap: 12px; }
+.pim-modelos3d-gen-row { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 8px 12px; }
+.pim-modelos3d-gen-row .pim-modelos3d-text { margin-top: 2px; font-size: 12px; }
+
+/* ------------------------------------------- estado vacío (E26) */
+.pim-modelos3d-empty { display: grid; justify-items: center; gap: 24px; padding: 32px 24px; }
+.pim-modelos3d-empty > .pim-empty { gap: 8px; padding: 0; }
+.pim-modelos3d-empty-title { margin: 8px 0 0; color: var(--pim-ink); font-size: 15px; font-weight: 650; line-height: 1.35; }
+.pim-modelos3d-empty-text { max-width: 28rem; margin: 0; color: var(--pim-muted); font-size: 13px; line-height: 1.5; }
+.pim-modelos3d-empty-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 8px; }
+
+/* Fuente de Imágenes (E29-E31): dos opciones seleccionables. */
+.pim-modelos3d-source { display: grid; gap: 12px; width: 100%; max-width: 440px; text-align: left; }
+.pim-modelos3d-source > div:empty { display: none; }
+.pim-modelos3d-source-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.pim-option.pim-modelos3d-source-opt { grid-template-columns: 20px minmax(0, 1fr); align-items: center; column-gap: 12px; row-gap: 0; min-width: 0; }
+.pim-modelos3d-source-opt > .pim-icon { grid-row: span 2; color: var(--pim-subtle); transition: color var(--pim-fast) var(--pim-ease); }
+.pim-modelos3d-source-opt[aria-pressed="true"] > .pim-icon { color: var(--pim-blue); }
+.pim-modelos3d-source-name { overflow: hidden; font-size: 13px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+.pim-modelos3d-source-count { color: var(--pim-muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+.pim-modelos3d-file-input { display: block; width: 100%; min-width: 0; color: var(--pim-muted); font: inherit; font-size: 12px; cursor: pointer; }
+.pim-modelos3d-file-input::file-selector-button { min-height: 32px; margin-right: 12px; padding: 4px 12px; border: 1px solid var(--pim-line-strong); border-radius: var(--pim-r-control); background: var(--pim-surface); color: var(--pim-ink); font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; transition: background var(--pim-fast) var(--pim-ease), border-color var(--pim-fast) var(--pim-ease); }
+.pim-modelos3d-file-input:hover::file-selector-button { border-color: var(--pim-subtle); background: var(--pim-surface-soft); }
+.pim-modelos3d-file-input:focus-visible { outline: none; }
+.pim-modelos3d-file-input:focus-visible::file-selector-button { border-color: var(--pim-blue); box-shadow: var(--pim-focus); }
+.pim-modelos3d-msg { display: flex; align-items: center; gap: 8px; margin: 0; color: var(--pim-text); font-size: 12px; }
+.pim-modelos3d-msg.is-warning .pim-icon { color: var(--pim-warning); }
+.pim-modelos3d-msg.is-success .pim-icon { color: var(--pim-success); }
+
+/* ------------------------------ opciones elegidas (AA) */
+/* AA: sobre el tinte azul de la opción elegida el gris apagado (--pim-muted) se
+   queda en 4.49:1; el texto secundario pasa a --pim-text. */
+.pim-modelos3d-root .pim-option[aria-pressed="true"] small,
+.pim-modelos3d-source-opt[aria-pressed="true"] .pim-modelos3d-source-count { color: var(--pim-text); }

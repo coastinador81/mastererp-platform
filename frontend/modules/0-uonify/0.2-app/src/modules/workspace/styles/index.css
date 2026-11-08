@@ -1,0 +1,12 @@
+/* Hojas del espacio de trabajo (prototipo: app-shell.css). Se cargan en el orden
+   del prototipo porque varias reglas posteriores ajustan a las anteriores. */
+@import './01-shell.css';
+@import './02-conversation.css';
+@import './03-responsive-navigation.css';
+@import './04-module-layout.css';
+@import './05-composer-controls.css';
+@import './06-motion-chat.css';
+@import './07-header-limit.css';
+@import './08-conversation-scroll.css';
+@import './09-context-usage.css';
+@import './conversation-agentic-cards.css';

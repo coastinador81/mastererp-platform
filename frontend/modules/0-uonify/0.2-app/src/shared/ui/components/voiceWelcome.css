@@ -1,0 +1,84 @@
+.composer .composer-voice-button.is-inviting { background: var(--pim-ai-tint); border-color: var(--pim-ai-line); color: var(--pim-ai-strong); border-radius: 50%; box-shadow: 0 0 0 4px var(--pim-ai-tint); animation: uony-voice-halo 3s ease-in-out infinite; }
+.composer-voice-button.is-inviting svg path { transform-box: fill-box; transform-origin: center; animation: uony-voice-invite 4.8s ease-in-out infinite; }
+.composer-voice-button.is-inviting svg path:nth-child(2n) { animation-delay: .16s; }
+.composer-voice-button.is-inviting svg path:nth-child(3n) { animation-delay: .32s; }
+@keyframes uony-voice-halo {
+  0%, 100% { box-shadow: 0 0 0 2px var(--pim-ai-tint); }
+  50% { box-shadow: 0 0 0 6px var(--pim-ai-tint); }
+}
+@keyframes uony-voice-invite {
+  0%, 36%, 100% { transform: scaleY(1); }
+  9%, 27% { transform: scaleY(.45); }
+  18% { transform: scaleY(1.15); }
+}
+.pim-dialog.uony-voice-welcome-dialog { width: min(740px, calc(100vw - 32px)); border: 1px solid var(--pim-blue-line); border-radius: 24px; background: var(--pim-surface); }
+.uony-voice-welcome-dialog .pim-dialog-header { padding: 30px 32px 12px; align-items: center; }
+.uony-voice-welcome-dialog .pim-dialog-header h2 { display: flex; align-items: center; }
+.uony-voice-wordmark { display: block; width: 152px; height: auto; }
+.uony-voice-welcome-dialog .pim-dialog-body { padding: 16px 32px 8px; }
+.uony-voice-welcome { display: grid; grid-template-columns: 230px minmax(0, 1fr); align-items: center; gap: 28px; text-align: left; color: var(--pim-text); }
+.uony-voice-art { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 310px; isolation: isolate; }
+.uony-voice-orbit { position: absolute; z-index: -1; width: 230px; height: 290px; border-radius: 50%; background: radial-gradient(ellipse, var(--pim-ai-tint), var(--pim-blue-tint) 45%, transparent 72%); }
+.uony-voice-art > img { display: block; width: 210px; max-width: 100%; height: auto; filter: drop-shadow(0 16px 18px color-mix(in srgb, var(--pim-blue-strong) 12%, transparent)); }
+.uony-voice-wave { height: 60px; display: flex; align-items: center; gap: 5px; margin-top: 24px; opacity: .65; }
+.uony-voice-wave i { display: block; width: 3px; border-radius: 4px; background: linear-gradient(var(--pim-ai-text), var(--pim-blue)); }
+.uony-voice-welcome-dialog[open] .uony-voice-art > img { animation: uony-voice-float 4.8s ease-in-out infinite; }
+.uony-voice-welcome-dialog[open] .uony-voice-orbit { animation: uony-voice-glow 4.8s ease-in-out infinite; }
+.uony-voice-welcome-dialog[open] .uony-voice-wave i { transform-origin: center; animation: uony-voice-wave 1.8s ease-in-out infinite; }
+.uony-voice-welcome-dialog .uony-voice-wave i:nth-child(2n) { animation-delay: -.35s; }
+.uony-voice-welcome-dialog .uony-voice-wave i:nth-child(3n) { animation-delay: -.8s; }
+.uony-voice-welcome-dialog .uony-voice-wave i:nth-child(4n) { animation-delay: -1.2s; }
+@keyframes uony-voice-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-7px); }
+}
+@keyframes uony-voice-glow {
+  0%, 100% { transform: scale(.96); opacity: .75; }
+  50% { transform: scale(1.04); opacity: 1; }
+}
+@keyframes uony-voice-wave {
+  0%, 100% { transform: scaleY(.45); }
+  45% { transform: scaleY(1); }
+  75% { transform: scaleY(.65); }
+}
+.uony-voice-eyebrow { display: block; font-size: 9px; font-weight: 650; letter-spacing: .14em; color: var(--pim-ai-strong); }
+.uony-voice-copy h3 { margin: 16px 0 18px; color: var(--pim-ink); font-size: 38px; font-weight: 500; letter-spacing: -1.4px; line-height: 1.13; }
+.uony-voice-copy h3 em { font-family: Georgia, 'Times New Roman', serif; color: var(--pim-blue-strong); font-weight: 400; }
+.uony-voice-copy p { font-size: 14px; line-height: 1.75; margin: 0; color: var(--pim-muted); }
+.uony-voice-example { margin-top: 22px; padding-left: 14px; border-left: 2px solid var(--pim-ai-line); }
+.uony-voice-example span { display: block; margin-bottom: 7px; color: var(--pim-muted); font-size: 9px; letter-spacing: .12em; }
+.uony-voice-example q { font-size: 14px; line-height: 1.6; color: var(--pim-ink); quotes: '«' '»'; }
+.uony-voice-welcome-dialog .pim-dialog-footer { padding: 24px 32px 30px; gap: 12px; flex-wrap: wrap; border-top: 0; background: transparent; }
+.uony-voice-welcome-dialog .pim-dialog-footer .pim-btn { min-height: 44px; padding-inline: 20px; border-radius: 12px; }
+.uony-voice-welcome-dialog .pim-dialog-footer .pim-btn-outline { border-color: transparent; background: transparent; color: var(--pim-muted); }
+@media (max-width: 600px) {
+  .uony-voice-welcome-dialog .pim-dialog-header { padding: 22px 24px 8px; }
+  .uony-voice-wordmark { width: 132px; }
+  .uony-voice-welcome-dialog .pim-dialog-body { padding: 0 24px 4px; }
+  .uony-voice-welcome { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .uony-voice-art { min-height: 160px; }
+  .uony-voice-orbit { width: 220px; height: 150px; }
+  .uony-voice-art > img { width: 132px; }
+  .uony-voice-wave { height: 30px; margin-top: 12px; gap: 4px; }
+  .uony-voice-wave i { max-height: 28px; width: 2px; }
+  .uony-voice-copy h3 { margin-top: 12px; font-size: 34px; }
+  .uony-voice-copy p { font-size: 13px; }
+  .uony-voice-example { margin-top: 18px; }
+  .uony-voice-welcome-dialog .pim-dialog-footer { padding: 20px 20px 24px; gap: 8px; }
+  .uony-voice-welcome-dialog .pim-dialog-footer .pim-btn { padding-inline: 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .composer .composer-voice-button.is-inviting, .composer-voice-button.is-inviting svg path { animation: none; }
+  .uony-voice-welcome-dialog[open] .uony-voice-art > img,
+  .uony-voice-welcome-dialog[open] .uony-voice-orbit,
+  .uony-voice-welcome-dialog[open] .uony-voice-wave i { animation: none; }
+}
+
+.uony-voice-preference { display: inline-flex; align-items: center; gap: 9px; margin-right: auto; color: var(--pim-muted); font-size: 12px; cursor: pointer; }
+.uony-voice-preference input { appearance: auto; width: 16px; height: 16px; margin: 0; accent-color: var(--pim-blue); cursor: pointer; }
+.uony-voice-preference input:focus-visible { outline: 2px solid var(--pim-blue); outline-offset: 3px; }
+.uony-voice-footer-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 12px; }
+@media (max-width: 600px) {
+  .uony-voice-preference { width: 100%; padding: 0 4px 10px; }
+  .uony-voice-footer-actions { width: 100%; gap: 8px; }
+}

@@ -1,0 +1,43 @@
+/* Kit de interfaz de Uonify · base de la ficha, utilidades, secciones y tarjetas.
+   Origen: pim/core.css del prototipo (líneas 58-85). Los tokens (--pim-*) están en
+   src/shared/styles/tokens.css; la fuente JetBrains Mono se carga en index.html.
+
+   Reglas del manual («Aplicación a la interfaz»):
+   - Azul = estructura y confianza: acción principal, enlaces, foco, selección.
+   - Aqua = SOLO IA / nuevo / datos en vivo. Sobre claro nunca es texto ni icono:
+     es fondo; el texto y los iconos usan Aqua 600 (--pim-ai-text).
+   - Un único botón sólido por vista; el resto outline, ghost o texto.
+   - El color no es jerarquía: lo son el tamaño, el peso y el espacio.
+   - Los colores semánticos solo comunican estado.
+   - Datos técnicos (SKU, ASIN, EAN, ids, URLs) en monoespaciada.
+   - Rejilla de 8 px (4 px dentro de componentes). Radios 4 · 8 · 12 · 16.
+   - Movimiento: 120 ms estado · 200 ms entrada/salida · 320 ms vista. */
+
+.pim-tab { display: grid; gap: 24px; min-width: 0; color: var(--pim-ink); font-size: 13px; line-height: 1.5; }
+.pim-tab * { box-sizing: border-box; }
+.pim-muted { color: var(--pim-muted); }
+.pim-small { font-size: 12px; }
+.pim-xs { font-size: 11px; }
+.pim-mono, .pim-tab code, .pim-tab kbd { font-family: var(--pim-mono); font-size: .92em; letter-spacing: 0; }
+.pim-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.pim-between { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.pim-stack { display: grid; gap: 16px; }
+.pim-grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 16px; }
+.pim-grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px; }
+@container (max-width: 560px) { .pim-grid-2, .pim-grid-3 { grid-template-columns: minmax(0,1fr); } }
+.pim-hidden { display: none !important; }
+.pim-sr-only { position: absolute !important; width: 1px !important; height: 1px !important; overflow: hidden !important; clip: rect(0 0 0 0) !important; white-space: nowrap !important; }
+
+/* Headings inside tabs: hierarchy by size and weight, icons in ink/subtle. */
+.pim-section { display: grid; gap: 16px; }
+.pim-section-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.pim-section-title { display: flex; align-items: center; gap: 8px; margin: 0; color: var(--pim-ink); font-size: 15px; font-weight: 650; letter-spacing: -.005em; }
+.pim-section-title .pim-icon { color: var(--pim-blue); }
+.pim-section-sub { margin: 4px 0 0; color: var(--pim-muted); font-size: 12px; line-height: 1.5; }
+
+/* Card: 12 px radius, depth by surface, not by shadow. */
+.pim-card { min-width: 0; padding: 16px; border: 1px solid var(--pim-line); border-radius: var(--pim-r-card); background: var(--pim-surface); }
+.pim-card-soft { background: var(--pim-surface-soft); }
+.pim-card-dashed { border-style: dashed; border-width: 1.5px; border-color: var(--pim-line-strong); }
+.pim-card-ai { border-color: var(--pim-ai-line); background: var(--pim-ai-tint); }
+.pim-card-title { display: flex; align-items: center; gap: 8px; margin: 0 0 8px; font-size: 13px; font-weight: 650; }

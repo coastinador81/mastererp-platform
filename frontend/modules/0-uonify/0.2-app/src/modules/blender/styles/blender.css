@@ -1,0 +1,14 @@
+.nxs-logo-blender img { width: 38px; height: 28px; }
+.bln-connection .nxs-primary { align-self: flex-start; }
+.bln-connection .nxs-detail-account p { margin: 3px 0; }
+.bln-result { margin-top: 22px; }
+.bln-scene { margin: 16px 0; font-size: 12px; }
+.bln-scene > div { display: flex; justify-content: space-between; gap: 16px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.bln-scene dt { color: var(--muted); flex-shrink: 0; }
+.bln-scene dd { margin: 0; text-align: right; overflow-wrap: anywhere; min-width: 0; }
+.bln-preview { margin: 20px 0; }
+.bln-preview img { display: block; width: auto; max-width: min(100%, 320px); max-height: 320px; height: auto; margin: 0 auto; border-radius: 8px; background: var(--sidebar); }
+.bln-preview figcaption { font-size: 11px; color: var(--muted); text-align: center; margin-top: 10px; }
+.bln-usage { margin-top: 24px; color: var(--muted); font-size: 12px; }
+.bln-usage summary { cursor: pointer; }
+.bln-connection .bln-cost { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--line); font-size: 12px; }

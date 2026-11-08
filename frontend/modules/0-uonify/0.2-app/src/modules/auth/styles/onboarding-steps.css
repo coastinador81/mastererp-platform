@@ -1,0 +1,56 @@
+/* Acceso a Uonify — pasos nuevos del alta (requisitos de OpenAI para socios):
+   Condiciones versionadas, «Conecta tu plan de ChatGPT» y «Listo». */
+
+/* Condiciones: tres casillas sin marcar y la cláusula de IA tal cual */
+.uon-terms-list { display: grid; gap: 14px; }
+.uon-terms-check { display: grid; grid-template-columns: 18px minmax(0, 1fr); column-gap: 11px; row-gap: 3px; align-items: start; }
+.uon-terms-check input { width: 18px; height: 18px; margin: 1px 0 0; accent-color: var(--uon-auth-blue); }
+.uon-terms-check label { color: var(--uon-auth-text); font-size: 13px; line-height: 1.5; cursor: pointer; }
+.uon-terms-check label a { color: var(--uon-auth-link); }
+.uon-terms-check small { grid-column: 2; color: var(--uon-auth-subtle); font-size: 11px; }
+.uon-terms-check small[hidden] { display: none; }
+.uon-terms-clause { max-height: 132px; overflow: auto; padding: 12px 14px; border: 1px solid var(--uon-auth-line); border-radius: 12px; background: var(--uon-auth-sky); color: var(--uon-auth-body); font-size: 12px; line-height: 1.6; }
+.uon-terms-clause strong { color: var(--uon-auth-ink); }
+
+.uon-inline-plan-permission { display: grid; gap: 14px; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--uon-auth-line); }
+.uon-inline-plan-permission > .uon-onboard-intro { margin: 0; }
+
+/* Plan de ChatGPT: qué supone, quién paga cada cosa y la elección */
+.uon-chatgpt-card { padding: 14px 16px; border: 1px solid var(--uon-auth-line); border-radius: 12px; background: var(--uon-auth-sky); }
+.uon-chatgpt-card-title { display: flex; align-items: center; gap: 8px; margin: 0 0 8px; color: var(--uon-auth-ink); font-size: 13px; font-weight: 700; }
+.uon-chatgpt-terms { margin: 0; padding-left: 18px; color: var(--uon-auth-body); font-size: 12px; line-height: 1.55; }
+.uon-chatgpt-terms li + li { margin-top: 3px; }
+.uon-chatgpt-table { width: 100%; margin-top: 12px; border-collapse: collapse; font-size: 12px; }
+.uon-chatgpt-table caption { margin-bottom: 6px; color: var(--uon-auth-label); font-size: 11px; font-weight: 700; text-align: left; }
+.uon-chatgpt-table :is(th, td) { padding: 7px 8px; border-top: 1px solid var(--uon-auth-line); text-align: left; vertical-align: top; }
+.uon-chatgpt-table thead th { border-top: 0; color: var(--uon-auth-subtle); font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+.uon-chatgpt-table tbody th { color: var(--uon-auth-text); font-weight: 500; }
+.uon-chatgpt-table td { color: var(--uon-auth-ink); font-weight: 650; white-space: nowrap; }
+.uon-chatgpt-choice { display: grid; gap: 10px; margin-top: 16px; }
+.uon-chatgpt-choice-label { margin: 0; color: var(--uon-auth-label); font-size: 12px; font-weight: 700; }
+.uon-choice-card { position: relative; display: grid; gap: 4px; padding: 13px 44px 13px 15px; border: 1.5px solid var(--uon-auth-line); border-radius: 12px; background: var(--surface); cursor: pointer; transition: border-color .16s, background-color .16s; }
+.uon-choice-card:hover { border-color: var(--uon-auth-line-hover); }
+.uon-choice-card.is-selected { border-color: var(--uon-auth-blue); background: var(--uon-auth-sky); }
+.uon-choice-card input { position: absolute; top: 15px; right: 15px; width: 17px; height: 17px; margin: 0; accent-color: var(--uon-auth-blue); }
+.uon-choice-title { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; color: var(--uon-auth-ink); font-size: 13px; font-weight: 700; }
+.uon-choice-copy { color: var(--uon-auth-body); font-size: 12px; line-height: 1.5; }
+.uon-chatgpt-consent { margin: -2px 0 2px; padding: 11px 13px; border-radius: 10px; background: var(--uon-auth-info); }
+.uon-chatgpt-connected { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 16px 0 0; color: var(--uon-auth-text); font-size: 13px; }
+
+/* Listo: resumen */
+.uon-done-summary { display: grid; gap: 0; margin: 0; border: 1px solid var(--uon-auth-line); border-radius: 12px; }
+.uon-done-summary > div { display: grid; grid-template-columns: 130px minmax(0, 1fr); gap: 12px; padding: 12px 15px; }
+.uon-done-summary > div + div { border-top: 1px solid var(--uon-auth-line); }
+.uon-done-summary dt { display: flex; align-items: center; gap: 6px; color: var(--uon-auth-label); font-size: 12px; font-weight: 700; }
+.uon-done-summary dd { margin: 0; color: var(--uon-auth-text); font-size: 13px; line-height: 1.5; overflow-wrap: anywhere; }
+.uon-onboard-step h2[tabindex="-1"]:focus { outline: none; }
+.uon-onboard-step h2[tabindex="-1"]:focus-visible { outline: 3px solid var(--uon-auth-focus); outline-offset: 4px; border-radius: 6px; }
+.uon-profile-dialog input[type="checkbox"]:focus-visible, .uon-profile-dialog input[type="radio"]:focus-visible { outline: 3px solid var(--uon-auth-focus); outline-offset: 2px; }
+
+@media (max-width: 480px) {
+  .uon-done-summary > div { grid-template-columns: 1fr; gap: 3px; }
+  .uon-chatgpt-table td { white-space: normal; }
+}
+
+/* Agrupa los campos durante el guardado sin añadir un marco al formulario. */
+.uon-integrated-fields { border: 0; margin: 0; padding: 0; min-width: 0; }

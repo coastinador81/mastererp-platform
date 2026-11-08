@@ -1,0 +1,4 @@
+/* Hojas de la pestaña «Vídeo» (prefijo pim-video-). */
+@import './video-library.css';
+@import './video-studio.css';
+@import './video-dialogs.css';

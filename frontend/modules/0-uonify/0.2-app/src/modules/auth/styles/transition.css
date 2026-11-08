@@ -1,0 +1,43 @@
+/* Acceso a Uonify — capa de acceso y bienvenida al espacio (#uon-workspace-transition)
+   Origen: auth-ui.css del prototipo (líneas 129–169); colores en tokens.css del módulo. */
+.uon-workspace-transition { position: fixed; inset: 0; z-index: 99999; width: 100%; max-width: none; height: 100dvh; max-height: none; margin: 0; padding: 90px 24px; border: 0; overflow: auto; background: radial-gradient(ellipse at 50% 39%, var(--uon-auth-glow-strong) 0, var(--uon-auth-glow-soft) 42%, transparent 75%); color: var(--uon-auth-text); font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; text-align: center; opacity: 0; transition: opacity .2s cubic-bezier(.2,.65,.3,1); }
+.uon-workspace-transition, .uon-workspace-transition * { box-sizing: border-box; }
+.uon-workspace-transition[open] { display: grid; place-items: center; }
+.uon-workspace-transition:not([open]) { display: none; }
+.uon-workspace-transition::backdrop { background: transparent; }
+.uon-workspace-transition.is-visible { opacity: 1; }
+.uon-workspace-transition.is-leaving { opacity: 0; }
+.uon-workspace-transition.is-leaving::backdrop { background: transparent; }
+html.uon-transition-active { overflow: hidden; }
+.uon-transition-brand { position: absolute; top: clamp(24px, 4vw, 42px); left: clamp(24px, 4vw, 48px); width: 138px; height: auto; }
+.uon-transition-center { width: min(500px, 100%); padding: 12px 0; transform: translateY(8px); opacity: 0; transition: transform .2s ease, opacity .2s ease; }
+.is-visible .uon-transition-center { transform: translateY(0); opacity: 1; }
+.is-leaving .uon-transition-center { transform: translateY(-10px); opacity: 0; }
+.uon-transition-emblem { position: relative; width: 212px; height: 212px; display: grid; place-items: center; margin: 0 auto 38px; }
+.uon-transition-logo { position: relative; z-index: 1; width: 154px; height: 154px; display: grid; place-items: center; border: 1px solid var(--uon-auth-line-soft); border-radius: 50%; background: var(--surface); box-shadow: 0 14px 45px var(--uon-auth-shadow-logo); }
+.uon-transition-logo img { display: block; width: 142px; height: auto; aspect-ratio: 8 / 5; object-fit: contain; image-rendering: auto; }
+.uon-transition-orbit { position: absolute; inset: 0; border: 1.5px solid var(--uon-auth-line); border-radius: 50%; }
+.uon-transition-orbit::before { content: ''; position: absolute; inset: -2px; border: 2.5px solid transparent; border-top-color: var(--uon-auth-live); border-right-color: var(--uon-auth-aqua-orbit); border-radius: 50%; animation: uon-orbit 2.5s linear infinite; }
+.uon-transition-orbit::after { content: ''; position: absolute; top: -4px; left: calc(50% - 4px); width: 8px; height: 8px; background: var(--uon-auth-live); border: 2px solid var(--uon-auth-sky); border-radius: 50%; box-shadow: 0 0 0 4px var(--uon-auth-live-halo); transform-origin: 4px 110px; animation: uon-orbit 2.5s linear infinite; }
+.uon-transition-orbit-inner { inset: 12px; border-color: var(--uon-auth-line-aqua); }
+.uon-transition-orbit-inner::before { border-top-color: var(--uon-auth-aqua-soft); border-right-color: transparent; animation: uon-orbit 4s linear infinite reverse; }
+.uon-transition-orbit-inner::after { display: none; }
+.uon-transition-kicker { margin: 0 0 13px; color: var(--uon-auth-kicker); font-size: 10px; font-weight: 700; letter-spacing: .2em; }
+.uon-transition-message { min-height: 110px; }
+.uon-transition-message h2 { margin: 0; color: var(--uon-auth-ink); font-size: clamp(27px, 4.5vw, 36px); font-weight: 600; letter-spacing: -.045em; line-height: 1.18; outline: none; }
+.uon-transition-message p { max-width: 370px; min-height: 46px; margin: 15px auto 0; color: var(--uon-auth-muted); font-size: 14px; line-height: 1.7; }
+.uon-transition-message.is-changing { animation: uon-step-arrive .18s ease both; }
+.uon-transition-steps { display: flex; gap: 7px; justify-content: center; margin-top: 25px; }
+.uon-transition-steps span { width: 26px; height: 3px; border-radius: 4px; background: var(--uon-auth-line); transition: background .2s ease; }
+.uon-transition-steps span.is-current { background: var(--uon-auth-live); }
+.uon-transition-steps span.is-complete { background: var(--uon-auth-aqua-done); }
+.uon-transition-foot { position: absolute; bottom: 32px; left: 20px; right: 20px; margin: 0; color: var(--uon-auth-faint); font-size: 9px; letter-spacing: .18em; line-height: 1.6; }
+.uon-transition-actions { display: flex; justify-content: center; gap: 10px; margin-top: 20px; }
+.uon-transition-actions:not(:has(button:not([hidden]))) { display: none; }
+.uon-transition-actions button { padding: 10px 17px; border: 1px solid var(--uon-auth-line); border-radius: 9px; background: var(--surface); color: var(--uon-auth-link); font: inherit; font-size: 12px; cursor: pointer; }
+.uon-workspace-transition.is-ready .uon-transition-orbit { opacity: .55; transition: opacity .5s; }
+.uon-workspace-transition.is-error .uon-transition-orbit::before, .uon-workspace-transition.is-error .uon-transition-orbit::after { animation-play-state: paused; }
+.uon-workspace-transition.is-error .uon-transition-steps { opacity: .4; }
+html.uon-workspace-revealing #app-shell { animation: uon-workspace-reveal .24s cubic-bezier(.2,.7,.2,1) both; }
+@keyframes uon-orbit { to { transform: rotate(360deg); } }
+@keyframes uon-workspace-reveal { from { opacity: .35; transform: translateY(10px); } to { opacity: 1; transform: none; } }

@@ -1,0 +1,35 @@
+/* Uonify PIM · Auditoría IA (4/4): anchos de la ficha y movimiento reducido (pim/auditoria.css). */
+
+/* Columna de la ficha (640 / 480 px) y teléfonos */
+@container pim-auditoria (max-width: 720px) {
+  .pim-auditoria-platforms { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@container pim-auditoria (max-width: 680px) {
+  /* Campos del esquema: cabecera densa (estado, REQ, papelera) → una columna antes. */
+  .pim-auditoria-fields .pim-auditoria-grid { grid-template-columns: minmax(0, 1fr); }
+}
+@container pim-auditoria (max-width: 560px) {
+  .pim-auditoria-grid,
+  .pim-auditoria-platforms,
+  .pim-auditoria-result-grid { grid-template-columns: minmax(0, 1fr); }
+  .pim-auditoria-stat { padding: 0 12px; }
+  .pim-auditoria-stat-value { font-size: 20px; }
+  .pim-auditoria-suggest .pim-auditoria-actions { flex: 1 1 100%; }
+}
+@container pim-auditoria (max-width: 440px) {
+  .pim-auditoria-url-row:not(:has(.pim-auditoria-search-btn)) { flex-direction: column; }
+  .pim-auditoria-url-row:not(:has(.pim-auditoria-search-btn)) > .pim-btn { width: 100%; }
+  .pim-auditoria-stats { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .pim-auditoria-stat { padding: 0; }
+  .pim-auditoria-stat + .pim-auditoria-stat { border-left: 0; }
+  .pim-auditoria-result-head { flex-direction: column; }
+}
+
+/* Movimiento reducido: core.css cubre la pestaña (.pim-tab *); aquí, el contenido de los diálogos. */
+@media (prefers-reduced-motion: reduce) {
+  .pim-auditoria-drag,
+  .pim-auditoria-chip,
+  .pim-auditoria-dropzone,
+  .pim-auditoria-modal * { transition: none !important; animation: none !important; }
+}
+:root[data-reduce-motion="true"] .pim-auditoria-modal * { transition: none !important; animation: none !important; }

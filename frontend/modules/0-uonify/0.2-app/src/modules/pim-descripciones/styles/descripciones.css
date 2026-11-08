@@ -1,0 +1,123 @@
+/* Uonify PIM: pestaña «Descripciones» (puerto React de pim/descripciones.css del prototipo).
+   Port of ProductsPIM/Descriptions/DescriptionsTab.tsx: three blocks (Descripción Larga, Viñetas,
+   Keywords SEO) with AI wands, plus the floating "Generando..." indicator of ProductsPIMInterface.tsx.
+
+   Design (manual «Aplicación a la interfaz» + the new frontend's line), built on pim/core.css:
+   - Three flat pim-sections separated by space and a hairline; each head has the title on the left
+     and its actions on the right. No nested boxes, no coloured panels.
+   - Vista | HTML is a pim-subtabs two-state toggle; the preview is a soft (read-only) surface.
+   - AI wands are icon-only buttons with a tooltip: pim-btn-ai in the section heads, ghost with the
+     Aqua 600 icon in the six bullet rows (a column of tinted squares would be decoration).
+   - The "Generando..." highlight and indicator use the AI tint and the AI gradient (AI = live).
+   - Only core tokens (--pim-*): no hex colours in this file. */
+
+.pim-descripciones { container-type: inline-size; display: grid; gap: 24px; min-width: 0; color: var(--pim-ink); font-size: 13px; line-height: 1.5; }
+
+/* Section heads: title left, actions right (36 px row so the Vista | HTML track fits). */
+.pim-descripciones .pim-section-head { align-items: center; flex-wrap: wrap; min-height: 36px; }
+.pim-descripciones .pim-section-title { min-width: 0; overflow-wrap: anywhere; }
+.pim-descripciones .pim-section-title label { cursor: inherit; }
+.pim-descripciones-hint { margin: 0; }
+
+/* Keyboard focus (WCAG 2.4.7 / 1.4.11): the shared core halo (3 px of blue at 18 %) is about 1.3:1
+   on the grey Vista | HTML track and on white around the 32 px wands and «Vaciar», under the 3:1 a
+   focus indicator needs. Solid 2 px blue ring, 2 px apart, as in gpsr.css. The pressed segment keeps
+   its hairline (box-shadow) because the ring surrounds it. */
+.pim-descripciones-view button:focus-visible { outline: 2px solid var(--pim-blue); outline-offset: 2px; }
+.pim-descripciones .pim-btn:focus-visible { outline: 2px solid var(--pim-blue); outline-offset: 2px; box-shadow: none; }
+
+/* Vista | HTML: the pressed segment is the current mode; the other one toggles. */
+.pim-descripciones-view button { display: inline-flex; align-items: center; gap: 4px; }
+.pim-descripciones-view button:hover { color: var(--pim-ink); }
+.pim-descripciones-view button[aria-pressed="true"] { background: var(--pim-surface); color: var(--pim-ink); box-shadow: 0 0 0 1px var(--pim-line); cursor: default; }
+.pim-descripciones-view .pim-icon { flex: 0 0 auto; }
+
+/* AI wands. Section wands: pim-btn-ai (core). Row wands: ghost, AI icon colour, AI tint on hover. */
+.pim-descripciones .pim-descripciones-wand:disabled { opacity: 1; cursor: progress; }
+.pim-descripciones .pim-descripciones-wand-row { color: var(--pim-ai-text); }
+.pim-descripciones .pim-descripciones-wand-row:hover:not(:disabled) { background: var(--pim-ai-tint); color: var(--pim-ai-strong); }
+
+/* Fields */
+.pim-descripciones-field { min-width: 0; }
+.pim-descripciones .pim-textarea.pim-descripciones-input { display: block; resize: none; field-sizing: content; }
+.pim-descripciones .pim-textarea.pim-descripciones-code { min-height: 128px; padding: 12px 16px; font-family: var(--pim-mono); font-size: 12px; line-height: 1.6; }
+.pim-descripciones .pim-textarea.pim-descripciones-keywords { min-height: 80px; }
+
+/* HTML preview: soft read-only surface, same box as the HTML editor so switching does not jump.
+   'prose prose-sm' typography of the original, on core tokens. */
+.pim-descripciones-preview { min-width: 0; min-height: 128px; padding: 12px 16px; overflow-x: auto; overflow-wrap: anywhere; border: 1px solid var(--pim-line); border-radius: var(--pim-r-control); background: var(--pim-surface-soft); color: var(--pim-text); font-size: 13px; line-height: 1.6; transition: background-color var(--pim-mid) var(--pim-ease), box-shadow var(--pim-mid) var(--pim-ease); }
+.pim-descripciones-preview > :first-child { margin-top: 0; }
+.pim-descripciones-preview > :last-child { margin-bottom: 0; }
+.pim-descripciones-preview p { margin: 0 0 12px; }
+.pim-descripciones-preview ul, .pim-descripciones-preview ol { margin: 0 0 12px; padding-left: 20px; }
+.pim-descripciones-preview ul { list-style: disc; }
+.pim-descripciones-preview ol { list-style: decimal; }
+.pim-descripciones-preview li { margin: 4px 0; }
+.pim-descripciones-preview li::marker { color: var(--pim-subtle); }
+.pim-descripciones-preview h1, .pim-descripciones-preview h2, .pim-descripciones-preview h3,
+.pim-descripciones-preview h4, .pim-descripciones-preview h5, .pim-descripciones-preview h6 { margin: 16px 0 8px; color: var(--pim-ink); font-weight: 650; line-height: 1.35; letter-spacing: -.005em; }
+.pim-descripciones-preview h1 { font-size: 18px; }
+.pim-descripciones-preview h2 { font-size: 16px; }
+.pim-descripciones-preview h3 { font-size: 14px; }
+.pim-descripciones-preview h4, .pim-descripciones-preview h5, .pim-descripciones-preview h6 { font-size: 13px; }
+.pim-descripciones-preview strong, .pim-descripciones-preview b { color: var(--pim-ink); font-weight: 650; }
+.pim-descripciones-preview a { color: var(--pim-blue-strong); text-decoration: underline; text-underline-offset: 2px; }
+.pim-descripciones-preview a:not([href]) { color: inherit; text-decoration: none; }
+.pim-descripciones-preview img { display: block; max-width: 100%; height: auto; margin: 12px 0; border-radius: var(--pim-r-control); }
+.pim-descripciones-preview blockquote { margin: 0 0 12px; padding-left: 12px; border-left: 2px solid var(--pim-line-strong); color: var(--pim-muted); }
+.pim-descripciones-preview hr { margin: 16px 0; border: 0; border-top: 1px solid var(--pim-line); }
+.pim-descripciones-preview table { width: 100%; margin: 0 0 12px; border-collapse: collapse; font-size: 12px; }
+.pim-descripciones-preview th, .pim-descripciones-preview td { padding: 4px 8px; border: 1px solid var(--pim-line); text-align: left; vertical-align: top; }
+.pim-descripciones-preview th { background: var(--pim-surface-muted); color: var(--pim-ink); font-weight: 600; }
+.pim-descripciones-preview code, .pim-descripciones-preview pre { font-family: var(--pim-mono); font-size: 12px; }
+.pim-descripciones-preview pre { margin: 0 0 12px; padding: 8px 12px; overflow-x: auto; border-radius: var(--pim-r-control); background: var(--pim-surface-muted); white-space: pre-wrap; }
+
+/* Bullets: numbered list of six rows; number · textarea · toolbar (wand, vaciar). */
+.pim-descripciones-bullets-body { display: grid; gap: 8px; min-width: 0; }
+.pim-descripciones-bullet-list { display: grid; gap: 8px; min-width: 0; margin: 0; padding: 0; list-style: none; }
+.pim-descripciones-bullet { display: grid; grid-template-columns: 24px minmax(0, 1fr) auto; align-items: start; gap: 8px; min-width: 0; }
+.pim-descripciones-bullet-num { padding-top: 9px; color: var(--pim-muted); font-size: 12px; font-weight: 600; line-height: 19px; font-variant-numeric: tabular-nums; text-align: right; }
+.pim-descripciones .pim-textarea.pim-descripciones-bullet-input { min-height: 56px; }
+.pim-descripciones-bullet-actions { padding-top: 12px; }
+.pim-descripciones .pim-descripciones-clear { color: var(--pim-muted); }
+.pim-descripciones .pim-descripciones-clear:hover:not(:disabled) { color: var(--pim-ink); }
+.pim-descripciones .pim-descripciones-add { justify-self: start; margin-left: 32px; }
+.pim-descripciones .pim-descripciones-add[hidden] { display: none; }
+
+/* AI highlight while aiActive (2 s): AI tint + AI gradient edge, soft aqua pulse (.ai-border / ai-pulse). */
+.pim-descripciones .pim-textarea.is-ai,
+.pim-descripciones-preview.is-ai-ring { border-color: transparent; background: linear-gradient(var(--pim-ai-tint), var(--pim-ai-tint)) padding-box, var(--pim-ai-gradient) border-box; animation: pim-descripciones-ai-pulse 2s var(--pim-ease) infinite; }
+@keyframes pim-descripciones-ai-pulse {
+  0%, 100% { box-shadow: 0 0 0 2px color-mix(in srgb, var(--pim-aqua) 16%, transparent); }
+  50% { box-shadow: 0 0 0 4px color-mix(in srgb, var(--pim-aqua) 28%, transparent); }
+}
+
+/* Floating "Generando..." indicator (fixed bottom-right, z-50): AI tint surface, Aqua 700 text,
+   AI gradient live line. It floats, so it is the one element here with a shadow. */
+.pim-descripciones-indicator { position: fixed; z-index: 50; right: 24px; bottom: 24px; display: flex; align-items: center; gap: 8px; min-height: 40px; padding: 8px 16px; overflow: hidden; border: 1px solid var(--pim-ai-line); border-radius: var(--pim-r-card); background: var(--pim-ai-tint); color: var(--pim-ai-strong); font-size: 13px; font-weight: 600; line-height: 1.4; box-shadow: var(--pim-shadow-float); pointer-events: none; animation: pim-descripciones-indicator-in var(--pim-mid) var(--pim-ease) both; }
+.pim-descripciones-indicator::after { content: ''; position: absolute; right: 0; bottom: 0; left: 0; height: 2px; background: var(--pim-ai-gradient); }
+.pim-descripciones-indicator.is-leaving { animation: pim-descripciones-indicator-out var(--pim-mid) var(--pim-ease) both; }
+.pim-descripciones-indicator .pim-icon { flex: 0 0 auto; color: var(--pim-ai-text); }
+@keyframes pim-descripciones-indicator-in { from { opacity: 0; transform: translateY(8px) scale(.96); } to { opacity: 1; transform: none; } }
+@keyframes pim-descripciones-indicator-out { from { opacity: 1; transform: none; } to { opacity: 0; transform: translateY(8px) scale(.96); } }
+
+/* Narrow sheet column */
+@container (max-width: 560px) {
+  .pim-descripciones .pim-textarea.pim-descripciones-code,
+  .pim-descripciones-preview { padding: 8px 12px; }
+}
+
+@media (max-width: 560px) {
+  .pim-descripciones-indicator { right: 16px; bottom: 16px; }
+}
+
+/* Reduced motion: static highlight ring, no spin; the indicator still fires animationend. */
+@media (prefers-reduced-motion: reduce) {
+  .pim-descripciones .pim-textarea.is-ai, .pim-descripciones-preview.is-ai-ring { animation: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--pim-aqua) 22%, transparent); }
+  .pim-descripciones-indicator, .pim-descripciones-indicator.is-leaving { animation-duration: .01ms; }
+  .pim-descripciones-indicator .pim-spin { animation: none; }
+}
+:root[data-reduce-motion="true"] .pim-descripciones .pim-textarea.is-ai,
+:root[data-reduce-motion="true"] .pim-descripciones-preview.is-ai-ring { animation: none !important; box-shadow: 0 0 0 3px color-mix(in srgb, var(--pim-aqua) 22%, transparent); }
+:root[data-reduce-motion="true"] .pim-descripciones-indicator { animation-duration: .01ms; }
+:root[data-reduce-motion="true"] .pim-descripciones-indicator .pim-spin { animation: none; }

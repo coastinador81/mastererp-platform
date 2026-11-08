@@ -1,0 +1,44 @@
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { api } from '@/shared/api/client';
+import { Projects, ProjectContext } from '../components/navigation/Projects';
+import { useWorkspaceStore, resetWorkspaceStore } from '../hooks/workspaceStore';
+import { startNewThread } from '../hooks/actions';
+vi.mock('@/shared/api/config', () => ({ USE_MOCKS: false, API_BASE: '/api' }));
+vi.mock('@/modules/auth', () => ({ currentAccountEmail: () => 'one@example.test' }));
+afterEach(() => vi.restoreAllMocks());
+function show() { return render(<QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}><Projects /><ProjectContext /></QueryClientProvider>); }
+it('crea un proyecto persistente, recupera tras remontar y asocia solo sus nuevos hilos', async () => {
+  resetWorkspaceStore();
+  const project = { id: 'new-project', name: 'Colección otoño' };
+  const get = vi.spyOn(api, 'get').mockResolvedValue({ projects: [] });
+  const post = vi.spyOn(api, 'post').mockResolvedValue(project);
+  const first = show();
+  fireEvent.click(screen.getByRole('button', { name: 'Nuevo proyecto' }));
+  const name = screen.getByLabelText('Nombre del proyecto');
+  expect(name).toHaveFocus();
+  fireEvent.change(name, { target: { value: project.name } });
+  fireEvent.click(screen.getByRole('button', { name: 'Crear proyecto' }));
+  await screen.findByText('Proyecto · Colección otoño');
+  expect(post).toHaveBeenCalledWith('/uony/projects', { id: expect.any(String), name: project.name });
+  const thread = useWorkspaceStore.getState().createThread({ title: 'Ficha de otoño', service: null, view: 'default' });
+  expect(thread.projectId).toBe(project.id);
+  first.unmount(); get.mockResolvedValue({ projects: [project] }); show();
+  await screen.findByRole('button', { name: project.name });
+  expect(screen.getByRole('button', { name: 'Ficha de otoño' })).toBeInTheDocument();
+  startNewThread();
+  expect(useWorkspaceStore.getState().createThread({ title: 'Fuera', service: null, view: 'default' }).projectId).toBeNull();
+});
+it('conserva el nombre y permite reintentar sin duplicar cuando el servidor falla', async () => {
+  resetWorkspaceStore();
+  vi.spyOn(api, 'get').mockResolvedValue({ projects: [] });
+  const post = vi.spyOn(api, 'post').mockRejectedValueOnce(new Error('No se pudo guardar')).mockResolvedValue({ id: 'p', name: 'Catálogo' });
+  show(); fireEvent.click(screen.getByRole('button', { name: 'Nuevo proyecto' }));
+  fireEvent.change(screen.getByLabelText('Nombre del proyecto'), { target: { value: 'Catálogo' } });
+  fireEvent.click(screen.getByRole('button', { name: 'Crear proyecto' }));
+  expect(await screen.findByRole('alert')).toHaveTextContent('No se pudo guardar');
+  expect(screen.getByLabelText('Nombre del proyecto')).toHaveValue('Catálogo');
+  fireEvent.click(screen.getByRole('button', { name: 'Crear proyecto' }));
+  await waitFor(() => expect(post).toHaveBeenCalledTimes(2));
+  expect(post.mock.calls[0][1]).toEqual(post.mock.calls[1][1]);
+});

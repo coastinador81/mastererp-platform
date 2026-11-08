@@ -1,0 +1,29 @@
+/* Pestaña «GPSR» del producto. Usa el sistema de diseño real (Section/SectionHead/
+ * Alert/Field + escala tipográfica del sistema); aquí solo lo específico: chips de
+ * país y filas de advertencia. Sin tamaños ad-hoc; cuerpo 13px, menor 12px. */
+
+.pim-gpsr-inline { margin-top: 12px; }
+/* Pares etiqueta/valor heredados de la marca: 2 columnas en escritorio, 1 en móvil.
+ * No usa el grid max-content de .pim-kv (al estrechar aplastaba una columna). */
+.pim-gpsr-kv { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px 20px; margin: 2px 0 10px; font-size: 12px; }
+.pim-gpsr-kv > div { display: grid; gap: 2px; min-width: 0; }
+.pim-gpsr-kv dt { color: var(--pim-muted); }
+.pim-gpsr-kv dd { margin: 0; color: var(--pim-ink); font-weight: 550; overflow-wrap: anywhere; min-width: 0; }
+
+.pim-gpsr-countries { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.pim-gpsr-chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 6px 5px 11px; background: var(--pim-blue-tint); border-radius: var(--pim-r-tag); font-size: 13px; color: var(--pim-blue-strong); }
+.pim-gpsr-chip button { display: grid; place-items: center; width: 18px; height: 18px; border: 0; border-radius: 50%; background: transparent; color: var(--pim-blue-strong); cursor: pointer; }
+.pim-gpsr-chip button:hover { background: #ffffff8c; }
+.pim-gpsr-add-country { width: auto; min-width: 170px; }
+
+.pim-gpsr-warnings { display: grid; gap: 10px; margin: 12px 0; }
+.pim-gpsr-warning { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.pim-gpsr-warning .pim-select { flex: 0 0 auto; min-width: 120px; }
+.pim-gpsr-warning .pim-input { flex: 1 1 200px; min-width: 0; }
+.pim-gpsr-warning-remove { display: grid; place-items: center; flex: 0 0 auto; width: 36px; height: 36px; border: 1px solid var(--pim-line); border-radius: var(--pim-r-control); background: var(--pim-surface); color: var(--pim-subtle); cursor: pointer; }
+.pim-gpsr-warning-remove:hover { border-color: var(--pim-error-line); color: var(--pim-error); background: var(--pim-error-tint); }
+
+.pim-gpsr-gate-list { margin: 0 0 8px; padding-left: 18px; display: grid; gap: 4px; font-size: 13px; }
+.pim-gpsr-gate-list li { line-height: 1.5; }
+
+.pim-gpsr-save-row { display: flex; justify-content: flex-end; margin-top: 20px; }

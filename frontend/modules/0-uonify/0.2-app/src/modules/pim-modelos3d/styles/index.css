@@ -1,0 +1,4 @@
+/* Hojas de la pestaña «3D», en el orden del prototipo (pim/modelos3d.css). */
+@import './tab.css';
+@import './viewer.css';
+@import './dialogs.css';

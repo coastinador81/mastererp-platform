@@ -1,0 +1,10 @@
+/* Hojas del kit de interfaz (src/shared/ui). Las importa src/shared/ui/index.ts,
+   así que cualquier módulo que use el kit (y AppProviders) las carga una vez.
+   Conservan los nombres de clase pim-* del prototipo: las pestañas ya los usan. */
+@import './base.css';
+@import './controls.css';
+@import './feedback.css';
+@import './layout.css';
+@import './overlays.css';
+@import './tooltip.css';
+@import './information.css';

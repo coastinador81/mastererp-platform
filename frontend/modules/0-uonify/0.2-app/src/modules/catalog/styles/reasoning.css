@@ -1,0 +1,12 @@
+.amazon-reasoning { min-width: 0; padding: 16px; border: 1px solid var(--pim-ai-line); border-radius: var(--pim-r-card); background: var(--surface); color: var(--text); white-space: normal; }
+.amazon-reasoning-heading { display: flex; align-items: center; gap: 10px; color: var(--pim-ai-strong); font-size: 14px; }
+.amazon-reasoning-heading svg { flex-shrink: 0; }
+.amazon-reasoning p { margin: 10px 0 0; color: var(--muted); font-size: 13px; line-height: 1.5; overflow-wrap: anywhere; }
+.amazon-reasoning .amazon-reasoning-consent { display: flex; align-items: flex-start; gap: 9px; margin-top: 12px; font-size: 13px; line-height: 1.5; color: var(--text); }
+.amazon-reasoning-consent input { width: 18px; height: 18px; flex: 0 0 18px; margin: 2px 0 0; accent-color: var(--pim-ai-strong); }
+.amazon-reasoning button { display: inline-flex; align-items: center; gap: 8px; margin-top: 14px; min-height: 40px; padding: 8px 12px; border: 1px solid var(--pim-ai-line); border-radius: var(--pim-r-control); background: var(--pim-ai-tint); color: var(--pim-ai-strong); font: inherit; font-size: 13px; cursor: pointer; }
+.amazon-reasoning button:disabled { opacity: .6; cursor: default; }
+.amazon-reasoning :is(button, input):focus-visible { outline: none; box-shadow: var(--pim-focus); }
+.uony-reasoning-panel { max-height: min(420px, calc(100dvh - 220px)); overflow-y: auto; }
+.uony-reasoning-panel > p { margin: 8px 14px; font-size: 13px; }
+@media (max-width: 480px) { .amazon-reasoning { padding: 12px; } .amazon-reasoning button { min-height: 44px; } }

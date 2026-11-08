@@ -1,0 +1,35 @@
+/* Acceso a Uonify — tarjetas de plan, acciones y textos legales del alta
+   Origen: auth-ui.css del prototipo (líneas 106–128); colores en tokens.css del módulo. */
+.uon-plan-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.uon-plan-card { position: relative; display: grid; align-content: start; gap: 5px; min-height: 144px; padding: 16px 18px; border: 1.5px solid var(--uon-auth-line); border-radius: 15px; background: var(--surface); cursor: pointer; transition: border-color .16s, background-color .16s, box-shadow .16s; }
+.uon-plan-card:hover { border-color: var(--uon-auth-line-hover); }
+.uon-plan-card:has(input:checked) { border-color: var(--uon-auth-blue); background: var(--uon-auth-sky); box-shadow: inset 0 0 0 1px var(--uon-auth-blue); }
+.uon-plan-card input { position: absolute; top: 17px; right: 17px; width: 17px; height: 17px; margin: 0; accent-color: var(--uon-auth-blue); }
+.uon-plan-name { padding-right: 22px; color: var(--uon-auth-heading-soft); font-size: 13px; font-weight: 750; }
+.uon-plan-price { color: var(--uon-auth-ink); font-size: 25px; font-weight: 700; letter-spacing: -.045em; }
+.uon-plan-price small { color: var(--uon-auth-subtle); font-size: 11px; font-weight: 500; letter-spacing: 0; }
+.uon-plan-price-custom { font-size: 22px; }
+.uon-plan-description { color: var(--uon-auth-body); font-size: 11px; line-height: 1.4; }
+.uon-plan-detail { margin-top: 3px; color: var(--uon-auth-blue); font-size: 10px; font-weight: 650; }
+.uon-onboard-plan-note { margin: 15px 0 0; color: var(--uon-auth-subtle); font-size: 11px; line-height: 1.45; }
+.uon-onboard-actions { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 28px; }
+.uon-onboard-back { min-height: 48px; padding: 0 15px; border: 1px solid transparent; border-radius: 10px; background: transparent; color: var(--uon-auth-body); font: inherit; font-size: 13px; font-weight: 650; cursor: pointer; }
+.uon-onboard-back:hover { background: var(--uon-auth-hover); }
+.uon-profile-submit { display: flex; align-items: center; justify-content: center; gap: 10px; min-width: 166px; min-height: 48px; margin-left: auto; padding: 0 18px; border: 0; border-radius: 10px; background: var(--uon-auth-action); color: var(--surface); font: inherit; font-size: 13px; font-weight: 650; cursor: pointer; }
+.uon-profile-submit:hover { background: var(--uon-auth-action-hover); }
+.uon-profile-submit:disabled { cursor: progress; opacity: .7; }
+.uon-profile-submit:disabled[data-age-blocked="true"] { cursor: not-allowed; }
+.uon-profile-status { margin: 11px 0 0; color: var(--uon-auth-error); font-size: 12px; line-height: 1.5; }
+.uon-profile-dialog :is(button,input,select,a):focus-visible { outline: 3px solid var(--uon-auth-focus); outline-offset: 3px; }
+
+/* Decisión del dueño: cinco planes; Personalizado ocupa la fila entera y los de pago indican la facturación anual. */
+.uon-plan-card-wide { grid-column: 1 / -1; min-height: 0; }
+.uon-plan-billing { margin-top: -3px; color: var(--uon-auth-subtle); font-size: 10px; font-weight: 600; letter-spacing: .02em; }
+
+/* Catálogo de billing: 13 meses por el precio de 12, ventas para Personalizado y estados de carga. */
+.uon-plan-bonus { margin: 1px 0 2px; }
+.uon-plan-sales { margin-top: 2px; color: var(--uon-auth-body); font-size: 11px; }
+.uon-plan-sales a { color: var(--uon-auth-link); font-weight: 650; }
+.uon-plan-loading { display: flex; align-items: center; gap: 10px; min-height: 120px; justify-content: center; color: var(--uon-auth-muted); font-size: 13px; }
+.uon-onboard-uony-note { margin: 10px 0 0; padding: 10px 12px; border-radius: 9px; background: var(--uon-auth-suggest); color: var(--uon-auth-suggest-text); font-size: 11px; line-height: 1.5; }
+.uon-profile-dialog .pim-alert .pim-btn { margin-top: 8px; }

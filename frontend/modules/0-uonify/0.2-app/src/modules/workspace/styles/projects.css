@@ -1,0 +1,26 @@
+.nav-projects > .nav-drawer-section-head { margin-top: 22px; }
+.nav-project-form { margin: 12px 0 20px; padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.nav-project-form label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 8px; }
+.nav-project-form input { width: 100%; min-width: 0; padding: 10px; border: 1px solid var(--line); border-radius: 8px; color: var(--ink); background: var(--surface); font: inherit; font-size: 12px; }
+.nav-project-form p { font-size: 12px; color: var(--muted); line-height: 1.5; margin: 10px 0 16px; }
+.nav-project-form p[role=alert] { color: var(--pim-error); }
+.nav-project-actions { display: flex; justify-content: flex-end; gap: 10px; }
+.nav-project-actions button { min-height: 36px; padding: 8px 12px; border: 0; border-radius: 8px; background: var(--soft); color: var(--text); font-size: 12px; }
+.nav-project-actions button[type=submit] { background: var(--blue); color: var(--surface); }
+.nav-project-actions button:disabled { opacity: .5; cursor: default; }
+.nav-project-name { display: flex; align-items: center; gap: 10px; width: 100%; padding: 11px 10px; border: 0; border-radius: 8px; background: transparent; color: var(--text); text-align: left; font-size: 13px; }
+.nav-project-name span { overflow-wrap: anywhere; min-width: 0; }
+.nav-project-name svg { flex-shrink: 0; }
+.nav-project-name:hover, .nav-project-name[aria-expanded=true] { color: var(--blue-dark); background: var(--active); }
+.nav-project-threads { margin: 8px 0 16px 17px; padding-left: 8px; border-left: 1px solid var(--line); }
+.nav-project-new-thread { border: 0; background: transparent; color: var(--blue-dark); font-size: 12px; padding: 10px; text-align: left; }
+.composer-project-context { display: flex; align-items: center; gap: 7px; margin: 0 0 10px; color: var(--blue-dark); font-size: 12px; }
+.composer-project-context span { overflow-wrap: anywhere; min-width: 0; }
+.nav-item-row { display: flex; align-items: center; gap: 2px; border-radius: 8px; min-width: 0; }
+.nav-item-row.is-active { background: var(--active); }
+.nav-item-row > .thread-button, .nav-item-row > .nav-project-name { flex: 1; min-width: 0; }
+.nav-item-delete { display: grid; place-items: center; flex: 0 0 32px; width: 32px; height: 34px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: var(--muted); cursor: pointer; }
+.nav-item-delete:hover, .nav-item-delete:focus-visible { background: var(--soft); color: var(--pim-error); }
+.nav-item-delete:disabled { opacity: .4; cursor: default; }
+.nav-delete-name { font-weight: 600; overflow-wrap: anywhere; }
+.nav-delete-error { color: var(--pim-error); }

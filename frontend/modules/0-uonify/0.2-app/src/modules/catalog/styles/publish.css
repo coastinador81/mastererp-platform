@@ -1,0 +1,54 @@
+/* Servicio Producto · diálogo «Publicar». Origen: pim/publicar.css del prototipo (sin cambios):
+   canales como pim-option con casilla, revisión en filas planas con su estado y datos
+   técnicos en monoespaciada. El color solo dice el estado (listo, por revisar, error). */
+
+.pim-publish { display: grid; gap: 12px; color: var(--pim-ink); font-size: 13px; line-height: 1.5; }
+.pim-publish-content { display: grid; gap: 24px; min-width: 0; }
+.pim-publish * { box-sizing: border-box; }
+.pim-publish-section { display: grid; gap: 12px; min-width: 0; }
+.pim-publish-section + .pim-publish-section { padding-top: 24px; border-top: 1px solid var(--pim-line); }
+.pim-publish-title { margin: 0; color: var(--pim-ink); font-size: 14px; font-weight: 650; }
+.pim-publish-note { display: flex; align-items: center; gap: 8px; margin: 0; color: var(--pim-muted); font-size: 12px; }
+.pim-publish-note.is-ok { color: var(--pim-success); }
+
+/* Canales */
+.pim-publish-channels { display: grid; gap: 8px; }
+.pim-option.pim-publish-channel { display: flex; align-items: center; gap: 12px; }
+.pim-publish-channel .pim-check { flex: 0 0 auto; }
+.pim-publish-logo { display: grid; place-items: center; width: 56px; height: 32px; flex: 0 0 auto; padding: 4px 8px; border: 1px solid var(--pim-line); border-radius: var(--pim-r-control); background: var(--pim-surface); color: var(--pim-muted); }
+.pim-publish-logo img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.pim-publish-channel-text { display: grid; flex: 1; gap: 2px; min-width: 0; }
+.pim-publish-channel-text strong { font-size: 13px; font-weight: 650; }
+.pim-publish-channel-text small { color: var(--pim-muted); font-size: 12px; }
+.pim-option.pim-publish-channel.is-selected .pim-publish-channel-text small { color: var(--pim-text); }
+.pim-publish-channel:has(.pim-check:focus-visible) { box-shadow: var(--pim-focus); }
+
+/* Revisión por producto */
+.pim-publish-products { display: grid; margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--pim-line); }
+.pim-publish-product { display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; align-items: center; gap: 4px 12px; padding: 12px 0; border-bottom: 1px solid var(--pim-line); }
+.pim-publish-thumb { display: grid; place-items: center; width: 40px; height: 40px; overflow: hidden; border: 1px solid var(--pim-line); border-radius: var(--pim-r-control); background: var(--pim-surface-soft); color: var(--pim-subtle); }
+.pim-publish-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pim-publish-product-text { display: grid; gap: 2px; min-width: 0; }
+.pim-publish-product-text strong { overflow: hidden; font-size: 13px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+.pim-publish-product-text small { color: var(--pim-muted); font-size: 12px; }
+.pim-publish-status { justify-self: end; }
+.pim-publish-detail { grid-column: 2 / -1; min-width: 0; }
+.pim-publish-detail:empty { display: none; }
+.pim-publish-checks, .pim-publish-results { display: grid; gap: 4px; margin: 4px 0 0; padding: 0; list-style: none; }
+.pim-publish-checks li, .pim-publish-results li { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 4px 8px; color: var(--pim-text); font-size: 12px; }
+.pim-publish-checks li > .pim-icon, .pim-publish-results li > .pim-icon { flex: 0 0 auto; margin-top: 2px; }
+.pim-publish-checks li > span, .pim-publish-results li > span { flex: 1 1 200px; min-width: 0; }
+.pim-publish-checks strong, .pim-publish-results strong { color: var(--pim-ink); font-weight: 600; }
+.pim-publish-checks .is-missing > .pim-icon { color: var(--pim-warning); }
+.pim-publish-checks .is-advice > .pim-icon { color: var(--pim-subtle); }
+.pim-publish-checks .pim-link { font-size: 12px; }
+.pim-publish-results .is-ok > .pim-icon { color: var(--pim-success); }
+.pim-publish-results .is-error > .pim-icon { color: var(--pim-error); }
+.pim-publish-summary { margin: 0; color: var(--pim-muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+.pim-publish-dialog .pim-dialog-footer .pim-btn .pim-icon { color: inherit; }
+
+@media (max-width: 520px) {
+  .pim-publish-product { grid-template-columns: 40px minmax(0, 1fr); }
+  .pim-publish-status { grid-column: 2; justify-self: start; }
+  .pim-option.pim-publish-channel { flex-wrap: wrap; }
+}

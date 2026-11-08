@@ -1,0 +1,5 @@
+/* Hojas de la pestaña «Auditoría IA» (clases pim-auditoria-*, tokens --pim-* de shared/styles/tokens.css). */
+@import './tab.css';
+@import './schema.css';
+@import './dialogs.css';
+@import './responsive.css';

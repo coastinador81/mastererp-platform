@@ -1,0 +1,50 @@
+/* Kit de interfaz · primitivas de maquetación comunes a las pestañas.
+   Origen: pim/core.css del prototipo (líneas 226-272). */
+
+/* ------------------------------------------------------------------------
+   Layout primitives: ONE design line for the seven tabs (the new frontend's).
+   Calm white surfaces, hierarchy by type and space, flat sections separated by
+   whitespace and a hairline — not nested coloured boxes.
+   ------------------------------------------------------------------------ */
+/* Tab intro: title + one line of context (only where the original has a header). */
+.pim-head { display: grid; gap: 4px; }
+.pim-head-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.pim-head h2, .pim-head .pim-head-title { display: flex; align-items: center; gap: 8px; margin: 0; color: var(--pim-ink); font-size: 18px; font-weight: 650; letter-spacing: -.01em; line-height: 1.3; }
+.pim-head p, .pim-head .pim-head-sub { margin: 0; color: var(--pim-muted); font-size: 13px; line-height: 1.5; }
+/* Sections: flat, separated by space and a hairline. */
+.pim-section + .pim-section, .pim-section.is-divided { padding-top: 24px; border-top: 1px solid var(--pim-line); }
+.pim-section-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.pim-divider { height: 1px; margin: 0; border: 0; background: var(--pim-line); }
+/* Toolbar of icon actions (ghost 32 px, tooltip via data-tooltip + aria-label). */
+.pim-toolbar { display: inline-flex; align-items: center; gap: 4px; }
+/* Metadata line: small muted facts separated by a dot. */
+.pim-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 12px; color: var(--pim-muted); font-size: 12px; }
+.pim-meta > * + *::before { content: '·'; margin-right: 12px; color: var(--pim-subtle); }
+/* Key-value list (technical details, scores, configuration). */
+.pim-kv { display: grid; grid-template-columns: max-content minmax(0,1fr); gap: 8px 16px; margin: 0; font-size: 12px; }
+.pim-kv dt { color: var(--pim-muted); }
+.pim-kv dd { margin: 0; color: var(--pim-ink); font-weight: 550; overflow-wrap: anywhere; }
+/* Stepper for multi-step flows (Auditoría, generación 3D…). */
+.pim-stepper { display: flex; flex-wrap: wrap; gap: 8px 24px; margin: 0; padding: 0; list-style: none; counter-reset: pim-step; }
+.pim-step { display: flex; align-items: center; gap: 8px; color: var(--pim-muted); font-size: 13px; counter-increment: pim-step; }
+.pim-step::before { content: counter(pim-step); display: grid; place-items: center; width: 24px; height: 24px; flex: 0 0 auto; border: 1px solid var(--pim-line-strong); border-radius: 50%; background: var(--pim-surface); color: var(--pim-muted); font-size: 12px; font-weight: 650; font-variant-numeric: tabular-nums; }
+.pim-step strong { color: var(--pim-ink); font-weight: 600; }
+.pim-step.is-active::before { border-color: var(--pim-blue); background: var(--pim-blue); color: #fff; }
+.pim-step.is-active { color: var(--pim-ink); }
+.pim-step.is-done::before { content: '✓'; border-color: var(--pim-success-line); background: var(--pim-success-tint); color: var(--pim-success); }
+/* Thumbnails and media tiles. */
+.pim-thumb { position: relative; aspect-ratio: 1; overflow: hidden; border: 1px solid var(--pim-line); border-radius: var(--pim-r-control); background: var(--pim-surface-soft); }
+.pim-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pim-thumb.is-selected { outline: 2px solid var(--pim-blue); outline-offset: 2px; }
+.pim-thumb-actions { position: absolute; inset: auto 8px 8px auto; display: flex; gap: 4px; opacity: 0; transition: opacity var(--pim-fast) var(--pim-ease); }
+.pim-thumb:hover .pim-thumb-actions, .pim-thumb:focus-within .pim-thumb-actions { opacity: 1; }
+.pim-thumb-actions .pim-btn { background: #ffffffeb; box-shadow: 0 1px 3px #15243824; }
+/* Option tiles (single choice among cards: categories, module types, styles). */
+.pim-option { display: grid; gap: 4px; padding: 12px 16px; border: 1px solid var(--pim-line); border-radius: var(--pim-r-control); background: var(--pim-surface); color: var(--pim-ink); font: inherit; text-align: left; cursor: pointer; transition: border-color var(--pim-fast) var(--pim-ease), background var(--pim-fast) var(--pim-ease); }
+.pim-option:hover { border-color: var(--pim-line-strong); background: var(--pim-surface-soft); }
+.pim-option[aria-pressed="true"], .pim-option[aria-checked="true"], .pim-option.is-selected { border-color: var(--pim-blue); background: var(--pim-blue-tint); box-shadow: inset 0 0 0 1px var(--pim-blue); }
+.pim-option small { color: var(--pim-muted); font-size: 12px; }
+.pim-option[aria-pressed="true"] small, .pim-option[aria-checked="true"] small, .pim-option.is-selected small { color: #3f5367; } /* AA on the blue tint */
+/* AI marker next to a title or a result. */
+.pim-ai-mark { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border: 1px solid var(--pim-ai-line); border-radius: var(--pim-r-tag); background: var(--pim-ai-tint); color: var(--pim-ai-strong); font-size: 11px; font-weight: 650; }
+.pim-ai-mark .pim-icon { color: var(--pim-ai-text); }

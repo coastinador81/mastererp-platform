@@ -1,0 +1,73 @@
+/* Kit de interfaz · campos, botones, insignias, interruptor y casilla.
+   Origen: pim/core.css del prototipo (líneas 87-149). */
+
+/* Fields: 8 px radius */
+.pim-field { display: grid; gap: 8px; min-width: 0; }
+.pim-label { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: var(--pim-ink); font-size: 13px; font-weight: 550; }
+.pim-hint { color: var(--pim-muted); font-size: 12px; line-height: 1.45; }
+.pim-input, .pim-textarea, .pim-select { width: 100%; min-width: 0; padding: 8px 12px; border: 1px solid var(--pim-line-strong); border-radius: var(--pim-r-control); background: var(--pim-surface); color: var(--pim-ink); font: inherit; font-size: 13px; line-height: 1.45; transition: border-color var(--pim-fast) var(--pim-ease), box-shadow var(--pim-fast) var(--pim-ease); }
+.pim-input { height: 36px; }
+.pim-textarea { min-height: 72px; resize: vertical; }
+.pim-select { height: 36px; appearance: none; padding-right: 32px; background: var(--pim-surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235e7186' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") right 10px center / 15px no-repeat; }
+.pim-input:hover:not(:disabled), .pim-textarea:hover:not(:disabled), .pim-select:hover:not(:disabled) { border-color: #b9c8d6; }
+.pim-input:focus, .pim-textarea:focus, .pim-select:focus { outline: none; border-color: var(--pim-blue); box-shadow: 0 0 0 3px #0178f72e; }
+.pim-input::placeholder, .pim-textarea::placeholder { color: var(--pim-subtle); }
+.pim-input:disabled, .pim-textarea:disabled, .pim-select:disabled { background: var(--pim-surface-muted); color: var(--pim-muted); cursor: not-allowed; }
+.pim-input.is-invalid, .pim-textarea.is-invalid { border-color: var(--pim-error); box-shadow: 0 0 0 3px #b3261e1f; }
+.pim-input.pim-mono, .pim-input[data-mono] { font-family: var(--pim-mono); font-size: 12.5px; }
+.pim-counter { color: var(--pim-muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+.pim-counter.is-over { color: var(--pim-error); font-weight: 600; }
+.pim-error-text { color: var(--pim-error); font-size: 12px; }
+
+/* Buttons: 8 px radius. One solid accent (primary) per view. */
+.pim-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 36px; padding: 8px 16px; line-height: 1.2; border: 1px solid transparent; border-radius: var(--pim-r-control); background: var(--pim-surface); color: var(--pim-ink); font: inherit; font-size: 13px; font-weight: 600; white-space: nowrap; cursor: pointer; transition: background var(--pim-fast) var(--pim-ease), border-color var(--pim-fast) var(--pim-ease), color var(--pim-fast) var(--pim-ease), opacity var(--pim-fast) var(--pim-ease); }
+.pim-btn:disabled, .pim-btn[aria-disabled="true"] { opacity: .45; cursor: not-allowed; }
+.pim-btn:focus-visible { outline: none; box-shadow: var(--pim-focus); }
+.pim-btn-primary { --uony-fill: currentColor; background: var(--pim-blue); color: #fff; } /* the Uony mark turns white on solid blue */
+.pim-btn-primary:hover:not(:disabled) { background: var(--pim-blue-strong); }
+.pim-btn-outline { border-color: var(--pim-line-strong); background: var(--pim-surface); color: var(--pim-ink); }
+.pim-btn-outline:hover:not(:disabled) { border-color: #b9c8d6; background: var(--pim-surface-soft); }
+.pim-btn-ghost { background: transparent; color: var(--pim-text); }
+.pim-btn-ghost:hover:not(:disabled) { background: var(--pim-surface-muted); color: var(--pim-ink); }
+.pim-btn-danger { border-color: var(--pim-error-line); background: var(--pim-surface); color: var(--pim-error); }
+.pim-btn-danger:hover:not(:disabled) { background: var(--pim-error-tint); }
+.pim-btn-soft { border-color: var(--pim-blue-line); background: var(--pim-blue-tint); color: var(--pim-blue-strong); }
+.pim-btn-soft:hover:not(:disabled) { background: #dcebff; }
+/* AI actions (Generar con IA, varitas, generadores): aqua surface, Aqua 600 text. */
+.pim-btn-ai { border-color: var(--pim-ai-line); background: var(--pim-ai-tint); color: var(--pim-ai-strong); }
+.pim-btn-ai:hover:not(:disabled) { border-color: var(--pim-aqua); background: #d9f6f1; }
+.pim-btn-ai .pim-icon { color: var(--pim-ai-text); }
+.pim-btn-sm { min-height: 32px; padding: 4px 12px; font-size: 12px; }
+.pim-btn-lg { min-height: 40px; padding: 8px 24px; font-size: 14px; }
+.pim-btn-icon { width: 32px; min-height: 32px; padding: 0; }
+.pim-btn-icon.pim-btn-sm { width: 28px; min-height: 28px; }
+.pim-btn-block { width: 100%; }
+.pim-link { padding: 0; border: 0; background: none; color: var(--pim-blue); font: inherit; font-weight: 600; cursor: pointer; }
+.pim-link:hover { color: var(--pim-blue-strong); text-decoration: underline; }
+
+/* Badge: 4 px radius. Colour only when it states something. */
+.pim-badge { display: inline-flex; align-items: center; gap: 4px; min-height: 20px; padding: 2px 8px; border: 1px solid var(--pim-line); border-radius: var(--pim-r-tag); background: var(--pim-surface-soft); color: var(--pim-text); font-size: 11px; font-weight: 600; white-space: nowrap; }
+.pim-badge-blue { background: var(--pim-info-tint); color: var(--pim-info); border-color: var(--pim-info-line); }
+.pim-badge-green { background: var(--pim-success-tint); color: var(--pim-success); border-color: var(--pim-success-line); }
+.pim-badge-amber { background: var(--pim-warning-tint); color: var(--pim-warning); border-color: var(--pim-warning-line); }
+.pim-badge-red { background: var(--pim-error-tint); color: var(--pim-error); border-color: var(--pim-error-line); }
+.pim-badge-ai, .pim-badge-purple { background: var(--pim-ai-tint); color: var(--pim-ai-strong); border-color: var(--pim-ai-line); }
+/* Only in the OpenAI review build: marks what is not real yet. */
+.pim-badge-simulated { background: #fff7e6; color: #8a5a00; border-color: #f1d49a; }
+.pim-badge-outline { background: var(--pim-surface); border-color: var(--pim-line-strong); color: var(--pim-text); }
+
+/* Switch (status indicator: round is allowed) */
+.pim-switch { position: relative; width: 36px; height: 20px; flex: 0 0 auto; padding: 0; border: 0; border-radius: 999px; background: #c3cfdb; cursor: pointer; transition: background var(--pim-fast) var(--pim-ease); }
+.pim-switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px #15243833; transition: transform var(--pim-fast) var(--pim-ease); }
+.pim-switch[aria-checked="true"] { background: var(--pim-blue); }
+.pim-switch[aria-checked="true"]::after { transform: translateX(16px); }
+.pim-switch:disabled { opacity: .45; cursor: not-allowed; }
+.pim-switch:focus-visible { outline: none; box-shadow: var(--pim-focus); }
+
+/* Checkbox */
+.pim-check { width: 16px; height: 16px; accent-color: var(--pim-blue); }
+
+/* La marca ON conserva su proporción y su espacio también en controles compactos. */
+.pim-icon-uony { flex-shrink: 0; }
+.pim-btn:has(.pim-icon-uony) { min-height: 40px; }
+.pim-btn-icon:has(.pim-icon-uony), .pim-btn-icon.pim-btn-sm:has(.pim-icon-uony) { width: 48px; min-height: 40px; }

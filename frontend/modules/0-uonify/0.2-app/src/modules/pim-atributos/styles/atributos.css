@@ -1,0 +1,109 @@
+/* Uonify PIM · pestaña «Atributos» (puerto React de pim/atributos.css del prototipo).
+   Estructura de ProductsPIMInterface.tsx
+   (TabsContent "atributos"), ProductForm.tsx y CustomFieldsEditMode.tsx.
+   Diseño: la línea del frontend nuevo con la capa de marca de core.css. Secciones
+   planas (pim-section: título a la izquierda, acciones a la derecha) separadas por
+   espacio y una línea fina; etiquetas encima del campo; SKU y datos técnicos en
+   mono; acciones de IA con pim-btn-ai; iconos de acción fantasma con tooltip; una
+   sola acción sólida al final. Solo tokens --pim-*; colores de estado solo para
+   estados reales (stock, «Confirmado», aviso). Clases propias: pim-atributos-. */
+
+.pim-atributos { container: pim-atributos / inline-size; min-width: 0; }
+.pim-atributos [hidden] { display: none !important; }
+.pim-atributos-section { min-width: 0; }
+.pim-atributos .pim-section-head { align-items: center; flex-wrap: wrap; gap: 8px 16px; }
+.pim-atributos .pim-section-title .pim-icon { flex: 0 0 auto; }
+
+/* Keyboard focus on buttons: a solid 2 px blue outline (the shell's indicator),
+   not core's faint 18 % ring, so it passes 3:1 on white and on the AI tint too.
+   Inputs keep core's ring, since their border also turns blue. */
+.pim-atributos .pim-btn:focus-visible { outline: 2px solid var(--pim-blue); outline-offset: 2px; box-shadow: none; }
+
+/* Labels: the same height with or without an inline action, so fields line up. */
+.pim-atributos .pim-field > .pim-label, .pim-atributos-label-row { min-height: 24px; }
+.pim-atributos-label-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-width: 0; }
+.pim-atributos input[type="number"] { font-variant-numeric: tabular-nums; }
+
+/* Inline AI actions next to a label («Generar con IA», «IA»): pim-btn-ai at label height. */
+.pim-atributos-ai.pim-btn { min-height: 24px; padding: 0 8px; gap: 4px; font-size: 12px; }
+
+/* Category search (Amazon product types): search field + floating menu. */
+.pim-atributos-combo { position: relative; min-width: 0; }
+.pim-atributos-combo-icon { position: absolute; top: 50%; left: 12px; display: grid; color: var(--pim-subtle); pointer-events: none; translate: 0 -50%; }
+.pim-atributos-combo .pim-input { padding-left: 32px; }
+.pim-atributos-combo .pim-input.is-loading { padding-right: 36px; }
+.pim-atributos-combo-spinner { position: absolute; top: 50%; right: 12px; width: 14px; height: 14px; margin-top: -7px; border: 2px solid var(--pim-blue); border-top-color: transparent; border-radius: 50%; animation: pim-spin 1s linear infinite; pointer-events: none; }
+.pim-atributos-combo-list { position: absolute; z-index: 40; top: calc(100% + 4px); left: 0; right: 0; max-height: 240px; margin: 0; padding: 4px; overflow-y: auto; list-style: none; border: 1px solid var(--pim-line); border-radius: var(--pim-r-control); background: var(--pim-surface); box-shadow: var(--pim-shadow-float); animation: pim-atributos-menu-in var(--pim-mid) var(--pim-ease); }
+.pim-atributos-combo-option { display: grid; gap: 2px; padding: 8px 12px; border-radius: var(--pim-r-tag); cursor: pointer; transition: background var(--pim-fast) var(--pim-ease); }
+.pim-atributos-combo-option strong { overflow-wrap: anywhere; color: var(--pim-ink); font-size: 13px; font-weight: 550; }
+.pim-atributos-combo-option small { overflow-wrap: anywhere; color: var(--pim-muted); font-family: var(--pim-mono); font-size: 11px; }
+.pim-atributos-combo-option:hover { background: var(--pim-surface-muted); }
+.pim-atributos-combo-option.is-active { background: var(--pim-blue-tint); }
+.pim-atributos-combo-option.is-active strong { color: var(--pim-blue-strong); }
+@keyframes pim-atributos-menu-in { from { opacity: 0; translate: 0 -4px; } to { opacity: 1; translate: 0 0; } }
+
+/* Stock (Amazon Vendor) selector: a real state, so semantic tokens. */
+.pim-atributos-stock.is-available { border-color: var(--pim-success-line); background-color: var(--pim-success-tint); color: var(--pim-success); }
+.pim-atributos-stock.is-unavailable { border-color: var(--pim-error-line); background-color: var(--pim-error-tint); color: var(--pim-error); }
+.pim-atributos-stock.is-loading { border-color: var(--pim-line); background-color: var(--pim-surface-muted); color: var(--pim-muted); }
+.pim-atributos-stock[aria-disabled="true"] { opacity: .7; cursor: progress; }
+
+/* Empty state of custom fields (pim-empty on a dashed surface). */
+.pim-atributos-empty { gap: 4px; padding: 32px 16px; }
+.pim-atributos-empty .pim-icon { margin-bottom: 4px; }
+.pim-atributos-empty-title { font-size: 13px; font-weight: 600; }
+.pim-atributos-empty-sub { font-size: 12px; }
+
+/* Custom fields: one list surface, rows separated by hairlines. */
+.pim-atributos-fields { display: grid; min-width: 0; border: 1px solid var(--pim-line); border-radius: var(--pim-r-card); background: var(--pim-surface); }
+.pim-atributos-card { container-type: inline-size; min-width: 0; padding: 12px 16px; }
+.pim-atributos-card + .pim-atributos-card { border-top: 1px solid var(--pim-line); }
+.pim-atributos-card:first-child { border-top-left-radius: calc(var(--pim-r-card) - 1px); border-top-right-radius: calc(var(--pim-r-card) - 1px); }
+.pim-atributos-card:last-child { border-bottom-left-radius: calc(var(--pim-r-card) - 1px); border-bottom-right-radius: calc(var(--pim-r-card) - 1px); }
+.pim-atributos-card.is-entering { animation: pim-atributos-in var(--pim-mid) var(--pim-ease); }
+@keyframes pim-atributos-in { from { opacity: 0; translate: 0 8px; } to { opacity: 1; translate: 0 0; } }
+@media (prefers-reduced-motion: reduce) { .pim-atributos-card.is-entering, .pim-atributos-combo-list { animation: none; } }
+
+/* Confirmed field: compact row (type icon · name · value · actions). */
+.pim-atributos-row { display: flex; align-items: center; gap: 12px; min-height: 48px; padding-top: 8px; padding-bottom: 8px; transition: background var(--pim-fast) var(--pim-ease); }
+.pim-atributos-row:hover { background: var(--pim-surface-soft); }
+.pim-atributos-type-box { display: grid; place-items: center; flex: 0 0 auto; width: 32px; height: 32px; border-radius: var(--pim-r-control); background: var(--pim-surface-muted); color: var(--pim-muted); }
+.pim-atributos-summary-text { display: grid; flex: 1 1 auto; gap: 2px; min-width: 0; }
+@container (min-width: 440px) {
+  .pim-atributos-summary-text { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); align-items: baseline; gap: 16px; }
+}
+.pim-atributos-field-name { margin: 0; overflow-wrap: anywhere; color: var(--pim-ink); font-size: 13px; font-weight: 550; line-height: 1.45; }
+.pim-atributos-field-value { margin: 0; overflow-wrap: anywhere; color: var(--pim-text); font-size: 13px; line-height: 1.45; }
+.pim-atributos-field-type { color: var(--pim-muted); }
+.pim-atributos-summary-actions { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
+.pim-atributos-summary-actions .pim-btn-ghost { color: var(--pim-muted); }
+.pim-atributos-summary-actions .pim-btn-ghost:hover:not(:disabled) { color: var(--pim-ink); }
+.pim-atributos-edit.pim-btn { gap: 4px; padding: 4px 8px; }
+.pim-atributos .pim-atributos-remove:hover:not(:disabled) { background: var(--pim-error-tint); color: var(--pim-error); }
+
+/* Field being edited: name · type · value on a soft surface, then remove + confirm. */
+.pim-atributos-card.is-editing { display: grid; gap: 16px; padding: 16px; background: var(--pim-surface-soft); }
+/* align-items: start keeps labels and controls top-aligned when the value control
+   is taller than the others (a «Texto Largo» textarea). */
+.pim-atributos-form { display: grid; grid-template-columns: minmax(0, 1fr); align-items: start; gap: 16px; }
+@container (min-width: 400px) {
+  .pim-atributos-form { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-areas: "name name" "type value"; }
+  .pim-atributos-f-name { grid-area: name; }
+  .pim-atributos-f-type { grid-area: type; }
+  .pim-atributos-f-value { grid-area: value; }
+}
+@container (min-width: 600px) {
+  .pim-atributos-form { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr) minmax(0, 3fr); grid-template-areas: "name type value"; }
+}
+.pim-atributos-check { display: inline-flex; align-items: center; gap: 8px; min-height: 36px; color: var(--pim-text); font-size: 13px; cursor: pointer; }
+.pim-atributos-card-actions { display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
+.pim-atributos-card-actions .pim-atributos-remove { color: var(--pim-muted); }
+
+/* Create / save: the one solid action of the view, at the end. */
+.pim-atributos-footer { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 8px 16px; padding-top: 24px; border-top: 1px solid var(--pim-line); }
+.pim-atributos-warning { flex: 1 1 240px; margin: 0; color: var(--pim-warning); font-size: 12px; line-height: 1.5; }
+@container pim-atributos (max-width: 559px) {
+  .pim-atributos-footer { flex-direction: column; align-items: stretch; }
+  .pim-atributos-warning { flex: 0 0 auto; }
+  .pim-atributos-submit { width: 100%; }
+}

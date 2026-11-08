@@ -1,0 +1,88 @@
+/* Pestaña A+ (Contenido A+): cabecera, notas, cuerpo y tarjetas de módulo.
+   Puerto de pim/aplus.css del prototipo (clases pim-aplus-*); solo tokens --pim-*.
+   Editores: aplus-editors.css · Diálogos: aplus-dialogs.css. */
+
+.pim-aplus { container: pim-aplus / inline-size; display: grid; gap: 24px; min-width: 0; color: var(--pim-ink); font-size: 13px; line-height: 1.5; }
+.pim-aplus *, .pim-aplus *::before, .pim-aplus *::after { box-sizing: border-box; }
+.pim-aplus [hidden] { display: none !important; }
+
+/* ---------------------------------------------------------------- cabecera */
+.pim-aplus-head { gap: 12px; }
+.pim-aplus-head-row { flex-wrap: wrap; }
+.pim-aplus-head-text { display: grid; flex: 1 1 200px; gap: 4px; min-width: 0; }
+.pim-aplus-head-tools { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px; margin-left: auto; }
+.pim-aplus-docs-slot:empty { display: none; }
+.pim-aplus .pim-aplus-docs { width: auto; max-width: 240px; height: 32px; padding: 4px 32px 4px 12px; font-size: 12px; }
+.pim-aplus-status-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; min-width: 0; }
+.pim-aplus-status-row .pim-meta { margin-right: 4px; }
+.pim-aplus-asin { color: var(--pim-ink); }
+
+/* ------------------------------------------- notas de Amazon (compactas) */
+.pim-aplus-notes { display: grid; gap: 12px; min-width: 0; }
+.pim-aplus-guide { display: flex; align-items: flex-start; gap: 8px; min-width: 0; color: var(--pim-muted); font-size: 12px; line-height: 1.5; }
+.pim-aplus-guide > .pim-icon { flex: none; margin-top: 1px; color: var(--pim-subtle); }
+.pim-aplus-guide-items { display: grid; flex: 1; grid-template-columns: minmax(0, 1fr); gap: 12px 32px; min-width: 0; }
+@container pim-aplus (min-width: 560px) { .pim-aplus-guide-items { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.pim-aplus-guide-item { display: grid; align-content: start; gap: 4px; min-width: 0; }
+.pim-aplus-guide-item p { margin: 0; overflow-wrap: anywhere; }
+.pim-aplus-guide .pim-aplus-guide-title { color: var(--pim-ink); font-weight: 600; }
+.pim-aplus-guide .pim-mono { color: var(--pim-text); }
+.pim-aplus-warn { padding: 8px 12px; }
+.pim-aplus-warn p { margin: 0; overflow-wrap: anywhere; }
+
+/* ------------------------------------------------------------ cuerpo */
+.pim-aplus-body { display: grid; gap: 24px; min-width: 0; padding-top: 24px; border-top: 1px solid var(--pim-line); }
+.pim-aplus-list { display: grid; gap: 16px; min-width: 0; }
+
+/* Estado vacío (pim-empty); «Añadir módulo» queda debajo como única acción sólida. */
+.pim-aplus-empty { padding: 24px 16px 0; }
+.pim-aplus-empty-icon { display: grid; place-items: center; width: 40px; height: 40px; margin-bottom: 8px; border: 1px solid var(--pim-line); border-radius: var(--pim-r-card); background: var(--pim-surface-soft); color: var(--pim-text); }
+.pim-aplus-empty .pim-aplus-empty-icon .pim-icon { color: var(--pim-text); }
+.pim-aplus-empty h3 { margin: 0; color: var(--pim-ink); font-size: 15px; font-weight: 650; line-height: 1.35; }
+.pim-aplus-empty p { max-width: 28rem; margin: 0; color: var(--pim-muted); font-size: 13px; line-height: 1.5; }
+
+/* Barra de acciones: Añadir módulo (secundaria) · guardar (outline) · Publicar (sólida). */
+.pim-aplus-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; min-width: 0; padding-top: 24px; border-top: 1px solid var(--pim-line); }
+.pim-aplus-actions.is-empty { justify-content: center; padding-top: 0; border-top: 0; }
+.pim-aplus-actions.is-empty .pim-aplus-save { display: none; }
+.pim-aplus-save { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px; margin-left: auto; }
+@container pim-aplus (max-width: 559px) {
+  .pim-aplus-actions:not(.is-empty) > .pim-aplus-add { width: 100%; }
+  .pim-aplus-save { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; margin-left: 0; }
+  .pim-aplus-save > .pim-btn { min-width: 0; white-space: normal; }
+  .pim-aplus-save > [data-action="save-publish"] { grid-column: 1 / -1; order: -1; }
+}
+
+/* ------------------------------------------------------ tarjeta de módulo */
+.pim-card.pim-aplus-card { container: pim-aplus-card / inline-size; padding: 0; animation: pim-aplus-in var(--pim-mid) var(--pim-ease) both; }
+@keyframes pim-aplus-in { from { opacity: 0; translate: 0 4px; } to { opacity: 1; translate: 0 0; } }
+.pim-aplus-card-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; padding: 12px 16px 12px 24px; border-bottom: 1px solid var(--pim-line); }
+.pim-aplus-card-titles { display: flex; flex: 1 1 240px; align-items: center; gap: 8px 12px; min-width: 0; }
+.pim-aplus-card-titles .pim-badge { flex: none; }
+.pim-aplus-card-num { font-variant-numeric: tabular-nums; }
+.pim-aplus-card-title { margin: 0; color: var(--pim-ink); font-size: 15px; font-weight: 650; letter-spacing: -.005em; line-height: 1.35; overflow-wrap: anywhere; }
+.pim-aplus-card-tools { gap: 8px; margin-left: auto; }
+.pim-aplus-status .pim-icon { flex: none; }
+.pim-aplus .pim-aplus-delete:hover:not(:disabled) { background: var(--pim-error-tint); color: var(--pim-error); }
+.pim-aplus-card-errors { padding: 16px 24px 0; }
+.pim-aplus-card-errors:empty { display: none; }
+.pim-aplus-errors { padding: 12px 16px; }
+.pim-aplus-errors-body { display: grid; gap: 4px; min-width: 0; }
+.pim-aplus-errors p { margin: 0; font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; }
+.pim-aplus-errors .pim-aplus-errors-title { font-weight: 600; }
+.pim-aplus-errors-list { column-gap: 24px; }
+@container pim-aplus-card (min-width: 560px) { .pim-aplus-errors-list:has(> :nth-child(5)) { columns: 2; } }
+.pim-aplus-errors-list > p { break-inside: avoid; }
+.pim-aplus-card-body { min-width: 0; padding: 24px; }
+@container pim-aplus (max-width: 559px) {
+  .pim-aplus-card-head { align-items: flex-start; padding: 12px 12px 12px 16px; }
+  .pim-aplus-card-titles { flex-direction: column; align-items: flex-start; gap: 4px; }
+  .pim-aplus-card-errors { padding: 16px 16px 0; }
+  .pim-aplus-card-body { padding: 16px; }
+}
+
+/* ------------------------------------------------------ menos movimiento */
+@media (prefers-reduced-motion: reduce) {
+  .pim-card.pim-aplus-card { animation: none; }
+}
+:root[data-reduce-motion="true"] .pim-card.pim-aplus-card { animation: none; }

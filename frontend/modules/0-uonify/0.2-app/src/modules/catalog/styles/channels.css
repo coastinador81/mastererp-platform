@@ -1,0 +1,60 @@
+/* Servicio Producto · canales de venta en el centro de la cabecera (interruptor por
+   producto o conector sin ficha) y su menú. Origen: app-shell.css del prototipo
+   (r28, r30 y r32). El hueco .topbar-center lo coloca el módulo workspace. */
+
+.channel-bar { display: flex; align-items: center; gap: 8px; }
+.channel-switch { display: inline-flex; align-items: stretch; height: 36px; border: 1px solid #d5dee8; border-radius: 10px; background: #fff; transition: border-color .15s ease, background .15s ease, box-shadow .15s ease; }
+.channel-switch button { border: 0; background: transparent; color: #5b7287; }
+.channel-switch-main { display: inline-flex; align-items: center; gap: 9px; padding: 0 10px 0 12px; border-radius: 9px 0 0 9px; }
+.channel-switch-main img { width: 64px; height: auto; display: block; margin-top: 3px; }
+/* Un interruptor pequeño: gris con el canal apagado, verde con el canal activo. */
+.channel-switch-state { position: relative; width: 26px; height: 16px; flex: 0 0 auto; border-radius: 999px; background: #c3ced8; transition: background .15s ease; }
+.channel-switch-state::after { content: ''; position: absolute; top: 2px; left: 2px; width: 12px; height: 12px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px #0f2a4433; transition: transform .15s ease; }
+.channel-switch-more { width: 26px; display: grid; place-items: center; padding: 0; border-left: 1px solid #e3eaf1 !important; border-radius: 0 9px 9px 0; }
+.channel-switch-more svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.channel-switch:hover { border-color: #b9cbdc; }
+.channel-switch button:hover, .channel-switch-more[aria-expanded="true"] { background: #f4f8fc; }
+.channel-switch.is-active { border-color: #ffb547; background: #fff8ec; box-shadow: 0 0 0 3px #ff99001f; }
+.channel-switch.is-active .channel-switch-state { background: #16a34a; }
+.channel-switch.is-active .channel-switch-state::after { transform: translateX(10px); }
+.channel-switch.is-active button:hover { background: #fff1d9; }
+.channel-switch.is-active .channel-switch-more { border-left-color: #ffd699 !important; }
+.channel-switch.is-disabled .channel-switch-main { cursor: help; }
+.channel-switch.is-disabled .channel-switch-state { background: #dde4ea; }
+.channel-switch.is-disabled img { opacity: .6; }
+.channel-switch button:focus-visible { outline-offset: -2px; }
+
+.channel-menu { position: absolute; top: calc(100% + 10px); left: 50%; width: 300px; transform: translateX(-50%); display: grid; gap: 10px; padding: 14px; border: 1px solid #d8e3ee; border-radius: 14px; background: #fff; box-shadow: 0 18px 45px #173d6224; font-size: 12px; }
+.channel-menu-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-bottom: 10px; border-bottom: 1px solid #e6ecf1; }
+.channel-menu-head img { width: 72px; height: auto; }
+.channel-menu-head span { color: var(--muted); font-size: 11px; }
+.channel-menu p { margin: 0; line-height: 1.5; }
+.channel-menu-status { color: var(--ink); font-weight: 650; }
+.channel-menu-status.is-active { color: #127c3b; }
+.channel-menu-note { color: var(--muted); }
+.channel-menu-row { display: flex; justify-content: space-between; gap: 10px; padding: 8px 10px; border-radius: 9px; background: #f5f8fb; }
+.channel-menu-row strong { color: #8a5a00; font-weight: 650; }
+.channel-menu .secondary-action { width: 100%; justify-content: center; }
+
+@media (max-width: 700px) {
+  .channel-switch-main { gap: 7px; padding: 0 8px 0 10px; }
+  .channel-switch-main img { width: 54px; }
+  .channel-menu { position: fixed; top: 62px; left: 12px; right: 12px; width: auto; transform: none; }
+}
+
+/* r30: los menús se abren con la misma familia de movimiento. */
+@keyframes uon-pop { from { opacity: 0; scale: .97; } to { opacity: 1; scale: 1; } }
+.channel-menu { animation: uon-pop .16s ease-out both; transform-origin: top right; }
+@media (max-width: 430px) {
+  .channel-switch-main { gap: 4px; padding: 0 5px; }
+  .channel-switch-main img { width: 40px; }
+  .channel-switch-more { width: 22px; }
+}
+@media (prefers-reduced-motion: reduce) { .channel-menu { animation: none !important; } }
+:root[data-reduce-motion="true"] .channel-menu { animation: none !important; }
+
+/* r32: el conector de Amazon acompaña a Producto también sin ficha (marca y conexión). */
+.channel-switch.is-connector .channel-switch-main { gap: 8px; }
+.channel-switch-link { width: 8px; height: 8px; flex: 0 0 auto; border-radius: 50%; box-shadow: inset 0 0 0 1.5px #97a6b3; }
+.channel-switch.is-connector:hover .channel-switch-link { box-shadow: inset 0 0 0 1.5px #5f7386; }
+.topbar-center [data-tooltip]::after { width: 220px; white-space: normal; }

@@ -1,0 +1,87 @@
+/* Facturación · sección «Plan y facturación» de Configuración y piezas comunes
+   (tarjetas de planes, filas de movimientos y facturas, tarjeta de pago). */
+
+.bil-settings { display: grid; gap: 24px; min-width: 0; color: var(--pim-text); font-size: 13px; }
+.bil-settings .pim-section-head { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 12px 16px; }
+.bil-settings .pim-section-head > div:first-child { flex: 1 1 260px; min-width: 0; }
+.bil-block { display: grid; gap: 16px; min-width: 0; }
+.bil-block-title { margin: 0; color: var(--pim-ink); font-size: 13px; font-weight: 650; }
+.bil-fine { margin: 0; color: var(--pim-muted); font-size: 12px; line-height: 1.5; }
+.bil-muted-line { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; margin: 0; color: var(--pim-muted); font-size: 13px; }
+.bil-muted-line strong { color: var(--pim-ink); font-weight: 600; }
+
+/* Plan actual */
+.bil-current { display: grid; gap: 8px; min-width: 0; }
+.bil-current-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.bil-current-name { color: var(--pim-ink); font-size: 16px; font-weight: 650; letter-spacing: -.01em; }
+.bil-current-price { margin: 0; color: var(--pim-ink); font-size: 13px; font-weight: 550; font-variant-numeric: tabular-nums; }
+.bil-current-text { margin: 0; color: var(--pim-text); line-height: 1.55; overflow-wrap: anywhere; }
+.bil-withdrawal-note { margin-top: 8px; }
+.bil-withdrawal-note p { margin: 4px 0 12px; line-height: 1.5; }
+.bil-picker { display: grid; gap: 12px; min-width: 0; }
+.bil-picker[hidden] { display: none; }
+
+/* Tarjetas de planes (Configuración y muro de pago) */
+.bil-plans { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr)); gap: 12px; margin: 0; padding: 0; list-style: none; }
+.bil-plan { display: flex; flex-direction: column; gap: 8px; min-width: 0; padding: 16px; border: 1px solid var(--pim-line); border-radius: var(--pim-r-card); background: var(--pim-surface); }
+.bil-plan.is-popular { border-color: var(--pim-blue-line); }
+.bil-plan.is-current { border-color: var(--pim-blue); box-shadow: inset 0 0 0 1px var(--pim-blue); background: var(--pim-surface-soft); }
+.bil-plan-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.bil-plan-name { margin: 0; color: var(--pim-ink); font-size: 14px; font-weight: 700; }
+.bil-plan-price { margin: 0; color: var(--pim-ink); font-size: 24px; font-weight: 700; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+.bil-plan-price small { margin-left: 2px; color: var(--pim-muted); font-size: 12px; font-weight: 500; letter-spacing: 0; }
+.bil-plan-billing { display: grid; gap: 2px; margin: 0; color: var(--pim-muted); font-size: 12px; }
+.bil-plan-bonus { color: var(--pim-blue-strong); font-weight: 650; }
+.bil-plan-description { margin: 0; color: var(--pim-text); font-size: 12px; line-height: 1.45; }
+.bil-plan-facts { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; color: var(--pim-muted); font-size: 12px; line-height: 1.4; }
+.bil-plan-action { margin-top: auto; }
+
+/* Tokens de Uonify */
+.bil-balance { display: grid; gap: 12px; min-width: 0; }
+.bil-balance-total { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px; margin: 0; color: var(--pim-muted); font-size: 15px; font-variant-numeric: tabular-nums; }
+.bil-balance-total strong { color: var(--pim-ink); font-size: 24px; font-weight: 700; letter-spacing: -.02em; }
+.bil-balance-split { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 12px; margin: 0; }
+.bil-balance-split > div { display: grid; gap: 2px; padding: 12px 16px; border: 1px solid var(--pim-line); border-radius: var(--pim-r-control); background: var(--pim-surface-soft); }
+.bil-balance-split dt { color: var(--pim-muted); font-size: 12px; }
+.bil-balance-split dd { margin: 0; color: var(--pim-ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+.bil-balance-split dd.bil-balance-note { color: var(--pim-muted); font-size: 12px; font-weight: 400; }
+.bil-movements { display: grid; gap: 8px; min-width: 0; }
+
+/* Filas (movimientos y facturas) */
+.bil-rows { display: grid; margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--pim-line); }
+.bil-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; padding: 12px 0; border-bottom: 1px solid var(--pim-line); }
+.bil-row-main { display: grid; flex: 1 1 240px; gap: 2px; min-width: 0; }
+.bil-row-main strong { color: var(--pim-ink); font-weight: 550; overflow-wrap: anywhere; }
+.bil-row-main small { color: var(--pim-muted); font-size: 12px; }
+.bil-row-amount { display: grid; justify-items: end; gap: 2px; margin-left: auto; text-align: right; font-variant-numeric: tabular-nums; }
+.bil-row-amount strong { color: var(--pim-ink); font-size: 12.5px; font-weight: 600; white-space: nowrap; }
+.bil-row-amount small { color: var(--pim-muted); font-size: 11.5px; white-space: nowrap; }
+.bil-row-amount.is-in strong { color: var(--pim-success); }
+.bil-invoice .bil-row-amount { grid-auto-flow: row; }
+
+/* Tarjeta de pago (como la enseña Stripe) */
+.bil-payment { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.bil-card-label { display: inline-flex; align-items: center; gap: 12px; min-width: 0; }
+.bil-card-icon { display: grid; place-items: center; width: 40px; height: 28px; flex: 0 0 auto; border: 1px solid var(--pim-line-strong); border-radius: 6px; background: var(--pim-surface); color: var(--pim-blue-strong); }
+.bil-card-text { display: grid; gap: 1px; min-width: 0; }
+.bil-card-text strong { color: var(--pim-ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+.bil-card-text small { color: var(--pim-muted); font-size: 12px; }
+
+/* Apoya a Uonify */
+.bil-support .pim-section-title .pim-icon { color: var(--pim-muted); }
+.bil-bullets { display: grid; gap: 6px; margin: 0; padding-left: 20px; color: var(--pim-text); line-height: 1.5; }
+
+@media (max-width: 480px) {
+  .bil-row-amount { justify-items: start; margin-left: 0; text-align: left; }
+  .bil-balance-total strong { font-size: 20px; }
+}
+
+.bil-interval { border: 0; padding: 0; margin: 0 0 20px; min-width: 0; }
+.bil-interval legend { color: var(--pim-ink); font-weight: 600; margin-bottom: 8px; }
+.bil-interval-options { display: inline-flex; padding: 4px; border: 1px solid var(--pim-line); border-radius: var(--pim-r-card); background: var(--pim-surface-soft); gap: 4px; }
+.bil-interval-options label { position: relative; cursor: pointer; }
+.bil-interval-options input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.bil-interval-options span { display: block; padding: 8px 24px; border-radius: var(--pim-r-control); color: var(--pim-muted); border: 1px solid transparent; }
+.bil-interval-options input:checked + span { color: var(--pim-blue); background: var(--pim-blue-tint); border-color: var(--pim-blue-line); font-weight: 600; }
+.bil-interval-options input:focus-visible + span { outline: 2px solid var(--pim-blue); outline-offset: 2px; }
+.bil-interval p { margin: 8px 0 0; color: var(--pim-muted); font-size: 12px; line-height: 1.5; }

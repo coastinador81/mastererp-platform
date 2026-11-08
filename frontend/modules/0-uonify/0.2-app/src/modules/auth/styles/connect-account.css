@@ -1,0 +1,34 @@
+/* Acceso a Uonify — modo demostración de ChatGPT o Google y animaciones de entrada
+   Origen: auth-ui.css del prototipo (líneas 40–76); colores en tokens.css del módulo.
+   «Mi cuenta» ya no existe: la sustituye Configuración (módulo settings). */
+.uon-connect-dialog { width: min(460px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); margin: auto; padding: 0; border: 1px solid var(--uon-auth-line-soft); border-radius: 24px; background: var(--surface); color: var(--uon-auth-text); box-shadow: 0 30px 110px var(--uon-auth-shadow-connect); }
+.uon-connect-dialog::backdrop { background: var(--uon-auth-backdrop-light); backdrop-filter: blur(10px); }
+.uon-connect-dialog, .uon-connect-dialog * { box-sizing: border-box; }
+.uon-connect-card { position: relative; padding: 44px 40px 30px; font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; text-align: center; }
+.uon-connect-brands { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 28px; }
+.uon-connect-brands > span:not(.uon-connect-link) { width: 68px; height: 68px; display: grid; place-items: center; border-radius: 19px; }
+.uon-connect-uonify { background: var(--uon-auth-sky); border: 1px solid var(--uon-auth-line-soft); }
+.uon-connect-chatgpt { background: var(--uon-auth-text); }
+.uon-connect-uonify img { width: 48px; height: auto; }
+.uon-connect-chatgpt img { width: 32px; height: 32px; }
+.uon-connect-link { display: flex; gap: 5px; }
+.uon-connect-link i { width: 4px; height: 4px; border-radius: 50%; background: var(--uon-auth-dots); }
+.uon-connect-card h2 { margin: 0; font-size: 29px; font-weight: 650; letter-spacing: -.045em; }
+.uon-connect-card > p:not(.uon-auth-overline) { margin: 12px 0 26px; color: var(--uon-auth-muted); font-size: 14px; line-height: 1.6; }
+.uon-connect-card form { text-align: left; }
+.uon-connect-card label { display: block; margin-bottom: 8px; font-size: 12px; font-weight: 600; color: var(--uon-auth-label); }
+.uon-connect-card input { width: 100%; min-height: 50px; padding: 0 15px; border: 1px solid var(--uon-auth-line-strong); border-radius: 11px; background: var(--surface); color: var(--uon-auth-text); font: inherit; font-size: 14px; }
+.uon-connect-detail { display: flex; gap: 9px; margin: 16px 0 24px; color: var(--uon-auth-subtle); }
+.uon-connect-detail svg { width: 17px; height: 19px; flex: 0 0 auto; margin-top: 2px; }
+.uon-connect-detail p { margin: 0; font-size: 11px; line-height: 1.6; }
+.uon-connect-continue { display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; min-height: 50px; border: 0; border-radius: 11px; background: var(--uon-auth-action); color: var(--surface); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
+.uon-connect-continue:hover { background: var(--uon-auth-action-hover); }
+.uon-connect-back { margin-top: 18px; padding: 6px 14px; border: 0; background: transparent; color: var(--uon-auth-muted); font: inherit; font-size: 12px; cursor: pointer; }
+.uon-connect-dialog :is(button,input):focus-visible { outline: 3px solid var(--uon-auth-focus); outline-offset: 3px; }
+.uon-auth-dialog[open], .uon-connect-dialog[open], .uon-profile-dialog[open] { animation: uon-dialog-arrive .4s cubic-bezier(.2,.7,.2,1) both; }
+.uon-onboard-step:not([hidden]) { animation: uon-step-arrive .28s ease-out both; }
+@keyframes uon-dialog-arrive { from { opacity: 0; transform: translateY(12px) scale(.985); } to { opacity: 1; transform: none; } }
+@keyframes uon-step-arrive { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+/* Decisión del dueño y revisión de OpenAI: el modo demostración no imita al proveedor (sin su logotipo). */
+.uon-connect-card > .pim-badge-simulated { margin: 0 0 10px; }

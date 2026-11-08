@@ -1,0 +1,38 @@
+.drv-connect { color: var(--uon-auth-text); }
+.drv-connect p { color: var(--uon-auth-muted); font-size: 13px; line-height: 1.6; }
+.drv-connect h3 { font-size: 21px; letter-spacing: -.025em; margin: 8px 0; }
+.drv-connect .drv-eyebrow { color: var(--uon-auth-action); font-size: 10px; letter-spacing: .14em; font-weight: 600; }
+.drv-authorize { padding: 20px; border: 1px solid var(--uon-auth-line); border-radius: 16px; background: var(--uon-auth-sky); }
+.drv-account { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 20px 0; font-size: 13px; }
+.drv-connect small { display: block; color: var(--uon-auth-muted); font-size: 11px; margin-top: 5px; line-height: 1.5; overflow-wrap: anywhere; }
+.drv-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.drv-tabs { border-bottom: 1px solid var(--uon-auth-line); margin: 16px 0; }
+.drv-connect button:not(.uon-profile-submit), .cld-tool-tabs button { font: inherit; font-size: 12px; color: var(--uon-auth-action); border: 0; background: transparent; padding: 10px 12px; border-radius: 8px; cursor: pointer; }
+.drv-tabs button[aria-pressed=true], .cld-tool-tabs button[aria-pressed=true] { background: var(--uon-auth-sky); color: var(--uon-auth-text); font-weight: 600; }
+.drv-search { display: flex; align-items: center; border: 1px solid var(--uon-auth-line); border-radius: 8px; }
+.drv-search input { min-width: 0; width: 100%; padding: 12px; border: 0; border-radius: 8px; background: var(--surface); color: var(--uon-auth-text); font: inherit; font-size: 12px; }
+.drv-breadcrumb { display: flex; flex-wrap: wrap; margin-top: 8px; }
+.drv-breadcrumb button + button::before { content: '›'; margin-right: 12px; color: var(--uon-auth-muted); }
+.drv-files { list-style: none; padding: 0; margin: 12px 0; max-height: 290px; overflow: auto; scrollbar-width: thin; }
+.drv-files li { display: flex; align-items: center; gap: 10px; padding: 12px 0; border-bottom: 1px solid var(--uon-auth-line); font-size: 12px; }
+.drv-file-name { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.drv-file-icon { color: var(--uon-auth-muted); font-size: 24px; }
+.drv-files a { color: var(--uon-auth-action); text-decoration: none; font-size: 11px; }
+.drv-upload { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--uon-auth-line); }
+.drv-feedback { padding: 12px 0; }
+.drv-connect :is(button,input,a,summary):focus-visible, .cld-tool-tabs button:focus-visible { outline: 2px solid var(--uon-auth-action); outline-offset: 3px; }
+.drv-connect button:disabled { opacity: .55; cursor: default; }
+.cld-tool-tabs { display: flex; gap: 8px; margin: 16px 0 24px; border-bottom: 1px solid var(--uon-auth-line); padding-bottom: 12px; }
+@media(max-width:480px) { .drv-files li { flex-wrap: wrap; } .drv-file-name { min-width: 100px; } .drv-authorize { padding: 16px; } }
+
+.drv-onboarding-note { margin: 24px 0; padding: 18px 20px; background: var(--uon-auth-sky); border: 1px solid var(--uon-auth-line); border-radius: 12px; font-size: 13px; }
+.drv-onboarding-note p { margin-bottom: 0; }
+.drv-onboarding-actions { margin: 24px 0 8px; gap: 16px; }
+.drv-onboarding .drv-permission { font-size: 12px; }
+@media (max-width:760px), (max-height:720px) {
+  .drv-onboarding > p { margin-block: 6px; }
+  .drv-onboarding h3 { margin-block: 6px; }
+  .drv-onboarding .drv-account { margin-block: 10px; }
+  .drv-onboarding .drv-onboarding-actions { margin: 12px 0 4px; gap: 10px; }
+  .drv-onboarding .drv-authorize { padding: 12px; }
+}

@@ -1,0 +1,40 @@
+/* Uonify PIM · pestaña «Vídeo» (puerto de pim/video.css del prototipo, 3/3):
+   diálogos que se pintan fuera de la pestaña (condiciones de los modelos de IA,
+   «Subir a Seller Central» y foto del plano) y movimiento reducido. Clases pim-video-. */
+
+.pim-video-terms { display: grid; gap: 16px; color: var(--pim-text); font-size: 13px; line-height: 1.6; }
+.pim-video-terms p { margin: 0; }
+.pim-video-terms strong { color: var(--pim-ink); }
+.pim-video-terms-check { display: flex; align-items: center; gap: 8px; color: var(--pim-ink); font-weight: 550; cursor: pointer; }
+
+.pim-video-upload { display: grid; gap: 16px; }
+.pim-video-upload-steps { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; counter-reset: pim-video-step; }
+.pim-video-upload-steps > li { position: relative; display: grid; gap: 8px; padding: 12px 0 12px 36px; border-bottom: 1px solid var(--pim-line); counter-increment: pim-video-step; }
+.pim-video-upload-steps > li::before { content: counter(pim-video-step); position: absolute; top: 12px; left: 0; display: grid; place-items: center; width: 24px; height: 24px; border: 1px solid var(--pim-line-strong); border-radius: 50%; color: var(--pim-muted); font-size: 12px; font-weight: 650; font-variant-numeric: tabular-nums; }
+.pim-video-upload-step { display: grid; gap: 2px; min-width: 0; }
+.pim-video-upload-step strong { color: var(--pim-ink); font-size: 13px; font-weight: 600; }
+.pim-video-upload-step span { color: var(--pim-muted); font-size: 12px; overflow-wrap: anywhere; }
+.pim-video-upload .pim-btn .pim-icon { color: inherit; }
+.pim-video-upload a.pim-btn { text-decoration: none; }
+.pim-video-upload-data { display: grid; gap: 4px; margin: 0; }
+.pim-video-upload-data > div { display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; align-items: center; gap: 8px; min-height: 32px; }
+.pim-video-upload-data dt { color: var(--pim-muted); font-size: 12px; }
+.pim-video-upload-data dd { margin: 0; color: var(--pim-ink); font-size: 13px; font-weight: 550; overflow-wrap: anywhere; }
+
+.pim-video-picker { display: grid; gap: 12px; }
+.pim-video-picker-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; margin: 0; padding: 0; list-style: none; }
+.pim-video-picker-grid[data-format="9:16"] { grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); }
+.pim-video-picker-item { display: grid; gap: 4px; width: 100%; padding: 4px; border: 1px solid var(--pim-line); border-radius: var(--pim-r-control); background: var(--pim-surface); color: var(--pim-ink); font: inherit; text-align: left; cursor: pointer; transition: border-color var(--pim-fast) var(--pim-ease), background var(--pim-fast) var(--pim-ease); }
+.pim-video-picker-item:hover { border-color: var(--pim-line-strong); background: var(--pim-surface-soft); }
+.pim-video-picker-item[aria-pressed="true"] { border-color: var(--pim-blue); background: var(--pim-blue-tint); box-shadow: inset 0 0 0 1px var(--pim-blue); }
+.pim-video-picker-item:focus-visible { outline: none; box-shadow: var(--pim-focus); }
+.pim-video-picker-frame { display: block; aspect-ratio: 16 / 9; overflow: hidden; border-radius: var(--pim-r-tag); background: var(--pim-surface-muted); }
+.pim-video-picker-grid[data-format="9:16"] .pim-video-picker-frame { aspect-ratio: 9 / 16; }
+.pim-video-picker-frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pim-video-picker-name { overflow: hidden; padding: 0 4px; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+.pim-video-picker-meta { display: flex; flex-wrap: wrap; gap: 2px 8px; padding: 0 4px 4px; color: var(--pim-muted); font-size: 11px; }
+.pim-video-picker-item[aria-pressed="true"] .pim-video-picker-meta { color: var(--pim-text); }
+
+@media (prefers-reduced-motion: reduce) {
+  .pim-video-shot-change, .pim-video-picker-item { transition: none; }
+}

@@ -1,0 +1,51 @@
+.conversation-messages > .message.assistant.is-uony-reply {
+  position: relative;
+  box-sizing: border-box;
+  max-width: min(78%, calc(100% - 50px), 620px);
+  min-width: 0;
+  margin-left: 50px;
+}
+
+.conversation-messages > .message.assistant.is-uony-reply.has-form {
+  width: min(calc(100% - 50px), 620px);
+  max-width: min(calc(100% - 50px), 620px);
+}
+
+.conversation-messages > .message.assistant.is-uony-reply::before {
+  content: '';
+  position: absolute;
+  top: 9px;
+  left: -50px;
+  width: 36px;
+  height: 23px;
+  background: url('/assets/brands/uonify-isotipo-3d.webp') center / contain no-repeat;
+  pointer-events: none;
+}
+
+/* F1-S (lote 8, maqueta «A · Va apareciendo»): la respuesta crece mientras Uony la escribe. */
+.conversation-messages > .message.assistant.is-writing .uony-writing-caret {
+  display: inline-block;
+  width: 6px;
+  height: 1em;
+  margin-left: 2px;
+  vertical-align: -0.15em;
+  background: currentColor;
+  opacity: 0.55;
+  animation: uony-writing-caret 1s steps(2) infinite;
+}
+
+@keyframes uony-writing-caret {
+  50% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .conversation-messages > .message.assistant.is-writing .uony-writing-caret { animation: none; }
+}
+
+/* Lote 9 (maqueta aprobada por el dueño el 22-10): «Uony está pensando…» donde aparecerá la respuesta. */
+.conversation-messages > .message.assistant.is-thinking-slow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--pim-muted);
+}

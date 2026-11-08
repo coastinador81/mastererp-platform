@@ -33,6 +33,7 @@ on:
       - 'frontend/modules/2.10-transport/2.10.1-drivers/src/**'
       - 'frontend/modules/2.3-ecommerce/2.3.2-stores/src/**'
       - '.github/workflows/publish-uonify-dev.yml'
+      - '!frontend/modules/0-uonify/0.2-app/**'
 permissions:
   contents: read
   id-token: write

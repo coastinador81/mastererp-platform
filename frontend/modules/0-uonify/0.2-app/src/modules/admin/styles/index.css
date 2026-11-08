@@ -1,0 +1,4 @@
+/* Hojas del panel de administración (prefijo adm-). Las carga AdminApp al entrar en /admin. */
+@import './layout.css';
+@import './pages.css';
+@import './sections.css';

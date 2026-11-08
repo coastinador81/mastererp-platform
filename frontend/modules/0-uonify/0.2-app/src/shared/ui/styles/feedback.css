@@ -1,0 +1,50 @@
+/* Kit de interfaz · progreso, subpestañas, zona de soltar, spinner, vacío y alertas.
+   Origen: pim/core.css del prototipo (líneas 151-186). */
+
+/* Progress: blue; AI progress uses the blue → aqua fill. */
+.pim-progress { position: relative; height: 8px; overflow: hidden; border-radius: var(--pim-r-tag); background: var(--pim-surface-muted); }
+.pim-progress > span { position: absolute; inset: 0 auto 0 0; border-radius: inherit; background: var(--pim-blue); transition: width var(--pim-slow) var(--pim-ease); }
+.pim-progress-ai > span { background: var(--pim-ai-gradient); }
+
+/* Sub-tabs inside a tab */
+.pim-subtabs { display: inline-flex; gap: 4px; padding: 4px; border-radius: var(--pim-r-control); background: var(--pim-surface-muted); }
+.pim-subtabs button { min-height: 28px; padding: 4px 12px; border: 0; border-radius: var(--pim-r-tag); background: transparent; color: var(--pim-text); font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; transition: background var(--pim-fast) var(--pim-ease), color var(--pim-fast) var(--pim-ease); }
+.pim-subtabs button[aria-selected="true"] { background: var(--pim-surface); color: var(--pim-ink); box-shadow: 0 1px 2px #1524381a; }
+/* Mismo aspecto seleccionado para las variantes radio (Vídeo) y conmutador
+   (Descripciones) del componente SubTabs; iconos alineados con el texto. */
+.pim-subtabs button { display: inline-flex; align-items: center; gap: 6px; }
+.pim-subtabs button[aria-checked="true"], .pim-subtabs button[aria-pressed="true"] { background: var(--pim-surface); color: var(--pim-ink); box-shadow: 0 1px 2px #1524381a; }
+.pim-subtabs button[aria-disabled="true"] { opacity: .45; cursor: not-allowed; }
+.pim-subtabs button:focus-visible { outline: none; box-shadow: var(--pim-focus); }
+.pim-subtabs button .pim-icon { flex: 0 0 auto; }
+
+/* Drop zone */
+.pim-dropzone { display: grid; place-items: center; gap: 8px; min-height: 152px; padding: 24px; border: 1.5px dashed var(--pim-line-strong); border-radius: var(--pim-r-card); background: var(--pim-surface-soft); color: var(--pim-muted); text-align: center; transition: border-color var(--pim-fast) var(--pim-ease), background var(--pim-fast) var(--pim-ease); }
+.pim-dropzone.is-over { border-color: var(--pim-blue); background: var(--pim-blue-tint); }
+.pim-dropzone strong { color: var(--pim-ink); font-size: 13px; }
+.pim-dropzone .pim-icon { color: var(--pim-subtle); }
+
+/* Spinner */
+.pim-spin { animation: pim-spin 1s linear infinite; }
+@keyframes pim-spin { to { transform: rotate(360deg); } }
+
+/* Empty state */
+.pim-empty { display: grid; place-items: center; gap: 8px; padding: 32px 16px; color: var(--pim-muted); text-align: center; }
+.pim-empty .pim-icon { color: var(--pim-subtle); }
+.pim-empty strong { color: var(--pim-ink); font-size: 14px; }
+
+/* Alert: semantic, state only */
+.pim-alert { display: flex; align-items: flex-start; gap: 8px; padding: 12px 16px; border: 1px solid var(--pim-info-line); border-radius: var(--pim-r-control); background: var(--pim-info-tint); color: var(--pim-ink); font-size: 12px; line-height: 1.5; }
+.pim-alert .pim-icon { flex: 0 0 auto; margin-top: 1px; color: var(--pim-info); }
+.pim-alert-amber { border-color: var(--pim-warning-line); background: var(--pim-warning-tint); }
+.pim-alert-amber .pim-icon { color: var(--pim-warning); }
+.pim-alert-green { border-color: var(--pim-success-line); background: var(--pim-success-tint); }
+.pim-alert-green .pim-icon { color: var(--pim-success); }
+.pim-alert-red { border-color: var(--pim-error-line); background: var(--pim-error-tint); }
+.pim-alert-red .pim-icon { color: var(--pim-error); }
+.pim-alert-ai { border-color: var(--pim-ai-line); background: var(--pim-ai-tint); }
+.pim-alert-ai .pim-icon { color: var(--pim-ai-text); }
+/* Zona de soltar como botón (A+), con foco visible, y desactivada. */
+button.pim-dropzone { width: 100%; font: inherit; cursor: pointer; }
+.pim-dropzone:focus-visible, .pim-dropzone:has(> input[type="file"]:focus-visible) { outline: none; box-shadow: var(--pim-focus); }
+.pim-dropzone.is-disabled { opacity: .6; cursor: not-allowed; }

@@ -1,0 +1,12 @@
+.uon-identity-ready { position: relative; width: min(520px, calc(100vw - 28px)); max-height: calc(100dvh - 28px); overflow: auto; padding: 38px; border: 1px solid var(--uon-auth-line); border-radius: 24px; background: var(--surface); color: var(--uon-auth-text); box-shadow: 0 32px 100px var(--uon-auth-shadow-profile); }
+.uon-identity-ready::backdrop { background: var(--uon-auth-backdrop-strong); backdrop-filter: blur(9px); }
+.uon-identity-brand { display: block; width: 146px; height: auto; margin-bottom: 34px; }
+.uon-identity-ready h2 { margin: 0; font-size: 30px; letter-spacing: -.04em; line-height: 1.15; }
+.uon-identity-account { display: flex; align-items: center; gap: 15px; padding: 18px; border: 1px solid var(--uon-auth-line); border-radius: 12px; }
+.uon-identity-account > svg { width: 24px; height: 24px; flex-shrink: 0; }
+.uon-identity-account div { min-width: 0; }
+.uon-identity-account strong, .uon-identity-account span { display: block; overflow-wrap: anywhere; font-size: 14px; }
+.uon-identity-account span { margin-top: 5px; color: var(--uon-auth-muted); font-size: 13px; }
+.uon-identity-note { font-size: 12px; color: var(--uon-auth-muted); margin: 18px 0 28px; }
+.uon-identity-actions { display: flex; justify-content: space-between; align-items: center; gap: 20px; }
+@media (max-width: 480px) { .uon-identity-ready { padding: 28px 22px; } .uon-identity-actions { flex-direction: column-reverse; align-items: stretch; } }

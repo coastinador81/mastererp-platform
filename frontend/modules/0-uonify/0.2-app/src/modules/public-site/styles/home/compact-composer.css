@@ -1,0 +1,50 @@
+/* Portada y espacio comparten proporciones: 750 px, campo de una línea y controles compactos.
+   Hoja de la vista pública, también incluida en el prerender. */
+.focus-hero { max-width: 750px; }
+.focus-hero h1 { font-size: clamp(40px, 4vw, 60px); font-weight: 500; line-height: 1.1; color: var(--pim-ink); }
+.focus-hero h1 em { color: var(--pim-blue-strong); }
+.focus-hero .home-composer { box-sizing: border-box; display: flex; flex-direction: column; gap: 9px; width: 100%; max-width: 750px; min-height: 104px; margin-top: 24px; padding: 15px 16px 12px; border: 1px solid var(--pim-blue-line); border-radius: 20px; background: var(--pim-surface); backdrop-filter: none; box-shadow: 0 20px 50px color-mix(in srgb, var(--pim-blue-strong) 8%, transparent); }
+.home-composer .composer-field { min-width: 0; padding: 0; }
+.home-composer .composer-field textarea { box-sizing: border-box; display: block; width: 100%; min-height: 29px; height: auto; max-height: 120px; margin: 0; padding: 2px 0 0; font-size: 15px; line-height: 1.5; color: var(--pim-ink); }
+.home-composer .composer-field textarea::placeholder { color: var(--pim-muted); }
+.home-composer .composer-controls { display: flex; flex-wrap: nowrap; justify-content: flex-start; gap: 4px; min-height: 32px; padding: 0; }
+.home-composer .composer-controls > .composer-tool-group { gap: 2px; min-width: 0; }
+.home-composer .composer-tool-group-right { flex: 0 1 auto; margin-left: auto; }
+.home-composer .composer-plus-button, .home-composer .composer-voice-button, .home-composer-nav { box-sizing: border-box; display: grid; place-items: center; flex: 0 0 auto; width: 32px; height: 32px; min-height: 32px; padding: 0; border: 0; border-radius: var(--pim-r-control); color: var(--pim-muted); background: transparent; cursor: pointer; }
+.home-composer .composer-plus-button { font-size: 25px; line-height: 1; }
+.home-composer-nav svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.home-composer-usage-ring { box-sizing: border-box; width: 14px; height: 14px; border: 2px solid var(--pim-subtle); border-radius: 50%; }
+.home-composer-nav:hover { background: var(--pim-surface-muted); color: var(--pim-ink); }
+.home-composer .composer-ai-picker { position: static; flex: 0 1 auto; min-width: 0; max-width: none; min-height: 32px; margin-right: 2px; border: 0; border-radius: 0; background: transparent; }
+.home-composer .composer-speed-trigger, .home-composer .composer-model-trigger, .home-composer .composer-effort-trigger { min-height: 32px; padding: 0 6px; border: 0; border-radius: var(--pim-r-control); background: transparent; font-size: 13px; }
+.home-composer .composer-speed-trigger { width: 28px; flex: 0 0 28px; padding: 0; color: var(--pim-muted); }
+.home-composer .composer-speed-trigger[aria-pressed="true"] { color: var(--pim-blue); background: var(--pim-blue-tint); }
+.home-composer .composer-model-trigger { flex: 0 1 auto; max-width: 150px; padding-right: 3px; font-weight: 550; color: var(--pim-text); }
+.home-composer .composer-model-trigger > .composer-ai-chevron { display: none; }
+.home-composer .composer-effort-trigger { flex: 0 0 auto; gap: 2px; padding-left: 3px; color: var(--pim-muted); }
+.home-composer .composer-ai-chevron { width: 14px; height: 14px; margin: 0; fill: none; stroke: currentColor; stroke-width: 2; flex-shrink: 0; }
+.home-composer .composer-model-menu, .home-composer .composer-effort-menu { left: auto; right: 0; max-width: 100%; }
+.home-composer .send-button { box-sizing: border-box; width: 32px; height: 32px; flex: 0 0 auto; margin-left: 4px; padding: 6px; border: 0; border-radius: 50%; background: var(--pim-blue); color: var(--pim-surface); box-shadow: none; }
+.home-composer .send-button svg { width: 19px; height: 19px; }
+.home-composer .send-button:hover { background: var(--pim-blue-strong); transform: none; }
+.home-composer-nav:focus-visible { outline: 2px solid var(--pim-blue); outline-offset: 2px; }
+.focus-hero > .composer-live-status { max-width: calc(100% - 32px); margin: 6px 16px 0 auto; color: var(--pim-muted); font-size: 11px; line-height: 1.45; text-align: right; }
+.focus-hero > .composer-live-status:not([hidden]) + .prompt-suggestions { margin-top: 24px; }
+@media (max-width: 560px) {
+  .focus-main { padding-inline: 24px; }
+  .focus-hero .home-composer { padding-inline: 12px; }
+  .home-composer .composer-controls, .home-composer .composer-controls > .composer-tool-group { gap: 0; }
+  .home-composer .composer-plus-button, .home-composer .composer-voice-button, .home-composer-nav { width: 26px; height: 26px; min-height: 26px; }
+  .home-composer .composer-plus-button { font-size: 20px; }
+  .home-composer .composer-voice-button svg, .home-composer-nav svg { width: 16px; height: 16px; }
+  .home-composer .composer-speed-trigger { width: 24px; flex-basis: 24px; }
+  .home-composer .composer-model-trigger, .home-composer .composer-effort-trigger { min-height: 26px; font-size: 12.5px; }
+  .home-composer .composer-model-trigger { padding: 0 2px 0 3px; }
+  .home-composer .composer-effort-trigger { padding: 0 3px 0 2px; }
+  .home-composer .composer-ai-chevron { display: none; }
+  .home-composer .send-button { width: 28px; height: 28px; margin-left: 2px; padding: 5px; }
+}
+@media (max-width: 380px) {
+  .focus-main { padding-inline: 10px; }
+  .focus-hero .home-composer { padding-inline: 8px; }
+}

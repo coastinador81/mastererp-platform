@@ -1,0 +1,32 @@
+.bln-product { display: grid; gap: 20px; min-width: 0; }
+.bln-product-overview { display: grid; gap: 16px; min-width: 0; align-items: start; }
+.bln-product-connection, .bln-product-preview { padding: 16px; display: grid; gap: 8px; min-width: 0; }
+.bln-product-heading { display: flex; align-items: flex-start; gap: 14px; min-width: 0; }
+.bln-product-heading > img { width: 60px; height: 28px; object-fit: contain; flex-shrink: 0; }
+.bln-product-heading > div { min-width: 0; flex: 1; }
+.bln-product h3 { margin: 0; font-size: 14px; font-weight: 650; color: var(--pim-ink); }
+.bln-product-heading p { margin: 5px 0 0; font-size: 12px; line-height: 1.5; color: var(--pim-muted); }
+.bln-product a.pim-btn { text-decoration: none; }
+.bln-product-work { display: grid; gap: 16px; }
+.bln-product-open-scene { margin: 0; font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; color: var(--pim-muted); }
+.bln-product-open-scene strong { font-weight: 500; color: var(--pim-ink); }
+.bln-product .bln-result { margin-top: 0; font-size: 13px; line-height: 1.5; }
+.bln-product .bln-result > p { margin: 0; color: var(--pim-muted); }
+.bln-product .bln-scene { margin-bottom: 0; }
+.bln-scene-details { margin-top: 8px; }
+.bln-scene-details summary { cursor: pointer; color: var(--pim-muted); font-size: 12px; }
+.bln-scene-details summary:focus-visible { outline: 2px solid var(--pim-blue); outline-offset: 4px; border-radius: 4px; }
+.bln-product-preview .bln-preview { margin: 0; }
+.bln-product-empty { gap: 12px; }
+.bln-product-empty > .pim-icon { color: var(--pim-subtle); }
+.bln-product-cost { padding-top: 16px; border-top: 1px solid var(--pim-line); }
+@container pim-modelos3d (min-width: 560px) {
+  .bln-product-overview.has-preview { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); }
+  .bln-product-overview.has-preview .bln-product-heading { flex-wrap: wrap; }
+  .bln-product-overview.has-preview .bln-product-heading > .pim-btn { margin-left: 74px; }
+}
+@container pim-modelos3d (max-width: 460px) {
+  .bln-product-connection .bln-product-heading { flex-wrap: wrap; }
+  .bln-product-connection .bln-product-heading > .pim-btn { margin-left: 74px; }
+  .bln-product-connection, .bln-product-preview { padding: 16px; }
+}
