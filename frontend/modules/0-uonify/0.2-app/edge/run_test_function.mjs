@@ -31,11 +31,8 @@ const opt = (name, fallback) => (args.includes(name) ? args[args.indexOf(name) +
 const names = { d: opt('--default'), a: opt('--api') };
 const stage = opt('--stage', 'DEVELOPMENT');
 const kvsName = opt('--kvs', 'uonify-dev-gate');
-// --sin-claves-kvs: para la CI, cuyo rol no puede leer el KVS (ni siquiera los nombres de las claves,
-// porque list-keys devuelve también los valores). Se sigue comprobando que el KVS está READY y asociado.
-const sinClavesKvs = args.includes('--sin-claves-kvs');
 if (!names.d || !names.a || !['DEVELOPMENT', 'LIVE'].includes(stage) || !kvsName) {
-  console.error('Uso: node run_test_function.mjs --default <nombre> --api <nombre> [--stage DEVELOPMENT|LIVE] [--kvs <nombre>] [--sin-claves-kvs]');
+  console.error('Uso: node run_test_function.mjs --default <nombre> --api <nombre> [--stage DEVELOPMENT|LIVE] [--kvs <nombre>]');
   process.exit(64);
 }
 const LOCAL = { d: path.join(HERE, 'gate-default.js'), a: path.join(HERE, 'gate-api.js') };
@@ -103,15 +100,11 @@ function preflight(work) {
     throw new Precheck(`no encuentro el KeyValueStore «${kvsName}» (${error.message})`);
   }
   if (kvs.Status !== 'READY') throw new Precheck(`el KeyValueStore «${kvsName}» está ${kvs.Status}, no READY`);
-  if (sinClavesKvs) {
-    console.log(`AVISO KeyValueStore ${kvsName} READY; sus claves no se comprueban (--sin-claves-kvs)`);
-  } else {
-    // Solo los nombres de las claves (la consulta filtra en la CLI: los valores nunca llegan aquí).
-    const keys = awsJson(['cloudfront-keyvaluestore', 'list-keys', '--kvs-arn', kvs.ARN, '--region', 'us-east-1', '--query', 'Items[].Key']) || [];
-    const missing = KVS_KEYS.filter((k) => !keys.includes(k));
-    if (missing.length) throw new Precheck(`faltan en el KeyValueStore: ${missing.join(', ')}. Primero el dueño ejecuta ./set_gate_credentials.sh (y --check); sin ellas este test no probaría el HMAC ni el SHA-256`);
-    console.log(`OK    KeyValueStore ${kvsName} READY con ${KVS_KEYS.join(' y ')}`);
-  }
+  // Solo los nombres de las claves (la consulta filtra en la CLI: los valores nunca llegan aquí).
+  const keys = awsJson(['cloudfront-keyvaluestore', 'list-keys', '--kvs-arn', kvs.ARN, '--region', 'us-east-1', '--query', 'Items[].Key']) || [];
+  const missing = KVS_KEYS.filter((k) => !keys.includes(k));
+  if (missing.length) throw new Precheck(`faltan en el KeyValueStore: ${missing.join(', ')}. Primero el dueño ejecuta ./set_gate_credentials.sh (y --check); sin ellas este test no probaría el HMAC ni el SHA-256`);
+  console.log(`OK    KeyValueStore ${kvsName} READY con ${KVS_KEYS.join(' y ')}`);
   const etags = {};
   for (const k of ['d', 'a']) {
     const d = awsJson(['cloudfront', 'describe-function', '--name', names[k], '--stage', stage]);
