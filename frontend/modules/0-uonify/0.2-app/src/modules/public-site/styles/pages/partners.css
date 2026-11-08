@@ -1,0 +1,42 @@
+/* Partners: programa de partners autorizados, directorio y formulario de solicitud.
+   Identidad de Uonify (manual): azul #0178F7 estructura; aqua solo para la IA (no aquí). */
+.partner-hero { padding: 54px 0 10px; text-align: center; }
+.partner-hero h1 { font-size: clamp(32px, 5vw, 46px); line-height: 1.08; letter-spacing: -.02em; }
+.partner-hero h1 span { color: #0178F7; }
+.partner-hero .lead { margin: 16px auto 0; max-width: 62ch; }
+
+.partner-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding: 30px 0; }
+.partner-steps .pstep { background: #f8fafe; border: 1px solid #e1e8f1; border-radius: 16px; padding: 22px; }
+.partner-steps .pstep h3 { font-size: 17px; color: #152438; margin: 0 0 6px; }
+.partner-steps .pstep p { margin: 0; color: #5e7186; font-size: 14px; }
+
+.partner-dir { padding: 24px 0; }
+.partner-dir .pcards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-top: 18px; }
+.pcard { background: #fff; border: 1px solid #e1e8f1; border-radius: 16px; padding: 20px; min-width: 0; }
+.plogo { height: 76px; border-radius: 12px; background: #eaf3ff; display: flex; align-items: center; justify-content: center; padding: 10px 14px; margin-bottom: 14px; text-align: center; }
+.plogo img { max-height: 56px; max-width: 100%; object-fit: contain; }
+.plogo-name { font-weight: 600; color: #0a4fa0; font-size: 15px; }
+.pcard h3 { font-size: 16px; color: #152438; margin: 0 0 2px; }
+.pmeta { margin: 0; color: #5e7186; font-size: 13px; }
+
+.partner-apply { padding: 22px 0 56px; }
+.pform { background: #fff; border: 1px solid #e1e8f1; border-radius: 16px; padding: 24px; margin-top: 18px; max-width: 760px; }
+.pform-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.pfield { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.pfield-full { grid-column: 1 / -1; }
+.pform label { font-size: 13.5px; color: #152438; font-weight: 500; }
+.pform .req { color: #0178F7; }
+.pform input, .pform select, .pform textarea { font: inherit; font-size: 15px; padding: 10px 12px; border: 1px solid #cdd8e4; border-radius: 8px; background: #fff; color: #152438; width: 100%; }
+.pform input:focus, .pform select:focus, .pform textarea:focus { outline: none; border-color: #0178F7; box-shadow: 0 0 0 3px #eaf3ff; }
+.pform textarea { resize: vertical; }
+.pf-trap { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.pconsent { display: flex; gap: 10px; align-items: flex-start; margin-top: 16px; font-size: 14px; color: #34445a; }
+.pconsent input { width: 18px; height: 18px; margin-top: 2px; flex: 0 0 auto; accent-color: #0178F7; }
+.pf-actions { margin-top: 18px; }
+.pf-sent { margin-top: 14px; font-size: 14px; color: #0f6b45; background: #eaf6ef; border: 1px solid #bfe3ce; border-radius: 8px; padding: 11px 13px; }
+.pf-note { margin-top: 12px; font-size: 12.5px; color: #8595a6; }
+
+@media (max-width: 640px) {
+  .partner-steps { grid-template-columns: 1fr; }
+  .pform-grid { grid-template-columns: 1fr; }
+}

@@ -1,0 +1,14 @@
+/* Clientes: muro de marcas que avalan Uonify. Identidad del manual (azul #0178F7). */
+.cli-hero { padding: 54px 0 10px; text-align: center; }
+.cli-hero h1 { font-size: clamp(32px, 5vw, 46px); line-height: 1.08; letter-spacing: -.02em; }
+.cli-hero h1 span { color: #0178F7; }
+.cli-hero .lead { margin: 16px auto 0; max-width: 60ch; }
+
+.cli-wall { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 16px; padding: 34px 0; }
+.clogo { height: 118px; border: 1px solid #e1e8f1; border-radius: 16px; background: #fff; display: flex; align-items: center; justify-content: center; padding: 20px 24px; min-width: 0; }
+.clogo img { max-height: 72px; max-width: 100%; object-fit: contain; }
+.clogo-name { font-weight: 600; color: #152438; font-size: 18px; letter-spacing: -.01em; }
+
+.cli-cta { text-align: center; padding: 20px 0 60px; }
+.cli-cta h2 { font-size: 26px; color: #152438; }
+.cli-cta p { margin: 8px 0 20px; color: #5e7186; }

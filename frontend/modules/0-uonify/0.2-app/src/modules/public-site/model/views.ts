@@ -12,6 +12,8 @@ export type PublicViewKey =
   | 'producto'
   | 'como-funciona'
   | 'lo-que-puedes-hacer'
+  | 'partners'
+  | 'clientes'
   | 'precios'
   | 'seguridad'
   | 'para-empresas'
@@ -67,6 +69,20 @@ export const PUBLIC_VIEWS: Record<PublicViewKey, PublicViewMeta> = {
     description: 'Precios de Uonify: una suscripción única y clara. La IA y la creación las pagas a Google, a sus precios y sin recargo de Uonify. Antes de crear cada pieza ves su precio máximo.',
     bodyClass: 'pricing-page',
   },
+  partners: {
+    key: 'partners',
+    path: '/partners',
+    title: 'Partners autorizados — Uonify',
+    description: 'Programa de partners autorizados de Uonify: empresas que implantan la herramienta, hacen el onboarding y acompañan a sus clientes. Consulta el directorio y solicita unirte.',
+    bodyClass: 'partners-page',
+  },
+  clientes: {
+    key: 'clientes',
+    path: '/clientes',
+    title: 'Clientes — Uonify',
+    description: 'Marcas que trabajan con Uonify para preparar sus productos, su contenido y su operación.',
+    bodyClass: 'clientes-page',
+  },
   seguridad: {
     key: 'seguridad',
     path: '/seguridad',
@@ -117,6 +133,8 @@ export const PATHS = {
   comoFunciona: PUBLIC_VIEWS['como-funciona'].path,
   loQuePuedesHacer: PUBLIC_VIEWS['lo-que-puedes-hacer'].path,
   precios: PUBLIC_VIEWS.precios.path,
+  partners: PUBLIC_VIEWS.partners.path,
+  clientes: PUBLIC_VIEWS.clientes.path,
   seguridad: PUBLIC_VIEWS.seguridad.path,
   paraEmpresas: PUBLIC_VIEWS['para-empresas'].path,
   sobreUonify: PUBLIC_VIEWS.empresa.path,
