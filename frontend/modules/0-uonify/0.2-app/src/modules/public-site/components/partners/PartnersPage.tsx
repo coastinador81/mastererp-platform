@@ -2,13 +2,16 @@ import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router';
 import productosCss from '../../styles/pages/productos.css?inline';
 import partnersCss from '../../styles/pages/partners.css?inline';
+import richCss from '../../styles/pages/rich.css?inline';
 import { viewSheets } from '../../styles/sheets';
 import { PATHS, PUBLIC_VIEWS } from '../../model/views';
+import { DeviceFrame } from '../common/DeviceFrame';
+import { HomeLink } from '../common/HomeLink';
 import { PageFooter, SITE_FOOTER_LINKS } from '../common/PageFooter';
 import { PageHeader } from '../common/PageHeader';
 import { PublicView } from '../common/PublicView';
 
-const SHEETS = viewSheets(productosCss, partnersCss);
+const SHEETS = viewSheets(productosCss, partnersCss, richCss);
 
 /** Distribuidores oficiales (solo los confirmados por el dueño). `logo` se añade con el
  *  material oficial autorizado; sin él se muestra el nombre, nunca un logo copiado. */
@@ -40,10 +43,16 @@ export function PartnersPage() {
     <PublicView view={PUBLIC_VIEWS.partners} sheets={SHEETS}>
       <PageHeader current="partners" loginLabel="Tu espacio Uonify" />
       <main id="contenido" tabIndex={-1}>
-        <section className="partner-hero wrap" aria-labelledby="partner-title">
-          <p className="eyebrow">PROGRAMA DE PARTNERS</p>
-          <h1 id="partner-title">Partners autorizados <span>de Uonify.</span></h1>
-          <p className="lead">Empresas autorizadas por Uonify que implantan la herramienta, hacen el onboarding y acompañan a sus clientes. Tú trabajas con Uonify; un partner cercano te ayuda a sacarle todo el partido.</p>
+        <section className="hero-split wrap" aria-labelledby="partner-title">
+          <div className="hero-copy">
+            <p className="eyebrow">PROGRAMA DE PARTNERS</p>
+            <h1 id="partner-title">Partners autorizados <span>de Uonify.</span></h1>
+            <p className="lead">Empresas autorizadas por Uonify que implantan la herramienta, hacen el onboarding y acompañan a sus clientes. Tú trabajas con Uonify; un partner cercano te ayuda a sacarle todo el partido.</p>
+            <a className="button primary" href="#solicitar">Solicitar ser partner</a>
+          </div>
+          <div className="hero-illo hero-glow">
+            <img src="/assets/product-icons/hive.png" width="340" height="340" alt="Red de partners de Uonify" fetchPriority="high" />
+          </div>
         </section>
 
         <section className="partner-steps wrap" aria-label="Qué hace un partner">
@@ -55,22 +64,35 @@ export function PartnersPage() {
           ))}
         </section>
 
-        <section className="partner-dir wrap" aria-labelledby="dir-title">
+        <section className="alt-section wrap" aria-labelledby="partner-how-title">
+          <div className="alt-copy">
+            <p className="kicker">Cómo trabaja un partner</p>
+            <h2 id="partner-how-title">Uonify, implantado a la medida de tu negocio.</h2>
+            <p>El partner configura la plataforma para tu operación, conecta tus canales y forma a tu equipo. Tú trabajas en Uonify; el partner está detrás para que todo funcione.</p>
+            <ul>
+              <li>Puesta en marcha y conexión de tus cuentas.</li>
+              <li>Formación y acompañamiento en tu idioma.</li>
+              <li>Soporte cercano y continuo.</li>
+            </ul>
+          </div>
+          <div className="alt-media">
+            <DeviceFrame illo="nexus" label="El espacio de Uonify" alt="El espacio de Uonify" />
+          </div>
+        </section>
+
+        <section className="partner-dir logo-strip-section wrap" aria-labelledby="dir-title">
           <div className="section-heading">
             <p className="eyebrow">Distribuidores oficiales</p>
-            <h2 id="dir-title">Nuestra red de partners.</h2>
+            <h2 id="dir-title">Nuestra red de partners autorizados.</h2>
           </div>
-          <div className="pcards">
+          <div className="logo-strip">
             {PARTNERS.map(partner => (
-              <article className="pcard" key={partner.name}>
-                <div className="plogo">
-                  {partner.logo
-                    ? <img src={partner.logo} alt={partner.name} loading="lazy" />
-                    : <span className="plogo-name">{partner.name}</span>}
-                </div>
-                <h3>{partner.name}</h3>
-                <p className="pmeta">{partner.country} · Partner autorizado</p>
-              </article>
+              <div className="logo-cell logo-cell-partner" key={partner.name}>
+                {partner.logo
+                  ? <img src={partner.logo} alt={partner.name} loading="lazy" />
+                  : <span className="logo-name">{partner.name}</span>}
+                <small>{partner.country} · Partner autorizado</small>
+              </div>
             ))}
           </div>
         </section>
