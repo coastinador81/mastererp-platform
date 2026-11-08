@@ -18,6 +18,7 @@ Media fuera de git: los 37 ficheros de más de 1 MiB (imágenes, modelos 3D y v�
 ## Reglas de esta carpeta
 
 - ⚠ La raíz de `frontend/modules/0-uonify` es la app del equipo MasterERP y no se toca. Su workflow `publish-uonify-dev.yml` excluye `frontend/modules/0-uonify/0.2-app/**`, así que los cambios aquí no la republican.
+- **Diseño: el [manual de identidad corporativa](../identidad-corporativa/Uonify_Identidad_Corporativa.pdf) es canon.** Antes de tocar cualquier diseño o UX/UI, se lee. No se inventan diseños, estilos ni patrones nuevos, y lo que el manual no cubra lo decide el Product Owner. Un cambio visual que no cumpla el manual no se fusiona.
 - Aprobación visual previa del Product Owner para cualquier cambio de lo que se ve. Lo aprobado sigue publicado hasta que él apruebe lo nuevo.
 - Nada valioso en el navegador: ni claves, ni precios internos, ni identificadores de proveedor. Las llamadas al backend van siempre por `/api` relativo.
 - TypeScript estricto. Todo fichero nuevo o modificado tiene como máximo 500 líneas. La excepción del Product Owner (08-11-2026) cubre solo `public/assets/vendor/model-viewer-4.3.1.min.js` (1.118 líneas, librería de terceros), `edge/test_gate.mjs` (939) y `edge/deploy_edge.mjs` (793). Si se toca uno de los dos últimos, se parte en ese mismo cambio.
