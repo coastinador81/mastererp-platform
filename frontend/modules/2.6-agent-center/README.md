@@ -1,18 +1,33 @@
-# Agent Center frontend
+# Centro de Agentes
 
-Objetivo específico: Configurar agentes y flujos que consumen Uonify.
+Objetivo: configurar, activar y supervisar agentes que consumen Uonify, junto con su conocimiento, reglas de negocio, integraciones y aprobaciones.
 
-Responsabilidad: experiencia de agentes y flujos. Estado: planned.
+## Fuente única del frontend
 
-## Contrato y estado de esta capa
+Este directorio es la fuente de verdad del frontend del Centro de Agentes. La entrada estática se encuentra en `agents-web/index.html`.
 
-Código: 2.6. Nombre/ruta: `2.6-agent-center`. Objetivo y alcance: los descritos arriba; esta carpeta no amplía las responsabilidades de su módulo padre. Propietario funcional: dominio Centro de Agentes; responsable nominal pendiente de asignación. Propietario de los datos: módulo que define sus entidades; no copiar datos de otros dominios.
+La infraestructura de `mastererp-infrastructure/modules/2.6-agent-center` solo conserva hosting, S3, CloudFront, DNS y permisos de publicación. No debe mantener una copia editable de esta interfaz.
 
-Capa: frontend. Dependencias: contexto autenticado, tenant y contratos del padre cuando correspondan; contratos adicionales pendientes de definición. Exclusiones: lógica y recursos de otros módulos; conectores técnicos fuera de Digital Sales. APIs/eventos/MCP: no declarar disponibles por existir esta carpeta; revisar implementación y contrato antes de consumir. Propuestas sin contrato confirmado permanecen pendientes.
+## Alcance del primer front
 
-Estado verificable: la reserva documental no acredita implementación; conservar cualquier código/plantilla existente y revisar evidencia específica antes de marcar implementado.
+- Inicio con estado operativo, acciones de preparación y catálogo de agentes.
+- Navegación para agentes, conocimiento y reglas, flujos, aprobaciones, integraciones y supervisión.
+- Estados iniciales sin integraciones, datos transaccionales ni acciones simuladas.
+- Diseño responsive y accesible alineado con el estándar UX/UI de MasterERP.
 
-Validaciones: estructura local mediante scripts/validate_structure.py. Pendientes: contratos específicos, responsable nominal y pruebas funcionales antes de habilitar esta capacidad.
+## Publicación
+
+El dominio DEV es `https://agentes-dev.uonify.com/`. La publicación debe construir o empaquetar esta entrada desde Platform; Infrastructure conserva el dominio y los recursos AWS asociados.
+
+Antes de habilitar operaciones reales, definir contratos de tenant, empresa, permisos, APIs y auditoría. La navegación no concede acceso.
+
+## Regla obligatoria de propiedad del frontend
+
+**Todo código editable del Centro de Agentes vive exclusivamente en este módulo de Platform:** `frontend/modules/2.6-agent-center/`. La entrada publicada es `agents-web/index.html`.
+
+Antes de editar una interfaz, un agente debe comprobar esta regla e informar al desarrollador si la petición apunta a Infrastructure. `mastererp-infrastructure` no es una fuente de frontend: solo mantiene CloudFront, S3, DNS, certificado, permisos OIDC y la infraestructura necesaria para publicar el artefacto generado desde Platform. No crear, copiar ni corregir HTML, CSS, JavaScript, assets o builds del Centro de Agentes en Infrastructure.
+
+Una modificación de hosting no autoriza a cambiar la interfaz; una modificación de interfaz no autoriza a cambiar DNS, AWS, permisos ni despliegues. Si se requieren ambos cambios, deben tratarse como dos tareas coordinadas, indicando al desarrollador qué repositorio, recurso y publicación están implicados.
 
 <!-- ux-ui-standard:start -->
 ## UX/UI común
