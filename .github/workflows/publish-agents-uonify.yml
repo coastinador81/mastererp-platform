@@ -1,0 +1,44 @@
+name: Publish agentes-dev.uonify.com
+on:
+  workflow_dispatch:
+  push:
+    branches: [dev]
+    paths:
+      - 'frontend/modules/2.6-agent-center/agents-web/**'
+      - 'frontend/shared/module-launcher/**'
+      - '.github/workflows/publish-agents-uonify.yml'
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: mastererp-dev-agents-frontend
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::277352717693:role/mastererp-dev-agents-frontend-github-role
+          aws-region: us-west-1
+      - name: Package Agent Center frontend
+        run: |
+          cp frontend/modules/2.6-agent-center/agents-web/index.html index.html
+          mkdir -p publish/shared
+          cp frontend/shared/module-launcher/module-launcher.mjs publish/shared/module-launcher.mjs
+      - name: Publish to the existing frontend bucket
+        env:
+          BUCKET: ${{ vars.AGENTS_UONIFY_BUCKET }}
+          DISTRIBUTION: ${{ vars.AGENTS_UONIFY_DISTRIBUTION_ID }}
+        run: |
+          set -euo pipefail
+          test -n "${BUCKET:-}" && test -n "${DISTRIBUTION:-}"
+          test "$(aws sts get-caller-identity --query Account --output text)" = 277352717693
+          aws s3 cp publish/shared/module-launcher.mjs "s3://$BUCKET/shared/module-launcher.mjs" --content-type 'text/javascript; charset=utf-8' --cache-control 'no-cache,max-age=0,must-revalidate'
+          aws s3 cp index.html "s3://$BUCKET/index.html" --content-type 'text/html; charset=utf-8' --cache-control 'no-cache,max-age=0,must-revalidate'
+          invalidation=$(aws cloudfront create-invalidation --distribution-id "$DISTRIBUTION" --paths / /index.html /shared/module-launcher.mjs --query Invalidation.Id --output text)
+          aws cloudfront wait invalidation-completed --distribution-id "$DISTRIBUTION" --id "$invalidation"
