@@ -17,8 +17,10 @@ const SHEETS = viewSheets(productosCss, partnersCss, richCss);
  *  material oficial autorizado; sin él se muestra el nombre, nunca un logo copiado. */
 interface Partner { name: string; country: string; logo?: string }
 const PARTNERS: readonly Partner[] = [
-  { name: 'Ética y Servicios en Redes C.A.', country: 'Venezuela' },
-  { name: 'BigBuy', country: 'España' },
+  // Logos oficiales (sin redibujar): ESIN (cuenta oficial de Ética y Servicios; pendiente de que el
+  // dueño confirme que es su logo); BigBuy (CMS oficial de bigbuy.eu). Monocromo blanco sobre Tinta.
+  { name: 'Ética y Servicios en Redes C.A.', country: 'Venezuela', logo: '/assets/partners/eticayservicios.png' },
+  { name: 'BigBuy', country: 'España', logo: '/assets/partners/bigbuy.svg' },
 ];
 
 /** Qué hace un partner autorizado (modelo tipo AWS Partner Network). */

@@ -15,9 +15,11 @@ const SHEETS = viewSheets(productosCss, clientesCss, richCss);
  *  añade con su material autorizado; sin él se muestra el nombre, nunca un logo copiado. */
 interface Cliente { name: string; logo?: string }
 const CLIENTES: readonly Cliente[] = [
+  // Logos oficiales (sin redibujar): Rentprive (manual de Rentprive); Exquisit (exquisit.de,
+  // versión negativa/blanca); InnovaGoods (innovagoods.com, versión blanca). Monocromo blanco sobre Tinta.
   { name: 'Rentprive', logo: '/assets/clientes/rentprive.png' },
-  { name: 'Exquisit' },
-  { name: 'InnovaGoods' },
+  { name: 'Exquisit', logo: '/assets/clientes/exquisit.svg' },
+  { name: 'InnovaGoods', logo: '/assets/clientes/innovagoods.png' },
 ];
 
 /** Clientes (`/clientes`): marcas que avalan Uonify. */

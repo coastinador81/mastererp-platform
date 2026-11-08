@@ -15,12 +15,14 @@
 .logo-strip-section { padding: 10px 0 26px; text-align: center; }
 .strip-label { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: #8595a6; margin-bottom: 18px; }
 .logo-strip { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 14px; }
-.logo-cell { flex: 0 1 190px; height: 92px; display: flex; align-items: center; justify-content: center; padding: 16px 22px; background: #fff; border: 1px solid #e6edf5; border-radius: 16px; box-shadow: 0 6px 18px rgba(21,36,56,.05); transition: box-shadow .18s, transform .18s; }
-.logo-cell:hover { box-shadow: 0 12px 26px rgba(21,36,56,.1); transform: translateY(-2px); }
-.logo-cell img { max-height: 54px; max-width: 100%; object-fit: contain; }
-.logo-cell .logo-name { font-size: 17px; font-weight: 600; color: #152438; letter-spacing: -.01em; }
-.logo-cell-partner { flex-direction: column; gap: 8px; height: auto; min-height: 112px; flex-basis: 268px; padding: 20px 22px; }
-.logo-cell-partner small { font-size: 12px; color: #5e7186; }
+/* Franja de logos: monocromo uniforme (logos oficiales en blanco sobre Tinta del manual). */
+.logo-cell { flex: 0 1 190px; height: 92px; display: flex; align-items: center; justify-content: center; padding: 16px 24px; background: #152438; border: 1px solid #243a54; border-radius: 16px; box-shadow: 0 10px 24px rgba(21,36,56,.14); transition: box-shadow .18s, transform .18s; }
+.logo-cell:hover { box-shadow: 0 16px 30px rgba(21,36,56,.2); transform: translateY(-2px); }
+.logo-cell img { max-height: 46px; max-width: 100%; object-fit: contain; opacity: .95; }
+.logo-cell:hover img { opacity: 1; }
+.logo-cell .logo-name { font-size: 17px; font-weight: 600; color: #fff; letter-spacing: -.01em; }
+.logo-cell-partner { flex-direction: column; gap: 10px; height: auto; min-height: 118px; flex-basis: 268px; padding: 20px 22px; }
+.logo-cell-partner small { font-size: 12px; color: #9fb2c8; }
 
 /* Secciones alternas texto + interfaz */
 .alt-section { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 44px; padding: 46px 0; }
