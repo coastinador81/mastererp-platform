@@ -1,6 +1,5 @@
-import { Link } from 'react-router';
 import { PATHS } from '../../model/views';
-import { HomeLink } from './HomeLink';
+import { HomeFooter } from '../home/HomeFooter';
 
 export interface FooterLink { to: string; label: string }
 
@@ -41,17 +40,11 @@ export const SITE_FOOTER_LINKS: readonly FooterLink[] = [
   FOOTER_LINKS.terminos,
 ];
 
-/** Pie de las páginas públicas: logotipo, enlaces y nota de la página. */
-export function PageFooter({ links, note }: { links: readonly FooterLink[]; note: string }) {
-  return (
-    <footer className="footer wrap">
-      <HomeLink className="brand" brand>
-        <img data-uonify-logo="relief" src="/assets/brands/uonify-wordmark-mono-3d.webp" width="115" height="36" alt="Uonify" />
-      </HomeLink>
-      <nav aria-label="Enlaces del pie">
-        {links.map(link => <Link key={link.to} to={link.to}>{link.label}</Link>)}
-      </nav>
-      <p>{note}</p>
-    </footer>
-  );
+/**
+ * Pie común de TODAS las páginas públicas: es exactamente el de la portada (HomeFooter),
+ * sin variantes por página (decisión del dueño, 08-11-2026). Se conserva la firma con
+ * `links`/`note` por compatibilidad con las páginas que aún los pasan; no se usan.
+ */
+export function PageFooter(_props: { links: readonly FooterLink[]; note: string }) {
+  return <HomeFooter />;
 }

@@ -90,6 +90,11 @@ main[tabindex="-1"]:focus { outline: none; }
 .footer a { text-decoration: none; }
 .footer a:hover { color: var(--blue-dark); }
 .footer > span { justify-self: end; }
+.site-footer { max-width: 1120px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 14px 40px; min-height: 92px; padding: 22px 26px; color: var(--muted); border-top: 1px solid rgba(111,137,162,.18); font-size: 11px; }
+.site-footer nav { display: flex; flex-wrap: wrap; gap: 22px; }
+.site-footer a, .site-footer button { color: var(--muted); text-decoration: none; background: none; border: 0; font: inherit; font-size: inherit; cursor: pointer; padding: 0; }
+.site-footer a:hover, .site-footer button:hover { color: var(--blue-dark); }
+@media (max-width: 640px) { .site-footer { justify-content: center; gap: 12px; text-align: center; } }
 
 @media (max-width: 760px) {
   .ambient::before { background-size: 48px 48px; }
