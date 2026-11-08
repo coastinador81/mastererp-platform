@@ -78,3 +78,7 @@ Esta sección orienta el diseño; no acredita implementación ni añade requisit
 ## Creación guiada en Administración
 
 Desarrolladores e IA deben consultar el [patrón común de tres pasos](../../../docs/ADMINISTRATION_FORM_UX.md). Clientes/Proveedores: Datos básicos → Dirección y contactos → Condiciones. Órdenes: Datos de la orden → Detalles → Revisión. Reutilizar componentes y conservar contratos, permisos y datos. Candidato local; publicación pendiente.
+
+## Navegacion adaptable de Finanzas
+
+El frontend independiente y la demo de Compras reutilizan los servicios relacionados de Platform: Chat, Finanzas, Ecommerce, Inventario y Agentes. El menu funcional ocupa 64 px y se expande sobre el contenido al pasar el mouse, recibir foco o usar el boton del encabezado. Conserva las agrupaciones de Administracion y las restricciones existentes. En movil se abre como panel con cierre exterior y Escape; seleccionar una ruta cierra el panel. Las tarjetas se ajustan al ancho real del contenido y las tablas conservan desplazamiento horizontal interno. Esta presentacion no cambia permisos, contratos, datos ni operaciones. Los estilos quedan limitados a la entrada `finance-app`; Uonify conserva su presentacion.
