@@ -356,3 +356,43 @@
 @media(prefers-reduced-motion:reduce){.finance-app .integrated-layout{transition:none}}
 
 .finance-app .integrated-nav:not(:hover,:focus-within,.is-open) .finance-real-links{display:none}
+
+/* Contextual assistant: a reserved right column on wide screens, modal on smaller ones. */
+.finance-app .finance-assistant-toggle{width:40px;height:40px;padding:9px;display:grid;place-items:center;flex:none;border-radius:50%}
+.finance-app .finance-assistant-toggle[aria-expanded=true]{color:var(--finance-primary);background:var(--finance-selected);border-color:var(--finance-accent)}
+.finance-app .finance-assistant-panel{position:sticky;top:80px;height:calc(100dvh - 80px);min-width:0;display:flex;flex-direction:column;background:#fff;border-left:1px solid var(--finance-border);align-self:start;z-index:22;color:var(--finance-text)}
+.finance-app .finance-assistant-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:20px;border-bottom:1px solid var(--finance-border);flex:none}
+.finance-app .finance-assistant-heading>div{display:flex;align-items:center;gap:10px;min-width:0}
+.finance-app .finance-assistant-heading h2{margin:0;font-size:15px;font-weight:500;color:var(--finance-title)}
+.finance-app .finance-assistant-heading h2 span{display:block;font-size:11px;font-weight:400;color:var(--finance-muted);margin-top:3px}
+.finance-app .finance-assistant-heading button{display:grid;place-items:center;padding:8px;width:36px;min-height:36px;flex:none;border:0}
+.finance-app .finance-assistant-symbol{display:grid;place-items:center;width:32px;height:32px;border-radius:10px;background:var(--finance-selected);color:var(--finance-primary);flex:none}
+.finance-app .finance-assistant-body{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:24px 20px;font-size:13px;line-height:1.7;overflow-wrap:anywhere}
+.finance-app .finance-assistant-body p{margin:0 0 10px;color:var(--finance-muted)}
+.finance-app .finance-assistant-body strong{font-weight:500;color:var(--finance-title)}
+.finance-app .finance-assistant-empty{padding:36px 0 16px;margin-top:16px;border-top:1px solid var(--finance-border)}
+.finance-app .finance-assistant-empty>svg{color:var(--finance-primary);width:28px;height:28px}
+.finance-app .finance-assistant-empty h3{font-size:16px;font-weight:500;color:var(--finance-title);margin:14px 0 8px}
+.finance-app .finance-assistant-empty>span{display:inline-block;font-size:11px;padding:4px 8px;border-radius:6px;background:var(--finance-table-header);color:var(--finance-muted);margin-top:8px}
+.finance-app .finance-assistant-composer{padding:16px 20px max(20px,env(safe-area-inset-bottom));border-top:1px solid var(--finance-border);flex:none;min-width:0}
+.finance-app .finance-assistant-composer label{display:block;font-size:12px;color:var(--finance-muted);margin-bottom:8px}
+.finance-app .finance-assistant-composer textarea{display:block;width:100%;min-height:88px;max-height:160px;resize:vertical;font:inherit;font-size:13px;line-height:1.6;padding:12px;border:1px solid var(--finance-control-border);border-radius:12px}
+.finance-app .finance-assistant-composer>div{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-top:10px}
+.finance-app .finance-assistant-composer small{font-size:11px;color:var(--finance-muted);line-height:1.5}
+.finance-app .finance-assistant-composer button{padding:8px;width:36px;min-height:36px;flex:none;display:grid;place-items:center}
+@media(min-width:1101px){
+ .finance-app .integrated-layout:has(>.finance-assistant-panel){grid-template-columns:64px minmax(0,1fr) 340px}
+ .finance-app .integrated-layout:has(>.finance-service-rail):has(>.finance-assistant-panel){grid-template-columns:72px 64px minmax(0,1fr) 340px}
+ .finance-app .integrated-layout:has(>.finance-assistant-panel):has(>.integrated-nav:is(:hover,:focus-within,.is-open)){grid-template-columns:256px minmax(0,1fr) 340px}
+ .finance-app .integrated-layout:has(>.finance-service-rail):has(>.finance-assistant-panel):has(>.integrated-nav:is(:hover,:focus-within,.is-open)){grid-template-columns:72px 256px minmax(0,1fr) 340px}
+}
+@media(max-width:1100px){
+ .finance-app .finance-assistant-scrim{position:fixed;inset:0;background:#17243b38;z-index:60}
+ .finance-app .finance-assistant-panel{position:fixed;right:0;top:0;width:min(400px,100%);height:100dvh;z-index:61;box-shadow:-12px 0 36px #23385214}
+}
+@media(max-width:480px){
+ .finance-app .finance-assistant-panel{width:100%;border:0}
+ .finance-app .context-controls .purchases-local-badge{display:none}
+ .finance-app .finance-assistant-body{padding:20px 16px}
+ .finance-app .finance-assistant-composer{padding-left:16px;padding-right:16px}
+}

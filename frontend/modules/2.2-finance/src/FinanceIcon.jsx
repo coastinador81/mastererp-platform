@@ -1,6 +1,9 @@
 import React from 'react';
 
 const paths={
+  sparkles:<><path d="m12 3 2.4 6.6L21 12l-6.6 2.4L12 21l-2.4-6.6L3 12l6.6-2.4L12 3Z"/><path d="M20 2v4m-2-2h4"/></>,
+  close:<path d="m6 6 12 12M18 6 6 18"/>,
+  send:<><path d="m3 3 18 9-18 9 4-9-4-9Zm4 9h14"/></>,
   chat:<path d="M5 4h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H9l-6 4V6a2 2 0 0 1 2-2Zm3 5h8m-8 4h5"/>,
   summary:<><path d="M4 20V11m5 9V6m5 14V3m5 17V9"/></>,
   clients:<><circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2m1-15a3 3 0 0 1 0 6m2 3a5 5 0 0 1 3 4v2"/></>,
