@@ -15,7 +15,7 @@ export default function FinanceNavigation({allowed,path,navigate,permissions=[],
   const canOpen=route=>previewOnly?['resumen-compras','solicitudes-compra','sugerencias-compras','ordenes-compra'].includes(route):allowed&&permissions.includes(route==='ventas'?'administration.read':['clientes','proveedores'].includes(route)?'administration.parties.read':'administration.purchases.read');
   return <nav className="finance-navigation" aria-label="Administración">
     <p className="nav-caption">FINANZAS</p>
-    {allowed ? <a href="/" aria-current={path==='/modulos/finanzas'?'page':undefined}><FinanceIcon name="summary"/>Resumen de Finanzas</a> : null}
+    {allowed ? <a href="/" aria-current={path==='/modulos/finanzas'?'page':undefined}><FinanceIcon name="summary"/>Resumen</a> : null}
     <details className="administration-nav" open><summary className="administration-nav-title"><ChevronDownIcon className="finance-disclosure-icon"/>Administración</summary><div className="administration-nav-children">
     {groups.map(([number,name,groupItems],index)=>{const items=previewOnly&&number==='2.2.1.2'?[['Resumen','resumen-compras'],...groupItems.flatMap(item=>item[1]==='solicitudes-compra'?[item,['Sugerencias de compras','sugerencias-compras']]:[item])]:groupItems;return <details className="finance-nav-group" key={number} open={index<2||items.some(([,route])=>route&&path.includes('/'+route))}>
       <summary><ChevronDownIcon className="finance-disclosure-icon"/>{name}</summary>

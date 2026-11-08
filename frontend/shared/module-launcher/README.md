@@ -18,3 +18,5 @@ node scripts/sync_module_launcher.mjs --check
 El manifiesto registra fuente y SHA-256. El workflow existente de Agentes comprueba la integridad y publica el asset local antes de index.html, con Content-Type JavaScript y caché revalidable. No descarga código de otro dominio en runtime ni necesita nuevas credenciales, permisos o stacks. Las actualizaciones se sincronizan y revisan en ambos repositorios; el commit de Infrastructure fija la versión publicada de su copia.
 
 Los pipelines de Finanzas y Ecommerce observan esta carpeta. Cambiar un icono/enlace no modifica contratos SQL, permisos ni hosting.
+
+Navegación principal: los enlaces de aplicaciones fijan target=_self, por lo que un clic normal sustituye la aplicación en la misma pestaña. Se preserva la apertura voluntaria con Ctrl/Cmd o menú contextual. Finanzas incorpora un icono de chat junto al lanzador para volver a https://dev.uonify.com/ sin tokens ni contexto en la URL. El acceso no implementa SSO ni modifica autorizaciones. Publicación mediante los pipelines DEV propietarios de las aplicaciones.
