@@ -8,7 +8,8 @@ const args=process.argv.slice(2),at=args.indexOf('--infrastructure');
 const infrastructure=at===-1?path.resolve(root,'../mastererp-infrastructure'):path.resolve(args[at+1]);
 const source='frontend/shared/module-launcher/module-launcher.mjs';
 const target=path.join(infrastructure,'modules/2.6-agent-center/agents-static/shared');
-const bytes=await readFile(path.join(root,source));
+// Hash canonical LF bytes so Windows checkouts match Git/GitHub Actions.
+const bytes=Buffer.from((await readFile(path.join(root,source),'utf8')).replace(/\r\n/g,'\n'),'utf8');
 const manifest={sourceRepository:'eticayservicios/mastererp-platform',sourcePath:source,sha256:createHash('sha256').update(bytes).digest('hex'),generated:true};
 if(args.includes('--check')){
  const copy=await readFile(path.join(target,'module-launcher.mjs'));
