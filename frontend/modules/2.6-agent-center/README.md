@@ -58,3 +58,7 @@ El workflow propietario prepara HTML, lanzador, Inter y licencia desde Platform.
 ## Autenticacion del publicador
 
 El workflow usa OIDC con el rol existente `mastererp-dev-agents-frontend-github-role`, sin claves AWS permanentes. La confianza se limita al subject inmutable `repo:eticayservicios@144081289/mastererp-platform@1434968316:ref:refs/heads/dev` y audiencia `sts.amazonaws.com`. Infrastructure administra esa confianza en el stack `mastererp-dev-agents-frontend`. Se conservan permisos, bucket y distribucion existentes. Las variables de hosting son `AGENTS_UONIFY_BUCKET` y `AGENTS_UONIFY_DISTRIBUTION_ID`.
+
+## Contenido adaptable
+
+El contenido aprovecha el ancho disponible del panel y usa consultas de contenedor para reorganizar indicadores (cuatro, dos o una columna), tarjetas y etiquetas del catalogo. Las acciones y textos se ajustan sin recortar contenido. Este ajuste conserva el comportamiento del sidebar y no habilita operaciones nuevas.

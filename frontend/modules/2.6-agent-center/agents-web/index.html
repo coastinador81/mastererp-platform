@@ -34,6 +34,38 @@
       .app.menu-open .nav-scrim{display:block;position:fixed;inset:calc(var(--header) + 84px) 0 0;background:#17243b33;border:0;z-index:37;cursor:pointer}
       .main{padding:28px 16px 48px}.intro{display:block}.intro .primary{margin-top:22px}.intro h1,.view h1{font-size:27px}.metrics,.grid{grid-template-columns:1fr}.empty{padding:24px;min-height:220px}
     }
+
+    /* Content responds to its available width, independently of sidebar navigation. */
+    .content-pane{container-type:inline-size}
+    .main .view{max-width:none;min-width:0}
+    .main :is(.intro>div,.metric,.panel,.agent>div){min-width:0}
+    .main :is(h1,h2,h3,p,small,.badge,.links button){overflow-wrap:anywhere}
+    .main .intro{flex-wrap:wrap;align-items:flex-start}
+    .main .intro>div{flex:1 1 420px}
+    .main .primary{max-width:100%;white-space:normal;justify-content:center;flex-shrink:0}
+    .main .metrics{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .main .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .main .agent{grid-template-columns:40px minmax(0,1fr) auto}
+    .main .links button{width:100%;font:inherit}
+    @container(max-width:1050px){
+      .main .metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .main .intro{gap:20px}
+    }
+    @container(max-width:720px){
+      .main .grid{grid-template-columns:minmax(0,1fr)}
+      .main .intro{display:block}
+      .main .intro .primary{margin-top:20px}
+      .main .panel{padding:20px}
+    }
+    @container(max-width:480px){
+      .main{padding:24px 16px 40px}
+      .main .metrics{grid-template-columns:minmax(0,1fr)}
+      .main .metric{min-height:0;padding:16px}
+      .main .intro h1,.main .view h1{font-size:26px;line-height:1.25}
+      .main .agent{grid-template-columns:38px minmax(0,1fr);gap:8px 12px}
+      .main .agent .badge{grid-column:2;justify-self:start;max-width:100%}
+      .main .empty{margin-top:24px;padding:20px;min-height:0}
+    }
   </style>
 </head>
 <body><a class="skip" href="#content">Saltar al contenido</a><div class="app">
