@@ -1,8 +1,9 @@
 import { useState, type FormEvent } from 'react';
+import { Link } from 'react-router';
 import productosCss from '../../styles/pages/productos.css?inline';
 import partnersCss from '../../styles/pages/partners.css?inline';
 import { viewSheets } from '../../styles/sheets';
-import { PUBLIC_VIEWS } from '../../model/views';
+import { PATHS, PUBLIC_VIEWS } from '../../model/views';
 import { PageFooter, SITE_FOOTER_LINKS } from '../common/PageFooter';
 import { PageHeader } from '../common/PageHeader';
 import { PublicView } from '../common/PublicView';
@@ -68,7 +69,7 @@ export function PartnersPage() {
                     : <span className="plogo-name">{partner.name}</span>}
                 </div>
                 <h3>{partner.name}</h3>
-                <p className="pmeta">{partner.country} · Distribuidor oficial</p>
+                <p className="pmeta">{partner.country} · Partner autorizado</p>
               </article>
             ))}
           </div>
@@ -84,11 +85,11 @@ export function PartnersPage() {
             <div className="pform-grid">
               <div className="pfield pfield-full"><label htmlFor="pf-empresa">Empresa <span className="req">*</span></label><input id="pf-empresa" name="empresa" required /></div>
               <div className="pfield"><label htmlFor="pf-pais">País o territorio <span className="req">*</span></label><input id="pf-pais" name="pais" required /></div>
-              <div className="pfield"><label htmlFor="pf-web">Sitio web</label><input id="pf-web" name="web" inputMode="url" placeholder="https://" /></div>
+              <div className="pfield"><label htmlFor="pf-web">Sitio web (opcional)</label><input id="pf-web" name="web" inputMode="url" placeholder="https://" /></div>
               <div className="pfield"><label htmlFor="pf-contacto">Persona de contacto <span className="req">*</span></label><input id="pf-contacto" name="contacto" required /></div>
-              <div className="pfield"><label htmlFor="pf-cargo">Cargo</label><input id="pf-cargo" name="cargo" /></div>
+              <div className="pfield"><label htmlFor="pf-cargo">Cargo (opcional)</label><input id="pf-cargo" name="cargo" /></div>
               <div className="pfield"><label htmlFor="pf-email">Email corporativo <span className="req">*</span></label><input id="pf-email" name="email" type="email" required /></div>
-              <div className="pfield"><label htmlFor="pf-tel">Teléfono</label><input id="pf-tel" name="telefono" inputMode="tel" /></div>
+              <div className="pfield"><label htmlFor="pf-tel">Teléfono (opcional)</label><input id="pf-tel" name="telefono" inputMode="tel" /></div>
               <div className="pfield pfield-full"><label htmlFor="pf-tipo">Tipo de colaboración</label>
                 <select id="pf-tipo" name="tipo" defaultValue="Implantación y onboarding">
                   <option>Implantación y onboarding</option>
@@ -101,11 +102,23 @@ export function PartnersPage() {
             <div className="pf-trap" aria-hidden="true">
               <label>No rellenar este campo<input tabIndex={-1} autoComplete="off" name="website_url" /></label>
             </div>
-            <label className="pconsent"><input type="checkbox" name="consentimiento" required /><span>Acepto que Uonify trate mis datos para gestionar esta solicitud, según su política de privacidad.</span></label>
+            <label className="pconsent"><input type="checkbox" name="consentimiento" required /><span>He leído la información de protección de datos y acepto que Uonify trate mis datos para gestionar mi solicitud de Partner y ponerse en contacto conmigo.</span></label>
             <div className="pf-actions"><button className="button primary" type="submit">Enviar solicitud</button></div>
             {sent && <p className="pf-sent" role="status">Gracias. Hemos recibido tu solicitud; te responderemos por correo.</p>}
             <p className="pf-note">Tu solicitud llega a nuestro equipo de partners. Protección antispam sin rastreadores de terceros.</p>
           </form>
+          <div className="pform-dp" aria-label="Información de protección de datos">
+            <h3>Protección de datos</h3>
+            <p>Responsable: ETHICS CLOUD &amp; SECURITY SERVICES LLC, 4572 NW 114th Ave 1301, Doral, Florida 33178, EE.&nbsp;UU. Representante en la UE (art.&nbsp;27 RGPD): DataRep (Data Protection Representative Limited), Irlanda; puedes contactarlo en el formulario de <a className="text-link" href="https://www.datarep.com/data-request/" target="_blank" rel="noopener noreferrer">datarep.com/data-request</a> o en datarequest@datarep.com, indicando que tu solicitud es para Uonify. Contacto: privacidad@uonify.com.</p>
+            <ul>
+              <li><strong>Finalidad:</strong> gestionar y evaluar tu solicitud para ser Partner autorizado y ponernos en contacto contigo.</li>
+              <li><strong>Base jurídica:</strong> la aplicación de medidas precontractuales a petición tuya y nuestro interés legítimo en evaluar posibles colaboraciones.</li>
+              <li><strong>Destinatarios:</strong> no cedemos tus datos; solo los tratan, por nuestra cuenta, los proveedores que nos dan alojamiento y correo. Tu solicitud se envía a partners@uonify.com.</li>
+              <li><strong>Conservación:</strong> durante la evaluación y, si no hay colaboración, hasta 1 año para atender consultas relacionadas; si colaboramos, mientras dure la relación y los plazos legales. Guardamos la fecha, tu dirección IP (o un valor equivalente) y la versión de este texto para acreditar tu solicitud.</li>
+              <li><strong>Tus derechos:</strong> acceso, rectificación, supresión, oposición, limitación y portabilidad, escribiendo a privacidad@uonify.com; y reclamar ante la autoridad de control (en España, la AEPD, aepd.es). Estés donde estés, puedes ejercer los derechos que te reconozca tu ley.</li>
+              <li>Más información en la <Link className="text-link" to={PATHS.privacidad}>Política de privacidad</Link>.</li>
+            </ul>
+          </div>
         </section>
       </main>
       <PageFooter links={SITE_FOOTER_LINKS} note="Uonify · Programa de partners." />

@@ -2,7 +2,7 @@ import productosCss from '../../styles/pages/productos.css?inline';
 import preciosCss from '../../styles/pages/precios.css?inline';
 import { viewSheets } from '../../styles/sheets';
 import { PATHS, PUBLIC_VIEWS } from '../../model/views';
-import { formatEuros, MONTHLY_NET_EUR, MONTHLY_PRICE_EUR, YEARLY_PRICE_EUR } from '../../model/seo/plans';
+import { formatEuros, MONTHLY_NET_EUR, MONTHLY_PRICE_EUR, YEARLY_NET_EUR, YEARLY_PRICE_EUR } from '../../model/seo/plans';
 import { HomeLink } from '../common/HomeLink';
 import { PageFooter, SITE_FOOTER_LINKS } from '../common/PageFooter';
 import { PageHeader } from '../common/PageHeader';
@@ -23,7 +23,7 @@ const INCLUDES: readonly string[] = [
 const FAQ: ReadonlyArray<{ q: string; a: string }> = [
   { q: '¿Hay un plan gratuito?', a: 'No. Uonify es de pago desde que entras. Tienes 14 días para darte de baja: te devolvemos tu cuota, menos los días que la hayas usado.' },
   { q: '¿Cómo me doy de baja?', a: 'Desde tu cuenta, cuando quieras. En los primeros 14 días te devolvemos tu cuota menos los días que la hayas usado; después, conservas el acceso hasta el final del periodo que ya pagaste.' },
-  { q: '¿El pago anual es más barato?', a: 'Es el mismo precio: 143,75 € al año equivale a 11,98 € al mes (IVA de España incluido). Eliges cómo prefieres pagar.' },
+  { q: '¿El pago anual es más barato?', a: 'Es el mismo precio: 118,80 € al año + IVA equivale a 9,90 € al mes + IVA. En España, 143,75 € al año o 11,98 € al mes con el IVA incluido. Eliges cómo prefieres pagar.' },
   { q: '¿Cuánto cuesta un vídeo o una imagen?', a: 'Depende de la pieza. Uony te enseña el precio máximo en euros antes de crearla, y lo pagas a Google con tu proyecto.' },
   { q: '¿Necesito una cuenta de Google?', a: 'Sí, para crear imágenes y vídeos y para trabajar con tus archivos de Google Drive. Entras en Uonify con tu cuenta de Google.' },
 ];
@@ -52,10 +52,10 @@ export function PreciosPage() {
             <h2 className="plan-name">Uonify</h2>
             <p className="plan-tag">Todas las herramientas y Uony.</p>
             <div className="amounts">
-              <span className="amount">{formatEuros(MONTHLY_PRICE_EUR)}<small> / mes</small></span>
-              <span className="year">o {formatEuros(YEARLY_PRICE_EUR)} al año</span>
+              <span className="amount">{formatEuros(MONTHLY_NET_EUR)}<small> / mes + IVA</small></span>
+              <span className="year">o {formatEuros(YEARLY_NET_EUR)} al año + IVA</span>
             </div>
-            <p className="vat">IVA de España incluido. El precio final con el IVA de tu país se muestra antes de pagar.</p>
+            <p className="vat">En España, {formatEuros(MONTHLY_PRICE_EUR)} al mes ({formatEuros(YEARLY_PRICE_EUR)} al año) con el IVA incluido. El precio final con el IVA de tu país se muestra antes de pagar.</p>
             <p className="vat vat-business">{formatEuros(MONTHLY_NET_EUR)} al mes sin IVA para empresas con número de IVA válido.</p>
             <ul className="includes">
               {INCLUDES.map(item => <li key={item}>{item}</li>)}
