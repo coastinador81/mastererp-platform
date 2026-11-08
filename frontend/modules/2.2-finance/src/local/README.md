@@ -56,3 +56,9 @@ El comparativo IA → nodo → Compras muestra cantidad, precio, proveedor y tot
 Límites técnicos del prototipo: unidades enteras positivas hasta 1.000.000, precio positivo hasta 1.000.000 con dos decimales, proveedor de hasta 160 caracteres. Cálculo monetario por céntimos, sin impuestos ni conversión. Estos límites no definen políticas comerciales del backend. La elección de proveedor es texto DEMO, no un maestro conectado. Agregar/quitar productos, reglas IA, identidades, permisos y persistencia siguen pendientes.
 
 No se crea una orden de compra real ni se ejecutan servicios. Todas las versiones se pierden al recargar. La publicación del candidato se realiza mediante el pipeline de Finanzas; no conecta servicios ni persiste datos.
+
+## Filtros de Compras
+
+La lista demo de Compras utiliza filtros compactos y automaticos: Nodo, fechas, moneda y busqueda se aplican al cambiar, sin boton Aplicar. La busqueda propone referencias, proveedores y conceptos de los ejemplos que respetan el resto de filtros; permite elegir con mouse o flechas/Enter y cerrar con Escape. Un rango de fechas invalido conserva los ultimos resultados validos y lo indica sin borrar lo escrito. Los filtros mantienen el orden Nodo, Desde, Hasta, Estado, Moneda y buscador; Nodo siempre va primero. El titulo accesible de la tabla no se muestra como texto duplicado. No se muestran Aplicar, Restablecer, avisos de actualizacion automatica ni la linea de resumen de filtros. Cada filtro se limpia desde su propio control; la moneda inicial sigue siendo Bs. Ordenes conserva su comportamiento anterior. Solo frontend demo: no hay consultas ni persistencia backend.
+
+Estado filtra automaticamente y ofrece los estados presentes en los documentos demo, sin inventar transiciones ni modificar documentos. Los controles comparten margenes y alturas para mantener el buscador alineado.
