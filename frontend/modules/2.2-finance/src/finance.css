@@ -354,3 +354,5 @@
  .finance-app .integrated-layout:has(>.finance-service-rail):has(>.integrated-nav:is(:hover,:focus-within,.is-open)){grid-template-columns:72px 256px minmax(0,1fr)}
 }
 @media(prefers-reduced-motion:reduce){.finance-app .integrated-layout{transition:none}}
+
+.finance-app .integrated-nav:not(:hover,:focus-within,.is-open) .finance-real-links{display:none}
