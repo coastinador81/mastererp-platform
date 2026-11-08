@@ -33,4 +33,24 @@
   --finance-error-text: #B3261E;      /* Error */
   --finance-error-surface: #FCECEC;   /* tinte de error claro */
   --finance-error-border: #F0C9C9;    /* borde de error claro */
+
+  /* Datos técnicos (código, NIF, teléfono, IDs, cifras) en monoespaciada (§14). Las pantallas lo aplican con
+     var(--finance-mono, var(--finance-font)): bajo uonify-brand = mono; sin la clase = Inter. Nota: JetBrains
+     Mono aún no está autohospedada (la carpeta de fuentes la comparte Inventario); se usa la pila mono del
+     sistema hasta añadir su woff2. */
+  --finance-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+}
+
+/* Iconos de KPI neutros (el manual: el color no decora; un acento por pantalla). Se neutralizan solo bajo
+   uonify-brand, conservando las clases de color del tema base para una reversión limpia. Mayor especificidad
+   (0,4,0) que `.purchase-indicator-icon.blue` (0,2,0), sin !important. */
+:root.finance-app.uonify-brand .purchase-indicator-icon {
+  background: var(--finance-table-header);
+  color: var(--finance-muted);
+}
+
+/* Datos técnicos en monoespaciada (§14): código, NIF, teléfono y demás celdas marcadas con «finance-tech». */
+:root.finance-app.uonify-brand .finance-tech {
+  font-family: var(--finance-mono);
+  font-variant-numeric: tabular-nums;
 }
