@@ -346,3 +346,11 @@
  .finance-app .context-controls>button{padding:8px;font-size:12px}
  .finance-app .context-controls .purchases-local-badge{display:none}
 }
+
+/* Desktop expansion reserves space; container queries reflow the central content. */
+@media(min-width:801px){
+ .finance-app .integrated-layout{transition:grid-template-columns 180ms ease}
+ .finance-app .integrated-layout:has(>.integrated-nav:is(:hover,:focus-within,.is-open)){grid-template-columns:256px minmax(0,1fr)}
+ .finance-app .integrated-layout:has(>.finance-service-rail):has(>.integrated-nav:is(:hover,:focus-within,.is-open)){grid-template-columns:72px 256px minmax(0,1fr)}
+}
+@media(prefers-reduced-motion:reduce){.finance-app .integrated-layout{transition:none}}
