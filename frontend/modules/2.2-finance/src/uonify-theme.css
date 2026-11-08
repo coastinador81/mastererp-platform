@@ -1,0 +1,107 @@
+/* Capa de tema «uonify-brand» de Finanzas (2.2-finance).
+   Re-mapea los tokens --finance-* a la paleta del manual de identidad de Uonify
+   (modules/0-uonify/identidad-corporativa/Uonify_Identidad_Corporativa.pdf), SIN editar finance.css
+   y SIN afectar a otras apps. Excepción del propietario (08-11-2026) documentada en el README.md de la
+   raíz y en frontend/AGENTS.md. Alcance: fase 1 (solo visual), Finanzas independiente (finanzas-dev).
+
+   Se activa SOLO con la clase marcadora «uonify-brand» en el <html> de 2.2-finance; Ecommerce (que también
+   usa .finance-app) NO la lleva y conserva sus tokens. El selector tiene más especificidad (dos clases) que
+   «:root.finance-app» y la hoja se importa DESPUÉS de finance.css. Solo cambian COLORES: el espaciado
+   (retícula de 8), los radios (8/12) y la tipografía (Inter) del tema base ya cumplen el manual. */
+/* JetBrains Mono autohospedada (manual §14) para datos técnicos y cifras bajo uonify-brand.
+   Fuente oficial: JetBrains/JetBrainsMono v2.304, licencia SIL OFL 1.1 (ver ./uonify-fonts/OFL.txt).
+   Carpeta propia de 2.2-finance, fuera de src/assets/fonts. font-display: swap para no bloquear el render.
+   Definir la familia aquí no la aplica: solo se usa vía --finance-mono, que ya es «JetBrains Mono, …». */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./uonify-fonts/JetBrainsMono-Regular.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('./uonify-fonts/JetBrainsMono-Medium.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('./uonify-fonts/JetBrainsMono-SemiBold.woff2') format('woff2');
+}
+
+:root.finance-app.uonify-brand {
+  /* Texto y superficies: Tinta para titulares; Neutros del manual para cuerpo y apoyo. */
+  --finance-text: #474A51;            /* Neutro 700 · cuerpo */
+  --finance-muted: #66696F;           /* Neutro 600 · secundario */
+  --finance-title: #0A0B0D;           /* Tinta · titulares */
+  --finance-background: #F8FAFE;      /* Neutro 50 */
+  --finance-surface: #FFFFFF;         /* Blanco */
+  --finance-table-header: #F0F2F6;    /* Neutro 100 */
+  --finance-border: #E1E3E8;          /* Neutro 200 */
+  --finance-control-border: #CACCD1;  /* Neutro 300 */
+
+  /* Azul = estructura y acción. Este token se usa como relleno Y como texto (migas, panel IA), así que toma
+     Azul 600 #006AE1: cumple AA como texto sobre claro (regla del 600, §12) y como relleno con texto blanco
+     (5:1). El Azul Uonify #0178F7 se reserva al aro de foco (--finance-focus), que no es texto. */
+  --finance-primary: #006AE1;         /* Azul 600 */
+  --finance-primary-hover: #0052BC;   /* Azul 700 · hover */
+  --finance-accent: #77C3FF;          /* Azul 300 · acento/borde (no texto) */
+  --finance-selected: #E7F0FD;        /* tinte azul claro · fila/elemento seleccionado */
+  --finance-row-hover: #F4F7FC;       /* tinte neutro-azul · hover de fila */
+  --finance-focus: #0178F7;           /* Azul Uonify · aro de foco */
+
+  /* Estado de error: color semántico del manual (solo comunica estado, nunca decora). */
+  --finance-error-text: #B3261E;      /* Error */
+  --finance-error-surface: #FCECEC;   /* tinte de error claro */
+  --finance-error-border: #F0C9C9;    /* borde de error claro */
+
+  /* Datos técnicos (código, NIF, teléfono, IDs, cifras) en monoespaciada (§14). Las pantallas lo aplican con
+     var(--finance-mono, var(--finance-font)): bajo uonify-brand = mono; sin la clase = Inter. Nota: JetBrains
+     Mono aún no está autohospedada (la carpeta de fuentes la comparte Inventario); se usa la pila mono del
+     sistema hasta añadir su woff2. */
+  --finance-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+
+  /* Acento de IA = aqua (manual §16: aqua solo para IA; sobre claro el texto/icono IA usa Aqua 600, §12). */
+  --finance-ai-text: #008376;   /* Aqua 600 */
+  --finance-ai-tint: #E9FBF7;   /* tinte aqua claro (fondo IA) */
+  --finance-ai-line: #BFEDE5;   /* borde aqua claro */
+}
+
+/* Iconos de KPI neutros (el manual: el color no decora; un acento por pantalla). Se neutralizan solo bajo
+   uonify-brand, conservando las clases de color del tema base para una reversión limpia. Mayor especificidad
+   (0,4,0) que `.purchase-indicator-icon.blue` (0,2,0), sin !important. */
+:root.finance-app.uonify-brand .purchase-indicator-icon {
+  background: var(--finance-table-header);
+  color: var(--finance-muted);
+}
+
+/* Datos técnicos en monoespaciada (§14): código, NIF, teléfono y demás celdas marcadas con «finance-tech». */
+:root.finance-app.uonify-brand .finance-tech {
+  font-family: var(--finance-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Panel «Asistente IA» = Uony (incremento 3). El acento de IA pasa a aqua y el isotipo «ON» (SVG oficial) marca
+   la IA. Solo override bajo uonify-brand; finance.css no se toca. El aqua solo tiñe superficies; el texto/icono
+   de IA sobre claro usa Aqua 600 (§12 asimetría). */
+:root.finance-app.uonify-brand .finance-assistant-toggle img,
+:root.finance-app.uonify-brand .finance-assistant-symbol img { display: block; width: 22px; height: auto; }
+:root.finance-app.uonify-brand .finance-assistant-toggle[aria-expanded="true"] {
+  color: var(--finance-ai-text);
+  background: var(--finance-ai-tint);
+  border-color: var(--finance-ai-line);
+}
+:root.finance-app.uonify-brand .finance-assistant-symbol {
+  background: var(--finance-ai-tint);
+  color: var(--finance-ai-text);
+}
+:root.finance-app.uonify-brand .finance-assistant-empty > img { display: block; width: 30px; height: auto; }
+:root.finance-app.uonify-brand .finance-assistant-empty > span {
+  background: var(--finance-ai-tint);
+  color: var(--finance-ai-text);
+}

@@ -13,4 +13,4 @@ h1 { color: #102b40; font-size: clamp(32px,5vw,46px); line-height: 1.14; letter-
 h2 { margin-top: 32px; font-size: 20px; color: #18394f; }
 p { font-size: 15px; }
 .back { display: inline-block; margin-top: 22px; font-weight: 650; }
-:focus-visible { outline: 3px solid #0875f5; outline-offset: 5px; }
+:focus-visible { outline: 3px solid #0178f7; outline-offset: 5px; }

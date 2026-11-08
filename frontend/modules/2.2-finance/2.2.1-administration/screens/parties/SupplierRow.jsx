@@ -19,10 +19,10 @@ export default function SupplierRow({row,path,navigate}) {
     navigate(path);
   };
   return <tr className="supplier-row" onClick={openRow}>
-    <td>{row.codigo}</td>
+    <td className="finance-tech">{row.codigo}</td>
     <td><a className="supplier-name" href={'#'+path} onClick={openName}>{row.nombre}</a></td>
-    <td>{row.datos_generales?.numero_identificacion||'—'}</td>
+    <td className="finance-tech">{row.datos_generales?.numero_identificacion||'—'}</td>
     <td>{row.datos_generales?.email||'—'}</td>
-    <td>{row.datos_generales?.telefono||'—'}</td>
+    <td className="finance-tech">{row.datos_generales?.telefono||'—'}</td>
   </tr>;
 }

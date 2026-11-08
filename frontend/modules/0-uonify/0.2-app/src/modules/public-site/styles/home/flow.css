@@ -78,7 +78,7 @@ html:has(.access-dialog[open]) { overflow: hidden; }
 .consent-line { display: flex; align-items: start; gap: 10px; margin: 20px 0; color: #344e63; font-size: 12px; line-height: 1.6; cursor: pointer; }
 .consent-line input { margin-top: 2px; }
 .loading-state { display: flex; align-items: center; justify-content: center; gap: 13px; min-height: 130px; color: #315873; font-size: 13px; }
-.flow-spinner { width: 20px; height: 20px; border: 2px solid #c9dff0; border-top-color: #0875f5; border-radius: 50%; animation: spin .8s linear infinite; }
+.flow-spinner { width: 20px; height: 20px; border: 2px solid #c9dff0; border-top-color: #0178f7; border-radius: 50%; animation: spin .8s linear infinite; }
 .error-callout { padding: 16px; margin: 20px 0 25px; color: #81352e; background: #fff3f0; border: 1px solid #edd0c9; border-radius: 11px; font-size: 12px; line-height: 1.6; }
 @keyframes spin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .flow-spinner { animation: none; } }

@@ -3,8 +3,8 @@
    Azul = estructura; aqua SOLO para IA; un botón sólido por vista; radios 4/8/12/16. */
 
 :root {
-  --blue: #096bdc;
-  --blue-dark: #064fa7;
+  --blue: #0178f7;        /* Azul rector (identidad, §10) — foco y degradado; no es texto */
+  --blue-dark: #0052bc;   /* Azul 700 — acción fuerte / hover */
   --aqua: #35d5c4;
   --ink: #152438;
   --text: #34445a;
@@ -18,8 +18,8 @@
 
 :root {
   /* Brand (new frontend tokens, aligned with the manual) */
-  --pim-blue: var(--blue, #096bdc);           /* structure, primary action */
-  --pim-blue-strong: var(--blue-dark, #064fa7);
+  --pim-blue: #006ae1;                        /* Azul 600 — acción y texto sobre claro (AA, regla del 600 §12) */
+  --pim-blue-strong: var(--blue-dark, #0052bc);
   --pim-blue-tint: #eaf3ff;                   /* selected, info background */
   --pim-blue-line: #cfe2f8;
   --pim-aqua: var(--aqua, #35d5c4);           /* AI: backgrounds and fills only */
@@ -27,7 +27,7 @@
   --pim-ai-strong: #00695e;                   /* Aqua 700 */
   --pim-ai-tint: #e9faf7;                     /* AI surface */
   --pim-ai-line: #a9eadf;
-  --pim-ai-gradient: linear-gradient(90deg, var(--pim-blue) 0%, var(--pim-aqua) 100%); /* AI progress / live */
+  --pim-ai-gradient: linear-gradient(90deg, var(--blue) 0%, var(--pim-aqua) 100%); /* AI progress / live (azul rector -> aqua) */
   /* Neutrals */
   --pim-ink: var(--ink, #152438);
   --pim-text: var(--text, #34445a);
@@ -48,7 +48,7 @@
   --pim-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   --pim-ease: cubic-bezier(0.2, 0, 0, 1);
   --pim-fast: 120ms; --pim-mid: 200ms; --pim-slow: 320ms;
-  --pim-focus: 0 0 0 2px var(--pim-surface), 0 0 0 4px var(--pim-blue);
+  --pim-focus: 0 0 0 2px var(--pim-surface), 0 0 0 4px var(--blue); /* aro de foco = azul rector */
   --pim-shadow-float: 0 12px 32px #15243824;   /* menus, modals, toasts only */
 }
 

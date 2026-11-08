@@ -22,9 +22,9 @@
 .finance-sales .sales-pagination>div{display:flex;gap:10px}
 .finance-sales button.secondary{font:inherit;background:#fff;color:var(--finance-text,#4B5563);border:1px solid var(--finance-control-border,#D8E2F0);border-radius:10px;padding:10px 16px;box-shadow:none;text-transform:none}
 .finance-sales button.secondary:hover:not(:disabled){background:var(--finance-row-hover,#F1F6FD)}
-.finance-sales button:disabled{cursor:default;color:#667085;background:#F8FAFD}
+.finance-sales button:disabled{cursor:default;color:var(--finance-muted);background:var(--finance-background)}
 .finance-sales .sales-empty{padding:24px 16px;margin:0}
-.finance-sales .sale-money{white-space:nowrap;text-align:right}
+.finance-sales .sale-money{white-space:nowrap;text-align:right;font-family:var(--finance-mono,var(--finance-font))}
 .finance-sales .sale-badge{display:inline-block;font-size:12px;line-height:1.5;font-weight:400;border-radius:20px;padding:4px 10px;background:#EDF7F1;color:#356548;white-space:nowrap}
 .finance-sales .sale-badge.cancelled{background:#F1F3F6;color:#596273}
 .finance-sales .sales-back{display:inline-block;margin-bottom:20px;color:var(--finance-primary,#096BDC);text-decoration:none}
@@ -33,7 +33,7 @@
 .finance-sales .sales-fields{display:grid;grid-template-columns:minmax(120px,1fr) minmax(0,2fr);gap:14px 20px;margin:12px 0 0;font-size:14px}
 .finance-sales .sales-fields dt{font-weight:400;color:var(--finance-muted,#667085)}
 .finance-sales .sales-fields dd{margin:0;font-weight:400;overflow-wrap:anywhere}
-.finance-sales .sale-grand-total{font-size:30px;font-weight:500;color:var(--finance-title,#374151);overflow-wrap:anywhere}
+.finance-sales .sale-grand-total{font-size:30px;font-weight:500;color:var(--finance-title,#374151);overflow-wrap:anywhere;font-family:var(--finance-mono,var(--finance-font))}
 .finance-sales .sale-grand-total span{font-size:16px;font-weight:400}
 .finance-sales .sales-lines table{min-width:900px}
 @media(max-width:760px){.finance-sales .sales-summary-grid{grid-template-columns:minmax(0,1fr)}.finance-sales .panel{padding:16px}.finance-sales .sales-fields{grid-template-columns:minmax(0,1fr);gap:5px}.finance-sales .sales-fields dd{margin-bottom:12px}.finance-sales .sales-heading{align-items:start}.finance-sales .sales-heading h1{font-size:26px}}

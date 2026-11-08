@@ -7,6 +7,10 @@ import { EmbeddedCheckout } from './EmbeddedCheckout';
 import { onboardingMoney as money, type CheckoutStatus, type EmbeddedCheckoutSession, type OnboardingInterval, type OnboardingOffer } from '../model/onboarding';
 import '../styles/onboarding-subscription.css';
 
+/** Aviso pre-contractual de cobros adicionales (texto final de Legal). Se muestra en el paso de pago,
+ *  antes de suscribirse; nunca en la página de precios. La cláusula completa vive en los Términos. */
+const AVISO_PRECONTRACTUAL = 'La suscripción incluye los servicios de Uonify. Algunos servicios pueden ofrecer recursos adicionales de pago, siempre opcionales y con tu confirmación previa; verás el precio con impuestos antes de pagar.';
+
 interface Props {
   account: string;
   onContinue?: () => Promise<void>;
@@ -127,7 +131,7 @@ function SubscriptionStep({ account, onContinue, onBack, compact = false, onProg
     <legend>Elige tu modalidad</legend>
     {(['annual', 'monthly'] as const).map(value => <label key={value} className={interval === value ? 'is-selected' : ''}>
       <input type="radio" name="uonify-interval" value={value} checked={interval === value} onChange={() => { setChoice(value); setAccepted(false); setMessage(''); }} />
-      <span><strong>{value === 'annual' ? 'Anual' : 'Mensual'}</strong><span>{money(value === 'annual' ? data.offer.annualCents : data.offer.monthlyCents)} + IVA / {value === 'annual' ? 'año' : 'mes'}</span></span>
+      <span><strong>{value === 'annual' ? 'Anual' : 'Mensual'}</strong><span>{money(value === 'annual' ? data.offer.annualCents : data.offer.monthlyCents)} al {value === 'annual' ? 'año' : 'mes'} + IVA</span></span>
     </label>)}
   </fieldset>;
   if (session) return <section className="bil-onboard-offer bil-onboard-payment" data-activation-payment="true" aria-label="Tu suscripción Uonify">
@@ -168,7 +172,7 @@ function SubscriptionStep({ account, onContinue, onBack, compact = false, onProg
         <h3>Autoriza tu suscripción</h3>
         <p><strong>Hoy {trial ? money(0) : total === null ? `${money(price)} + IVA` : money(total)}.</strong> {trial ? `Tras los ${data.offer.trialDays} días de prueba: ` : 'Renovaciones: '}{total === null ? `${money(price)} + IVA` : `${money(total)} con IVA`} / {period}.</p>
         <label className="bil-onboard-consent"><input type="checkbox" checked={accepted} disabled={busy} onChange={event => setAccepted(event.target.checked)} /><span>Autorizo las renovaciones de esta suscripción. Puedo cancelarlas desde mi cuenta.</span></label>
-        <p>El consumo de Google se paga por separado.</p>
+        <p className="bil-onboard-legal">{AVISO_PRECONTRACTUAL}</p>
         <InformationDisclosure label="Pago seguro y condiciones"><p>Stripe recoge tu tarjeta de forma segura. Uonify no guarda sus datos. Verás la fecha del primer cobro antes de confirmar en Stripe.</p><p>{trial ? 'Si cancelas durante la prueba, no pagarás la suscripción.' : 'Al confirmar se cobrará el importe de hoy.'}</p></InformationDisclosure>
         <div className="bil-onboard-actions">
           <button className="uon-onboard-back" type="button" disabled={busy} onClick={() => { setAuthorizing(false); setAccepted(false); }} aria-label="Volver a las condiciones">Volver</button>
@@ -191,7 +195,7 @@ function SubscriptionStep({ account, onContinue, onBack, compact = false, onProg
     </dl>
     {data.taxScope === 'sandbox_fixed_21' && <p className="bil-onboard-test-note">Entorno de pruebas: IVA de ejemplo del 21 %. No se realizan cargos reales.</p>}
     {trial ? <p><strong>{data.offer.trialDays} días gratis de Uonify.</strong> Empiezan al confirmar en Stripe. Verás allí la fecha del primer cobro antes de aceptar. Si cancelas durante la prueba, no pagarás la suscripción. Te avisaremos {data.offer.reminderDays} días antes del primer cobro.</p> : <p><strong>Ya has utilizado la prueba gratuita.</strong> Al confirmar se cobrará el importe de hoy.</p>}
-    <p>El consumo de IA de Google y sus créditos se gestionan en tu cuenta de Google y se facturan por separado.</p>
+    <p className="bil-onboard-legal">{AVISO_PRECONTRACTUAL}</p>
     {data.checkoutMode !== 'hosted' && <label className="bil-onboard-consent"><input type="checkbox" checked={accepted} disabled={busy} onChange={event => setAccepted(event.target.checked)} /><span>Autorizo las renovaciones de esta suscripción. Puedo cancelarlas desde mi cuenta.</span></label>}
     {data.checkoutMode === 'hosted' ? <><p>Hay un pago anterior abierto. Puedes comprobar si terminó o cerrarlo para continuar aquí con el pago integrado.</p><button className="uon-profile-submit" disabled={busy} onClick={() => void changeInterval()}>Cerrar el pago anterior</button></> : <button className="uon-profile-submit" type="button" disabled={busy || (data.embeddedReady ? !accepted : saved)} aria-busy={busy || undefined} onClick={() => void prepare()}>{busy ? 'Preparando…' : !data.embeddedReady ? saved ? 'Modalidad guardada' : 'Guardar modalidad' : data.checkoutInterval ? 'Retomar pago seguro' : trial ? 'Continuar con la prueba' : 'Continuar con el pago'}</button>}
     {data.checkoutInterval && <>{data.checkoutMode !== 'hosted' && <button className="uon-onboard-back" disabled={busy} onClick={() => void changeInterval()}>Cambiar modalidad</button>}<button className="uon-onboard-back" disabled={busy} onClick={() => void refresh()}>Comprobar mi pago</button></>}
