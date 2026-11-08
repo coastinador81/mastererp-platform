@@ -8,6 +8,32 @@
    usa .finance-app) NO la lleva y conserva sus tokens. El selector tiene más especificidad (dos clases) que
    «:root.finance-app» y la hoja se importa DESPUÉS de finance.css. Solo cambian COLORES: el espaciado
    (retícula de 8), los radios (8/12) y la tipografía (Inter) del tema base ya cumplen el manual. */
+/* JetBrains Mono autohospedada (manual §14) para datos técnicos y cifras bajo uonify-brand.
+   Fuente oficial: JetBrains/JetBrainsMono v2.304, licencia SIL OFL 1.1 (ver ./uonify-fonts/OFL.txt).
+   Carpeta propia de 2.2-finance, fuera de src/assets/fonts. font-display: swap para no bloquear el render.
+   Definir la familia aquí no la aplica: solo se usa vía --finance-mono, que ya es «JetBrains Mono, …». */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./uonify-fonts/JetBrainsMono-Regular.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('./uonify-fonts/JetBrainsMono-Medium.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('./uonify-fonts/JetBrainsMono-SemiBold.woff2') format('woff2');
+}
+
 :root.finance-app.uonify-brand {
   /* Texto y superficies: Tinta para titulares; Neutros del manual para cuerpo y apoyo. */
   --finance-text: #474A51;            /* Neutro 700 · cuerpo */
