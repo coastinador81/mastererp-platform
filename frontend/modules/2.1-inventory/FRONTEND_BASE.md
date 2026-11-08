@@ -1,0 +1,34 @@
+# Base frontend de Inventario DEV
+
+Propietario: 2.1 Inventario, aplicación independiente. Entrada objetivo: https://inventario-dev.uonify.com. Esta entrega es únicamente base visual pública, sin datos personales, sesión simulada, llamadas API ni operaciones reales. No sustituye el componente funcional existente 2.1.1-inventory/src/Inventory.jsx ni su contrato.
+
+## Menú y navegación
+
+- Resumen.
+- Existencias: por producto y por sucursal.
+- Movimientos: entradas, salidas y transferencias.
+- Recepciones: pendientes y recibidas.
+- Conteos y ajustes: conteos físicos y ajustes.
+- Configuración.
+
+La aplicación conserva encabezado y menú al navegar con `?vista=...`; enlaces directos, recarga e historial nativos. Chat principal y lanzador abren en la misma pestaña. Menú responsive, Inter local, blanco/gris azulado y acentos azules del estándar UX/UI. Fuente e iconos se referencian desde las implementaciones existentes de Finanzas, sin duplicar archivos ni montar su aplicación.
+
+## Sucursal y Nodos
+
+Decisión del propietario de esta entrega: Nodos es una capacidad opcional de Ecommerce. Cada nodo representa por ahora una sucursal. Sin activación, el contrato objetivo es una sucursal predeterminada y ningún selector de nodos. La base no crea esa sucursal en backend ni presupone el tenant/empresa del usuario. Existencias por sucursal y transferencias muestran el requisito Nodos, sin habilitar operaciones ni simular activación.
+
+Al integrar servicios, Nodos activado permitirá Ecommerce e Inventario multinodo según permisos y contexto autorizado. Preparación pertenece a Ecommerce. Almacenes y ubicaciones internas quedan fuera de alcance. No se trasladan carpetas históricas 2.1.2-nodes/2.1.3-preparation en esta tarea ni se cambian contratos API/SQL por una decisión de menú; la transición organizativa queda pendiente y explícita.
+
+Maestro de productos reutilizado de Catálogo. Recepciones referenciará órdenes de Finanzas sin duplicar documentos ni generar deuda. Reglas, permisos y contratos pendientes antes de implementar operaciones.
+
+## Build y publicación
+
+Desde esta carpeta: `npm ci`, `npm run dev -- --port 5182 --strictPort`, `npm run build`. En este equipo se reutilizaron dependencias ya instaladas mediante un enlace local ignorado a node_modules de Finanzas; no es requisito de CI ni parte del commit.
+
+Pipeline preparado: `.github/workflows/publish-inventory-dev.yml`, rama dev, OIDC con rol exclusivo. Variables no secretas INVENTORY_DEV_BUCKET e INVENTORY_DEV_DISTRIBUTION_ID provienen de outputs del stack mastererp-dev-inventory-frontend. Artefacto dist; assets inmutables y entrada no-cache, invalidación CloudFront. No incluye APIs ni callback Cognito. El rol no tiene acceso a otros buckets/distribuciones. Publicar el workflow requiere commit/push explícitos; el bootstrap inicial puede publicar el mismo artefacto con AWS CLI, documentado en Infrastructure.
+
+Ver `docs/UX_UI_STANDARD.md` y `docs/FRONTEND_ARCHITECTURE.md` desde la raíz. La base visual no acredita inventario funcional, multinodo, autenticación ni autorización.
+
+## Verificación de esta entrega
+
+Publicado por bootstrap AWS CLI en https://inventario-dev.uonify.com, 2026-11-08. Build aprobado; navegación, recarga, historial y móvil probados localmente y en el dominio DEV. Sin llamadas API, sin selector de nodos. YAML/Bash del workflow validados, pero el workflow todavía no está publicado ni ejecutado. Validadores estructurales y git diff --check aprobados. Este resultado corresponde al bootstrap inicial, anterior a la publicación del código en dev. El commit de publicación incorpora también el pipeline OIDC y los accesos compartidos de Inventario y Chat principal.

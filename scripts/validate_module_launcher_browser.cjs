@@ -9,6 +9,7 @@ const root=path.resolve(__dirname,'..'),live=process.argv.includes('--live');
 const at=process.argv.indexOf('--output');
 const output=at<0?path.join(root,'frontend/modules/2.2-finance/node_modules/.cache/module-launcher'):path.resolve(process.argv[at+1]);
 const apps=[
+ {id:'inventory',name:'Inventario',origin:'https://inventario-dev.uonify.com',folder:path.join(root,'frontend/modules/2.1-inventory/dist'),index:'index.html'},
  {id:'finance',name:'Finanzas',origin:'https://finanzas-dev.uonify.com',folder:path.join(root,'frontend/modules/2.2-finance/dist'),index:'index.html'},
  {id:'ecommerce',name:'Ecommerce',origin:'https://ecom-dev.uonify.com',folder:path.join(root,'frontend/modules/2.3-ecommerce/dist'),index:'index.html'},
  {id:'agents',name:'Centro de Agentes',origin:'https://agentes-dev.uonify.com',folder:path.resolve(root,'../mastererp-infrastructure/modules/2.6-agent-center/agents-static'),index:'landing.html'},
@@ -54,12 +55,12 @@ async function serve(app){
    const host=page.locator('mastererp-module-launcher'),trigger=page.getByRole('button',{name:'Abrir módulos',exact:true});
    await trigger.click();
    const panel=page.getByRole('region',{name:'Módulos de MasterERP'});
-   assert.equal(await panel.locator('.tile').count(),11);
+   assert.equal(await panel.locator('.tile').count(),12);
    assert.equal(await panel.locator('[aria-current="true"]').innerText(),app.name+'\nEstás aquí');
-   assert.equal(await panel.locator('[aria-disabled="true"]').count(),8);
+   assert.equal(await panel.locator('[aria-disabled="true"]').count(),12-apps.length-1);
    const links=await panel.getByRole('link').evaluateAll(nodes=>nodes.map(node=>node.href).sort());
-   assert.deepEqual(links,apps.filter(other=>other!==app).map(other=>other.origin+'/').sort());
-   pass(app.id,'catalogue_current_app_two_real_links_eight_pending');
+   assert.deepEqual(links,[...apps.filter(other=>other!==app).map(other=>other.origin+'/'),'https://dev.uonify.com/'].sort());
+   pass(app.id,'catalogue_current_app_available_links_pending');
    await page.evaluate(()=>document.fonts.ready);
    await page.screenshot({path:path.join(output,app.id+'-desktop.png'),fullPage:true});
    await page.keyboard.press('Escape');assert.equal(await trigger.getAttribute('aria-expanded'),'false');
@@ -75,13 +76,13 @@ async function serve(app){
    await page.keyboard.press('Escape');
   }
   await page.setViewportSize({width:1440,height:1000});await page.goto(live?apps[0].origin:apps[0].local);
-  for(const destination of [apps[1],apps[2],apps[0]]){
+  for(const destination of [...apps.slice(1),apps[0]]){
    await page.getByRole('button',{name:'Abrir módulos',exact:true}).click();
    await page.getByRole('link',{name:destination.name+' Abrir aplicación',exact:true}).click();
    await page.waitForURL(url=>url.origin===(live?destination.origin:destination.local));
    await page.getByRole('button',{name:'Abrir módulos',exact:true}).waitFor();
   }
-  pass('cross-app','finance_ecommerce_agents_finance_same_tab');
+  pass('cross-app','all_available_apps_same_tab');
   assert.deepEqual(errors,[]);report.status='passed';
  }catch(error){report.status='failed';report.error=error.message;throw error;}
  finally{
