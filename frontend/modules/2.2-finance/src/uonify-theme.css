@@ -1,0 +1,36 @@
+/* Capa de tema «uonify-brand» de Finanzas (2.2-finance).
+   Re-mapea los tokens --finance-* a la paleta del manual de identidad de Uonify
+   (modules/0-uonify/identidad-corporativa/Uonify_Identidad_Corporativa.pdf), SIN editar finance.css
+   y SIN afectar a otras apps. Excepción del propietario (08-11-2026) documentada en el README.md de la
+   raíz y en frontend/AGENTS.md. Alcance: fase 1 (solo visual), Finanzas independiente (finanzas-dev).
+
+   Se activa SOLO con la clase marcadora «uonify-brand» en el <html> de 2.2-finance; Ecommerce (que también
+   usa .finance-app) NO la lleva y conserva sus tokens. El selector tiene más especificidad (dos clases) que
+   «:root.finance-app» y la hoja se importa DESPUÉS de finance.css. Solo cambian COLORES: el espaciado
+   (retícula de 8), los radios (8/12) y la tipografía (Inter) del tema base ya cumplen el manual. */
+:root.finance-app.uonify-brand {
+  /* Texto y superficies: Tinta para titulares; Neutros del manual para cuerpo y apoyo. */
+  --finance-text: #474A51;            /* Neutro 700 · cuerpo */
+  --finance-muted: #66696F;           /* Neutro 600 · secundario */
+  --finance-title: #0A0B0D;           /* Tinta · titulares */
+  --finance-background: #F8FAFE;      /* Neutro 50 */
+  --finance-surface: #FFFFFF;         /* Blanco */
+  --finance-table-header: #F0F2F6;    /* Neutro 100 */
+  --finance-border: #E1E3E8;          /* Neutro 200 */
+  --finance-control-border: #CACCD1;  /* Neutro 300 */
+
+  /* Azul = estructura y acción. Este token se usa como relleno Y como texto (migas, panel IA), así que toma
+     Azul 600 #006AE1: cumple AA como texto sobre claro (regla del 600, §12) y como relleno con texto blanco
+     (5:1). El Azul Uonify #0178F7 se reserva al aro de foco (--finance-focus), que no es texto. */
+  --finance-primary: #006AE1;         /* Azul 600 */
+  --finance-primary-hover: #0052BC;   /* Azul 700 · hover */
+  --finance-accent: #77C3FF;          /* Azul 300 · acento/borde (no texto) */
+  --finance-selected: #E7F0FD;        /* tinte azul claro · fila/elemento seleccionado */
+  --finance-row-hover: #F4F7FC;       /* tinte neutro-azul · hover de fila */
+  --finance-focus: #0178F7;           /* Azul Uonify · aro de foco */
+
+  /* Estado de error: color semántico del manual (solo comunica estado, nunca decora). */
+  --finance-error-text: #B3261E;      /* Error */
+  --finance-error-surface: #FCECEC;   /* tinte de error claro */
+  --finance-error-border: #F0C9C9;    /* borde de error claro */
+}
