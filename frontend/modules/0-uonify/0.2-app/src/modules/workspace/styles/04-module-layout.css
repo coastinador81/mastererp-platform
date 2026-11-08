@@ -1,0 +1,105 @@
+/* Espacio · logotipo, chat sin servicio y servicio con la conversación a la derecha.
+ * Origen: app-shell.css del prototipo (r25-r28, líneas 725-943), en el mismo orden.
+ * Los canales de venta del centro de la cabecera (.channel-*) son del módulo catalog.
+ */
+
+/* --- r25: product module, Google/Claude style ---------------------------- */
+/* Services launcher: fixed corner in every view; the menu opens right under it. */
+.services-menu { right: 12px; }
+
+/* Valores de móvil del bloque de 420 px que las reglas r25 anularían. */
+@media (max-width: 420px) {
+  .services-menu { right: 8px; }
+}
+
+/* --- r27: logo home button, chat view, Amazon channel ------------------------ */
+/* Uonify logo: always in the top-left corner; it starts a clean slate (signed in). */
+.topbar-left { display: flex; position: absolute; top: 12px; left: 16px; pointer-events: auto; }
+.workspace-brand { display: inline-flex; align-items: center; height: 38px; padding: 0 6px; border-radius: 10px; }
+.workspace-brand:hover { background: #f1f6fc; }
+.workspace-brand:focus-visible { outline: 2px solid #2977d5; outline-offset: 2px; }
+.workspace-brand img { width: 110px; height: auto; display: block; }
+.workspace:not(.is-home):not(.is-product) { padding-top: 76px; }
+
+/* Conversation without a module: Claude-style chat, messages above the composer. */
+.workspace-column.is-chat .workspace { flex: 0 0 0; padding: 0; overflow: hidden; }
+.workspace-column.is-chat .conversation-dock { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; width: min(calc(100% - 32px), 800px); margin: 0 auto 18px; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+.workspace-column.is-chat .conversation-header { display: none; }
+.workspace-column.is-chat .conversation-content { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; border-bottom: 0; }
+.workspace-column.is-chat .conversation-messages { flex: 1 1 auto; max-height: none; padding: 76px 4px 24px; }
+.workspace-column.is-chat .dock-composer-anchor .composer { border: 1px solid #d8e4f1; border-radius: 20px; box-shadow: 0 16px 40px #1d487112; }
+
+@media (max-width: 700px) {
+  .workspace:not(.is-home):not(.is-product) { padding-top: 68px; }
+  .workspace-brand img { width: 92px; }
+}
+
+/* --- r28: conversation on the right (VS Code style), channels in the header --- */
+/* Chat only: centred, as ChatGPT or Claude. With a module: header bar on top,
+   module on the left, conversation panel on the right. */
+.workspace-column.is-module { --chat-width: clamp(360px, 28vw, 440px); display: grid; grid-template-columns: minmax(0,1fr) var(--chat-width); grid-template-rows: 56px minmax(0,1fr); }
+.workspace-column.is-module.is-chat-hidden { grid-template-columns: minmax(0,1fr); }
+.workspace-column.is-module > .topbar { grid-column: 1 / -1; grid-row: 1; position: relative; height: 56px; display: flex; align-items: center; gap: 12px; padding: 0 12px 0 10px; border-bottom: 1px solid #e3ebf2; background: #fff; pointer-events: auto; }
+.workspace-column.is-module .topbar-left, .workspace-column.is-module .topbar-right { position: static; }
+.workspace-column.is-module .topbar-right { margin-left: auto; gap: 6px; }
+.workspace-column.is-module > .workspace { grid-column: 1; grid-row: 2; min-width: 0; }
+.workspace:not(.is-home):not(.is-product) { padding-top: 32px; }
+.workspace.is-product { container: module / inline-size; }
+
+/* Header: module name next to the logo; the services launcher stays in its corner. */
+.topbar-module { display: inline-flex; align-items: center; gap: 8px; min-width: 0; padding-left: 12px; border-left: 1px solid #e3ebf2; color: var(--ink); font-size: 14px; }
+.topbar-module img { width: 22px; height: 22px; object-fit: contain; }
+.topbar-module strong { font-weight: 650; white-space: nowrap; }
+.workspace-column.is-module .services-trigger { width: 36px; height: 36px; box-shadow: none; }
+.chat-panel-toggle { width: 36px; height: 36px; display: grid; place-items: center; padding: 0; border: 1px solid transparent; border-radius: 10px; background: transparent; color: #5b7287; }
+.chat-panel-toggle:hover { background: #edf3fb; color: var(--blue-dark); }
+.chat-panel-toggle[aria-expanded="true"] { color: var(--blue-dark); background: #edf5ff; border-color: #cfe2f7; }
+.chat-panel-toggle svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linejoin: round; }
+
+/* Centro de la cabecera: lo rellena el servicio (canales de Producto). */
+.topbar-center { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); z-index: 2; }
+
+/* The conversation panel. */
+.workspace-column.is-module > .conversation-dock { grid-column: 2; grid-row: 2; position: relative; min-width: 0; min-height: 0; display: flex; flex-direction: column; width: auto; margin: 0; border: 0; border-left: 1px solid #e3ebf2; border-radius: 0; background: #fbfcfe; box-shadow: none; container-type: inline-size; }
+.chat-panel-sash { display: none; }
+.workspace-column.is-module:not(.is-chat-sheet) .chat-panel-sash { display: block; position: absolute; z-index: 5; top: 0; bottom: 0; left: -4px; width: 8px; cursor: col-resize; touch-action: none; outline: none; }
+.chat-panel-sash::after { content: ''; position: absolute; top: 0; bottom: 0; left: 3px; width: 2px; background: transparent; transition: background .15s ease .1s; }
+.chat-panel-sash:hover::after, .chat-panel-sash:focus-visible::after, .chat-panel-sash.is-dragging::after { background: var(--blue); }
+.workspace-column.is-module .conversation-header { min-height: 46px; flex: 0 0 auto; padding: 6px 8px 6px 14px; border-bottom: 1px solid #e6ecf2; }
+.workspace-column.is-module .conversation-title { font-size: 13px; }
+.workspace-column.is-module .conversation-summary { display: block; color: var(--ink); font-weight: 650; }
+.conversation-actions { display: flex; align-items: center; gap: 2px; flex: 0 0 auto; }
+.conversation-action { width: 30px; height: 30px; display: grid; place-items: center; padding: 0; border: 0; border-radius: 8px; background: transparent; color: var(--muted); }
+.conversation-action:hover { background: #edf3fb; color: var(--ink); }
+.conversation-action svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.conversation-toggle[aria-expanded="true"] svg { transform: none; }
+.workspace-column.is-module .conversation-content { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; border-bottom: 0; }
+.workspace-column.is-module .conversation-messages { flex: 1 1 auto; max-height: none; padding: 16px 14px 12px; }
+.workspace-column.is-module .message { max-width: 88%; }
+.workspace-column.is-module .conversation-empty { max-width: 240px; line-height: 1.5; }
+.workspace-column.is-module .dock-composer-anchor { flex: 0 0 auto; padding: 0 10px 10px; }
+.workspace-column.is-module .dock-composer-anchor .composer { min-height: 0; gap: 7px; padding: 10px 11px 8px; border: 1px solid #d8e4f1; border-radius: 16px; box-shadow: 0 8px 24px #1d48710d; }
+.workspace-column.is-module .composer textarea { font-size: 14px; }
+
+/* Narrow screens: the conversation is a sheet over the module. */
+.chat-panel-scrim { position: fixed; inset: 0; z-index: 59; background: #0f2a4414; }
+.chat-panel-fab { position: fixed; z-index: 40; left: 50%; bottom: 16px; transform: translateX(-50%); max-width: min(calc(100vw - 32px), 440px); display: flex; align-items: center; gap: 8px; padding: 11px 18px 11px 14px; border: 1px solid #d8e4f1; border-radius: 999px; background: #fff; color: var(--ink); box-shadow: 0 14px 36px #1d487126; font-size: 13px; text-align: left; }
+.chat-panel-fab:hover { border-color: #b9d3ea; }
+.chat-panel-fab .assistant-symbol { color: var(--blue); font-size: 16px; }
+.chat-panel-fab-text { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+@media (max-width: 900px) {
+  .workspace-column.is-module { grid-template-columns: minmax(0,1fr); }
+  .workspace-column.is-module > .conversation-dock { position: fixed; z-index: 60; top: 0; right: 0; bottom: 0; width: min(420px, 100%); border-left: 1px solid #dde7f0; background: #fff; box-shadow: -18px 0 48px #173d6224; }
+  .workspace-column.is-module .workspace:not(.is-product) { padding-bottom: 84px; }
+}
+@media (max-width: 700px) {
+  .workspace-column.is-module > .topbar { gap: 8px; padding: 0 8px 0 6px; }
+  .workspace-column.is-module .workspace-brand img { width: 84px; }
+  .topbar-module { padding-left: 8px; }
+  .topbar-module strong { display: none; }
+  .topbar-center { position: static; transform: none; margin: 0 auto; }
+}
+@media (max-width: 430px) {
+  .workspace-column.is-module .workspace-brand img { width: 72px; }
+  .topbar-module { display: none; }
+}

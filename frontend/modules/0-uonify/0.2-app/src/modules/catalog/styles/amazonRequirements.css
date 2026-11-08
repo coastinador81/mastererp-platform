@@ -1,0 +1,24 @@
+.amazon-requirements h2 { font-size: 19px; }
+.amazon-requirements .amazon-requirements-uony { display: inline-flex; align-items: center; gap: 8px; color: var(--pim-ai-strong); border-color: var(--pim-ai-line); white-space: nowrap; }
+.amazon-requirements-local, .amazon-requirements-hint { color: var(--muted); font-size: 12px; line-height: 1.6; }
+.amazon-requirements-category { margin: 16px 0; font-size: 13px; overflow-wrap: anywhere; }
+.amazon-requirements-counts { display: flex; gap: 12px 24px; flex-wrap: wrap; padding: 14px 0; border-block: 1px solid var(--line); font-size: 13px; }
+.amazon-requirements-counts strong { color: var(--blue-dark); }
+.amazon-requirements-source { margin: 20px 0; }
+.amazon-requirements-source > summary { color: var(--blue-dark); cursor: pointer; font-size: 14px; }
+.amazon-requirements-source > p { color: var(--muted); font-size: 13px; line-height: 1.6; }
+.amazon-requirements-source .product-preparation-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.amazon-requirements-source label:last-child { grid-column: 1 / -1; }
+.amazon-requirements-attribute { display: grid; gap: 8px; margin: 24px 0; font-size: 13px; }
+.amazon-requirements-attribute select { width: 100%; min-width: 0; max-width: 100%; padding: 12px; border: 1px solid var(--pim-blue-line); border-radius: var(--pim-r-control); color: var(--text); background: var(--surface); font: inherit; }
+.amazon-requirement-field { min-width: 0; }
+.amazon-requirement-field > p { margin: 7px 0 0; }
+.amazon-requirements-suggestion { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px; margin-top: 8px; border-radius: var(--pim-r-control); background: var(--soft); }
+.amazon-requirements-suggestion p { margin: 0; font-size: 12px; overflow-wrap: anywhere; }
+.amazon-requirements-suggestion span { display: block; color: var(--muted); margin-top: 5px; }
+.amazon-requirements-issues { margin: 18px 0; color: var(--muted); font-size: 12px; line-height: 1.6; overflow-wrap: anywhere; }
+.amazon-requirements-issues summary { cursor: pointer; }
+@media (max-width: 600px) {
+  .amazon-requirements-source .product-preparation-fields { grid-template-columns: minmax(0, 1fr); }
+  .amazon-requirements-suggestion { flex-direction: column; align-items: flex-start; }
+}

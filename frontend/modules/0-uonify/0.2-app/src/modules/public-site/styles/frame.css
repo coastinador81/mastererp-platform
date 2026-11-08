@@ -1,0 +1,8 @@
+/* Marco común de las vistas públicas (cabecera de index.html del PROTO).
+   Se inyecta con cada vista pública, antes de sus propias hojas. */
+
+/* #page-root del PROTO no generaba caja: el <body> de cada vista (flex en la portada)
+   organiza directamente la cabecera, el contenido y el pie. */
+#root { display: contents; }
+
+img[data-uonify-logo="relief"] { object-fit: contain; image-rendering: auto; }

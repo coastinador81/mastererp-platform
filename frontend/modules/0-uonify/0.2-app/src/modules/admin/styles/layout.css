@@ -1,0 +1,79 @@
+/* Panel de administración · maqueta propia (menú lateral, cajón en móvil) y acceso.
+   Misma línea que app-shell.css (lateral) y auth-ui.css (acceso) del prototipo.
+   Colores y radios: src/shared/styles/tokens.css. */
+
+.adm-shell { display: grid; grid-template-columns: 248px minmax(0, 1fr); min-height: 100svh; background: var(--surface); color: var(--ink); }
+.adm-boot { min-height: 100svh; display: grid; place-items: center; padding: 24px 16px; }
+
+/* Lateral (app-shell.css: .sidebar, .thread-button, .account-area) */
+.adm-topbar { display: none; }
+.adm-sidebar { position: sticky; top: 0; height: 100svh; display: flex; flex-direction: column; gap: 18px; min-width: 0; padding: 16px 12px 14px; overflow-y: auto; background: var(--sidebar); border-right: 1px solid var(--line); }
+.adm-brand { display: flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 6px; }
+.adm-brand img { display: block; width: 104px; height: auto; }
+.adm-brand-tag { padding: 2px 6px; border-radius: var(--pim-r-tag); background: var(--active); color: var(--blue-dark); font-size: 11px; font-weight: 750; letter-spacing: .06em; text-transform: uppercase; }
+.adm-nav { display: grid; gap: 2px; }
+.adm-nav a { display: flex; align-items: center; gap: 10px; min-height: 36px; padding: 7px 10px; border-radius: var(--pim-r-control); color: var(--text); font-size: 13px; text-decoration: none; }
+.adm-nav a .pim-icon { flex: 0 0 auto; color: var(--muted); }
+.adm-nav a:hover { background: var(--soft); color: var(--ink); }
+.adm-nav a.active { background: var(--active); color: var(--blue-dark); font-weight: 650; }
+.adm-nav a.active .pim-icon { color: var(--blue); }
+.adm-member { display: flex; align-items: center; gap: 10px; margin-top: auto; padding: 12px 4px 0; border-top: 1px solid var(--line); }
+.adm-avatar { width: 32px; height: 32px; display: grid; place-items: center; flex: 0 0 auto; border-radius: 50%; background: var(--active); color: var(--blue-dark); font-size: 13px; font-weight: 800; }
+.adm-member-label { flex: 1 1 auto; min-width: 0; display: grid; gap: 1px; }
+.adm-member-label strong { overflow: hidden; font-size: 12px; font-weight: 650; text-overflow: ellipsis; white-space: nowrap; }
+.adm-member-label small { overflow: hidden; color: var(--muted); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+.adm-scrim { display: none; }
+
+/* Contenido */
+.adm-main { min-width: 0; outline: none; }
+.adm-page { display: grid; gap: 24px; width: 100%; max-width: 1180px; margin: 0 auto; padding: 32px clamp(16px, 4vw, 48px) 56px; }
+.adm-page-head { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 12px 16px; }
+.adm-page-head h1 { margin: 0 0 6px; color: var(--ink); font-size: clamp(24px, 2.4vw, 30px); font-weight: 650; letter-spacing: -.035em; line-height: 1.15; }
+.adm-page-head p { max-width: 660px; margin: 0; color: var(--muted); font-size: 14px; line-height: 1.5; }
+.adm-page-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.adm-back { display: inline-flex; align-items: center; gap: 6px; justify-self: start; color: var(--blue-dark); font-size: 13px; font-weight: 650; text-decoration: none; }
+.adm-back:hover { text-decoration: underline; }
+.adm-no-access { display: grid; justify-items: center; gap: 8px; padding: 48px 16px; color: var(--muted); text-align: center; }
+.adm-no-access h1 { margin: 0; color: var(--ink); font-size: 20px; font-weight: 650; }
+.adm-no-access p { margin: 0; font-size: 14px; }
+
+@media (max-width: 900px) {
+  .adm-shell { grid-template-columns: minmax(0, 1fr); }
+  .adm-topbar { position: sticky; z-index: 20; top: 0; display: flex; align-items: center; gap: 8px; height: 56px; padding: 0 12px; background: var(--surface); border-bottom: 1px solid var(--line); }
+  .adm-sidebar { position: fixed; z-index: 40; inset: 0 auto 0 0; width: min(300px, 86vw); height: 100svh; visibility: hidden; transform: translateX(-100%); box-shadow: var(--pim-shadow-float); transition: transform var(--pim-mid) var(--pim-ease), visibility var(--pim-mid) linear; }
+  .adm-shell.is-menu-open .adm-sidebar { visibility: visible; transform: none; }
+  .adm-shell.is-menu-open .adm-scrim { position: fixed; z-index: 30; inset: 0; display: block; background: color-mix(in srgb, var(--ink) 35%, transparent); }
+  .adm-page { padding-top: 24px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .adm-sidebar { transition: none; }
+}
+
+/* Acceso del equipo (auth-ui.css: .uon-auth-dialog, sin diálogo: pantalla completa) */
+.adm-auth { min-height: 100svh; display: grid; place-items: center; padding: 24px 16px; background: radial-gradient(ellipse at 50% 30%, var(--active) 0%, var(--sidebar) 45%, var(--surface) 80%); }
+.adm-auth-card { display: grid; grid-template-columns: .8fr 1fr; width: min(880px, 100%); overflow: hidden; border: 1px solid var(--line); border-radius: 24px; background: var(--surface); box-shadow: var(--pim-shadow-float); }
+.adm-auth-brand { display: flex; flex-direction: column; gap: 24px; min-height: 520px; padding: 32px; background: radial-gradient(circle at 45% 20%, var(--surface) 0, var(--pim-blue-tint) 45%, var(--pim-blue-line) 110%); }
+.adm-auth-brand img { width: 150px; height: auto; }
+.adm-auth-brand img.adm-auth-mascot { width: 176px; margin: auto; filter: drop-shadow(0 16px 28px color-mix(in srgb, var(--blue) 22%, transparent)); }
+.adm-auth-brand-copy { max-width: 270px; margin-top: auto; }
+.adm-auth-brand-copy span { display: block; color: var(--ink); font-size: clamp(26px, 3vw, 34px); font-weight: 650; letter-spacing: -.055em; line-height: 1.05; }
+.adm-auth-brand-copy p { margin: 14px 0 0; color: var(--text); font-size: 14px; line-height: 1.55; }
+.adm-auth-content { display: grid; align-content: center; gap: 16px; min-width: 0; padding: 40px clamp(20px, 4vw, 48px) 28px; }
+.adm-auth-overline { display: flex; align-items: center; gap: 8px; margin: 0; color: var(--blue-dark); font-size: 11px; font-weight: 750; letter-spacing: .13em; }
+.adm-auth-content h1 { margin: 0; color: var(--ink); font-size: clamp(26px, 3vw, 32px); font-weight: 640; letter-spacing: -.045em; line-height: 1.12; }
+.adm-auth-steps { margin: 4px 0; }
+.adm-auth-form { display: grid; gap: 14px; }
+.adm-auth-intro { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.55; overflow-wrap: anywhere; }
+.adm-auth-intro strong { color: var(--ink); font-weight: 650; }
+.adm-auth-preview { font-size: 12px; }
+.adm-code-input.pim-input { height: 44px; font-size: 18px; letter-spacing: .3em; }
+.adm-auth-links { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px 16px; font-size: 13px; }
+.adm-auth-links .pim-link:disabled { color: var(--muted); cursor: default; text-decoration: none; }
+.adm-auth-legal { margin: 8px 0 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
+
+@media (max-width: 760px) {
+  .adm-auth-card { grid-template-columns: minmax(0, 1fr); }
+  .adm-auth-brand { display: none; }
+  .adm-auth-content { padding-top: 28px; }
+}

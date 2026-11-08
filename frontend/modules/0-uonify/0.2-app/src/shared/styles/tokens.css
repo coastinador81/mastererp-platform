@@ -1,0 +1,54 @@
+/* Tokens de marca de Uonify (manual de identidad corporativa).
+   Origen: app-shell.css (:root) y pim/core.css (:root) del prototipo HTML.
+   Azul = estructura; aqua SOLO para IA; un botón sólido por vista; radios 4/8/12/16. */
+
+:root {
+  --blue: #096bdc;
+  --blue-dark: #064fa7;
+  --aqua: #35d5c4;
+  --ink: #152438;
+  --text: #34445a;
+  --muted: #5e7186;
+  --line: #e1e8f1;
+  --surface: #fff;
+  --sidebar: #f7faff;
+  --soft: #f3f7fc;
+  --active: #eaf3ff;
+}
+
+:root {
+  /* Brand (new frontend tokens, aligned with the manual) */
+  --pim-blue: var(--blue, #096bdc);           /* structure, primary action */
+  --pim-blue-strong: var(--blue-dark, #064fa7);
+  --pim-blue-tint: #eaf3ff;                   /* selected, info background */
+  --pim-blue-line: #cfe2f8;
+  --pim-aqua: var(--aqua, #35d5c4);           /* AI: backgrounds and fills only */
+  --pim-ai-text: #008376;                     /* Aqua 600: AI text and icons on light */
+  --pim-ai-strong: #00695e;                   /* Aqua 700 */
+  --pim-ai-tint: #e9faf7;                     /* AI surface */
+  --pim-ai-line: #a9eadf;
+  --pim-ai-gradient: linear-gradient(90deg, var(--pim-blue) 0%, var(--pim-aqua) 100%); /* AI progress / live */
+  /* Neutrals */
+  --pim-ink: var(--ink, #152438);
+  --pim-text: var(--text, #34445a);
+  --pim-muted: var(--muted, #5e7186);
+  --pim-subtle: #8595a6;                      /* icons, placeholders (not body text) */
+  --pim-line: var(--line, #e1e8f1);
+  --pim-line-strong: #d3dde7;
+  --pim-surface: #fff;
+  --pim-surface-soft: #f8fafe;                /* Neutral 50 */
+  --pim-surface-muted: #f0f4f8;               /* Neutral 100 */
+  /* Semantic (manual): state only, never decoration */
+  --pim-success: #0f6b45; --pim-success-tint: #eaf6ef; --pim-success-line: #bfe3ce;
+  --pim-warning: #9a6100; --pim-warning-tint: #fff6e5; --pim-warning-line: #f2d9a6;
+  --pim-error: #b3261e;   --pim-error-tint: #fdeeec;   --pim-error-line: #f3c4bf;
+  --pim-info: #006ae1;    --pim-info-tint: #eaf3ff;    --pim-info-line: #cfe2f8;
+  /* Shape, type, motion */
+  --pim-r-tag: 4px; --pim-r-control: 8px; --pim-r-card: 12px; --pim-r-modal: 16px;
+  --pim-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --pim-ease: cubic-bezier(0.2, 0, 0, 1);
+  --pim-fast: 120ms; --pim-mid: 200ms; --pim-slow: 320ms;
+  --pim-focus: 0 0 0 2px var(--pim-surface), 0 0 0 4px var(--pim-blue);
+  --pim-shadow-float: 0 12px 32px #15243824;   /* menus, modals, toasts only */
+}
+

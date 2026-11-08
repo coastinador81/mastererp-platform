@@ -1,0 +1,49 @@
+/* Uonify PIM · pestaña GPSR (puerto React de pim/gpsr.css del prototipo). Todas las clases propias empiezan por pim-gpsr-.
+   Identidad corporativa + línea del frontend nuevo (core.css): intro pim-head con
+   el escudo en azul, una sección plana (sin tarjeta ni fondo de color) con el
+   formulario (contactos y URL a todo el ancho; tipo e idioma en 2 columnas, 1 bajo
+   560 px), la certificación como fila con
+   interruptor y el pie con la única acción primaria sólida, separado por un filete.
+   Campos, etiquetas, botones e interruptor son los componentes compartidos
+   (pim-field, pim-label, pim-input, pim-select, pim-switch, pim-btn-primary):
+   aquí solo va la composición. Sin colores fuera de los tokens. */
+
+.pim-gpsr-root { container: pim-gpsr / inline-size; display: grid; gap: 24px; min-width: 0; }
+
+/* Intro: título de 18 px / 650; el escudo es estructura, en azul. */
+.pim-gpsr-root .pim-head .pim-gpsr-head-icon { flex: none; color: var(--pim-blue); }
+
+/* Formulario: rejilla de 2 columnas, 16 px entre campos, controles alineados
+   por abajo aunque la etiqueta ocupe dos líneas. Los dos contactos (etiquetas y
+   ejemplos largos, correo o URL) y la URL de cumplimiento van a todo el ancho;
+   solo «Tipo de contenido | Idioma» comparte fila. */
+.pim-gpsr-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: end; }
+.pim-gpsr-wide { grid-column: 1 / -1; }
+
+/* Certificación de Seguridad: fila de ajuste (etiqueta a la izquierda, interruptor
+   a la derecha). Toda la etiqueta es zona de clic (label for → conmuta). */
+.pim-gpsr-switch-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 48px; padding: 8px 16px; border: 1px solid var(--pim-line); border-radius: var(--pim-r-control); background: var(--pim-surface); transition: border-color var(--pim-fast) var(--pim-ease), background var(--pim-fast) var(--pim-ease); }
+.pim-gpsr-switch-row:hover { border-color: var(--pim-line-strong); background: var(--pim-surface-soft); }
+.pim-gpsr-switch-label { flex: 1; min-width: 0; align-self: stretch; display: flex; align-items: center; color: var(--pim-ink); font-size: 13px; font-weight: 550; line-height: 1.4; cursor: pointer; user-select: none; }
+
+/* Foco de teclado visible (WCAG 2.4.7 / 1.4.11): el halo compartido de core
+   (3 px de azul al 18 %) no llega a 3:1 ni sobre el raíl gris del interruptor ni
+   junto al botón azul; aquí va un anillo sólido de 2 px separado 2 px, como el
+   del original. */
+.pim-gpsr-root .pim-switch:focus-visible,
+.pim-gpsr-root .pim-gpsr-save:focus-visible { outline: 2px solid var(--pim-blue); outline-offset: 2px; box-shadow: none; }
+
+/* Pie del formulario: filete y acción primaria a la derecha (como las acciones
+   de la ficha de producto del frontend nuevo). */
+.pim-gpsr-actions { display: flex; align-items: center; justify-content: flex-end; gap: 8px; padding-top: 24px; border-top: 1px solid var(--pim-line); }
+.pim-gpsr-save .pim-icon { flex: none; }
+
+/* Columna estrecha de la ficha: una sola columna, mismo orden; la acción ocupa el ancho. */
+@container pim-gpsr (max-width: 560px) {
+  .pim-gpsr-grid { grid-template-columns: minmax(0, 1fr); }
+  .pim-gpsr-actions .pim-gpsr-save { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pim-gpsr-switch-row { transition: none; }
+}

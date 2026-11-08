@@ -1,0 +1,12 @@
+/* Acceso a Uonify — velo difuminado y estado de la página detrás de los diálogos
+   Origen: auth-ui.css del prototipo (líneas 1–6); colores en tokens.css del módulo. */
+.uon-onboarding-surface { position: fixed; inset: 0; z-index: 99998; background: var(--uon-auth-surface-blur); -webkit-backdrop-filter: blur(9px) saturate(.85); backdrop-filter: blur(9px) saturate(.85); opacity: 1; transition: opacity .7s cubic-bezier(.2,.65,.3,1); }
+.uon-onboarding-surface.is-leaving { opacity: 0; }
+.uon-onboarding-surface[hidden] { display: none; }
+html.uon-onboarding-active { overflow: hidden; }
+html.uon-onboarding-active #root { pointer-events: none; }
+html.uon-onboarding-active :is(.uon-auth-dialog, .uon-connect-dialog, .uon-profile-dialog)::backdrop { background: transparent; backdrop-filter: none; }
+
+/* Prototipo (index.html): la portada se oculta mientras se resuelve la sesión. */
+html.uon-resolving-home #root { visibility: hidden; }
+:is(.uon-auth-dialog, .uon-connect-dialog, .uon-profile-dialog, .uon-workspace-transition) img[data-uonify-logo="relief"] { object-fit: contain; image-rendering: auto; }

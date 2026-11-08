@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 24" role="img" aria-label="Uony · Uonify" shape-rendering="geometricPrecision">
+<defs><linearGradient id="uony-mark-gradient" gradientUnits="userSpaceOnUse" x1="246" y1="0" x2="30" y2="166"><stop offset="0" stop-color="#0473E6"/><stop offset="0.125" stop-color="#0374E9"/><stop offset="0.25" stop-color="#0577E7"/><stop offset="0.375" stop-color="#067CEA"/><stop offset="0.5" stop-color="#0D87E4"/><stop offset="0.625" stop-color="#29AEC9"/><stop offset="0.75" stop-color="#2EB7C6"/><stop offset="0.875" stop-color="#31BBC5"/><stop offset="1" stop-color="#32BCC3"/></linearGradient></defs>
+<g transform="translate(1.72741 1) scale(0.13253012)"><path fill="url(#uony-mark-gradient)" d="M133.709 17.292L246 103.95V0H275.75V165.75L115.535 41.161A53 53 0 1 0 134.949 72.5L165.015 95.75A83 83 0 1 1 133.709 17.292Z"/></g>
+</svg>

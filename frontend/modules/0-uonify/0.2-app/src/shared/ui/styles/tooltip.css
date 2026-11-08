@@ -1,0 +1,26 @@
+/* Kit de interfaz · nombre al pasar el ratón (y con el foco del teclado) en los
+   botones de icono: atributo data-tooltip (+ data-tooltip-pos / data-tooltip-align).
+   Origen: app-shell.css del prototipo (líneas 958-971, 1055-1058 y 1113-1114).
+   Escape los oculta hasta que el puntero se mueve o cambia el foco
+   (TooltipDismiss, montado en AppProviders). */
+
+[data-tooltip] { position: relative; }
+[data-tooltip]::after { content: attr(data-tooltip); content: attr(data-tooltip) / ""; position: absolute; z-index: 60; left: 50%; bottom: calc(100% + 8px); width: max-content; max-width: 240px; padding: 5px 9px; border-radius: 7px; background: #1b2430; color: #fff; font: 500 11.5px/1.35 Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; letter-spacing: 0; text-align: center; white-space: nowrap; pointer-events: none; opacity: 0; transform: translate(-50%, 3px); transition: opacity .12s ease, transform .12s ease; }
+[data-tooltip-pos="below"]::after { top: calc(100% + 8px); bottom: auto; transform: translate(-50%, -3px); }
+[data-tooltip-align="start"]::after { left: 0; transform: translateY(3px); }
+[data-tooltip-align="end"]::after { left: auto; right: 0; transform: translateY(3px); }
+[data-tooltip-pos="below"][data-tooltip-align="end"]::after { transform: translateY(-3px); }
+@media (hover: hover) {
+  [data-tooltip]:hover::after { opacity: 1; transform: translate(-50%, 0); transition-delay: .3s; }
+  [data-tooltip-align]:hover::after { transform: none; }
+}
+[data-tooltip]:focus-visible::after { opacity: 1; transform: translate(-50%, 0); }
+[data-tooltip-align]:focus-visible::after { transform: none; }
+[data-tooltip][aria-expanded="true"]:not(.chat-panel-toggle)::after { opacity: 0 !important; }
+/* A la derecha (raíles laterales). */
+[data-tooltip-pos="right"]::after { left: calc(100% + 8px); right: auto; top: 50%; bottom: auto; transform: translate(-3px, -50%); }
+@media (hover: hover) { [data-tooltip-pos="right"]:hover::after { transform: translate(0, -50%); } }
+[data-tooltip-pos="right"]:focus-visible::after { transform: translate(0, -50%); }
+/* Escape los oculta; el puntero puede alcanzarlos. */
+:root[data-tooltips-hidden] [data-tooltip]::after { opacity: 0 !important; }
+@media (hover: hover) { [data-tooltip]:hover::after { pointer-events: auto; } }

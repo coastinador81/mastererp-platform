@@ -1,0 +1,64 @@
+.drive-analysis { margin-top: 14px; padding: 16px; border: 1px solid var(--pim-ai-line); border-radius: var(--pim-r-card); background: var(--pim-surface); color: var(--pim-text); white-space: normal; min-width: 0; overflow-wrap: anywhere; }
+.drive-analysis header { display: flex; align-items: center; gap: 10px; color: var(--pim-ink); }
+.drive-analysis header small { display: block; font-size: 12px; color: var(--pim-muted); margin-top: 3px; }
+.drive-analysis p { margin: 10px 0; font-size: 13px; line-height: 1.55; }
+.drive-analysis button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 36px; max-width: 100%; padding: 7px 10px; border: 1px solid var(--pim-line-strong); border-radius: var(--pim-r-control); background: var(--pim-surface); color: var(--pim-blue-strong); font: inherit; font-size: 12px; text-align: left; white-space: normal; overflow-wrap: anywhere; cursor: pointer; }
+.drive-analysis button:disabled { cursor: default; opacity: .55; }
+.drive-analysis button:focus-visible, .drive-analysis input:focus-visible, .drive-analysis summary:focus-visible { outline: none; box-shadow: var(--pim-focus); }
+.drive-analysis-picker form { display: grid; gap: 9px; margin-top: 16px; }
+.drive-analysis-picker label { font-size: 13px; font-weight: 600; }
+.drive-analysis-picker input { box-sizing: border-box; width: 100%; min-width: 0; padding: 10px; border: 1px solid var(--pim-line-strong); border-radius: var(--pim-r-control); background: var(--pim-surface); color: var(--pim-ink); font: inherit; font-size: 13px; }
+.drive-analysis-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.drive-analysis-pages { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 8px 0; }
+.drive-analysis-pages span { color: var(--pim-muted); font-size: 12px; }
+.drive-analysis-browser { margin: 12px 0; padding: 10px; background: var(--pim-surface-soft); border-radius: var(--pim-r-control); }
+.drive-analysis-browser nav { display: flex; flex-wrap: wrap; gap: 5px; }
+.drive-analysis-browser ul, .drive-analysis-sources { padding: 0; list-style: none; }
+.drive-analysis-browser li { margin: 6px 0; }
+.drive-analysis-browser li button { width: 100%; justify-content: flex-start; }
+.drive-analysis-summary { display: flex; flex-direction: column; gap: 4px; margin-top: 16px; }
+.drive-analysis-summary span, .drive-analysis-sources small { color: var(--pim-muted); font-size: 12px; }
+.drive-analysis progress { width: 100%; accent-color: var(--pim-ai-text); }
+.drive-analysis details { margin: 12px 0; font-size: 12px; }
+.drive-analysis summary { cursor: pointer; padding: 5px 0; font-weight: 500; }
+.drive-analysis-sources { max-height: 220px; overflow-y: auto; }
+.drive-analysis-sources li { display: grid; gap: 4px; padding: 8px 0; border-bottom: 1px solid var(--pim-line); }
+.drive-analysis-proposals { margin: 0; }
+.drive-analysis-proposals > div { padding: 10px 0; border-bottom: 1px solid var(--pim-line); }
+.drive-analysis-proposals dt { font-weight: 600; }
+.drive-analysis-proposals dt small { margin-left: 6px; font-weight: 400; color: var(--pim-muted); }
+.drive-analysis-proposals dd { margin: 6px 0; }
+.drive-analysis-proposals dd strong, .drive-analysis-proposals q { display: block; font-size: 11px; color: var(--pim-muted); font-weight: 400; }
+.drive-analysis .drive-analysis-review { margin: 4px 0 10px; border-color: var(--pim-ai-line); color: var(--pim-ai-strong); background: var(--pim-ai-tint); }
+.drive-analysis .drive-analysis-recheck { margin: 4px 8px 10px 0; font-size: 11px; }
+.drive-analysis [role="alert"] { color: var(--pim-error); }
+.drive-analysis-warnings { color: var(--pim-warning); }
+.drive-fact-group { margin: 12px 0; padding: 12px; border: 1px solid var(--pim-line); border-radius: var(--pim-r-control); }
+.drive-fact-group h4 { margin: 0 0 8px; color: var(--pim-ink); font-size: 13px; }
+.drive-fact-value + .drive-fact-value { margin-top: 12px; padding-top: 8px; border-top: 1px solid var(--pim-line); }
+.drive-fact-value > p:first-child { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; }
+.drive-fact-support { font-size: 11px; font-weight: 400; color: var(--pim-muted); }
+.drive-fact-support--needs_review, .drive-fact-conflict, .drive-fact-reasons { color: var(--pim-warning); }
+.drive-fact-support--unsupported { color: var(--pim-error); }
+.drive-fact-meta, .drive-fact-evidence { color: var(--pim-muted); }
+.drive-analysis .drive-fact-meta { font-size: 11px; }
+.drive-fact-evidence { margin-top: 10px; padding-left: 10px; border-left: 2px solid var(--pim-line); }
+.drive-fact-evidence strong, .drive-fact-evidence q, .drive-fact-evidence span { display: block; font-size: 11px; font-weight: 400; }
+.drive-fact-evidence q { margin-top: 5px; white-space: pre-wrap; }
+.drive-fact-evidence details { margin: 4px 0; }
+.drive-fact-reasons, .drive-fact-rejections ul { padding-left: 18px; }
+.drive-fact-rejections li { margin: 10px 0; }
+.drive-analysis-source-link { color: var(--pim-blue-strong); text-decoration: underline; text-underline-offset: 2px; }
+.drive-analysis-source-link:focus-visible { outline: none; box-shadow: var(--pim-focus); border-radius: var(--pim-r-tag); }
+.product-drive-materials { margin: 16px; padding: 12px; border: 1px solid var(--pim-line); border-radius: var(--pim-r-card); }
+.product-drive-materials > summary { cursor: pointer; font-size: 13px; font-weight: 600; color: var(--pim-ink); }
+@media (max-width: 480px) { .drive-analysis { padding: 12px; } .drive-analysis-actions button { flex: 1 1 140px; } .product-drive-materials { margin: 8px; } }
+
+.drive-reading-details { display: grid; gap: 5px; margin: 4px 0; padding-left: 10px; border-left: 2px solid var(--pim-line); }
+.drive-analysis .drive-reading-details p { margin: 3px 0; font-size: 12px; }
+.drive-analysis-upgrade { width: 100%; }
+.drive-reading-details q { display: block; white-space: pre-wrap; overflow-wrap: anywhere; }
+.drive-resolution-history { color: var(--pim-muted); }
+.drive-resolution ul { padding-left: 18px; }
+.drive-resolution li { margin: 10px 0; }
+.drive-resolution li small { display: block; margin-top: 4px; color: var(--pim-muted); }

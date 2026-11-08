@@ -1,0 +1,44 @@
+.conversation-connection-card {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid var(--pim-blue-line);
+  border-radius: var(--pim-r-card);
+  background: var(--surface);
+  color: var(--ink);
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.conversation-connection-card + .conversation-connection-card,
+.amz-conversation-card + .conversation-connection-card { margin-top: 12px; }
+.conversation-connection-card *, .conversation-connection-card *::before { box-sizing: border-box; }
+.conversation-connection-header { display: flex; align-items: center; gap: 12px; }
+.conversation-connection-header > div { flex: 1; min-width: 0; }
+.conversation-connection-header h3 { margin: 0; font-size: 14px; line-height: 1.5; font-weight: 600; }
+.conversation-connection-state { color: var(--muted); font-size: 12px; }
+.conversation-connection-card > p { margin: 14px 0; color: var(--text); font-size: 13px; line-height: 1.6; }
+.conversation-connection-card button { font: inherit; font-size: 13px; cursor: pointer; }
+.conversation-connection-card button:disabled { cursor: default; opacity: .55; }
+.conversation-connection-card button:focus-visible { outline: none; box-shadow: var(--pim-focus); }
+.conversation-connection-manage { padding: 9px 12px; border: 1px solid var(--pim-blue-line); border-radius: var(--pim-r-control); background: var(--surface); color: var(--blue-dark); }
+.conversation-connection-close { display: grid; place-items: center; width: 32px; height: 32px; padding: 6px; border: 0; border-radius: var(--pim-r-control); background: transparent; color: var(--muted); }
+.conversation-connection-close:hover { background: var(--soft); }
+.conversation-connection-panel { min-width: 0; margin-top: 16px; border-top: 1px solid var(--line); }
+.conversation-connection-panel:focus { outline: none; }
+.conversation-connection-panel .cld-connect { margin-top: 16px; }
+.conversation-connection-panel .cld-project-card { padding: 14px; }
+.conversation-connection-panel .cld-checks > div { flex-wrap: wrap; gap: 6px; }
+.conversation-connection-panel .cld-checks dd { margin-left: 0; }
+.conversation-connection-panel select { max-width: 100%; }
+.conversation-connection-panel .nxs-detail-account { margin: 14px 0; padding: 12px; }
+.conversation-connection-panel .nxs-detail-status { gap: 12px; flex-wrap: wrap; }
+.conversation-connection-panel .nxs-detail-actions, .conversation-connection-panel .cld-actions { flex-wrap: wrap; }
+.conversation-connection-session { color: var(--muted); font-size: 13px; }
+.conversation-connection-dialog .pim-dialog-body { padding: 16px; }
+@media (max-width: 420px) {
+  .conversation-connection-card { padding: 12px; }
+  .conversation-connection-header { gap: 8px; }
+  .conversation-connection-panel .cld-project-card { padding: 10px; }
+  .conversation-connection-panel .nxs-detail-actions { flex-direction: column; align-items: stretch; }
+}

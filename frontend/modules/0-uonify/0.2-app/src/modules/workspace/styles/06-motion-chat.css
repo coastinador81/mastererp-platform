@@ -1,0 +1,136 @@
+/* Espacio · movimiento, antesala de la respuesta, fila única y chat centrado en un servicio.
+ * Origen: app-shell.css del prototipo (r30-r32, líneas 1014-1163), en el mismo orden.
+ */
+
+/* --- r30: anteroom before each new screen, rail with threads, one-row composer --- */
+/* The same subtle entrance for every change of screen: fade, slight rise, focus-in. */
+@keyframes uon-enter { from { opacity: 0; transform: translateY(8px); filter: blur(3px); } to { opacity: 1; transform: none; filter: none; } }
+@keyframes uon-enter-side { from { opacity: 0; transform: translateX(14px); filter: blur(2px); } to { opacity: 1; transform: none; filter: none; } }
+@keyframes uon-enter-soft { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+@keyframes uon-pop { from { opacity: 0; scale: .97; } to { opacity: 1; scale: 1; } }
+@keyframes uon-drawer { from { opacity: 0; translate: -14px 0; } to { opacity: 1; translate: 0 0; } }
+@keyframes uon-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes uon-shimmer { to { background-position: -200% 0; } }
+@keyframes uon-breathe { 0%, 100% { opacity: .45; scale: .86; } 50% { opacity: 1; scale: 1; } }
+.uon-enter { animation: uon-enter .42s cubic-bezier(.2,.8,.2,1) both; }
+.uon-enter-side { animation: uon-enter-side .38s cubic-bezier(.2,.8,.2,1) both; }
+.uon-enter-soft { animation: uon-enter-soft .26s ease-out both; }
+/* Entrega: primero el texto, después la tarjeta. Sin ampliar ni desenfocar. */
+@keyframes uon-reply-arrive { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+.uon-reply-text { animation: uon-reply-arrive .36s cubic-bezier(.2,.7,.3,1) both; }
+.uon-reply-card { animation: uon-reply-arrive .42s cubic-bezier(.2,.7,.3,1) .08s both; }
+@media (prefers-reduced-motion: reduce) { .uon-reply-text, .uon-reply-card { animation: none !important; } }
+:root[data-reduce-motion="true"] :is(.uon-reply-text, .uon-reply-card) { animation: none !important; }
+/* Menus and panels open with the same family of motion. */
+.services-menu, .account-popover, .channel-menu, .composer-model-menu, .composer-effort-menu, .composer-usage-panel, .composer-more-menu { animation: uon-pop .16s ease-out both; }
+.services-menu, .account-popover, .channel-menu { transform-origin: top right; }
+.composer-model-menu, .composer-effort-menu, .composer-usage-panel, .composer-more-menu { transform-origin: bottom center; }
+.nav-drawer { animation: uon-drawer .24s cubic-bezier(.2,.8,.2,1) both; }
+.nav-drawer-scrim, .chat-panel-scrim { animation: uon-fade .2s ease-out both; }
+
+/* «Revisando tu petición…» / «Abriendo Producto…»: the anteroom of the next answer or screen. */
+.message.is-thinking { display: inline-flex; align-items: center; background: transparent; padding: 12px 0; font-size: 14px; }
+.conversation-messages.is-pending > .uony-guide { display: none; }
+.thinking-mark { color: var(--blue); font-size: 15px; line-height: 1; animation: uon-breathe 1.2s ease-in-out infinite; }
+.thinking-text { color: transparent; background: linear-gradient(90deg, var(--pim-muted) 0%, var(--pim-muted) 35%, var(--pim-ink) 50%, var(--pim-muted) 65%, var(--pim-muted) 100%) 0 0 / 200% 100%; -webkit-background-clip: text; background-clip: text; animation: uon-shimmer 1.6s linear infinite; }
+.composer.is-waiting .composer-send { opacity: .45; cursor: default; }
+
+/* Reduced motion (system or Uonify preference): nothing slides or shimmers. */
+@media (prefers-reduced-motion: reduce) {
+  .uon-enter, .uon-enter-side, .uon-enter-soft, .services-menu, .account-popover, .channel-menu, .composer-model-menu, .composer-effort-menu, .composer-usage-panel, .composer-more-menu, .nav-drawer, .nav-drawer-scrim, .chat-panel-scrim, .thinking-mark, .thinking-text { animation: none !important; }
+}
+:root[data-reduce-motion="true"] :is(.uon-enter, .uon-enter-side, .uon-enter-soft, .services-menu, .account-popover, .channel-menu, .composer-model-menu, .composer-effort-menu, .composer-usage-panel, .composer-more-menu, .nav-drawer, .nav-drawer-scrim, .chat-panel-scrim, .thinking-mark, .thinking-text) { animation: none !important; }
+@media (prefers-reduced-motion: reduce) { .thinking-text { color: #5f7386; background: none; } }
+:root[data-reduce-motion="true"] .thinking-text { color: #5f7386; background: none; }
+
+/* Usage: only the ring; the percentage is in its name and tooltip. */
+.composer-usage-trigger { width: 32px; justify-content: center; padding: 0; }
+.composer-usage-trigger [data-composer-usage-label] { display: none; }
+.composer-usage-ring { width: 15px; height: 15px; }
+
+/* One row everywhere: + · Hilos · uso … speed · model · effort · mic · voice · send.
+   Narrow composers (side panel, phones) use compact buttons; a long model name shortens. */
+.composer-bottom { flex-wrap: nowrap; }
+.composer-bottom-actions { flex: 0 1 auto; }
+.composer-bottom .composer-ai-picker { flex: 0 1 auto; }
+.composer-bottom .composer-model-trigger { flex: 0 1 auto; }
+.workspace-column.is-module .dock-composer-anchor { padding: 0 8px 8px; }
+.workspace-column.is-module .dock-composer-anchor .composer { padding: 10px 10px 8px; }
+@container (max-width: 480px) {
+  .composer-bottom, .composer-navigation, .composer-bottom-actions { gap: 0; }
+  .composer-bottom .composer-plus-button, .composer-bottom .composer-voice-button, .composer-nav-button, .composer-usage-trigger { width: 26px; height: 26px; min-height: 26px; }
+  .composer-bottom .composer-plus-button { font-size: 20px; }
+  .composer-nav-button svg, .composer-bottom .composer-voice-button svg { width: 16px; height: 16px; }
+  .composer-usage-ring { width: 14px; height: 14px; }
+  .composer-bottom .composer-speed-trigger { width: 24px; flex-basis: 24px; }
+  .composer-bottom .composer-model-trigger, .composer-bottom .composer-effort-trigger { min-height: 26px; font-size: 12.5px; }
+  .composer-bottom .composer-model-trigger { padding: 0 2px 0 3px; }
+  .composer-bottom .composer-effort-trigger { padding: 0 3px 0 2px; }
+  .composer-bottom .composer-ai-chevron { display: none; }
+  .composer-bottom .composer-send { width: 28px; height: 28px; margin-left: 2px; padding: 5px; }
+}
+@media (max-width: 560px) {
+  .composer-bottom, .composer-navigation, .composer-bottom-actions { gap: 0; }
+  .composer-bottom .composer-plus-button, .composer-bottom .composer-voice-button, .composer-nav-button, .composer-usage-trigger { width: 26px; height: 26px; min-height: 26px; }
+  .composer-bottom .composer-plus-button { font-size: 20px; }
+  .composer-nav-button svg, .composer-bottom .composer-voice-button svg { width: 16px; height: 16px; }
+  .composer-usage-ring { width: 14px; height: 14px; }
+  .composer-bottom .composer-speed-trigger { width: 24px; flex-basis: 24px; }
+  .composer-bottom .composer-model-trigger, .composer-bottom .composer-effort-trigger { min-height: 26px; font-size: 12.5px; }
+  .composer-bottom .composer-model-trigger { padding: 0 2px 0 3px; }
+  .composer-bottom .composer-effort-trigger { padding: 0 3px 0 2px; }
+  .composer-bottom .composer-ai-chevron { display: none; }
+  .composer-bottom .composer-send { width: 28px; height: 28px; margin-left: 2px; padding: 5px; }
+  .welcome .composer, .workspace-column.is-chat .dock-composer-anchor .composer { padding-inline: 12px; }
+}
+/* The smallest phones: narrower gutters so the one row still fits. */
+@media (max-width: 380px) {
+  .workspace.is-home { padding-inline: 10px; }
+  .workspace-column.is-chat .conversation-dock { width: calc(100% - 16px); }
+  .welcome .composer, .workspace-column.is-chat .dock-composer-anchor .composer { padding-inline: 8px; }
+}
+
+/* r30 review: no scrollbar flash while a screen enters; waiting send; ring contrast;
+   tooltips that Escape can dismiss and the pointer can reach. */
+.workspace-column { overflow: clip; }
+.composer.is-waiting .composer-send:hover { background: var(--blue); }
+.composer-usage-ring { border-color: #7b8da0; }
+.composer-usage-trigger.has-usage .composer-usage-ring { background: conic-gradient(var(--blue) var(--usage-progress), #8494a5 0); }
+/* The home card never grows past the screen: the model name shortens instead. */
+.workspace.is-home > .welcome { min-width: 0; max-width: 100%; }
+.welcome .composer, .dock-composer-anchor .composer { min-width: 0; }
+
+/* --- r31: Producto opens on its catalog with the conversation in the middle ---- */
+/* No sheet yet: catalog on the left, the chat centred in the rest (as ChatGPT or
+   Claude). A new or chosen product opens the sheet and the chat goes right. */
+.workspace-column.is-product-chat { grid-template-columns: minmax(0,1fr); }
+.product-chat-anchor { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
+.workspace-column.is-product-chat .conversation-dock { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; width: 100%; margin: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+.workspace-column.is-product-chat .conversation-header, .workspace-column.is-product-chat .chat-panel-sash { display: none; }
+.workspace-column.is-product-chat .conversation-content { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; border-bottom: 0; }
+.workspace-column.is-product-chat .conversation-messages { flex: 1 1 auto; width: min(calc(100% - 32px), 800px); max-height: none; margin: 0 auto; padding: 28px 4px 24px; }
+.workspace-column.is-product-chat .message { max-width: min(78%, 620px); }
+.workspace-column.is-product-chat .conversation-empty { max-width: 340px; color: var(--muted); font-size: 14px; line-height: 1.55; }
+.workspace-column.is-product-chat .dock-composer-anchor { width: min(calc(100% - 32px), 800px); margin: 0 auto 18px; padding: 0; }
+.workspace-column.is-product-chat .dock-composer-anchor .composer { padding: 14px 16px 10px; border: 1px solid #d8e4f1; border-radius: 20px; box-shadow: 0 16px 40px #1d487112; }
+.workspace-column.is-product-chat .composer textarea { font-size: 15px; }
+@media (max-width: 700px) {
+  .workspace-column.is-product-chat .conversation-messages, .workspace-column.is-product-chat .dock-composer-anchor { width: calc(100% - 20px); }
+}
+
+/* r31 review: the centred chat measures its own column; no resize edge there;
+   phones give the composer the full width so the one row fits. */
+.workspace-column.is-module.is-product-chat .chat-panel-sash { display: none; }
+.workspace-column.is-product-chat .conversation-dock { container-type: inline-size; }
+.workspace-column.is-product-chat .composer-model-menu { width: min(304px, calc(100cqw - 20px)); }
+@media (max-width: 560px) {
+  .workspace-column.is-product-chat .conversation-messages { width: calc(100% - 12px); }
+  .workspace-column.is-product-chat .dock-composer-anchor { width: calc(100% - 12px); margin-bottom: 10px; }
+  .workspace-column.is-product-chat .dock-composer-anchor .composer { padding-inline: 10px; }
+}
+@media (max-width: 380px) {
+  .workspace-column.is-product-chat .dock-composer-anchor { width: calc(100% - 8px); }
+  .workspace-column.is-product-chat .dock-composer-anchor .composer { padding-inline: 6px; }
+}
+
+.topbar-center [data-tooltip]::after { width: 220px; white-space: normal; }

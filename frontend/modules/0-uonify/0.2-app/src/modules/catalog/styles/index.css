@@ -1,0 +1,15 @@
+/* Hojas del servicio Producto (módulo catalog). Clases del prototipo: product-*,
+   channel-* y pim-publish-*. Cada hoja, 500 líneas como máximo. */
+@import './workbench.css';
+@import './sheet.css';
+@import './channels.css';
+@import './publish.css';
+
+.live-product-fieldset { border: 0; padding: 0; margin: 0; min-width: 0; min-height: 0; display: flex; flex-direction: column; flex: 1 1 auto; }
+.live-product-save { padding: 20px 24px; display: flex; justify-content: flex-end; }
+.live-product-channel { color: var(--pim-muted); font-size: 12px; }
+.message-product-link { display: block; margin-top: 12px; border: 1px solid var(--pim-line); padding: 8px 12px; border-radius: 8px; background: var(--surface); color: var(--pim-blue); cursor: pointer; }
+
+.live-product-version { padding: 12px 24px; color: var(--pim-muted); background: var(--pim-surface-soft); }
+
+@media (max-width: 760px) { .live-product-channel { display: none; } }

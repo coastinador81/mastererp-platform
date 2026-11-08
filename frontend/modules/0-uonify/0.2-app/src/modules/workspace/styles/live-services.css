@@ -1,0 +1,17 @@
+.live-services { width: min(720px, calc(100% - 32px)); margin: 32px auto; padding-bottom: 60px; color: var(--uon-auth-text); }
+.live-services h1 { font-size: 28px; letter-spacing: -.03em; }
+.live-services p { color: var(--uon-auth-muted); line-height: 1.65; font-size: 14px; }
+.live-services nav { display: flex; flex-wrap: wrap; gap: 12px; border-bottom: 1px solid var(--uon-auth-line); padding: 16px 0; margin-bottom: 24px; }
+.live-services nav button { background: transparent; border: 0; border-radius: 8px; padding: 10px 16px; color: var(--uon-auth-action); cursor: pointer; font: inherit; }
+.live-services nav button[aria-pressed=true] { background: var(--uon-auth-sky); font-weight: 600; }
+.live-services dl > div { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding: 20px 0; border-bottom: 1px solid var(--uon-auth-line); font-size: 14px; }
+.live-services dd { margin: 0; color: var(--uon-auth-muted); }
+.live-services small { display: block; margin-top: 4px; font-size: 11px; }
+.live-services button:focus-visible { outline: 2px solid var(--uon-auth-action); outline-offset: 3px; }
+
+.uony-response-model { display: block; margin-top: 12px; font-size: 11px; color: var(--uon-auth-muted); }
+
+.services-account-link { display: block; width: 100%; margin-top: 14px; padding: 12px 6px 2px; border: 0; border-top: 1px solid var(--line); background: transparent; color: var(--blue-dark); font-size: 12px; text-align: left; }
+.account-identity-label { margin: 7px 8px 3px; font-size: 10px; color: var(--muted); }
+.live-service-view { padding: 24px; }
+.live-services dd { overflow-wrap: anywhere; min-width: 0; }

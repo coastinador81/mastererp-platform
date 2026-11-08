@@ -1,0 +1,46 @@
+.conversation-messages > .message.assistant.has-proposal {
+  box-sizing: border-box;
+  width: min(100%, 620px);
+  max-width: min(100%, 620px);
+  min-width: 0;
+  padding: 0;
+  background: transparent;
+  white-space: normal;
+}
+.conversation-product-proposal-response { display: flex; align-items: flex-start; gap: 12px; min-width: 0; color: var(--pim-text); }
+.conversation-product-proposal-response > svg { flex: none; margin-top: 2px; }
+.conversation-product-proposal-body { flex: 1; min-width: 0; }
+.conversation-product-proposal-body > p { margin: 0 0 12px; overflow-wrap: anywhere; }
+.conversation-product-proposal-card {
+  display: flex; flex-direction: column; gap: 9px; box-sizing: border-box;
+  max-width: 410px; padding: 15px; border: 1px solid var(--pim-blue-line);
+  border-left: 3px solid var(--pim-blue); border-radius: var(--pim-r-card);
+  background: var(--pim-surface); color: var(--pim-text);
+}
+.conversation-product-proposal-eyebrow { color: var(--pim-muted); font-size: 11px; }
+.conversation-product-proposal-card strong { color: var(--pim-ink); font-size: 13px; font-weight: 600; overflow-wrap: anywhere; }
+.conversation-product-proposal-card dl { display: grid; gap: 5px; margin: 0; }
+.conversation-product-proposal-card dl > div { display: flex; flex-wrap: wrap; gap: 5px; }
+.conversation-product-proposal-card dt { color: var(--pim-muted); }
+.conversation-product-proposal-card dd { margin: 0; overflow-wrap: anywhere; }
+.conversation-product-proposal-card > p { margin: 0; color: var(--pim-muted); font-size: 12px; }
+.conversation-product-proposal-details { border-top: 1px solid var(--pim-blue-line); padding-top: 8px; }
+.conversation-product-proposal-details summary { color: var(--pim-blue-strong); cursor: pointer; }
+.conversation-product-proposal-details dl { display: grid; gap: 9px; max-height: 230px; overflow-y: auto; margin: 10px 0 0; }
+.conversation-product-proposal-details dt { color: var(--pim-muted); font-size: 11px; }
+.conversation-product-proposal-details dd { white-space: pre-wrap; overflow-wrap: anywhere; }
+.conversation-product-proposal-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.conversation-product-proposal-actions button,
+.conversation-product-proposal-attention button { min-height: 40px; padding: 8px 12px; border-radius: var(--pim-r-control); font: inherit; cursor: pointer; }
+.conversation-product-proposal-primary { border: 1px solid var(--pim-blue); background: var(--pim-blue); color: var(--pim-surface); }
+.conversation-product-proposal-secondary { border: 1px solid transparent; background: transparent; color: var(--pim-muted); }
+.conversation-product-proposal-attention button { border: 1px solid var(--pim-blue-line); background: var(--pim-surface); color: var(--pim-blue-strong); }
+.conversation-product-proposal-actions button:focus-visible,
+.conversation-product-proposal-attention button:focus-visible,
+.conversation-product-proposal-details summary:focus-visible,
+.conversation-product-proposal-body p[tabindex="-1"]:focus { outline: 2px solid var(--pim-blue); outline-offset: 2px; }
+.conversation-product-proposal-attention p { margin: 0 0 8px; }
+@media (max-width: 560px) {
+  .conversation-product-proposal-response { gap: 9px; }
+  .conversation-product-proposal-card { padding: 12px; }
+}

@@ -1,0 +1,67 @@
+/* Espacio · cuenta en la esquina y fila de controles del compositor.
+ * Origen: app-shell.css del prototipo (r29, líneas 945-1012), en el mismo orden.
+ * Los tooltips [data-tooltip] están en el kit (src/shared/ui/styles/tooltip.css).
+ */
+
+/* --- r29: composer controls as Claude/OpenAI, account in the corner --------- */
+/* Top-right corner, right to left: account, services, conversation panel. */
+.topbar-right { gap: 8px; }
+.topbar-right > * { flex: 0 0 auto; }
+.services-trigger { border-color: transparent; background: transparent; box-shadow: none; }
+.services-trigger:hover, .services-trigger[aria-expanded="true"] { border-color: transparent; background: #edf3fb; }
+.account-anchor { position: relative; display: inline-flex; }
+.account-button { width: 38px; height: 38px; display: grid; place-items: center; padding: 0; border: 0; border-radius: 50%; background: transparent; }
+.account-button .account-avatar { width: 32px; height: 32px; font-size: 13px; transition: box-shadow .15s ease; }
+.account-button:hover .account-avatar, .account-button[aria-expanded="true"] .account-avatar { box-shadow: 0 0 0 3px #d6e7fb; }
+.account-popover { position: absolute; z-index: 40; top: calc(100% + 8px); right: 0; width: min(268px, calc(100vw - 24px)); padding: 8px; border: 1px solid #d8e3ee; border-radius: 14px; background: #fff; box-shadow: 0 18px 45px #173d6224; text-align: left; }
+.workspace-column.is-module .account-button { width: 36px; height: 36px; }
+
+/* Bottom row: + · Hilos · Uso … speed · IA · mic · voice · send. */
+.composer-bottom { display: flex; align-items: center; gap: 4px; min-height: 32px; }
+.composer-navigation { gap: 2px; }
+.composer-bottom-actions { margin-left: auto; display: flex; align-items: center; gap: 2px; min-width: 0; }
+.composer-bottom .composer-plus-button, .composer-bottom .composer-voice-button { width: 32px; height: 32px; }
+.composer-nav-button { width: 32px; min-height: 32px; height: 32px; padding: 0; border-radius: 8px; color: #5f7386; }
+.composer-nav-button svg { width: 17px; height: 17px; }
+.composer-usage-trigger { min-height: 32px; padding: 0 8px; border-radius: 8px; font-size: 12px; }
+.composer-usage-ring { width: 13px; height: 13px; }
+.composer-bottom .composer-send { width: 32px; height: 32px; margin-left: 4px; padding: 6px; border-radius: 50%; }
+/* Modelo y razonamiento comparten una sola acción discreta. */
+.composer-bottom .composer-ai-picker { min-width: 0; min-height: 32px; max-width: none; margin-right: 2px; border: 0; border-radius: 0; background: transparent; }
+.composer-bottom .composer-speed-trigger, .composer-bottom .composer-model-trigger, .composer-bottom .composer-effort-trigger { min-height: 32px; padding: 0 6px; border: 0; border-radius: 8px; background: transparent; font-size: 13px; }
+.composer-bottom .composer-speed-trigger { width: 28px; flex: 0 0 28px; padding: 0; color: #71849a; }
+.composer-bottom .composer-speed-trigger[aria-pressed="true"] { color: var(--blue); background: #eaf3ff; }
+.composer-bottom .composer-model-trigger { max-width: 150px; padding-right: 3px; color: #2d3f52; font-weight: 550; }
+.composer-bottom .composer-ai-trigger { gap: 5px; max-width: 190px; padding: 0 6px; border-radius: 8px; }
+.composer-ai-trigger .composer-ai-effort { flex: none; color: var(--muted); font-weight: 400; }
+.composer-ai-effort-group { margin-top: 5px; border-top: 1px solid var(--pim-line); }
+.composer-bottom .composer-effort-trigger { flex: 0 0 auto; gap: 2px; padding-left: 3px; color: var(--muted); }
+.composer-bottom .composer-speed-trigger:hover, .composer-bottom .composer-model-trigger:hover, .composer-bottom .composer-effort-trigger:hover,
+.composer-bottom .composer-model-trigger[aria-expanded="true"], .composer-bottom .composer-effort-trigger[aria-expanded="true"] { background: #f0f4f8; color: var(--ink); }
+.composer-bottom .composer-ai-chevron { width: 14px; height: 14px; margin: 0; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.composer-bottom .composer-model-menu, .composer-bottom .composer-effort-menu { left: auto; right: 0; }
+.composer-effort-menu { width: min(232px, calc(100vw - 48px)); overflow-y: auto; overscroll-behavior: contain; }
+.composer-model-menu { width: min(304px, calc(100vw - 32px)); }
+
+/* Usage: plan limits as Claude shows them, with OpenAI data; opens above its button. */
+/* Never wider than its composer (its containing block), however narrow the chat column is. */
+.composer-usage-panel { right: auto; width: min(380px, calc(100vw - 32px)); max-width: 100%; padding: 14px 16px 16px; border-radius: 14px; }
+.composer-usage-heading { padding-bottom: 4px; border-bottom: 0; }
+.composer-usage-heading strong { color: var(--muted); font-size: 13px; font-weight: 500; }
+.composer-usage-heading span { font-size: 11px; }
+.composer-usage-empty { font-size: 12px; }
+.composer-usage-row { gap: 7px; padding-top: 12px; }
+/* Label and percentage on the first line, reset time underneath (as Claude shows it): the
+   percentage never leaves the panel, whatever the width. */
+.composer-usage-row > div { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; column-gap: 10px; row-gap: 1px; font-size: 13px; }
+.composer-usage-row > div span { grid-column: 1; grid-row: 1; min-width: 0; overflow: hidden; color: var(--ink); white-space: nowrap; text-overflow: ellipsis; }
+.composer-usage-row > div small { grid-column: 1 / -1; grid-row: 2; min-width: 0; overflow: hidden; color: var(--muted); font-size: 12px; white-space: nowrap; text-overflow: ellipsis; }
+.composer-usage-row > div strong { grid-column: 2; grid-row: 1; min-width: 34px; color: var(--muted); font-size: 12.5px; font-weight: 500; text-align: right; font-variant-numeric: tabular-nums; }
+.composer-usage-row > i { height: 4px; background: #e9eef3; }
+.composer-usage-row > i b { background: var(--blue); }
+
+.composer-effort-option { min-height: 34px; }
+
+/* La falta de modelos nunca ocupa ni parte la fila de voz y envío. */
+.composer-bottom .composer-ai-unavailable { flex: 0 1 auto; max-width: 110px; }
+.composer-bottom .composer-ai-setup { white-space: nowrap; font-size: 12px; padding: 0 6px; overflow: hidden; text-overflow: ellipsis; color: var(--muted); }

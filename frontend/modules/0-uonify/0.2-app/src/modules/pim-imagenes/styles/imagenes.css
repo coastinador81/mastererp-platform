@@ -1,0 +1,82 @@
+/* Uonify PIM · pestaña «Imágenes» (prototipo: pim/imagenes.css, líneas 1-83).
+   La capa de marca y los componentes comunes están en el kit (@/shared/ui: tokens --pim-*,
+   pim-head, pim-section, pim-thumb, pim-dropzone, pim-progress, pim-btn-ai…). Aquí solo la
+   composición de la pestaña.
+   - Secciones planas separadas por espacio y una línea fina; las miniaturas como objetos.
+   - Azul = estructura y selección; aqua solo para lo que hace Uony (IA).
+   - Sin botón sólido en la vista principal: la acción destacada es «Generar Imágenes» (IA).
+   - Datos técnicos (nombres de archivo, URLs, dimensiones, tamaños) en monoespaciada.
+   - Sin colores sueltos: todo sale de los tokens. Todas las clases empiezan por pim-imagenes-.
+   La vista previa está en preview.css. */
+
+.pim-imagenes { container: pim-imagenes / inline-size; display: grid; gap: 24px; min-width: 0; color: var(--pim-ink); font-size: 13px; line-height: 1.5; }
+.pim-imagenes:focus, .pim-imagenes [tabindex="-1"]:focus { outline: none; }
+.pim-imagenes > [data-region]:empty { display: none; }
+.pim-imagenes .pim-icon { flex: 0 0 auto; }
+
+/* Cabecera «Media» + recuento (badge neutro) */
+.pim-imagenes-head .pim-head-row { align-items: center; }
+.pim-imagenes-total { font-variant-numeric: tabular-nums; }
+
+/* Cabecera de sección: título a la izquierda, acciones a la derecha (bajan si no caben). */
+.pim-imagenes .pim-section-head { align-items: center; flex-wrap: wrap; min-height: 32px; }
+.pim-imagenes .pim-section-actions { gap: 4px; }
+
+/* 1 · Subir Imágenes + Extraer Imágenes desde URL (lado a lado en contenedores anchos) */
+.pim-imagenes-sources { grid-template-columns: minmax(0, 1fr); gap: 24px 32px; }
+@container pim-imagenes (min-width: 560px) { .pim-imagenes-sources { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.pim-imagenes-source { display: grid; align-content: start; gap: 16px; min-width: 0; }
+
+.pim-imagenes-drop { position: relative; min-height: 144px; padding: 16px; }
+.pim-imagenes-drop:hover { border-color: var(--pim-subtle); }
+.pim-imagenes-drop.is-over { border-color: var(--pim-blue); }
+.pim-imagenes-drop:focus-within { border-color: var(--pim-blue); box-shadow: var(--pim-focus); }
+.pim-imagenes-drop p { margin: 0; }
+.pim-imagenes-drop > p:first-of-type { color: var(--pim-ink); font-weight: 550; }
+.pim-imagenes-file { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+.pim-imagenes-select { pointer-events: none; }
+.pim-imagenes-drop .pim-imagenes-select .pim-icon { color: currentColor; }
+.pim-imagenes-drop:hover .pim-imagenes-select { border-color: var(--pim-subtle); background: var(--pim-surface-soft); }
+
+.pim-imagenes-url-row { display: flex; gap: 8px; }
+.pim-imagenes-url-row .pim-input { flex: 1; }
+/* Extraer: botón de icono con contorno azul (acción estructural, no IA). */
+.pim-btn.pim-imagenes-scan { width: 36px; min-height: 36px; border-color: var(--pim-blue-line); color: var(--pim-blue); }
+.pim-btn.pim-imagenes-scan:hover:not(:disabled) { border-color: var(--pim-blue); background: var(--pim-blue-tint); color: var(--pim-blue-strong); }
+.pim-imagenes-progress { display: grid; gap: 8px; }
+.pim-imagenes-progress-head { display: flex; align-items: center; gap: 8px; color: var(--pim-muted); font-size: 12px; }
+.pim-imagenes-progress-head strong { color: var(--pim-ink); font-weight: 550; }
+.pim-imagenes-pct { margin-left: auto; font-variant-numeric: tabular-nums; }
+
+/* 2 · Galería, procesadas e IA: rejilla de pim-thumb con el pie debajo */
+.pim-btn.pim-imagenes-btn-destructive:hover:not(:disabled) { background: var(--pim-error-tint); color: var(--pim-error); }
+
+.pim-imagenes-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin: 0; padding: 0; list-style: none; }
+@container pim-imagenes (min-width: 520px) { .pim-imagenes-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@container pim-imagenes (min-width: 720px) { .pim-imagenes-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+
+.pim-imagenes-item { display: grid; align-content: start; gap: 8px; min-width: 0; }
+/* La miniatura no recorta (los tooltips de sus acciones pueden salir de ella): el redondeo
+   lo lleva la propia imagen, dentro del borde de 1 px. */
+.pim-imagenes-thumb { overflow: visible; transition: outline-color var(--pim-fast) var(--pim-ease); }
+.pim-imagenes-thumb > img { border-radius: calc(var(--pim-r-control) - 1px); user-select: none; }
+/* Anillo azul de selección: solo sigue a la casilla (sin clase is-selected), así se quita
+   al desmarcar aunque la miniatura no se repinte. */
+.pim-imagenes-thumb:has(.pim-check:checked) { outline: 2px solid var(--pim-blue); outline-offset: 2px; }
+.pim-imagenes-check { position: absolute; top: 8px; left: 8px; z-index: 2; display: grid; place-items: center; width: 24px; height: 24px; border: 1px solid var(--pim-line); border-radius: var(--pim-r-tag); background: color-mix(in srgb, var(--pim-surface) 92%, transparent); cursor: pointer; }
+.pim-imagenes-check .pim-check { margin: 0; cursor: pointer; }
+.pim-imagenes .pim-thumb-actions { z-index: 2; }
+@media (hover: none) { .pim-imagenes .pim-thumb-actions { opacity: 1; } }
+/* Tooltips de las acciones: se anclan al grupo (borde derecho, encima) y no a cada botón,
+   para que «Vista Previa de Imagen» quepa dentro de la miniatura aunque el ojo no sea el último. */
+.pim-imagenes .pim-thumb-actions > .pim-btn[data-tooltip] { position: static; }
+/* Foco visible sobre la imagen: el anillo de core queda tapado por la sombra de la acción. */
+.pim-imagenes .pim-thumb-actions .pim-btn:focus-visible { outline: 2px solid var(--pim-blue); outline-offset: 1px; box-shadow: var(--pim-focus), 0 1px 3px color-mix(in srgb, var(--pim-ink) 14%, transparent); }
+
+.pim-imagenes-caption { display: grid; gap: 4px; min-width: 0; }
+.pim-imagenes-name { overflow: hidden; color: var(--pim-ink); font-size: 12px; white-space: nowrap; text-overflow: ellipsis; }
+.pim-imagenes-tags { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; min-width: 0; color: var(--pim-muted); font-size: 11px; }
+.pim-imagenes-tags .pim-mono { font-size: 11px; font-variant-numeric: tabular-nums; }
+
+/* «Generar Imágenes» (IA), bajo «Extraer Imágenes desde URL». */
+.pim-imagenes-generate { display: flex; padding-top: 4px; }

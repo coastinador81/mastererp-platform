@@ -1,0 +1,112 @@
+/* Marco aprobado del alta; cabecera persistente y un único progreso por fases. */
+.activation-screen { height: 100dvh; box-sizing: border-box; padding: 68px 14px 14px; background: var(--uon-auth-sky); color: var(--uon-auth-text); display: grid; place-items: center; overflow: auto; }
+.activation-screen button, .activation-card button { cursor: pointer; }
+.activation-screen > .activation-topbar { position: fixed; z-index: 30; inset: 0 0 auto; height: 60px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; pointer-events: none; }
+.activation-topbar .topbar-left { position: static; display: flex; pointer-events: auto; }
+.activation-topbar .topbar-right { position: static; margin-left: auto; pointer-events: auto; gap: 10px; }
+.activation-topbar .services-menu { top: 58px; }
+.activation-topbar .workspace-brand { display: flex; align-items: center; }
+.activation-topbar .workspace-brand-full { display: block; width: 110px; height: auto; }
+.activation-topbar .services-preparation-note { margin: 0 6px 12px; font-size: 12px; color: var(--uon-auth-muted); line-height: 1.5; }
+.activation-card > header button { background: transparent; border: 0; color: var(--uon-auth-muted); }
+.activation-conversation { width: min(980px, 100%); height: min(760px, 100%); min-height: 0; }
+.activation-journey { width: 100%; min-width: 0; }
+.activation-card { background: var(--surface); margin-bottom: 12px; }
+.activation-screen .activation-journey, .activation-card-restored.uon-profile-dialog { height: 100%; min-height: 0; }
+.activation-card-restored.uon-profile-dialog { width: 100%; max-height: 100%; margin: 0; overflow: auto; }
+.activation-card-restored .uon-onboard-shell { height: 100%; min-height: 0; }
+.activation-card-restored .uon-onboard-side { padding: 28px; min-height: 0; }
+.activation-card-restored .uon-onboard-side-copy { display: flex; flex-direction: column; justify-content: center; min-height: 0; }
+.activation-card-restored .uon-onboard-side-copy > span { font-size: clamp(32px, 3vw, 39px); }
+.activation-card-restored .uon-onboard-side-copy em { font-family: Georgia, serif; font-weight: 400; color: var(--uon-auth-action); }
+.activation-card-restored .uon-onboard-side-copy p { font-size: 13px; font-weight: 400; }
+.activation-character { display: block; width: 100%; max-height: min(36dvh, 280px); object-fit: contain; }
+.activation-card-restored .uon-onboard-main { min-height: 0; min-width: 0; padding: 26px 30px 24px; display: flex; flex-direction: column; }
+.activation-stage-header { flex-shrink: 0; margin-bottom: 22px; }
+.activation-progress { width: 100%; outline-offset: 6px; }
+.activation-progress-phases { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; list-style: none; padding: 0; margin: 0 0 12px; }
+.activation-progress-phases li { display: flex; align-items: center; gap: 6px; color: var(--uon-auth-muted); font-size: 11px; }
+.activation-phase-marker { display: grid; place-items: center; flex: 0 0 22px; height: 22px; border: 1px solid var(--uon-auth-line-strong); border-radius: 50%; color: var(--uon-auth-muted); font-size: 11px; }
+.activation-progress-phases .is-current { color: var(--uon-auth-action); font-weight: 700; }
+.activation-progress-phases .is-current .activation-phase-marker { color: var(--surface); background: var(--uon-auth-action); border-color: var(--uon-auth-action); }
+.activation-progress-phases .is-complete .activation-phase-marker { color: var(--uon-auth-action); background: var(--uon-auth-info); border-color: var(--uon-auth-line-hover); }
+.activation-progress-track { height: 5px; background: var(--uon-auth-line); border-radius: 8px; overflow: hidden; }
+.activation-progress-track > span { display: block; height: 100%; border-radius: inherit; background: var(--uon-auth-live); }
+.activation-progress-current { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-top: 9px; color: var(--uon-auth-muted); font-size: 12px; line-height: 1.4; }
+.activation-progress-current strong { color: var(--uon-auth-action); font-weight: 600; }
+.activation-progress-current > span { flex-shrink: 0; font-variant-numeric: tabular-nums; }
+.activation-stage-body { flex: 1; min-height: 0; min-width: 0; overflow: auto; overscroll-behavior: contain; scrollbar-gutter: stable; padding-right: 4px; }
+.activation-card > header { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--uon-auth-line); color: var(--pim-ai-text); font-size: 13px; }
+.activation-card > header svg { width: 36px; height: 24px; }
+.activation-card > header button { margin-left: auto; font-size: 20px; }
+.activation-card-compact { border: 1px solid var(--uon-auth-line); border-radius: 16px; overflow: hidden; }
+.activation-card-compact .uon-onboard-main { padding: 16px; }
+.activation-card-compact h2 { font-size: 19px; margin: 0 0 10px; }
+.activation-choice button:focus-visible { outline: 3px solid var(--uon-auth-focus-soft); border-color: var(--uon-auth-live); }
+.activation-card-content { min-width: 0; min-height: 100%; display: flex; flex-direction: column; }
+.activation-card-content p { color: var(--uon-auth-muted); font-size: 13px; line-height: 1.6; }
+.activation-card-content .uon-onboard-intro { font-size: 14px; }
+.activation-card-content .uon-onboard-step[hidden] { display: none; }
+.activation-card-content .uon-terms-clause { margin-top: 18px; }
+.activation-card-content .uon-terms-clause p { font-size: 12px; color: inherit; }
+.activation-profile-form { flex: 1; display: flex; flex-direction: column; }
+.activation-actions { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; margin-top: 24px; }
+.activation-profile-form > .activation-actions { margin-top: auto; padding-top: 28px; }
+.activation-actions .uon-profile-submit { margin-left: auto; }
+.activation-eyebrow { color: var(--uon-auth-muted); font-size: 12px; }
+.activation-choice { border: 0; padding: 0; margin: 16px 0; min-width: 0; }
+.activation-choice legend { color: var(--uon-auth-ink); font-size: 14px; font-weight: 650; }
+.activation-choice button { display: block; width: 100%; text-align: left; padding: 13px 15px; margin-top: 10px; border: 1px solid var(--uon-auth-line); border-radius: 12px; background: var(--surface); color: var(--uon-auth-text); font: inherit; font-size: 13px; }
+.activation-choice button:hover { border-color: var(--uon-auth-line-hover); }
+.activation-consent { display: flex; align-items: flex-start; gap: 10px; margin-block: 18px; color: var(--uon-auth-text); font-size: 13px; line-height: 1.5; }
+.activation-consent input { margin-top: 3px; flex-shrink: 0; width: 18px; height: 18px; accent-color: var(--uon-auth-action); }
+.activation-card-content .activation-success { color: var(--pim-ai-text); }
+.activation-back { margin-top: 16px; align-self: flex-start; }
+.activation-benefits { margin-bottom: 12px; }
+.activation-message { margin: 8px 0 0; font-size: 13px; color: var(--uon-auth-muted); }
+.activation-complete { display: flex; flex-direction: column; min-height: 100%; }
+.activation-complete h2 { outline-offset: 5px; }
+.activation-complete-summary { display: grid; gap: 12px; margin: 8px 0 18px; }
+.activation-complete-summary dt { color: var(--uon-auth-ink); font-size: 13px; font-weight: 650; }
+.activation-complete-summary dd { margin: 3px 0 0; color: var(--uon-auth-muted); font-size: 13px; line-height: 1.5; }
+.activation-complete-next { padding: 14px 16px; border: 1px solid var(--uon-auth-line); border-radius: 12px; background: var(--uon-auth-info); }
+.activation-complete-next h3 { margin: 0 0 6px; font-size: 14px; }
+.activation-complete-next p { margin: 6px 0 0; }
+.activation-complete-next .activation-complete-intent { color: var(--uon-auth-text); overflow-wrap: anywhere; white-space: pre-wrap; }
+.activation-complete > .activation-actions { margin-top: auto; padding-top: 24px; }
+@media (max-width: 760px) {
+  .activation-screen { padding: 62px 10px 10px; }
+  .activation-screen > .activation-topbar { height: 54px; padding-inline: 10px; }
+  .activation-topbar .topbar-right { gap: 4px; }
+  .activation-topbar .workspace-brand-full { width: 100px; }
+  .activation-conversation { width: min(640px, 100%); }
+  .activation-card-restored .uon-onboard-shell { display: flex; flex-direction: column; }
+  .activation-card-restored .uon-onboard-side { display: grid; grid-template-columns: minmax(0, 1fr) 64px; gap: 4px 12px; padding: 10px 16px; flex-shrink: 0; }
+  .activation-card-restored .uon-profile-brand { display: none; }
+  .activation-card-restored .uon-onboard-side-copy { display: contents; }
+  .activation-card-restored .uon-onboard-side-copy > span { grid-column: 1; font-size: 22px; align-self: center; }
+  .activation-card-restored .activation-character { grid-column: 2; grid-row: 1; width: 64px; height: 48px; align-self: center; }
+  .activation-card-restored .uon-onboard-side-copy p { display: none; }
+  .activation-card-restored .uon-onboard-main { flex: 1; padding: 14px 18px; }
+  .activation-stage-header { margin-bottom: 16px; }
+  .activation-progress-phases { gap: 4px; margin-bottom: 10px; }
+  .activation-progress-phases li { flex-direction: column; gap: 4px; font-size: 10px; text-align: center; line-height: 1.2; }
+  .activation-phase-marker { flex-basis: 20px; width: 20px; height: 20px; font-size: 10px; }
+  .activation-progress-current { font-size: 11px; margin-top: 8px; }
+}
+@media (max-width: 760px), (max-height: 720px) {
+  .activation-complete > p { margin: 8px 0 14px; }
+  .activation-complete-summary { gap: 8px; margin: 0 0 12px; }
+  .activation-complete-summary dt, .activation-complete-summary dd { display: inline; font-size: 12px; line-height: 1.45; }
+  .activation-complete-summary dd { margin-left: 5px; overflow-wrap: anywhere; }
+  .activation-complete-next { padding: 10px 12px; }
+  .activation-complete > .activation-actions { padding-top: 16px; }
+  .activation-actions { margin-top: 16px; gap: 12px; }
+  .activation-profile-form > .activation-actions { padding-top: 16px; }
+  .activation-card-content .uon-onboard-intro { margin: 8px 0 16px; }
+  .activation-card-content .uon-terms-clause { margin-top: 0; }
+  .activation-card-content [data-activation-profile-part="ai-terms"] .uon-onboard-intro { margin-bottom: 6px; }
+  .activation-verified-email { margin: 8px 0 0; font-size: 13px; }
+  .activation-optional-fields { grid-column: 1 / -1; }
+  .activation-optional-fields .pim-information-content:not([hidden]) { display: grid; gap: 16px; }
+}

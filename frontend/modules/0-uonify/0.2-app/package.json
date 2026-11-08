@@ -1,0 +1,59 @@
+{
+  "name": "uonify-frontend",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Uonify — frontend en React (Vite). Datos simulados con MSW hasta conectar el backend.",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "postbuild": "npm run prerender",
+    "build:ssr": "vite build --ssr",
+    "prerender": "npm run build:ssr && node scripts/prerender.mjs",
+    "preview": "vite preview",
+    "typecheck": "tsc -b --pretty false",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check:lines": "node scripts/check-lines.mjs",
+    "check:contract": "node scripts/check-live-contract.mjs",
+    "check": "npm run check:lines && npm run check:contract && npm run typecheck && npm run lint && npm run test"
+  },
+  "dependencies": {
+    "@google/model-viewer": "^4.3.1",
+    "@stripe/stripe-js": "7.9.0",
+    "@tanstack/react-query": "^5.104.0",
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.48.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "react-router": "^8.4.0",
+    "three": "~0.183.2",
+    "zustand": "^5.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.0",
+    "@testing-library/jest-dom": "^6.6.0",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.0",
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@types/three": "~0.183.0",
+    "@vitejs/plugin-react": "^6.1.1",
+    "eslint": "^10.11.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^16.0.0",
+    "jsdom": "^30.1.1",
+    "msw": "^2.15.0",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.70.1",
+    "vite": "^8.3.1",
+    "vitest": "^5.0.2"
+  },
+  "msw": {
+    "workerDirectory": [
+      "public"
+    ]
+  }
+}

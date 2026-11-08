@@ -1,0 +1,100 @@
+.amz-conversation-card {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  max-width: 560px;
+  padding: 18px;
+  border: 1px solid var(--pim-blue-line);
+  border-radius: var(--pim-r-card);
+  background: var(--surface);
+  color: var(--ink);
+  text-align: left;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.amz-conversation-header { display: flex; align-items: center; gap: 12px; }
+.amz-conversation-logo {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  border: 1px solid var(--line);
+  border-radius: var(--pim-r-control);
+}
+.amz-conversation-logo img { display: block; width: 36px; height: 36px; object-fit: contain; }
+.amz-conversation-title { flex: 1; min-width: 0; }
+.amz-conversation-card h3 { margin: 0; color: var(--ink); font-size: 14px; font-weight: 600; line-height: 1.5; }
+.amz-conversation-state { color: var(--muted); font-size: 12px; }
+.amz-conversation-state.is-connected { color: var(--pim-success); }
+.amz-conversation-card p { margin: 14px 0; color: var(--text); font-size: 13px; line-height: 1.6; }
+.amz-conversation-card button { font: inherit; font-size: 13px; cursor: pointer; }
+.amz-conversation-primary, .amz-conversation-settings .nxs-primary {
+  padding: 10px 15px;
+  border: 1px solid var(--blue-dark);
+  border-radius: var(--pim-r-control);
+  background: var(--blue-dark);
+  color: var(--surface);
+  font-weight: 600;
+  line-height: 1.5;
+}
+.amz-conversation-close {
+  display: grid;
+  place-items: center;
+  flex: 0 0 32px;
+  width: 32px;
+  height: 32px;
+  padding: 6px;
+  border: 0;
+  border-radius: var(--pim-r-control);
+  background: transparent;
+  color: var(--muted);
+}
+.amz-conversation-close:hover { background: var(--soft); }
+.amz-conversation-card button:disabled { cursor: default; opacity: .55; }
+.amz-conversation-card button:focus-visible { outline: none; box-shadow: var(--pim-focus); }
+.amz-conversation-panel { margin-top: 16px; border-top: 1px solid var(--line); }
+.amz-conversation-panel:focus { outline: none; }
+.amz-conversation-settings .nxs-detail-account {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 12px 0;
+  padding: 12px;
+  border-radius: var(--pim-r-control);
+  background: var(--sidebar);
+}
+.amz-conversation-settings .nxs-detail-account span { font-size: 11px; color: var(--muted); }
+.amz-conversation-settings .nxs-detail-account strong { font-size: 13px; font-weight: 500; }
+.amz-conversation-settings .nxs-detail-account p { margin: 0; }
+.amz-conversation-settings .amz-detail-identity {
+  display: grid;
+  grid-template-columns: minmax(0, 102px) minmax(0, 1fr);
+  align-items: baseline;
+  gap: 10px;
+  margin: 0;
+  padding: 10px 0;
+  border-radius: 0;
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+}
+.amz-conversation-settings .amz-detail-identity strong { font-size: 12px; }
+.amz-permission-details { padding: 12px 0; }
+.amz-permission-details summary { color: var(--text); cursor: pointer; font-size: 12px; line-height: 1.5; }
+.amz-permission-details summary:focus-visible { outline: none; box-shadow: var(--pim-focus); border-radius: var(--pim-r-control); }
+.amz-conversation-settings .amz-permission-details p { margin-bottom: 0; }
+.amz-conversation-settings .nxs-detail-status { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0 16px; border-bottom: 1px solid var(--line); font-size: 13px; }
+.amz-conversation-settings h3 { margin: 16px 0 8px; font-size: 13px; }
+.amz-conversation-settings ul { padding-left: 18px; margin: 8px 0; font-size: 13px; color: var(--text); line-height: 1.7; }
+.amz-conversation-settings li { margin: 4px 0; }
+.amz-conversation-settings .nxs-detail-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 18px; }
+.amz-conversation-settings .nxs-detail-actions p { flex-basis: 100%; margin: 0; }
+.amz-conversation-settings .nxs-text-button { padding: 8px 0; border: 0; background: transparent; color: var(--blue-dark); font-size: 12px; line-height: 1.5; text-align: left; }
+.amz-conversation-settings .amz-check-connection { margin-top: 10px; color: var(--muted); }
+.amz-conversation-settings [role="alert"] { color: var(--pim-error); }
+.amz-conversation-settings [role="status"]:focus { outline: 2px solid var(--pim-blue-line); outline-offset: 3px; }
+@media (max-width: 420px) {
+  .amz-conversation-card { padding: 14px; }
+  .amz-conversation-settings .nxs-detail-actions { align-items: stretch; flex-direction: column; gap: 4px; }
+  .amz-conversation-settings .nxs-detail-actions p { flex-basis: auto; }
+}

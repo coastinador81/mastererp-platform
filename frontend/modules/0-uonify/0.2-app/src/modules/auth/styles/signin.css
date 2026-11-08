@@ -1,0 +1,35 @@
+/* Acceso a Uonify — diálogo «Entra en Uonify» (#uon-auth-dialog)
+   Origen: auth-ui.css del prototipo (líneas 7–39); colores en tokens.css del módulo. */
+.uon-auth-dialog { width: min(780px, calc(100vw - 28px)); max-height: min(680px, calc(100dvh - 28px)); padding: 0; border: 1px solid var(--uon-auth-line); border-radius: 24px; background: var(--surface); color: var(--uon-auth-text); box-shadow: 0 28px 90px var(--uon-auth-shadow-dialog); overflow: auto; }
+.uon-auth-dialog::backdrop { background: var(--uon-auth-backdrop); backdrop-filter: blur(6px); }
+.uon-auth-dialog, .uon-auth-dialog * { box-sizing: border-box; }
+.uon-auth-shell { display: grid; grid-template-columns: .85fr 1fr; min-height: 530px; }
+.uon-auth-brand { position: relative; display: flex; flex-direction: column; min-height: 530px; padding: 35px 32px; overflow: hidden; background: radial-gradient(circle at 45% 20%, var(--uon-auth-brand-mint) 0, var(--uon-auth-brand-sky) 40%, var(--uon-auth-brand-deep) 110%); }
+.uon-auth-brand::before, .uon-auth-brand::after { content: ''; position: absolute; border: 1px solid var(--uon-auth-white-veil); border-radius: 50%; pointer-events: none; }
+.uon-auth-brand::before { width: 360px; height: 360px; right: -210px; bottom: -195px; }
+.uon-auth-brand::after { width: 250px; height: 250px; left: -120px; top: 145px; }
+.uon-auth-brand > img:first-child { position: relative; z-index: 1; width: 150px; height: auto; }
+.uon-auth-brand-copy { position: relative; z-index: 1; margin-top: 94px; max-width: 270px; }
+.uon-auth-brand-copy span { display: block; font-size: clamp(27px, 3vw, 37px); font-weight: 650; letter-spacing: -.055em; line-height: 1.05; }
+.uon-auth-brand-copy p { max-width: 240px; margin: 14px 0 0; color: var(--uon-auth-slate); font-size: 14px; line-height: 1.55; }
+.uon-auth-character { position: absolute; right: -22px; bottom: -42px; width: 210px; height: 210px; object-fit: contain; transform: rotate(-12deg); opacity: .93; }
+.uon-auth-content { position: relative; display: flex; flex-direction: column; justify-content: center; padding: 42px clamp(25px, 4vw, 55px) 31px; font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+.uon-auth-close { position: absolute; top: 18px; right: 20px; width: 34px; height: 34px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--uon-auth-muted); font-size: 28px; font-weight: 300; line-height: 1; cursor: pointer; }
+.uon-auth-close:hover { background: var(--uon-auth-info); color: var(--uon-auth-ink); }
+.uon-auth-overline { margin: 0 0 9px; color: var(--uon-auth-blue); font-size: 11px; font-weight: 750; letter-spacing: .13em; }
+.uon-auth-content h2 { margin: 0; color: var(--uon-auth-ink); font-size: clamp(28px, 3vw, 35px); font-weight: 640; letter-spacing: -.045em; line-height: 1.12; }
+.uon-auth-content > p#uon-auth-intro { margin: 12px 0 26px; color: var(--uon-auth-muted); font-size: 14px; line-height: 1.55; }
+.uon-auth-pending { margin: -7px 0 20px; padding: 12px 14px; border: 1px solid var(--uon-auth-line); border-radius: 11px; background: var(--uon-auth-sky); }
+.uon-auth-pending span { color: var(--uon-auth-blue-text); font-size: 11px; font-weight: 700; letter-spacing: .03em; }
+.uon-auth-pending p { margin: 4px 0 0; max-height: 3.1em; overflow: hidden; color: var(--uon-auth-label); font-size: 13px; line-height: 1.55; }
+.uon-auth-provider { width: 100%; min-height: 52px; display: grid; grid-template-columns: 29px 1fr 20px; align-items: center; gap: 11px; padding: 8px 16px; border: 1px solid var(--uon-auth-navy); border-radius: 12px; background: var(--uon-auth-navy); box-shadow: 0 9px 22px var(--uon-auth-navy-shadow); color: var(--surface); font: inherit; font-size: 14px; font-weight: 650; text-align: center; cursor: pointer; }
+.uon-auth-provider:hover { background: var(--uon-auth-action); border-color: var(--uon-auth-action); }
+.uon-auth-provider:disabled { cursor: progress; opacity: .72; }
+.uon-auth-chatgpt-mark { display: block; width: 29px; height: 29px; object-fit: contain; }
+.uon-auth-provider-arrow { font-size: 18px; font-weight: 400; }
+.uon-auth-help { margin: 14px 0 0; color: var(--uon-auth-subtle); font-size: 12px; line-height: 1.5; text-align: center; }
+.uon-auth-status { margin: 13px 0 0; padding: 11px 12px; border-radius: 9px; background: var(--uon-auth-info); color: var(--uon-auth-slate); font-size: 12px; line-height: 1.45; }
+.uon-auth-legal { display: flex; align-items: center; justify-content: center; gap: 9px; margin-top: 28px; color: var(--uon-auth-subtle); font-size: 11px; }
+.uon-auth-legal a { color: inherit; text-decoration: none; }
+.uon-auth-legal a:hover { text-decoration: underline; }
+.uon-auth-dialog :is(button, a):focus-visible { outline: 3px solid var(--uon-auth-focus); outline-offset: 3px; }

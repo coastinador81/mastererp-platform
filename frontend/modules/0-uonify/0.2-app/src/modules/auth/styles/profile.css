@@ -1,0 +1,32 @@
+/* Acceso a Uonify — alta en seis pasos: marco, progreso y campos
+   Origen: auth-ui.css del prototipo (líneas 77–105); colores en tokens.css del módulo. */
+.uon-profile-dialog { width: min(980px, calc(100vw - 28px)); max-height: min(760px, calc(100dvh - 28px)); padding: 0; overflow: auto; border: 1px solid var(--uon-auth-line); border-radius: 25px; background: var(--surface); color: var(--uon-auth-text); box-shadow: 0 32px 100px var(--uon-auth-shadow-profile); }
+.uon-profile-dialog::backdrop { background: var(--uon-auth-backdrop-strong); backdrop-filter: blur(9px); }
+.uon-profile-dialog, .uon-profile-dialog * { box-sizing: border-box; }
+.uon-onboard-shell { display: grid; grid-template-columns: minmax(245px, .75fr) minmax(0, 1.7fr); min-height: 655px; font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+.uon-onboard-side { display: flex; flex-direction: column; padding: 38px 32px; overflow: hidden; background: radial-gradient(circle at 85% 65%, var(--uon-auth-side-aqua) 0, var(--uon-auth-side-mint) 27%, var(--uon-auth-side-sky) 68%, var(--uon-auth-side-blue) 100%); }
+.uon-profile-brand { display: block; width: 146px; height: auto; }
+.uon-onboard-side-copy { margin: auto 0; max-width: 260px; }
+.uon-onboard-side-copy span { display: block; color: var(--uon-auth-ink); font-size: clamp(29px, 3vw, 39px); font-weight: 650; letter-spacing: -.055em; line-height: 1.06; }
+.uon-onboard-side-copy p { margin: 17px 0 0; color: var(--uon-auth-slate); font-size: 14px; line-height: 1.6; }
+.uon-onboard-main { position: relative; padding: 42px clamp(27px, 4vw, 54px) 30px; }
+.uon-onboard-main .uon-auth-close { top: 20px; right: 22px; }
+/* Seis pasos (requisito F6 de la revisión de OpenAI): una lista con el paso actual marcado. */
+.uon-onboard-progress { display: flex; gap: 6px; width: min(240px, calc(100% - 48px)); margin: 0 0 27px; padding: 0; list-style: none; }
+.uon-onboard-progress li { flex: 1; height: 4px; border-radius: 9px; background: var(--uon-auth-line); }
+.uon-onboard-progress li.is-current { background: var(--uon-auth-live); }
+.uon-onboard-progress li.is-complete { background: var(--uon-auth-aqua-done); }
+.uon-onboard-main .uon-auth-overline { margin-bottom: 12px; }
+.uon-onboard-step h2 { margin: 0; color: var(--uon-auth-ink); font-size: clamp(27px, 3.3vw, 35px); font-weight: 650; letter-spacing: -.05em; line-height: 1.12; }
+.uon-onboard-intro { max-width: 540px; margin: 11px 0 25px; color: var(--uon-auth-muted); font-size: 14px; line-height: 1.55; }
+.uon-onboard-suggestion { margin: -11px 0 15px; padding: 9px 12px; border-radius: 9px; background: var(--uon-auth-suggest); color: var(--uon-auth-suggest-text); font-size: 11px; line-height: 1.45; }
+.uon-onboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 17px 16px; }
+.uon-onboard-field { min-width: 0; }
+.uon-onboard-field-wide { grid-column: 1 / -1; }
+.uon-onboard-field label { display: block; margin-bottom: 7px; color: var(--uon-auth-label); font-size: 12px; font-weight: 650; }
+.uon-onboard-field label span { color: var(--uon-auth-faint); font-weight: 450; }
+.uon-onboard-field input, .uon-onboard-field select { display: block; width: 100%; min-height: 46px; padding: 0 13px; border: 1px solid var(--uon-auth-line-strong); border-radius: 10px; background: var(--surface); color: var(--uon-auth-text); font: inherit; font-size: 13px; }
+.uon-onboard-field input[readonly] { background: var(--uon-auth-sky); color: var(--uon-auth-link); }
+.uon-onboard-field small { display: block; margin-top: 6px; color: var(--uon-auth-subtle); font-size: 11px; line-height: 1.4; }
+.uon-age-notice { margin: 9px 0 0; padding: 10px 12px; border-radius: 9px; background: var(--uon-auth-error-tint); color: var(--uon-auth-error); font-size: 12px; line-height: 1.45; }
+.uon-onboard-field :is(input,select):focus { outline: 3px solid var(--uon-auth-focus-soft); border-color: var(--uon-auth-live); }

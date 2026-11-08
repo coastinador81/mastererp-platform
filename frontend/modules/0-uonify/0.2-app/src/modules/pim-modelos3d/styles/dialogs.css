@@ -1,0 +1,123 @@
+/* Pestaña «3D» (módulo pim-modelos3d) · diálogos (Generador, Cargar Modelo 3D y Vista AR) y movimiento reducido.
+   Copia de pim/modelos3d.css del prototipo (líneas 251-368). Todas las clases
+   propias empiezan por pim-modelos3d-; solo tokens --pim-* (los hex de la escena
+   3D y del lienzo AR viven en model/constants.ts y model/ar.ts). */
+
+/* ======================================================= modales */
+.pim-modelos3d-dialog .pim-dialog-header h2 { display: flex; align-items: center; gap: 8px; }
+.pim-modelos3d-dialog .pim-dialog-header p { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.pim-modelos3d-dialog .pim-dialog-header p .pim-badge { gap: 4px; }
+.pim-modelos3d-dlg-icon { display: inline-grid; flex: none; place-items: center; color: var(--pim-subtle); }
+.pim-modelos3d-dlg-icon.is-ai { color: var(--pim-ai-text); }
+.pim-modelos3d-dlg { container: pim-modelos3d-dlg / inline-size; display: grid; gap: 24px; min-width: 0; color: var(--pim-ink); font-size: 13px; }
+.pim-modelos3d-dlg:focus { outline: none; }
+.pim-modelos3d-dlg-stack { display: grid; gap: 16px; min-width: 0; }
+.pim-modelos3d-dlg-stack.is-tight { gap: 12px; }
+.pim-modelos3d-dlg-stack:empty { display: none; }
+.pim-modelos3d-dlg-end { display: flex; justify-content: flex-end; }
+.pim-modelos3d-dlg-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 16px; padding-top: 16px; border-top: 1px solid var(--pim-line); }
+.pim-modelos3d-estimate { display: inline-flex; align-items: center; gap: 8px; color: var(--pim-muted); font-size: 13px; }
+.pim-modelos3d-estimate .pim-icon { color: var(--pim-subtle); }
+.pim-modelos3d-advtoggle { justify-self: start; }
+.pim-modelos3d-advtoggle .pim-icon { color: var(--pim-subtle); }
+.pim-modelos3d-swtitle { display: block; color: var(--pim-ink); font-size: 13px; font-weight: 550; }
+.pim-modelos3d-hint { display: block; color: var(--pim-muted); font-size: 12px; }
+
+/* Imágenes Fuente (E38) */
+.pim-modelos3d-thumbs { display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); gap: 8px; }
+.pim-thumb.pim-modelos3d-thumb-more { display: grid; place-items: center; border-style: dashed; border-color: var(--pim-line-strong); background: var(--pim-surface); color: var(--pim-muted); font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* Generación en curso (E39-E43): el paso en curso como título + progreso IA. */
+.pim-modelos3d-run { display: grid; gap: 16px; }
+.pim-modelos3d-run-head { display: flex; align-items: flex-start; gap: 12px; }
+.pim-modelos3d-run-head .pim-modelos3d-h4 { font-size: 15px; }
+.pim-modelos3d-run-head .pim-modelos3d-text { margin-top: 4px; }
+.pim-modelos3d-progress-row { display: grid; gap: 8px; }
+
+/* Procesamiento en Curso / resultados (E44, E45) */
+.pim-modelos3d-state { display: grid; justify-items: center; gap: 8px; padding: 8px 0; text-align: center; }
+.pim-modelos3d-state > p, .pim-modelos3d-state > h4 { margin: 0; }
+.pim-modelos3d-state .pim-modelos3d-text { max-width: 30rem; }
+.pim-modelos3d-idbox { display: grid; gap: 2px; width: 100%; max-width: 440px; margin: 8px 0; padding: 8px 12px; border: 1px solid var(--pim-line); border-radius: var(--pim-r-control); background: var(--pim-surface-soft); text-align: left; }
+.pim-modelos3d-idbox code { overflow-wrap: anywhere; color: var(--pim-ink); font-size: 12.5px; }
+.pim-modelos3d-use { justify-self: end; }
+
+/* Cargar Modelo 3D (E46, E47) */
+.pim-dropzone.pim-modelos3d-drop { display: block; padding: 32px 24px; }
+.pim-modelos3d-drop.is-dragging { border-color: var(--pim-blue); background: var(--pim-blue-tint); }
+.pim-modelos3d-drop.is-error { border-color: var(--pim-error-line); background: var(--pim-surface); }
+.pim-modelos3d-drop.is-success { border-color: var(--pim-success-line); background: var(--pim-surface); }
+.pim-modelos3d-drop .pim-modelos3d-centered + .pim-modelos3d-centered { margin-top: 24px; }
+.pim-modelos3d-drop .pim-modelos3d-stats { max-width: 30rem; }
+.pim-modelos3d-filename { overflow-wrap: anywhere; font-family: var(--pim-mono); font-size: 12px; }
+.pim-modelos3d-progress-wrap { display: grid; gap: 8px; width: 100%; max-width: 28rem; }
+
+/* ================================================== Vista AR */
+.pim-modelos3d-dlg .pim-modelos3d-artabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; }
+.pim-modelos3d-dlg .pim-modelos3d-artabs button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 32px; }
+.pim-modelos3d-artabs button .pim-icon { color: var(--pim-subtle); }
+.pim-modelos3d-artabs button[aria-selected="true"] .pim-icon { color: var(--pim-blue); }
+@container pim-modelos3d-dlg (max-width: 480px) {
+  .pim-modelos3d-dlg .pim-modelos3d-artabs button { white-space: nowrap; }
+  .pim-modelos3d-artabs button .pim-icon { display: none; }
+  .pim-modelos3d-stats > div { padding: 8px; }
+  .pim-modelos3d-stats strong.pim-mono { overflow-wrap: normal; font-size: 12px; }
+}
+.pim-modelos3d-arpanel { min-width: 0; outline: none; }
+.pim-modelos3d-arpanel:focus-visible { border-radius: var(--pim-r-control); box-shadow: var(--pim-focus); }
+.pim-modelos3d-arpanel[hidden] { display: none; }
+.pim-modelos3d-argrid2 { display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px 32px; }
+@container pim-modelos3d-dlg (min-width: 760px) { .pim-modelos3d-argrid2 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.pim-modelos3d-grouptitle { display: flex; align-items: center; gap: 8px; margin: 0; color: var(--pim-ink); font-size: 15px; font-weight: 650; line-height: 1.35; }
+.pim-modelos3d-grouptitle .pim-icon { color: var(--pim-subtle); }
+.pim-modelos3d-grouptitle.is-small { font-size: 13px; }
+.pim-modelos3d-groupdesc { margin: -8px 0 0; color: var(--pim-muted); font-size: 13px; }
+.pim-modelos3d-qr { position: relative; margin: 8px 0 4px; }
+.pim-modelos3d-qr img { display: block; width: 192px; height: 192px; padding: 8px; border: 1px solid var(--pim-line); border-radius: var(--pim-r-card); background: var(--pim-surface); }
+.pim-modelos3d-live { display: inline-flex; align-items: center; gap: 4px; min-height: 20px; padding: 2px 8px; border: 1px solid var(--pim-ai-line); border-radius: var(--pim-r-tag); background: var(--pim-ai-tint); color: var(--pim-ai-strong); font-size: 11px; font-weight: 650; white-space: nowrap; }
+.pim-modelos3d-qr .pim-modelos3d-live { position: absolute; top: -8px; right: -8px; }
+.pim-modelos3d-steps { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
+.pim-modelos3d-steps li { display: flex; align-items: flex-start; gap: 12px; }
+.pim-modelos3d-steps strong { font-size: 13px; font-weight: 600; }
+.pim-modelos3d-steps p { margin: 2px 0 0; color: var(--pim-muted); font-size: 12px; line-height: 1.5; }
+.pim-modelos3d-step-n { display: grid; flex: none; place-items: center; width: 24px; height: 24px; border: 1px solid var(--pim-line-strong); border-radius: 50%; background: var(--pim-surface); color: var(--pim-muted); font-size: 12px; font-weight: 650; font-variant-numeric: tabular-nums; }
+.pim-modelos3d-features { display: grid; gap: 8px; padding-top: 16px; border-top: 1px solid var(--pim-line); }
+.pim-modelos3d-features ul { display: grid; gap: 4px; margin: 0; padding: 0; color: var(--pim-muted); list-style: none; }
+.pim-modelos3d-features li { display: flex; align-items: center; gap: 8px; }
+.pim-modelos3d-features .pim-modelos3d-dot { width: 4px; height: 4px; }
+
+.pim-modelos3d-camgrid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; }
+@container pim-modelos3d-dlg (min-width: 860px) { .pim-modelos3d-camgrid { grid-template-columns: minmax(0, 3fr) minmax(0, 1fr); } }
+.pim-modelos3d-camstage { position: relative; aspect-ratio: 16 / 9; overflow: hidden; border-radius: var(--pim-r-card); background: var(--pim-ink); }
+.pim-modelos3d-camvideo, .pim-modelos3d-camcanvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.pim-modelos3d-camctl-center { position: absolute; inset: 0; display: grid; place-items: center; }
+.pim-modelos3d-camctl-bottom { position: absolute; right: 12px; bottom: 12px; left: 12px; display: flex; justify-content: center; }
+.pim-modelos3d-camprompt { position: absolute; inset: 0; display: grid; align-content: center; justify-items: center; gap: 12px; padding: 16px; color: var(--pim-surface); font-size: 13px; text-align: center; }
+.pim-modelos3d-camprompt p { margin: 0; }
+.pim-modelos3d-faded { opacity: .6; }
+.pim-btn.pim-modelos3d-glass { border-color: color-mix(in srgb, var(--pim-surface) 60%, transparent); background: color-mix(in srgb, var(--pim-surface) 92%, transparent); box-shadow: var(--pim-shadow-float); backdrop-filter: blur(4px); }
+.pim-card.pim-modelos3d-camctrl { display: grid; align-content: start; gap: 16px; }
+.pim-modelos3d-slabel { color: var(--pim-ink); font-size: 13px; font-weight: 550; font-variant-numeric: tabular-nums; }
+.pim-modelos3d-divider { padding-top: 16px; border-top: 1px solid var(--pim-line); }
+
+.pim-modelos3d-mvbox { position: relative; aspect-ratio: 16 / 9; overflow: hidden; border: 1px solid var(--pim-line); border-radius: var(--pim-r-card); background: var(--pim-surface-soft); }
+.pim-modelos3d-mv { display: block; width: 100%; height: 100%; }
+.pim-modelos3d-mvprogress { position: absolute; inset: 0; display: grid; align-content: center; justify-items: center; gap: 8px; color: var(--pim-muted); }
+.pim-modelos3d-mvprogress[hidden] { display: none; }
+.pim-modelos3d-mvprogress p { margin: 0; font-size: 13px; }
+.pim-modelos3d-mvempty { display: grid; align-content: center; justify-items: center; gap: 8px; aspect-ratio: 1; border: 1.5px dashed var(--pim-line-strong); border-radius: var(--pim-r-card); background: var(--pim-surface-soft); color: var(--pim-muted); }
+.pim-modelos3d-mvempty .pim-icon { color: var(--pim-subtle); }
+.pim-modelos3d-mvempty p { margin: 0; font-size: 13px; }
+.pim-modelos3d-mvempty.is-slate { background: var(--pim-surface-muted); }
+.pim-card.pim-modelos3d-techinfo { display: grid; gap: 12px; margin-top: 8px; }
+.pim-modelos3d-techinfo dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 16px; margin: 0; }
+@container pim-modelos3d-dlg (min-width: 560px) { .pim-modelos3d-techinfo dl { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.pim-modelos3d-techinfo dt { color: var(--pim-muted); font-size: 12px; }
+.pim-modelos3d-techinfo dd { margin: 2px 0 0; color: var(--pim-ink); font-family: var(--pim-mono); font-size: 12.5px; font-weight: 600; }
+
+/* Movimiento reducido: el núcleo ya lo aplica a .pim-tab; aquí, también a
+   los modales y al visor a pantalla completa. */
+@media (prefers-reduced-motion: reduce) {
+  .pim-modelos3d-root *, .pim-modelos3d-dlg * { animation: none !important; transition: none !important; }
+}
+:root[data-reduce-motion="true"] :is(.pim-modelos3d-root *, .pim-modelos3d-dlg *) { animation: none !important; transition: none !important; }

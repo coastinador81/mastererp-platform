@@ -1,0 +1,128 @@
+/* Uonify PIM · pestaña «Vídeo» (puerto de pim/video.css del prototipo, 1/3):
+   base, vistas, controles segmentados, estado vacío, reproductor, escenas, detalles,
+   requisitos, lista de vídeos y pie. Línea común del kit (tokens --pim-*, pim-head,
+   pim-section, pim-option, pim-subtabs, pim-thumb, pim-meta, pim-empty…); aquí solo la
+   composición. Azul = estructura y selección; aqua solo en lo que hace la IA.
+   Clases pim-video-. */
+
+.pim-video { container: pim-video / inline-size; display: grid; gap: 24px; min-width: 0; }
+.pim-video-body { display: grid; gap: 24px; min-width: 0; }
+.pim-video-count { font-variant-numeric: tabular-nums; }
+.pim-video .pim-head-row { align-items: center; }
+.pim-video .pim-section-head { align-items: center; flex-wrap: wrap; }
+.pim-video .pim-section-title .pim-badge { margin-left: 4px; font-variant-numeric: tabular-nums; }
+.pim-video-note { margin: 0; color: var(--pim-muted); font-size: 12px; line-height: 1.5; }
+.pim-video .pim-hint { margin: 0; }
+
+/* Vistas: biblioteca y estudio. */
+.pim-video-views { justify-self: start; max-width: 100%; overflow-x: auto; }
+.pim-video-views [role="tab"] { display: inline-flex; align-items: center; gap: 8px; min-height: 32px; padding: 4px 16px; }
+.pim-video-views [role="tab"] .pim-icon { color: var(--pim-subtle); }
+.pim-video-views [role="tab"][aria-selected="true"] .pim-icon { color: var(--pim-blue); }
+/* «Crear con IA» es la última vista (en React las subpestañas no llevan data-value). */
+.pim-video-views [role="tab"]:last-child[aria-selected="true"] .pim-icon { color: var(--pim-ai-text); }
+.pim-video-views [role="tab"]:focus-visible { outline: none; box-shadow: var(--pim-focus); }
+
+/* Controles segmentados (opción única): la línea de pim-subtabs, como radio. */
+.pim-video .pim-video-seg { flex-wrap: wrap; justify-self: start; max-width: 100%; }
+.pim-video .pim-video-seg button { display: inline-flex; align-items: center; gap: 6px; }
+.pim-video .pim-video-seg button[aria-checked="true"] { background: var(--pim-surface); color: var(--pim-ink); box-shadow: 0 1px 2px color-mix(in srgb, var(--pim-ink) 10%, transparent); }
+.pim-video .pim-video-seg button[aria-disabled="true"] { opacity: .45; cursor: not-allowed; }
+.pim-video .pim-video-seg button:focus-visible { outline: none; box-shadow: var(--pim-focus); }
+.pim-video .pim-video-seg .pim-icon { color: var(--pim-subtle); }
+.pim-video .pim-video-seg button[aria-checked="true"] .pim-icon { color: var(--pim-blue); }
+
+/* Estado vacío: una superficie discontinua que también admite soltar. */
+.pim-video-empty { padding: 8px; transition: border-color var(--pim-fast) var(--pim-ease), background var(--pim-fast) var(--pim-ease); }
+.pim-video-empty .pim-empty { padding: 40px 16px; }
+.pim-video-empty p { max-width: 44ch; margin: 0 0 8px; }
+.pim-video-empty-icon { display: grid; place-items: center; width: 48px; height: 48px; margin-bottom: 4px; border-radius: var(--pim-r-card); background: var(--pim-blue-tint); color: var(--pim-blue); }
+.pim-video-empty-icon .pim-icon, .pim-video-empty .pim-btn-primary .pim-icon { color: inherit; }
+.pim-video-empty-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+[data-drop].is-over { border-color: var(--pim-blue); background: var(--pim-blue-tint); }
+.pim-section[data-drop].is-over { outline: 2px dashed var(--pim-blue); outline-offset: 6px; background: transparent; border-radius: var(--pim-r-card); }
+
+/* Reproductor */
+.pim-video-stage { display: grid; gap: 12px; min-width: 0; }
+.pim-video-frame { position: relative; aspect-ratio: 16 / 9; overflow: hidden; border-radius: var(--pim-r-card); background: var(--pim-ink); }
+/* Vídeo vertical (9:16): el marco sigue su forma, centrado y sin pasar de 70 % de la altura. */
+.pim-video-frame.is-vertical { justify-self: center; width: min(100%, 360px, calc(70vh * 9 / 16)); aspect-ratio: 9 / 16; }
+.pim-video-player { display: block; width: 100%; height: 100%; object-fit: contain; background: var(--pim-ink); }
+.pim-video-player:focus-visible { outline: none; }
+/* El vídeo tapa cualquier sombra interior: el anillo de foco va en el marco. */
+.pim-video-frame:has(.pim-video-player:focus-visible), .pim-video-result-media:has(.pim-video-player:focus-visible) { box-shadow: var(--pim-focus); }
+.pim-video-caption { display: grid; gap: 4px; min-width: 0; }
+.pim-video-caption-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.pim-video-title { margin: 0; color: var(--pim-ink); font-size: 15px; font-weight: 650; line-height: 1.35; overflow-wrap: anywhere; }
+.pim-video-caption-row .pim-btn { flex: 0 0 auto; }
+.pim-video-facts { font-variant-numeric: tabular-nums; }
+/* Origen de un vídeo creado con IA: modelo, audio y saldo (texto aprobado). */
+.pim-video-origin { display: flex; align-items: flex-start; gap: 8px; margin: 4px 0 0; color: var(--pim-ai-strong); font-size: 12px; line-height: 1.5; }
+.pim-video-origin > .pim-icon { flex: 0 0 auto; margin-top: 2px; color: var(--pim-ai-text); }
+.pim-video-origin > span { display: grid; gap: 2px; min-width: 0; }
+.pim-video-origin small { color: var(--pim-muted); font-size: 12px; }
+
+/* Escenas: miniaturas 16:9 con su minuto; la actual lleva el anillo azul. */
+.pim-video-scenes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 12px; margin: 0; padding: 0; list-style: none; }
+@container pim-video (min-width: 520px) { .pim-video-scenes { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@container pim-video (min-width: 720px) { .pim-video-scenes { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+.pim-video-scene { display: grid; gap: 4px; width: 100%; padding: 0; border: 0; background: none; color: var(--pim-ink); font: inherit; text-align: left; cursor: pointer; }
+.pim-video-scene-thumb { aspect-ratio: 16 / 9; transition: border-color var(--pim-fast) var(--pim-ease); }
+.pim-video-scene-play { position: absolute; inset: auto auto 8px 8px; display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: color-mix(in srgb, var(--pim-surface) 92%, transparent); color: var(--pim-ink); box-shadow: 0 1px 3px color-mix(in srgb, var(--pim-ink) 14%, transparent); opacity: 0; transition: opacity var(--pim-fast) var(--pim-ease); }
+.pim-video-scene-play .pim-icon { margin-left: 2px; }
+.pim-video-scene:hover .pim-video-scene-play, .pim-video-scene:focus-visible .pim-video-scene-play, .pim-video-scene[aria-current="true"] .pim-video-scene-play { opacity: 1; }
+.pim-video-scene:hover .pim-video-scene-thumb { border-color: var(--pim-line-strong); }
+.pim-video-scene[aria-current="true"] .pim-video-scene-thumb { outline: 2px solid var(--pim-blue); outline-offset: 2px; }
+.pim-video-scene:focus-visible { outline: none; }
+.pim-video-scene:focus-visible .pim-video-scene-thumb { box-shadow: var(--pim-focus); }
+.pim-video-scene-time { margin-top: 4px; color: var(--pim-muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+.pim-video-scene[aria-current="true"] .pim-video-scene-time { color: var(--pim-blue); font-weight: 600; }
+.pim-video-scene-title { color: var(--pim-ink); font-size: 12px; font-weight: 550; line-height: 1.4; }
+.pim-video-progress { display: grid; gap: 8px; }
+.pim-video-progress-head { display: flex; justify-content: space-between; gap: 8px; color: var(--pim-muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+
+/* Detalles: destino, título e idioma a un lado; miniatura al otro cuando hay sitio. */
+.pim-video-details { display: grid; align-items: start; gap: 24px 32px; }
+.pim-video-details .pim-field { align-content: start; }
+.pim-video-details-main { display: grid; gap: 16px; min-width: 0; }
+@container pim-video (min-width: 560px) { .pim-video-details { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+.pim-video-poster { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.pim-video-poster-thumb { width: 160px; aspect-ratio: 16 / 9; flex: 0 0 auto; }
+.pim-video-poster-empty { display: grid; place-items: center; height: 100%; color: var(--pim-subtle); }
+.pim-video-poster-actions { display: grid; justify-items: start; gap: 4px; }
+
+/* Requisitos de Amazon: filas con estado; el color solo dice si cumple. */
+.pim-video-checks { display: grid; margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--pim-line); }
+.pim-video-check { display: grid; grid-template-columns: 20px minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--pim-line); }
+.pim-video-check-mark { display: grid; place-items: center; }
+.pim-video-check.is-ok .pim-video-check-mark { color: var(--pim-success); }
+.pim-video-check.is-warn .pim-video-check-mark { color: var(--pim-warning); }
+.pim-video-check.is-optional .pim-video-check-mark { color: var(--pim-subtle); }
+.pim-video-check-text { display: grid; gap: 2px; min-width: 0; }
+.pim-video-check-text strong { color: var(--pim-ink); font-size: 13px; font-weight: 600; }
+.pim-video-check-text small { color: var(--pim-muted); font-size: 12px; }
+.pim-video-check-value { color: var(--pim-ink); font-size: 12px; text-align: right; font-variant-numeric: tabular-nums; }
+.pim-video-check.is-warn .pim-video-check-value { color: var(--pim-warning); font-weight: 600; }
+
+/* Vídeos del producto: filas compactas; el elegido, en azul. */
+.pim-video-list { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.pim-video-row { display: flex; align-items: center; gap: 4px; padding: 4px 4px 4px 0; border: 1px solid var(--pim-line); border-radius: var(--pim-r-control); background: var(--pim-surface); transition: border-color var(--pim-fast) var(--pim-ease), background var(--pim-fast) var(--pim-ease); }
+.pim-video-row:hover { border-color: var(--pim-line-strong); }
+.pim-video-row.is-selected { border-color: var(--pim-blue); background: var(--pim-blue-tint); box-shadow: inset 0 0 0 1px var(--pim-blue); }
+.pim-video-row-select { display: flex; flex: 1; align-items: center; gap: 12px; min-width: 0; padding: 4px 8px; border: 0; border-radius: var(--pim-r-control); background: none; color: var(--pim-ink); font: inherit; text-align: left; cursor: pointer; }
+.pim-video-row-select:focus-visible { outline: none; box-shadow: var(--pim-focus); }
+.pim-video-row-thumb { display: grid; place-items: center; width: 64px; aspect-ratio: 16 / 9; flex: 0 0 auto; overflow: hidden; border-radius: var(--pim-r-tag); background: var(--pim-surface-muted); color: var(--pim-subtle); }
+.pim-video-row-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pim-video-row-meta { display: grid; gap: 2px; min-width: 0; }
+.pim-video-row-name { overflow: hidden; color: var(--pim-ink); font-size: 12px; font-weight: 550; text-overflow: ellipsis; white-space: nowrap; }
+.pim-video-row-sub { display: flex; flex-wrap: wrap; gap: 2px 12px; color: var(--pim-muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+.pim-video-row-dest { color: var(--pim-text); }
+.pim-video-row.is-selected .pim-video-row-sub { color: var(--pim-text); } /* AA sobre el tinte azul */
+.pim-btn.pim-video-remove:hover:not(:disabled) { background: var(--pim-error-tint); color: var(--pim-error); }
+
+/* Pie: una sola acción sólida. */
+.pim-video-footer { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding-top: 24px; border-top: 1px solid var(--pim-line); }
+.pim-video-footer .pim-video-note { flex: 1 1 240px; }
+.pim-video-footer .pim-btn-primary .pim-icon { color: inherit; }
+@container pim-video (max-width: 420px) { .pim-video-footer .pim-btn, .pim-video-footer [data-slot="generate"] { width: 100%; } }
+

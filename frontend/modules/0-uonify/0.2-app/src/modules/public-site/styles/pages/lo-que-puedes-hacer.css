@@ -1,0 +1,155 @@
+/* «Lo que puedes hacer» (/lo-que-puedes-hacer). Adaptada de la maqueta aprobada
+   (web-lo-que-puedes-hacer.html) a los tokens de la web. Se inyecta solo mientras la
+   vista está montada; todo va bajo .can-do-page para no afectar a otras vistas.
+   Los «huecos» numerados son piezas que creará el Estudio; aquí van como marcadores. */
+.can-do-page{--n50:#f8fafe;--n100:#f0f2f6;--n200:#e1e3e8;--n300:#caccd1;--n400:#abaeb3;--n600:#66696f;--n700:#474a51;--warn:#9a6100;--warn-tint:#fff6e5;--warn-line:#f2d9a6;--mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
+.can-do-page main{display:block}
+.can-do-page h1{font-size:clamp(2.5rem,5vw,4rem);line-height:1.06}
+.can-do-page h1 span,.can-do-page h2 span{color:var(--blue-dark)}
+.can-do-page h2{font-size:clamp(2rem,3.9vw,2.75rem);line-height:1.08;margin:0}
+.can-do-page h3{font-size:1.5rem;line-height:1.33;margin:0}
+.can-do-page .lead{font-size:1.25rem;line-height:1.6;color:var(--n700);margin:24px 0 0}
+.can-do-page section{scroll-margin-top:100px}
+
+/* Huecos de vídeo e imagen */
+.can-do-page .slot{position:relative;border-radius:12px;overflow:hidden;background:var(--ink);color:#fff}
+.can-do-page .slot.img{background:var(--n100);color:var(--ink)}
+.can-do-page .slot .ratio{width:100%;display:block}
+.can-do-page .slot .inner{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;padding:16px}
+.can-do-page .slot .head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.can-do-page .slot .tag{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;line-height:16px;letter-spacing:.06em;text-transform:uppercase;color:var(--n400)}
+.can-do-page .slot.img .tag{color:var(--n600)}
+.can-do-page .pin{width:24px;height:24px;border-radius:50%;background:var(--warn-tint);color:var(--warn);border:1px solid var(--warn-line);display:grid;place-items:center;font-family:var(--mono);font-size:11px;font-weight:700}
+.can-do-page .slot .play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:60px;height:60px;border-radius:50%;border:1px solid rgba(255,255,255,.24);display:grid;place-items:center;background:rgba(255,255,255,.08)}
+.can-do-page .slot.small .play{width:46px;height:46px}
+.can-do-page .slot.img .play{border-color:var(--n300);background:#fff;color:var(--n600)}
+.can-do-page .slot .cap strong{display:block;font-size:15px;line-height:20px;font-weight:600}
+.can-do-page .slot .cap .meta{display:block;margin-top:4px;font-family:var(--mono);font-size:12px;line-height:16px;color:var(--n400)}
+.can-do-page .slot.img .cap .meta{color:var(--n600)}
+.can-do-page .ai{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;height:24px;padding:0 8px;border-radius:4px;font-size:12px;font-weight:600;background:rgba(58,206,188,.14);color:var(--aqua-600,#008376);border:1px solid rgba(58,206,188,.32)}
+.can-do-page .slot .ai{color:#57e0cf;border-color:rgba(58,206,188,.4)}
+.can-do-page .ai.mark{padding:0 6px}
+
+/* Hero */
+.can-do-page .cd-hero{padding:72px 0 0;text-align:center}
+.can-do-page .cd-hero .lead{max-width:760px;margin-left:auto;margin-right:auto}
+.can-do-page .cd-hero .actions{display:flex;justify-content:center;align-items:center;gap:22px;margin-top:36px;flex-wrap:wrap}
+.can-do-page .cd-hero .reel{margin-top:56px}
+.can-do-page .note{margin:16px 0 0;font-size:14px;color:var(--n600);display:flex;justify-content:center;gap:8px;align-items:center}
+
+/* Recorridos */
+.can-do-page .routes{padding:88px 0 0}
+.can-do-page .routes .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
+.can-do-page .route{border:1px solid var(--n200);border-radius:12px;padding:30px;display:grid;grid-template-columns:72px minmax(0,1fr);gap:22px;align-items:start;background:#fff}
+.can-do-page .route:hover{border-color:var(--blue)}
+.can-do-page .route img{width:72px;height:72px}
+.can-do-page .route .num{font-family:var(--mono);font-size:12px;color:var(--n600);letter-spacing:.06em}
+.can-do-page .route h3{margin:8px 0;font-size:1.375rem;line-height:1.36}
+.can-do-page .route p{margin:0 0 16px;color:var(--n700)}
+
+/* Recorridos (detalle) */
+.can-do-page .journey{padding:110px 0}
+.can-do-page .journey.soft{background:var(--n50);border-top:1px solid var(--n200);border-bottom:1px solid var(--n200)}
+.can-do-page .journey .intro{max-width:760px}
+.can-do-page .journey .cols{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:56px;margin-top:56px;align-items:start}
+.can-do-page .steps{list-style:none;margin:0;padding:0;position:relative}
+.can-do-page .steps:before{content:"";position:absolute;left:19px;top:24px;bottom:24px;width:2px;background:#cfe2f8}
+.can-do-page .steps li{position:relative;display:grid;grid-template-columns:40px minmax(0,1fr);gap:16px;padding:0 0 30px}
+.can-do-page .steps li:last-child{padding-bottom:0}
+.can-do-page .steps .n{width:40px;height:40px;border-radius:50%;background:#fff;border:2px solid var(--blue-dark);color:var(--blue-dark);display:grid;place-items:center;font-family:var(--mono);font-size:13px;font-weight:700}
+.can-do-page .steps h3{font-size:1.25rem;line-height:1.4;margin-top:4px}
+.can-do-page .steps p{margin:8px 0 0;color:var(--n700)}
+.can-do-page .bubble{display:inline-block;margin-top:12px;background:#eaf3ff;border-radius:12px;padding:12px 16px;font-size:15px;line-height:1.5;color:var(--ink);max-width:420px}
+.can-do-page .cond{display:inline-flex;align-items:center;gap:8px;margin-top:12px;font-size:12px;line-height:16px;color:var(--warn);background:var(--warn-tint);border:1px solid var(--warn-line);border-radius:6px;padding:6px 10px}
+.can-do-page .media{display:grid;gap:16px}
+.can-do-page .media .row3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.can-do-page .media .row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:center}
+.can-do-page .media .how p{margin:0;color:var(--n700);font-size:15px}
+
+/* Redes */
+.can-do-page .social{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:48px;margin-top:56px}
+.can-do-page .social .case{display:grid;grid-template-columns:minmax(0,1fr) 240px;gap:28px;align-items:start}
+.can-do-page .social .case h3{font-size:1.5rem}
+.can-do-page .social .case p{margin:12px 0 0;color:var(--n700)}
+.can-do-page .social .case .eyebrow{margin:0 0 8px}
+.can-do-page .elements{margin-top:88px;display:grid;grid-template-columns:minmax(0,4fr) minmax(0,8fr);gap:44px;align-items:center}
+.can-do-page .elements p{color:var(--n700);margin:16px 0 0}
+.can-do-page .elements .tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.can-do-page .tile-label{margin-top:8px;font-size:14px;line-height:20px}
+.can-do-page .tile-label small{display:block;color:var(--n600);font-size:12px;font-family:var(--mono)}
+
+/* Galería en tinta */
+.can-do-page .gallery{padding:110px 0;background:var(--ink);color:#fff}
+.can-do-page .gallery .eyebrow{color:#52a5ff}
+.can-do-page .gallery h2 span{color:#52a5ff}
+.can-do-page .gallery .lead{color:var(--n300)}
+.can-do-page .bento{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;margin-top:56px;align-items:start}
+.can-do-page .bento .col{display:grid;gap:36px}
+.can-do-page .piece .txt{margin-top:16px}
+.can-do-page .piece h3{font-size:1.125rem;line-height:1.33}
+.can-do-page .piece p{margin:4px 0 0;font-size:14px;line-height:1.43;color:var(--n400)}
+.can-do-page .piece .ask{display:block;margin-top:8px;font-size:14px;line-height:1.43;color:#fff}
+.can-do-page .piece .ask:before{content:"Pídeselo así: ";color:var(--n400)}
+
+/* Confianza */
+.can-do-page .trust{padding:110px 0}
+.can-do-page .trust .cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:56px;margin-top:56px;align-items:start}
+.can-do-page .card{border:1px solid var(--n200);border-radius:12px;padding:24px;background:#fff}
+.can-do-page .card .over{font-size:12px;font-weight:700;letter-spacing:.1em;color:var(--n600)}
+.can-do-page .card h4{margin:8px 0 4px;font-size:1.0625rem;line-height:1.4}
+.can-do-page .card .spec{font-size:14px;color:var(--n700)}
+.can-do-page .card .spec .mono{font-family:var(--mono);font-size:13px}
+.can-do-page .scene{display:grid;grid-template-columns:24px minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 0;border-top:1px solid var(--n200)}
+.can-do-page .scene .mono{font-family:var(--mono)}
+.can-do-page .scene b{font-size:15px}
+.can-do-page .scene small{display:block;color:var(--n600);font-size:13px}
+.can-do-page .chip{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 10px;border:1px solid var(--n200);border-radius:8px;font-size:13px;white-space:nowrap}
+.can-do-page .price{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;padding-top:16px;border-top:1px solid var(--n200)}
+.can-do-page .price b{font-size:1.0625rem}
+.can-do-page .price span{font-size:13px;color:var(--n600)}
+.can-do-page .card .acts{display:flex;align-items:center;gap:12px;margin-top:16px}
+.can-do-page .card .acts .fake{height:36px;padding:0 16px;border-radius:8px;display:inline-flex;align-items:center;font-weight:600;font-size:14px;border:1px solid var(--n300)}
+.can-do-page .card .acts .fake.blue{background:var(--blue-dark);border-color:var(--blue-dark);color:#fff}
+.can-do-page .card .acts small{color:var(--n600)}
+.can-do-page .card-cap{margin:16px 0 0;font-size:13px;color:var(--n600)}
+.can-do-page .points{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:36px 32px}
+.can-do-page .points h3{font-size:1.125rem;line-height:1.33;margin-top:14px}
+.can-do-page .points p{margin:8px 0 0;color:var(--n700);font-size:15px}
+.can-do-page .points .ico{width:40px;height:40px;border-radius:8px;background:#eaf3ff;color:var(--blue-dark);display:grid;place-items:center}
+
+/* Cierre */
+.can-do-page .cd-close{padding:110px 0;text-align:center;border-top:1px solid var(--n200)}
+.can-do-page .cd-close .chars{display:flex;justify-content:center;gap:16px;margin-bottom:28px}
+.can-do-page .cd-close .chars img{width:84px;height:84px}
+.can-do-page .cd-close .lead{max-width:700px;margin-left:auto;margin-right:auto}
+.can-do-page .cd-close .actions{display:flex;justify-content:center;gap:22px;margin-top:36px;align-items:center;flex-wrap:wrap}
+.can-do-page svg.i{display:inline-block;vertical-align:middle;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+@media(max-width:1100px){
+  .can-do-page .journey .cols{grid-template-columns:minmax(0,1fr);gap:44px}
+  .can-do-page .social{grid-template-columns:minmax(0,1fr);gap:56px}
+  .can-do-page .elements{grid-template-columns:minmax(0,1fr)}
+  .can-do-page .bento{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .can-do-page .bento .col:last-child{grid-column:1/-1;grid-template-columns:repeat(2,minmax(0,1fr))}
+  .can-do-page .trust .cols{grid-template-columns:minmax(0,1fr)}
+}
+@media(max-width:760px){
+  .can-do-page .cd-hero{padding-top:44px;text-align:left}
+  .can-do-page .cd-hero .lead{margin-left:0}
+  .can-do-page .cd-hero .actions{align-items:stretch;flex-direction:column}
+  .can-do-page .note{justify-content:flex-start;flex-wrap:wrap}
+  .can-do-page .routes .grid{grid-template-columns:minmax(0,1fr);gap:16px}
+  .can-do-page .journey,.can-do-page .gallery,.can-do-page .trust,.can-do-page .cd-close{padding:64px 0}
+  .can-do-page .media .row3 .cap .meta,.can-do-page .media .row3 .tag span,.can-do-page .media .row3 .play,.can-do-page .media .row3 .ai{display:none}
+  .can-do-page .media .row2{grid-template-columns:minmax(0,1fr)}
+  .can-do-page .social .case{grid-template-columns:minmax(0,1fr);gap:20px}
+  .can-do-page .social .case .slot{max-width:260px}
+  .can-do-page .elements .tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .can-do-page .bento{grid-template-columns:minmax(0,1fr);gap:36px}
+  .can-do-page .bento .col:last-child{grid-template-columns:minmax(0,1fr)}
+  .can-do-page .points{grid-template-columns:minmax(0,1fr);gap:28px}
+  .can-do-page .cd-close{text-align:left}
+  .can-do-page .cd-close .chars{justify-content:flex-start}
+  .can-do-page .cd-close .actions{flex-direction:column;align-items:stretch}
+}
+@media(prefers-reduced-motion:reduce){.can-do-page *{animation-duration:.01ms!important}}

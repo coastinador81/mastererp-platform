@@ -1,0 +1,83 @@
+/* Pestaña «3D» (módulo pim-modelos3d) · visor 3D.
+   Copia de pim/modelos3d.css del prototipo (líneas 172-249). Todas las clases
+   propias empiezan por pim-modelos3d-; solo tokens --pim-* (los hex de la escena
+   3D y del lienzo AR viven en model/constants.ts y model/ar.ts). */
+
+/* ======================================================= visor 3D */
+.pim-modelos3d-viewer { container: pim-modelos3d-viewer / inline-size; position: relative; width: 100%; height: 100%; min-height: 500px; overflow: hidden; border: 1px solid var(--pim-line); border-radius: var(--pim-r-card); background: var(--pim-surface-soft); }
+.pim-modelos3d-viewer.is-fullscreen { position: fixed; inset: 0; z-index: 50; min-height: 0; border: 0; border-radius: 0; }
+.pim-modelos3d-stage { position: absolute; inset: 0; }
+.pim-modelos3d-stage-box { position: absolute; inset: 0; }
+.pim-modelos3d-stage-state:empty { display: none; }
+.pim-modelos3d-stage-state { position: absolute; inset: 0; background: var(--pim-surface-soft); }
+.pim-modelos3d-canvas { display: block; width: 100%; height: 100%; outline: none; }
+.pim-modelos3d-stagemsg { display: grid; align-content: center; justify-items: center; gap: 4px; width: 100%; height: 100%; padding: 56px 24px 152px; color: var(--pim-muted); font-size: 13px; text-align: center; }
+.pim-modelos3d-stagemsg p { margin: 0; }
+.pim-modelos3d-stagemsg .pim-modelos3d-statusicon, .pim-modelos3d-stagemsg .pim-modelos3d-spinner { margin-bottom: 8px; }
+.pim-modelos3d-stagemsg .is-title { color: var(--pim-ink); font-weight: 600; }
+
+/* Superficies flotantes del visor: neutras, con la única sombra permitida. */
+.pim-modelos3d-vtop { position: absolute; top: 12px; right: 12px; left: 12px; z-index: 10; display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; pointer-events: none; }
+.pim-modelos3d-vbadges { display: flex; flex-wrap: wrap; gap: 4px; pointer-events: auto; }
+.pim-modelos3d-chip { display: inline-flex; align-items: center; gap: 4px; min-height: 24px; padding: 2px 8px; border: 1px solid var(--pim-line); border-radius: var(--pim-r-tag); background: color-mix(in srgb, var(--pim-surface) 92%, transparent); color: var(--pim-text); font-size: 11px; font-weight: 600; backdrop-filter: blur(8px); }
+.pim-modelos3d-chip .pim-icon { color: var(--pim-subtle); }
+.pim-toolbar.pim-modelos3d-vactions { padding: 4px; border: 1px solid var(--pim-line); border-radius: var(--pim-r-control); background: color-mix(in srgb, var(--pim-surface) 92%, transparent); box-shadow: 0 4px 12px color-mix(in srgb, var(--pim-ink) 10%, transparent); pointer-events: auto; backdrop-filter: blur(8px); }
+.pim-modelos3d-vactions .pim-btn-icon { color: var(--pim-text); }
+
+.pim-modelos3d-vpanel { position: absolute; right: 12px; bottom: 12px; left: 12px; z-index: 10; overflow: hidden; border: 1px solid var(--pim-line); border-radius: var(--pim-r-card); background: color-mix(in srgb, var(--pim-surface) 95%, transparent); box-shadow: var(--pim-shadow-float); backdrop-filter: blur(12px); }
+.pim-modelos3d-vbasic { display: grid; gap: 12px; padding: 12px 16px; }
+.pim-modelos3d-switches { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 24px; }
+@container pim-modelos3d-viewer (min-width: 640px) { .pim-modelos3d-switches { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.pim-modelos3d-swrow { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-width: 0; }
+.pim-modelos3d-swlabel { display: inline-flex; align-items: center; gap: 8px; min-width: 0; color: var(--pim-ink); font-size: 13px; }
+.pim-modelos3d-swicon { display: inline-flex; flex: none; color: var(--pim-subtle); transition: color var(--pim-fast) var(--pim-ease); }
+.pim-modelos3d-swicon.is-on { color: var(--pim-ink); }
+.pim-modelos3d-intensity { display: flex; align-items: center; gap: 8px; }
+.pim-modelos3d-intensity-label { min-width: 72px; color: var(--pim-ink); font-size: 13px; }
+.pim-modelos3d-intensity-value { width: 44px; color: var(--pim-muted); font-size: 12px; font-variant-numeric: tabular-nums; text-align: right; }
+.pim-modelos3d-range { flex: 1 1 auto; width: 100%; min-width: 0; height: 20px; margin: 0; accent-color: var(--pim-blue); cursor: pointer; }
+.pim-modelos3d-range:focus-visible { outline: none; box-shadow: var(--pim-focus); border-radius: var(--pim-r-tag); }
+.pim-modelos3d-vadv { border-top: 1px solid var(--pim-line); }
+.pim-modelos3d-vadv-toggle { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; min-height: 36px; padding: 8px 16px; border: 0; background: transparent; color: var(--pim-ink); font: inherit; font-size: 13px; cursor: pointer; transition: background var(--pim-fast) var(--pim-ease); }
+.pim-modelos3d-vadv-toggle:hover { background: var(--pim-surface-soft); }
+.pim-modelos3d-vadv-toggle:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--pim-blue); }
+.pim-modelos3d-vadv-body { display: grid; gap: 12px; padding: 12px 16px; border-top: 1px solid var(--pim-line); animation: pim-modelos3d-reveal var(--pim-mid) var(--pim-ease); }
+.pim-modelos3d-vadv-body[hidden] { display: none; }
+.pim-modelos3d-views-label { color: var(--pim-muted); font-size: 12px; font-weight: 550; }
+.pim-modelos3d-views { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; }
+@container pim-modelos3d-viewer (min-width: 640px) { .pim-modelos3d-views { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+.pim-btn.pim-modelos3d-view { gap: 4px; min-height: 28px; padding: 4px 8px; font-weight: 550; }
+.pim-modelos3d-view .pim-icon { color: var(--pim-subtle); }
+.pim-modelos3d-envinfo { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; color: var(--pim-muted); font-size: 12px; }
+.pim-modelos3d-envinfo .pim-modelos3d-swlabel { color: inherit; font-size: 12px; }
+.pim-modelos3d-envinfo strong { color: var(--pim-ink); font-weight: 600; }
+
+/* Superposiciones del visor */
+.pim-modelos3d-overlay { position: absolute; inset: 0; display: grid; place-items: center; padding: 24px; color: var(--pim-muted); font-size: 13px; text-align: center; pointer-events: none; }
+.pim-modelos3d-overlay p, .pim-modelos3d-overlay h3 { margin: 0; }
+.pim-modelos3d-overlay.is-waiting { background: color-mix(in srgb, var(--pim-surface-soft) 70%, transparent); }
+.pim-modelos3d-overlay.is-paused { z-index: 20; background: color-mix(in srgb, var(--pim-surface) 95%, transparent); backdrop-filter: blur(4px); }
+.pim-modelos3d-overlay.is-paused h3 { color: var(--pim-ink); font-size: 15px; font-weight: 650; }
+.pim-modelos3d-overlay.is-paused p { max-width: 28rem; }
+.pim-modelos3d-overlay .pim-modelos3d-xs { display: inline-flex; align-items: center; gap: 8px; }
+.pim-modelos3d-waitbox { position: relative; display: grid; place-items: center; width: 48px; height: 48px; margin-bottom: 8px; color: var(--pim-subtle); }
+.pim-modelos3d-waitbox i { position: absolute; inset: 0; border: 2px solid var(--pim-blue-line); border-top-color: var(--pim-blue); border-radius: var(--pim-r-control); animation: pim-modelos3d-spin 1s linear infinite; }
+
+/* Model3DPlaceholder: cubo en azul de marca sobre escena neutra. */
+.pim-modelos3d-ph { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 56px 24px 152px; overflow: hidden; background: var(--pim-surface-soft); }
+.pim-modelos3d-ph-grid { position: absolute; inset: 0; width: 100%; height: 100%; color: var(--pim-line-strong); pointer-events: none; }
+.pim-modelos3d-ph-center { position: relative; display: grid; justify-items: center; gap: 8px; text-align: center; }
+.pim-modelos3d-ph-center h3 { margin: 8px 0 0; color: var(--pim-ink); font-size: 15px; font-weight: 650; }
+.pim-modelos3d-ph-center p { margin: 0; color: var(--pim-muted); font-size: 13px; }
+.pim-modelos3d-ph-badges { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; }
+.pim-modelos3d-ph-cube { width: 96px; height: 96px; perspective: 1000px; transform: scale(.8); transition: transform var(--pim-slow) var(--pim-ease); }
+.pim-modelos3d-ph-cube.is-loaded { transform: scale(1); }
+.pim-modelos3d-ph-body { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; }
+.pim-modelos3d-ph-body.is-rotating { animation: pim-modelos3d-rotate-y 8s linear infinite; }
+.pim-modelos3d-ph-face { position: absolute; inset: 0; border-radius: var(--pim-r-card); background: var(--pim-blue); }
+.pim-modelos3d-ph-face span { position: absolute; inset: 8px; border-radius: var(--pim-r-control); background: color-mix(in srgb, var(--pim-blue) 84%, var(--pim-surface)); }
+.pim-modelos3d-ph-face i { position: absolute; top: 16px; left: 16px; width: 12px; height: 12px; border-radius: 50%; background: color-mix(in srgb, var(--pim-surface) 50%, transparent); }
+.pim-modelos3d-ph-face b { position: absolute; right: 16px; bottom: 16px; width: 8px; height: 8px; border-radius: 50%; background: color-mix(in srgb, var(--pim-surface) 30%, transparent); }
+.pim-modelos3d-ph-wire { position: absolute; inset: 0; border: 2px solid var(--pim-blue-strong); border-radius: var(--pim-r-card); }
+.pim-modelos3d-ph-wire2 { position: absolute; inset: 16px; border: 1px solid color-mix(in srgb, var(--pim-surface) 40%, transparent); border-radius: var(--pim-r-control); }
+.pim-modelos3d-ph-strip { position: absolute; right: 12px; bottom: 12px; left: 12px; display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid var(--pim-warning-line); border-radius: var(--pim-r-control); background: var(--pim-warning-tint); color: var(--pim-ink); font-size: 12px; }

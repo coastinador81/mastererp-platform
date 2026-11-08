@@ -1,0 +1,4 @@
+/* Hoja global: tokens y base. Los componentes del kit (src/shared/ui) y cada
+   módulo importan sus propias hojas (máximo 500 líneas cada una). */
+@import './tokens.css';
+@import './base.css';

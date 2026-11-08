@@ -1,0 +1,37 @@
+.cld-connect { color: var(--uon-auth-text); }
+.cld-connect p { font-size: 13px; line-height: 1.6; color: var(--uon-auth-muted); margin: 8px 0; }
+.cld-connect .cld-intro { margin: 0 0 12px; max-width: 440px; font-size: 14px; }
+.cld-account-row { display: flex; align-items: center; gap: 12px; padding: 10px 0 16px; }
+.cld-account-row > div { flex: 1; min-width: 0; }
+.cld-account-row strong { font-size: 13px; }
+.cld-account-row p { overflow-wrap: anywhere; margin: 3px 0 0; font-size: 12px; }
+.cld-step { flex: 0 0 30px; height: 30px; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--uon-auth-line); color: var(--uon-auth-action); font-size: 12px; font-weight: 600; background: var(--surface); }
+.cld-badge { color: var(--uon-auth-action); font-size: 10px; font-weight: 600; border: 1px solid var(--uon-auth-line); border-radius: 16px; padding: 5px 9px; }
+.cld-project-card, .cld-window { border: 1px solid var(--uon-auth-line); border-radius: 16px; padding: 20px; background: var(--uon-auth-sky); }
+.cld-project-card header { display: flex; align-items: flex-start; gap: 12px; }
+.cld-connect h3 { margin: 3px 0 7px; font-size: 17px; letter-spacing: -.025em; line-height: 1.3; }
+.cld-project-card header p { margin: 0; }
+.cld-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; margin-top: 20px; }
+.cld-connect .cld-actions button { margin: 0; min-width: 0; font-size: 12px; }
+.cld-primary-action { margin: 8px 0 24px; }
+.cld-connect small { display: block; margin-top: 12px; color: var(--uon-auth-muted); font-size: 11px; line-height: 1.5; }
+.cld-details { border-bottom: 1px solid var(--uon-auth-line); padding: 12px 0; font-size: 12px; }
+.cld-project-card + .cld-details, .cld-window + .cld-details { margin-top: 12px; }
+.cld-details summary { cursor: pointer; color: var(--uon-auth-muted); font-weight: 500; }
+.cld-details p { font-size: 12px; }
+.cld-details button { margin: 8px 0 0; padding-left: 0; font-size: 12px; }
+.cld-project-label { display: block; margin: 18px 0 8px; font-size: 12px; }
+.cld-connect select { width: 100%; min-width: 0; padding: 12px; background: var(--surface); color: var(--uon-auth-text); border: 1px solid var(--uon-auth-line); border-radius: 8px; font: inherit; font-size: 12px; }
+.cld-connect :is(button,select,a,summary):focus-visible { outline: 2px solid var(--uon-auth-action); outline-offset: 3px; }
+.cld-connect button:disabled { opacity: .6; cursor: default; }
+.cld-project-name { display: grid; gap: 3px; overflow-wrap: anywhere; }
+.cld-project-name span { font-size: 11px; }
+.cld-checks { display: grid; gap: 10px; font-size: 12px; margin: 18px 0; }
+.cld-checks div { display: flex; flex-wrap: wrap; gap: 6px 14px; justify-content: space-between; }
+.cld-checks dd { margin: 0; color: var(--uon-auth-muted); }
+.cld-connect .cld-feedback { padding: 10px 0 0; font-size: 12px; }
+.cld-window-icon { color: var(--uon-auth-action); font-size: 24px; }
+@media (max-width: 480px) { .cld-project-card, .cld-window { padding: 16px; } .cld-badge { display: none; } .cld-actions { align-items: stretch; } .cld-actions button { width: 100%; white-space: normal; } }
+.cld-identity-rule { margin: 16px 0; padding: 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--soft); color: var(--text); font-size: 13px; }
+.cld-identity-rule p { margin: 8px 0; line-height: 1.6; overflow-wrap: anywhere; }
+.cld-identity-rule small { display: block; color: var(--muted); line-height: 1.6; }
