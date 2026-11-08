@@ -55,6 +55,6 @@ Vista local sin herramientas nuevas: `node scripts/preview_agents_frontend.mjs -
 
 El workflow propietario prepara HTML, lanzador, Inter y licencia desde Platform. Se modificó únicamente su empaquetado/publicación de archivos; no cambian roles, bucket, CloudFront, DNS o certificados. Validación local completada. Publicación mediante el workflow DEV propietario; su resultado se verifica en GitHub Actions y en el dominio, sin cambios de recursos AWS.
 
-## Autenticación del publicador
+## Autenticacion del publicador
 
-Por indicación del propietario, el candidato del workflow de Agentes usa los secretos AWS_ACCESS_KEY_ID y AWS_SECRET_ACCESS_KEY del repositorio Platform, no OIDC. Las claves existentes solo en Infrastructure no se heredan ni se pueden recuperar desde GitHub. Deben configurarse de forma segura en Platform; nunca incorporarlas al código o logs. No se crean credenciales ni se cambia IAM para este ajuste. BUCKET y DISTRIBUTION siguen siendo variables no secretas del hosting existente. El cambio de autenticación queda pendiente de publicación hasta disponer de los secretos en Platform.
+El workflow usa OIDC con el rol existente `mastererp-dev-agents-frontend-github-role`, sin claves AWS permanentes. La confianza se limita al subject inmutable `repo:eticayservicios@144081289/mastererp-platform@1434968316:ref:refs/heads/dev` y audiencia `sts.amazonaws.com`. Infrastructure administra esa confianza en el stack `mastererp-dev-agents-frontend`. Se conservan permisos, bucket y distribucion existentes. Las variables de hosting son `AGENTS_UONIFY_BUCKET` y `AGENTS_UONIFY_DISTRIBUTION_ID`.
