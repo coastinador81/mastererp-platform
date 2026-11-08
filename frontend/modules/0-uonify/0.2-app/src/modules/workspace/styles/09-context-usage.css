@@ -1,0 +1,42 @@
+/* Contexto de la siguiente entrada: icono silencioso junto al selector de IA. */
+.composer-context-trigger { flex: 0 0 28px; width: 28px; min-height: 32px; display: grid; place-items: center; padding: 0; border: 0; border-radius: var(--pim-r-control); background: transparent; color: var(--pim-subtle); }
+.composer-context-trigger:hover, .composer-context-trigger[aria-expanded="true"] { background: var(--pim-surface-muted); }
+.composer-context-trigger:focus-visible, .composer-context-panel button:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.composer-context-trigger.is-normal { color: var(--blue); }
+.composer-context-trigger.is-warning { color: var(--pim-warning); }
+.composer-context-trigger.is-critical { color: var(--pim-error); }
+.composer-context-circle { width: 18px; height: 18px; overflow: visible; }
+.composer-context-track, .composer-context-fill { fill: none; stroke-width: 2.5; }
+.composer-context-track { stroke: var(--pim-line-strong); }
+.composer-context-fill { stroke: currentColor; transform: rotate(-90deg); transform-origin: center; }
+.composer-context-unknown { fill: currentColor; font-size: 10px; font-weight: 650; }
+.composer-context-panel { position: absolute; z-index: 35; width: min(340px, calc(100vw - 32px)); max-width: 100%; max-height: min(480px, 65svh); overflow-y: auto; padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--pim-r-modal); background: var(--surface); color: var(--text); box-shadow: var(--pim-shadow-float); font-size: 12px; line-height: 1.5; }
+.composer-context-panel[hidden] { display: none; }
+.composer-context-heading { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.composer-context-heading strong { color: var(--ink); font-size: 13px; }
+.composer-context-heading > button { width: 24px; height: 24px; padding: 0; border: 0; border-radius: var(--pim-r-control); background: transparent; color: var(--muted); font-size: 19px; }
+.composer-context-panel p { margin: 8px 0; }
+.composer-context-percent { color: var(--blue); font-size: 20px; font-weight: 600; }
+.composer-context-percent.is-warning { color: var(--pim-warning); }
+.composer-context-percent.is-critical, .composer-context-alert { color: var(--pim-error); }
+.composer-context-panel dl { display: grid; gap: 4px; margin: 12px 0; }
+.composer-context-panel dl > div { display: flex; justify-content: space-between; gap: 12px; }
+.composer-context-panel dd { margin: 0; color: var(--ink); font-variant-numeric: tabular-nums; }
+.composer-context-model, .composer-context-state { color: var(--muted); }
+.composer-context-retry { min-height: 30px; padding: 4px 9px; border: 1px solid var(--line); border-radius: var(--pim-r-control); background: var(--surface); color: var(--blue); }
+.composer-usage-tabs { display: flex; gap: 4px; margin: 8px 0 4px; padding-bottom: 7px; border-bottom: 1px solid var(--line); }
+.composer-usage-tabs > button { min-height: 29px; padding: 3px 11px; border: 0; border-radius: var(--pim-r-control); background: transparent; color: var(--muted); font-size: 12px; }
+.composer-usage-tabs > button[aria-selected="true"] { background: var(--active); color: var(--blue-dark); }
+.composer-usage-tabpanel { height: 220px; max-height: 45svh; overflow-y: auto; scrollbar-gutter: stable; }
+.composer-usage-tabpanel[hidden] { display: none; }
+.composer-google-billing dl { margin-top: 14px; gap: 9px; }
+.composer-google-billing dt { align-self: center; }
+.composer-google-credit { font-size: 18px; font-weight: 600; }
+.composer-google-period { color: var(--muted); font-size: 11px; }
+.composer-google-observed { color: var(--muted); font-size: 11px; }
+.composer-google-observed time { white-space: normal; }
+.composer-google-stale { color: var(--pim-warning); font-size: 11px; }
+@media (max-width: 540px) {
+  .composer-context-trigger { flex-basis: 24px; width: 24px; min-height: 26px; }
+  .composer-context-circle { width: 16px; height: 16px; }
+}

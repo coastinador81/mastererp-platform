@@ -1,0 +1,63 @@
+/* Uonify PIM · Auditoría IA (3/4): diálogos de documentos y de conexiones API (pim/auditoria.css).
+   El pie de los diálogos es el del kit (<Dialog footer>), así que no hace falta .pim-auditoria-modal-footer. */
+
+/* Diálogos (E29, E30): estilo compartido del kit. */
+.pim-auditoria-modal-content { display: grid; gap: 24px; min-width: 0; }
+.pim-auditoria-stack { display: grid; gap: 24px; min-width: 0; }
+.pim-auditoria-stack-sm { display: grid; gap: 12px; min-width: 0; }
+.pim-auditoria-label-lg { color: var(--pim-ink); font-size: 13px; font-weight: 650; }
+
+/* DocumentProcessor */
+.pim-auditoria-docs-zone { cursor: pointer; }
+.pim-auditoria-docs-zone:hover { border-color: var(--pim-blue-line); }
+.pim-auditoria-docs-zone.pim-auditoria--active { border-color: var(--pim-blue); background: var(--pim-blue-tint); }
+.pim-auditoria-docs-zone.pim-auditoria--active > .pim-icon { color: var(--pim-blue); }
+.pim-auditoria-docs-copy { display: grid; gap: 4px; }
+.pim-auditoria-docs-title { color: var(--pim-ink); font-size: 13px; font-weight: 600; }
+.pim-auditoria-files { display: grid; gap: 12px; }
+.pim-auditoria-file-list { display: grid; border: 1px solid var(--pim-line); border-radius: var(--pim-r-card); }
+.pim-auditoria-file { display: flex; align-items: center; gap: 12px; min-width: 0; padding: 12px 16px; }
+.pim-auditoria-file + .pim-auditoria-file { border-top: 1px solid var(--pim-line); }
+.pim-auditoria-file-icon { display: inline-grid; flex: 0 0 auto; color: var(--pim-subtle); }
+.pim-auditoria-file-main { display: grid; gap: 2px; flex: 1 1 auto; min-width: 0; }
+.pim-auditoria-file-name { overflow: hidden; color: var(--pim-ink); white-space: nowrap; text-overflow: ellipsis; }
+.pim-auditoria-file-ok { color: var(--pim-success); }
+.pim-auditoria-file-err { color: var(--pim-error); font-size: 12px; overflow-wrap: anywhere; }
+.pim-auditoria-file-end { display: flex; flex: 0 0 auto; align-items: center; gap: 4px; }
+.pim-auditoria-file-status { display: inline-grid; }
+.pim-auditoria-file-status.pim-auditoria--success { color: var(--pim-success); }
+.pim-auditoria-file-status.pim-auditoria--error { color: var(--pim-error); }
+.pim-auditoria-mini-spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid var(--pim-blue); border-top-color: transparent; border-radius: 50%; animation: pim-spin 1s linear infinite; }
+.pim-auditoria-modal .pim-auditoria-file-remove { color: var(--pim-muted); }
+.pim-auditoria-modal .pim-auditoria-file-remove:hover:not(:disabled) { color: var(--pim-error); }
+
+/* APIConnectionModal */
+.pim-auditoria-api-tabs { justify-self: start; }
+.pim-auditoria-api-tabs button:disabled { opacity: .45; cursor: not-allowed; }
+.pim-auditoria-api-tabs button:focus-visible { outline: none; box-shadow: var(--pim-focus); }
+.pim-auditoria-api-panel { min-width: 0; }
+.pim-auditoria-platforms { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.pim-auditoria-platform { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.pim-auditoria-platform:focus-visible { outline: none; box-shadow: var(--pim-focus); }
+.pim-auditoria-emoji { flex: 0 0 auto; font-size: 20px; line-height: 1; }
+.pim-auditoria-platform-text { display: grid; gap: 2px; min-width: 0; }
+.pim-auditoria-platform-text strong { font-size: 13px; font-weight: 600; }
+.pim-auditoria-platform-text small { line-height: 1.4; }
+.pim-auditoria-api-selected { display: flex; align-items: center; gap: 12px; }
+.pim-auditoria-api-name { color: var(--pim-ink); font-size: 13px; font-weight: 650; overflow-wrap: anywhere; }
+.pim-auditoria-label-start { justify-content: flex-start; gap: 4px; }
+.pim-auditoria-req { color: var(--pim-error); }
+.pim-auditoria-secret { position: relative; min-width: 0; }
+.pim-auditoria-secret.pim-auditoria--toggle .pim-input { padding-right: 40px; }
+.pim-auditoria-modal .pim-auditoria-eye { position: absolute; top: 50%; right: 4px; width: 28px; min-height: 28px; translate: 0 -50%; color: var(--pim-muted); }
+.pim-auditoria-test-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.pim-auditoria-status-badge { min-height: 24px; }
+.pim-auditoria-modal .pim-auditoria-search-btn { width: 36px; min-height: 36px; }
+.pim-auditoria-result { display: grid; gap: 12px; }
+.pim-auditoria-result-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.pim-auditoria-result-head > div { display: grid; gap: 4px; justify-items: start; min-width: 0; }
+.pim-auditoria-result-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 24px; padding-top: 12px; border-top: 1px solid var(--pim-line); font-size: 12px; }
+.pim-auditoria-result-row { display: flex; justify-content: space-between; gap: 8px; min-width: 0; }
+.pim-auditoria-result-key { color: var(--pim-muted); text-transform: capitalize; }
+.pim-auditoria-result-value { color: var(--pim-ink); font-weight: 550; text-align: right; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+

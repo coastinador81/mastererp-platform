@@ -1,0 +1,65 @@
+/* Espacio · fase 2: ayuda y campana en la cabecera, páginas sin conversación
+ * (Configuración), aviso del límite de ChatGPT y pie del panel de uso.
+ * Tokens: src/shared/styles/tokens.css.
+ */
+
+/* Cabecera: de derecha a izquierda, cuenta, servicios, ayuda, avisos y conversación.
+   Los botones de ayuda y avisos (módulos help y notifications) miden como el de servicios. */
+.topbar-right > * { flex: 0 0 auto; }
+.workspace-brand .workspace-brand-compact { display: none; width: 36px; height: auto; }
+.topbar-page svg { width: 20px; height: 20px; flex: 0 0 auto; fill: none; stroke: var(--pim-muted); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+
+/* En móvil todo cabe en una fila: menos hueco entre botones, sin el botón de la
+   conversación (la abre el botón flotante) y el isotipo en lugar del logotipo. */
+@media (max-width: 480px) {
+  .topbar-right, .workspace-column.is-module .topbar-right { gap: 2px; }
+  .workspace-column.is-module .chat-panel-toggle { display: none; }
+}
+@media (max-width: 430px) {
+  .workspace-column.is-module > .topbar { gap: 6px; }
+  .workspace-column.is-module .topbar-right { gap: 0; }
+  .workspace-column.is-module .topbar-right > .pim-btn { padding-inline: 5px; }
+  .workspace-column.is-module .workspace-brand .workspace-brand-full { display: none; }
+  .workspace-column.is-module .workspace-brand .workspace-brand-compact { display: block; width: 36px; }
+  .workspace-column.is-module .workspace-brand { padding: 0 4px; }
+}
+
+/* Páginas (Configuración): a todo el ancho bajo la cabecera en barra. */
+.workspace.is-page { padding: 32px clamp(16px, 4vw, 48px) 48px; background: var(--pim-surface); }
+.workspace-column.is-page .topbar-module { display: inline-flex; }
+.workspace-column.is-page .topbar-module strong { display: inline; }
+@media (max-width: 700px) {
+  .workspace.is-page { padding: 24px 16px 40px; }
+  .workspace-column.is-page .topbar-module strong { font-size: 13px; }
+}
+
+/* Aviso del límite del plan de ChatGPT. */
+.uony-limit { display: grid; gap: 12px; color: var(--pim-text); line-height: 1.55; }
+.uony-limit p { margin: 0; }
+.uony-limit .pim-badge-simulated { justify-self: start; }
+.uony-limit-options { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
+.uony-limit-options > li { display: grid; gap: 4px; padding: 12px 0; border-bottom: 1px solid var(--pim-line); }
+.uony-limit-options > li:last-child { border-bottom: 0; padding-bottom: 0; }
+.uony-limit-options strong { color: var(--pim-ink); font-size: 13px; font-weight: 600; }
+.uony-limit-options span { color: var(--pim-muted); font-size: 12px; }
+.uony-limit-balance { display: grid; gap: 4px; margin: 4px 0 0; padding: 8px 12px; border: 1px solid var(--pim-line); border-radius: var(--pim-r-control); background: var(--pim-surface-soft); }
+.uony-limit-balance > div { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.uony-limit-balance dt { color: var(--pim-muted); font-size: 12px; }
+.uony-limit-balance dd { margin: 0; color: var(--pim-ink); font-size: 12px; font-weight: 600; }
+@media (max-width: 480px) {
+  .uony-limit-dialog .pim-dialog-footer { flex-direction: column-reverse; align-items: stretch; }
+  .uony-limit-dialog .pim-dialog-footer > .pim-btn { width: 100%; white-space: normal; }
+}
+
+/* Pie del panel de uso: con qué paga Uony y, con datos simulados, los interruptores. */
+.composer-usage-payer { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 10px; margin: 12px 0 0; padding-top: 10px; border-top: 1px solid var(--pim-line); color: var(--pim-text); font-size: 11px; line-height: 1.45; }
+.composer-usage-payer .pim-link { font-size: 11px; }
+.composer-usage-payer.is-limit span { color: var(--pim-warning); font-weight: 600; }
+.composer-usage-sim { display: grid; gap: 6px; margin-top: 12px; padding: 10px; border: 1px dashed var(--pim-line-strong); border-radius: var(--pim-r-control); background: var(--pim-surface-soft); font-size: 11px; }
+.composer-usage-sim > strong { color: var(--pim-muted); font-size: 10px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+.composer-usage-sim-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: var(--pim-text); }
+
+.workspace-return-chat { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 32px; padding: 6px 10px; border: 1px solid var(--pim-blue-line); border-radius: 9px; background: var(--pim-surface); color: var(--pim-blue-strong); font: inherit; font-size: 12px; cursor: pointer; white-space: nowrap; }
+.workspace-return-chat svg { width: 17px; height: 17px; stroke: currentColor; fill: none; stroke-width: 1.7; }
+.workspace-return-chat:focus-visible { outline: 2px solid var(--pim-blue); outline-offset: 3px; }
+@media (max-width: 800px) { .workspace-return-chat { width: 30px; padding: 5px; } .workspace-return-chat span { display: none; } }

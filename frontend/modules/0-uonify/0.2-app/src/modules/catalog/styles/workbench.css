@@ -1,0 +1,143 @@
+/* Servicio Producto · mesa de trabajo, raíl y catálogo lateral.
+   Origen: app-shell.css del prototipo (reglas product-*: base, r25, r30, r31 y r36),
+   en el mismo orden de cascada. Las variables del panel viven en la mesa. */
+
+/* Acciones del prototipo (.primary-action / .secondary-action) dentro de Producto. */
+:where(.product-workbench, .channel-menu) :is(.primary-action, .secondary-action) { min-height: 39px; padding: 9px 14px; border-radius: 9px; font-size: 12px; font-weight: 650; white-space: nowrap; }
+:where(.product-workbench, .channel-menu) .primary-action { border: 1px solid var(--blue); background: var(--blue); color: #fff; }
+:where(.product-workbench, .channel-menu) .primary-action:hover { background: var(--blue-dark); }
+:where(.product-workbench, .channel-menu) .secondary-action { border: 1px solid #d5e0ec; background: #fff; color: var(--ink); }
+:where(.product-workbench, .channel-menu) .secondary-action:hover { background: var(--soft); }
+
+.workspace.is-product { display: flex; padding: 0; overflow: hidden; background: #fff; container: module / inline-size; }
+.product-workbench { --product-panel-width: clamp(248px,24vw,326px); --product-rail-width: 54px; position: relative; isolation: isolate; width: 100%; min-width: 0; min-height: 0; flex: 1 1 auto; overflow: hidden; border: 0; border-radius: 0; background: #fff; box-shadow: none; }
+
+/* Panel lateral: raíl plegado y catálogo abierto. */
+.product-sidebar { position: absolute; z-index: 7; top: 0; bottom: 0; width: var(--product-rail-width); overflow: hidden; background: #f8fbfd; transition: width .24s cubic-bezier(.2,.8,.2,1),box-shadow .24s ease; }
+.product-sidebar-left { left: 0; }
+.product-workbench.is-catalog-open .product-sidebar-left { width: var(--product-panel-width); box-shadow: 0 8px 28px #173b5d18; }
+.product-sidebar-control { position: absolute; z-index: 9; top: 50%; width: 28px; height: 44px; transform: translateY(-50%); display: flex; align-items: center; justify-content: center; }
+.product-sidebar-left .product-sidebar-control { right: 0; }
+.product-sidebar-toggle { width: 24px; height: 40px; flex: 0 0 auto; display: grid; place-items: center; padding: 0; border: 1px solid #dce8ef; border-radius: 8px; background: #fff; color: #627e94; font-size: 23px; line-height: 1; transition: color .16s ease,background .16s ease,border-color .16s ease; }
+.product-sidebar-toggle:hover, .product-sidebar-toggle[aria-pressed="true"] { color: var(--blue-dark); background: #eaf4ff; border-color: #b5d4f0; }
+.product-sidebar-toggle:focus-visible { outline-offset: -3px; }
+.product-edge { position: absolute; z-index: 6; top: 0; bottom: 0; width: var(--product-rail-width); display: flex; flex-direction: column; align-items: center; gap: 7px; padding: 12px 7px; opacity: 1; visibility: visible; background: #f8fbfd; transition: opacity .12s ease,visibility .12s ease; }
+.product-edge-left { left: 0; border-right: 1px solid #dce8ef; }
+.product-edge button { position: relative; width: 39px; min-height: 39px; display: grid; place-items: center; padding: 0; border: 0; border-radius: 11px; background: transparent; color: #587086; font-size: 11px; font-weight: 700; }
+.product-edge button:hover, .product-edge button[aria-expanded="true"] { color: var(--blue-dark); background: #eaf4ff; }
+.product-edge-main { margin-bottom: 6px; }
+.product-edge-main b { position: absolute; top: -4px; right: -4px; min-width: 18px; height: 18px; display: grid; place-items: center; padding: 0 4px; border: 2px solid #f8fbfd; border-radius: 999px; color: #fff; background: var(--blue); font-size: 9px; }
+.product-icon-button { width: 32px; height: 32px; display: inline-grid; place-items: center; flex: 0 0 auto; padding: 8px; border: 0; border-radius: 6px; color: var(--muted); background: transparent; }
+.product-icon-button svg { width: 16px; height: 16px; }
+.product-icon-button:hover { color: var(--blue-dark); background: #edf5fb; }
+.product-drawer-eyebrow { color: #0f7287; font-size: 10px; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; }
+
+.product-drawer { position: absolute; z-index: 7; top: 0; bottom: 0; width: var(--product-panel-width); display: flex; flex-direction: column; overflow: hidden; background: #fff; transition: transform .24s cubic-bezier(.2,.8,.2,1),visibility .24s ease; visibility: hidden; }
+.product-catalog-drawer { left: 0; padding-right: 28px; border-right: 1px solid #dce8ef; transform: translateX(calc(-100% - 12px)); }
+.product-workbench.is-catalog-open .product-catalog-drawer { visibility: visible; transform: translateX(0); }
+.product-workbench.is-catalog-open .product-edge-left { visibility: hidden; opacity: 0; transform: translateX(-100%); }
+.product-drawer > header { min-height: 75px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 15px 12px 18px; border-bottom: 1px solid #e4ecf3; }
+.product-drawer > header h2 { margin: 2px 0 0; font-size: 19px; font-weight: 650; letter-spacing: -.03em; }
+.product-drawer-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; padding: 14px 15px 10px; }
+.product-search { min-height: 42px; display: flex; align-items: center; gap: 8px; margin: 0 15px 8px; padding: 0 11px; border: 1px solid #d6e2ec; border-radius: 10px; color: #708498; background: #f9fbfd; }
+.product-search input { min-width: 0; width: 100%; border: 0; outline: 0; background: transparent; color: var(--ink); font-size: 12px; }
+.product-search:focus-within { border-color: #7eb4ee; background: #fff; }
+.product-filter-trigger { min-height: 35px; display: flex; align-items: center; justify-content: space-between; margin: 0 15px 8px; padding: 7px 10px; border: 0; border-radius: 8px; color: #5c7286; background: #f3f7fa; font-size: 11px; }
+.product-filter-trigger span { color: var(--blue-dark); }
+.product-filter-trigger[aria-expanded="true"] { background: #eaf3ff; }
+
+/* Filtros de estado y fuente (comportamiento de la ficha original). */
+.product-filter-panel { display: grid; gap: 10px; margin: 0 15px 8px; padding: 10px; border: 1px solid #e4ecf3; border-radius: 10px; background: #fbfdff; }
+.product-filter-field { display: grid; gap: 5px; color: #5c7286; font-size: 11px; font-weight: 650; }
+.product-filter-field .pim-select { height: 32px; font-size: 12px; }
+.product-filter-clear { justify-self: start; font-size: 11px; }
+.product-filter-clear:disabled { color: var(--muted); cursor: default; text-decoration: none; }
+
+.product-catalog-list { min-height: 0; flex: 1 1 auto; overflow-y: auto; padding: 4px 9px 13px; }
+.product-catalog-item { width: 100%; min-height: 62px; display: grid; grid-template-columns: 38px minmax(0,1fr) 8px; align-items: center; gap: 10px; padding: 8px 10px; border: 1px solid transparent; border-radius: 11px; background: transparent; text-align: left; }
+.product-catalog-item:hover { background: #f2f8fc; }
+.product-catalog-item.is-selected { border-color: #cce0f3; background: #ecf6ff; }
+.product-item-thumb { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 9px; color: #168ea9; background: linear-gradient(145deg,#ddf8f4,#e5f1ff); font-size: 18px; }
+.product-item-thumb:has(img) { overflow: hidden; border: 1px solid var(--line); background: #fff; }
+.product-item-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.product-catalog-item strong, .product-catalog-item small { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.product-catalog-item strong { color: var(--ink); font-size: 12px; font-weight: 650; }
+.product-catalog-item small { margin-top: 3px; color: #586d80; font-size: 10px; }
+.product-item-state { width: 7px; height: 7px; border-radius: 50%; background: #22a77d; }
+.product-catalog-empty { height: 100%; min-height: 220px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; color: var(--muted); text-align: center; }
+.product-catalog-empty img { width: 64px; height: 64px; margin-bottom: 10px; object-fit: contain; }
+.product-catalog-empty strong { color: var(--ink); font-size: 13px; }
+.product-catalog-empty span { max-width: 220px; margin-top: 5px; font-size: 11px; line-height: 1.45; }
+.product-catalog-empty .product-catalog-retry { min-height: 32px; margin-top: 12px; padding: 6px 12px; }
+.product-catalog-status { margin: 0; padding: 18px 10px; color: var(--muted); font-size: 12px; }
+
+@media (max-width: 1000px) {
+  .product-workbench { --product-panel-width: min(300px,calc(100vw - 120px)); }
+}
+@media (max-width: 700px) {
+  .product-workbench { --product-rail-width: 48px; }
+  .product-edge { padding-inline: 5px; }
+  .product-edge button { width: 37px; }
+  .product-catalog-drawer { left: 0; }
+}
+@media (max-width: 420px) {
+  .product-workbench { --product-rail-width: 43px; }
+  .product-edge button { width: 34px; min-height: 36px; }
+  .product-catalog-drawer { left: 0; }
+}
+
+/* r25: el botón de plegar vive en la cabecera del panel (arriba a la derecha). */
+.product-catalog-drawer { padding-right: 0; }
+.product-drawer > header { min-height: 64px; padding-right: 54px; }
+.product-drawer > header h2 { font-size: 17px; }
+.product-sidebar-control { top: 14px; right: 12px; left: auto; width: 34px; height: 34px; transform: none; }
+.product-sidebar-left .product-sidebar-control { left: auto; right: 12px; }
+.product-workbench:not(.is-catalog-open) .product-sidebar-left .product-sidebar-control { display: none; }
+.product-sidebar-toggle { width: 34px; height: 34px; border: 0; border-radius: 9px; background: transparent; color: #5b7287; }
+.product-sidebar-toggle:hover, .product-sidebar-toggle[aria-pressed="true"] { border: 0; background: #edf3fb; color: var(--blue-dark); }
+.product-sidebar-toggle svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linejoin: round; }
+
+/* Raíl plegado: cada icono pertenece a su panel. */
+.product-edge { padding-top: 14px; }
+.product-edge button svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.product-edge-main { margin-bottom: 8px; }
+
+/* El raíl de un panel plegado se puede enfocar enseguida; solo se desvanece al abrirlo. */
+.product-edge { transition: opacity .12s ease, visibility 0s linear 0s; }
+.product-workbench.is-catalog-open .product-edge-left { transition: opacity .12s ease, visibility 0s linear .12s; }
+.product-workbench.is-catalog-open .product-catalog-drawer { transition: transform .24s cubic-bezier(.2,.8,.2,1), visibility 0s linear 0s; }
+
+/* r30: raíl con + Nuevo producto arriba, Catálogo y Hilos y proyectos. */
+.product-edge { gap: 6px; }
+.product-edge-main { margin-bottom: 0; }
+.product-edge .product-edge-new { margin-bottom: 4px; color: var(--blue-dark); background: #eaf3ff; }
+.product-edge .product-edge-new:hover { background: #dcebff; }
+.product-edge-threads svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linejoin: round; }
+/* Los nombres del raíl salen a la derecha; el raíl plegado los deja salir. */
+.product-workbench:not(.is-catalog-open) .product-sidebar-left { overflow: visible; }
+.product-drawer > header .product-drawer-threads { flex: 0 0 auto; }
+.product-drawer-threads svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linejoin: round; }
+
+/* r36: casillas en el catálogo para publicar varios productos (barra abajo). */
+.product-catalog-row { display: grid; grid-template-columns: minmax(0, 1fr); align-items: center; }
+.product-catalog-row:has(.product-catalog-check) { grid-template-columns: 26px minmax(0, 1fr); }
+.product-catalog-item > span:nth-child(2) { min-width: 0; }
+.product-catalog-check { display: grid; place-items: center; width: 26px; min-height: 44px; cursor: pointer; }
+.product-catalog-check input, .product-bulk-all input { width: 15px; height: 15px; margin: 0; accent-color: var(--blue); cursor: pointer; }
+.product-catalog-row.is-checked .product-catalog-item:not(.is-selected) { background: #f5f9ff; }
+.product-catalog-row .product-catalog-item { padding-left: 6px; }
+
+.product-bulk-slot { flex: 0 0 auto; }
+.product-bulk-bar { display: flex; align-items: center; gap: 6px; margin: 0 9px 12px; padding: 6px 6px 6px 12px; border: 1px solid #cfe2f8; border-radius: 12px; background: #f5f9ff; }
+.product-bulk-bar.is-entering { animation: uon-enter-soft .2s cubic-bezier(.2, 0, 0, 1); }
+.product-bulk-bar[hidden] { display: none; }
+.product-bulk-all { display: flex; flex: 1; align-items: center; gap: 8px; min-width: 0; color: var(--text); font-size: 12px; cursor: pointer; }
+.product-bulk-all span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* En pantallas estrechas el botón flotante «Conversación» va abajo: la barra queda encima. */
+.workspace-column:has(.chat-panel-fab:not([hidden])) .product-bulk-bar { margin-bottom: 76px; }
+.product-bulk-all strong { color: var(--ink); font-variant-numeric: tabular-nums; }
+.product-bulk-publish { display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 6px 12px; }
+.product-bulk-publish svg { width: 15px; height: 15px; flex: 0 0 auto; }
+.product-bulk-publish:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+:root[data-reduce-motion="true"] .product-bulk-bar { animation: none; }
+@media (prefers-reduced-motion: reduce) { .product-bulk-bar.is-entering { animation: none; } }

@@ -1,0 +1,87 @@
+.incidents-view { min-width: 0; color: var(--pim-text); font-size: 13px; line-height: 1.5; }
+.incidents-view.is-global { flex: 1; overflow-y: auto; padding: 28px; container-type: inline-size; }
+.incidents-view.is-global > * { max-width: 1040px; margin-inline: auto; }
+.incidents-heading, .incidents-heading-actions, .incidents-sync-main, .incidents-summary, .incident-detail header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.incidents-heading { margin-bottom: 24px; }
+.incidents-heading h1 { font-size: 24px; color: var(--pim-ink); margin: 0 0 6px; letter-spacing: -.02em; }
+.incidents-heading p { margin: 0; color: var(--pim-muted); }
+.incidents-heading .incidents-eyebrow { color: var(--pim-blue); font-size: 11px; font-weight: 600; margin-bottom: 6px; }
+.incidents-heading-actions { flex: 0 0 auto; align-items: center; gap: 8px; }
+.incidents-button, .incidents-icon { display: inline-flex; gap: 8px; align-items: center; justify-content: center; padding: 8px 12px; min-height: 36px; border: 1px solid var(--pim-line); border-radius: var(--pim-r-control); background: var(--pim-surface); color: var(--pim-blue); cursor: pointer; font: inherit; }
+.incidents-icon { padding: 8px; color: var(--pim-muted); }
+.incidents-button:hover, .incidents-icon:hover { background: var(--pim-surface-soft); border-color: var(--pim-blue-line); }
+.incidents-view :is(button, input, select, summary):focus-visible, .product-incidents-badge:focus-visible { outline: 2px solid var(--pim-blue); outline-offset: 3px; }
+.incidents-view button:disabled { opacity: .55; cursor: not-allowed; }
+.incidents-sync { padding: 14px 16px; background: var(--pim-surface-soft); border: 1px solid var(--pim-line); border-radius: var(--pim-r-card); margin-bottom: 20px; color: var(--pim-muted); }
+.incidents-sync p { margin: 0; }
+.incidents-sync-main { align-items: center; flex-wrap: wrap; }
+.incidents-sync > :not(:first-child) { margin-top: 10px; }
+.incidents-sync [role="alert"], .incidents-view > [role="alert"], .incident-detail [role="alert"] { color: var(--pim-error); }
+.incidents-summary { align-items: center; flex-wrap: wrap; margin-bottom: 18px; }
+.incidents-summary strong { color: var(--pim-ink); font-size: 15px; }
+.incidents-summary span { color: var(--pim-muted); font-size: 12px; }
+.incidents-filters { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; margin-bottom: 20px; }
+.incidents-filters label { display: grid; gap: 6px; color: var(--pim-muted); font-size: 12px; flex: 1 1 130px; min-width: 0; }
+.incidents-filters .incidents-search { flex: 2 1 210px; }
+.incidents-filters :is(input, select) { width: 100%; min-width: 0; min-height: 38px; padding: 8px 10px; color: var(--pim-ink); background: var(--pim-surface); border: 1px solid var(--pim-line-strong); border-radius: var(--pim-r-control); font: inherit; }
+.incidents-list { list-style: none; padding: 0; border-top: 1px solid var(--pim-line); }
+.incidents-list li { border-bottom: 1px solid var(--pim-line); }
+.incident-row { display: flex; align-items: flex-start; gap: 12px; width: 100%; padding: 18px 10px; border: 0; text-align: left; background: var(--pim-surface); color: var(--pim-text); font: inherit; cursor: pointer; }
+.incident-row:hover, .incident-row.is-selected { background: var(--pim-surface-soft); }
+.incident-row-content { display: grid; flex: 1; min-width: 0; gap: 3px; }
+.incident-row-content strong { color: var(--pim-ink); }
+.incident-row-message { margin-top: 5px; overflow-wrap: anywhere; }
+.incident-row > svg { color: var(--pim-muted); flex: 0 0 auto; margin-top: 3px; }
+.incident-severity { display: inline-flex; padding-top: 2px; color: var(--pim-info); }
+.incident-severity.is-ERROR { color: var(--pim-error); }
+.incident-severity.is-WARNING { color: var(--pim-warning); }
+.incident-status { display: inline-flex; padding: 3px 8px; border: 1px solid var(--pim-line); border-radius: var(--pim-r-tag); font-size: 11px; color: var(--pim-muted); background: var(--pim-surface-soft); flex: 0 1 auto; }
+.incident-status.is-needs_attention { background: var(--pim-warning-tint); border-color: var(--pim-warning-line); color: var(--pim-warning); }
+.incident-status.is-awaiting_amazon, .incident-status.is-correction_ready { background: var(--pim-info-tint); border-color: var(--pim-info-line); color: var(--pim-info); }
+.incident-status.is-resolved { background: var(--pim-success-tint); border-color: var(--pim-success-line); color: var(--pim-success); }
+.incidents-muted { color: var(--pim-muted); font-size: 12px; overflow-wrap: anywhere; }
+.incidents-empty { padding: 36px 20px; text-align: center; color: var(--pim-muted); }
+.incidents-empty svg { color: var(--pim-blue); }
+.incidents-empty h2 { font-size: 15px; color: var(--pim-ink); margin: 14px 0 6px; }
+.incidents-empty p { margin: 0; }
+.incidents-notice { padding: 12px 16px; border-radius: var(--pim-r-control); background: var(--pim-surface-soft); }
+.incident-detail { margin-top: 24px; padding: 22px; border: 1px solid var(--pim-line-strong); border-radius: var(--pim-r-card); overflow-wrap: anywhere; }
+.incident-detail h3 { margin: 0; font-size: 16px; color: var(--pim-ink); }
+.incident-detail-product { margin-bottom: 0; color: var(--pim-ink); font-weight: 600; }
+.incident-detail-message { font-size: 14px; }
+.incident-detail details { border-top: 1px solid var(--pim-line); margin-top: 14px; padding-top: 14px; }
+.incident-detail summary { cursor: pointer; color: var(--pim-muted); }
+.incident-detail dl { display: grid; grid-template-columns: minmax(60px, 100px) minmax(0, 1fr); gap: 8px; }
+.incident-detail dd { margin: 0; }
+.incident-detail dt { font-weight: 600; }
+.incident-uony { display: inline-flex; align-items: center; gap: 10px; font: inherit; padding: 9px 14px; min-height: 40px; border: 1px solid var(--pim-ai-line); border-radius: var(--pim-r-control); color: var(--pim-ai-strong); background: var(--pim-ai-tint); cursor: pointer; }
+.incident-uony:hover { border-color: var(--pim-ai-strong); }
+.incident-history { padding-left: 18px; }
+.incident-history time { font-size: 12px; color: var(--pim-muted); }
+.incident-history p { margin: 4px 0 12px; }
+.product-incidents-badge { display: block; margin-top: 9px; padding: 3px 8px; border: 1px solid var(--pim-warning-line); color: var(--pim-warning); background: var(--pim-warning-tint); border-radius: var(--pim-r-tag); cursor: pointer; font: inherit; font-size: 12px; }
+.product-incidents-access { display: flex; gap: 8px; align-items: center; margin: 0 18px 16px; padding: 10px 12px; border: 1px solid var(--pim-line); border-radius: var(--pim-r-control); color: var(--pim-blue); background: var(--pim-surface); cursor: pointer; }
+.product-incidents-access-copy { display: grid; gap: 4px; flex: 1; min-width: 0; text-align: left; }
+.product-incidents-access small { font-size: 11px; line-height: 1.4; color: var(--pim-muted); overflow-wrap: anywhere; }
+.product-incidents-access > svg { flex: 0 0 auto; }
+.product-incidents-access[data-state="clear"] > svg:first-child, .product-incidents-access[data-state="clear"] small { color: var(--pim-success); }
+.product-incidents-access[data-state="attention"], .product-edge .product-incidents-rail[data-state="attention"] { color: var(--pim-error); border-color: var(--pim-error-line); background: var(--pim-error-tint); }
+.product-incidents-access[data-state="attention"] small { color: var(--pim-error); }
+.product-edge .product-incidents-rail[data-state="clear"] { color: var(--pim-success); }
+.product-incidents-count { position: absolute; top: -3px; right: -3px; min-width: 16px; padding: 2px 4px; border-radius: var(--pim-r-control); color: var(--pim-surface); background: var(--pim-error); font-size: 10px; line-height: 1.2; }
+.product-incidents-access:focus-visible, .product-incidents-rail:focus-visible { outline: 2px solid var(--pim-blue); outline-offset: 3px; }
+@container (max-width: 560px) {
+  .incidents-heading { flex-wrap: wrap; gap: 12px; }
+  .incident-row { flex-wrap: wrap; }
+  .incident-row .incident-status { margin-left: 30px; }
+  .incident-row-content { flex-basis: calc(100% - 50px); }
+  .incident-row > svg { margin-left: auto; }
+  .incident-detail { padding: 16px; }
+}
+@media (max-width: 600px) {
+  .incidents-view.is-global { padding: 20px 16px 90px; }
+  .incidents-heading { flex-wrap: wrap; }
+  .incident-row { flex-wrap: wrap; }
+  .incident-row-content { flex-basis: calc(100% - 50px); }
+  .incident-row .incident-status { margin-left: 30px; }
+}

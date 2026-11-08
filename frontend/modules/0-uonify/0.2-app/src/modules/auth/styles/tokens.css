@@ -1,0 +1,69 @@
+/* Paleta del acceso (auth-ui.css del prototipo). Tonos casi idénticos del
+   prototipo comparten token. Los generales (blanco, azul de marca…) vienen de
+   src/shared/styles/tokens.css. */
+:root {
+  /* Tinta y textos */
+  --uon-auth-ink: #142f49;
+  --uon-auth-text: #183149;
+  --uon-auth-label: #40566b;
+  --uon-auth-body: #566d81;
+  --uon-auth-muted: #60758a;
+  --uon-auth-subtle: #718598;
+  --uon-auth-faint: #8093a3;
+  --uon-auth-heading-soft: #224966;
+  --uon-auth-slate: #315a77;
+  --uon-auth-link: #426f98;
+  --uon-auth-kicker: #537ca0;
+  --uon-auth-blue-text: #225c9a;
+  --uon-auth-suggest-text: #2c637d;
+  /* Azules de estructura y acción */
+  --uon-auth-blue: #2d78ca;
+  --uon-auth-action: #245db3;
+  --uon-auth-action-hover: #164d9c;
+  --uon-auth-navy: #173b65;
+  --uon-auth-navy-shadow: #173b6526;
+  --uon-auth-live: #337bd2;
+  --uon-auth-live-halo: #3279d80b;
+  /* Superficies */
+  --uon-auth-sky: #f4f9ff;
+  --uon-auth-hover: #f2f7fb;
+  --uon-auth-info: #edf5ff;
+  --uon-auth-suggest: #edf7fb;
+  --uon-auth-error-tint: #fff2f0;
+  --uon-auth-white-veil: #ffffff91;
+  --uon-auth-surface-blur: rgba(236, 243, 249, .58);
+  --uon-auth-glow-strong: #f8fbfed9;
+  --uon-auth-glow-soft: #f8fbfe66;
+  /* Líneas y foco */
+  --uon-auth-line: #dce8f3;
+  --uon-auth-line-soft: #e2eef8;
+  --uon-auth-line-aqua: #e4f1f2;
+  --uon-auth-line-strong: #cdd9e5;
+  --uon-auth-line-hover: #8ab8e5;
+  --uon-auth-dots: #aac7d5;
+  --uon-auth-focus: #87bded;
+  --uon-auth-focus-soft: #cde8ff;
+  /* Degradados de marca (paneles laterales) */
+  --uon-auth-brand-mint: #d4fcf5;
+  --uon-auth-brand-sky: #c4e6ff;
+  --uon-auth-brand-deep: #2a72d1;
+  --uon-auth-side-aqua: #87d8ec;
+  --uon-auth-side-mint: #d4f5ee;
+  --uon-auth-side-sky: #d1e3fa;
+  --uon-auth-side-blue: #abcaf0;
+  /* Progreso completado y órbitas */
+  --uon-auth-aqua-done: #48b9b1;
+  --uon-auth-aqua-orbit: #48bdc3;
+  --uon-auth-aqua-soft: #58c6bd;
+  /* Estado */
+  --uon-auth-error: #a03933;
+  /* Sombras y fondos de los modales */
+  --uon-auth-shadow-dialog: #102b4966;
+  --uon-auth-shadow-connect: #102b493b;
+  --uon-auth-shadow-account: #102b4952;
+  --uon-auth-shadow-profile: #102b4970;
+  --uon-auth-shadow-logo: #29699410;
+  --uon-auth-backdrop: #1028428c;
+  --uon-auth-backdrop-light: #17334e55;
+  --uon-auth-backdrop-strong: #102842a8;
+}

@@ -1,0 +1,36 @@
+/* Acceso a Uonify — tres formas de entrar (ChatGPT, Google y correo con código).
+   Decisión del dueño (27-09-2026): sin contraseña. Un solo botón sólido por vista:
+   ChatGPT en la lista y «Enviar código» / «Verificar» en el correo. */
+.uon-auth-providers { display: grid; gap: 10px; }
+.uon-auth-provider.is-secondary { border-color: var(--uon-auth-line-strong); background: var(--surface); box-shadow: none; color: var(--uon-auth-ink); }
+.uon-auth-provider.is-secondary:hover { border-color: var(--uon-auth-line-hover); background: var(--uon-auth-sky); }
+.uon-auth-provider-mark { display: grid; place-items: center; width: 29px; height: 29px; color: var(--uon-auth-slate); }
+.uon-auth-google-mark { display: block; }
+.uon-auth-provider:focus-visible { outline: 3px solid var(--uon-auth-focus); outline-offset: 3px; }
+
+/* Correo y código */
+.uon-auth-form { display: grid; gap: 8px; }
+.uon-auth-form label { color: var(--uon-auth-label); font-size: 12px; font-weight: 650; }
+.uon-auth-form input { width: 100%; min-height: 50px; padding: 0 15px; border: 1px solid var(--uon-auth-line-strong); border-radius: 11px; background: var(--surface); color: var(--uon-auth-text); font: inherit; font-size: 14px; }
+.uon-auth-form input:focus { outline: 3px solid var(--uon-auth-focus-soft); border-color: var(--uon-auth-live); }
+.uon-auth-form input[aria-invalid="true"] { border-color: var(--pim-error); }
+.uon-auth-code-input { font-family: var(--pim-mono); font-size: 22px !important; letter-spacing: .42em; text-align: center; }
+.uon-auth-code-input::placeholder { color: var(--uon-auth-line-strong); }
+.uon-auth-hint { margin: 0; color: var(--uon-auth-subtle); font-size: 11px; line-height: 1.5; }
+.uon-auth-error { margin: 2px 0 0; padding: 10px 12px; border-radius: 9px; background: var(--uon-auth-error-tint); color: var(--uon-auth-error); font-size: 12px; line-height: 1.45; }
+.uon-auth-error[hidden] { display: none; }
+.uon-auth-submit { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 50px; margin-top: 8px; border: 0; border-radius: 11px; background: var(--uon-auth-action); color: var(--surface); font: inherit; font-size: 14px; font-weight: 650; cursor: pointer; }
+.uon-auth-submit:hover { background: var(--uon-auth-action-hover); }
+.uon-auth-submit:disabled { cursor: not-allowed; opacity: .6; }
+.uon-auth-submit[aria-busy="true"] { cursor: progress; }
+.uon-auth-back { justify-self: center; margin-top: 14px; padding: 6px 14px; border: 0; border-radius: 8px; background: transparent; color: var(--uon-auth-muted); font: inherit; font-size: 12px; cursor: pointer; }
+.uon-auth-back:hover { background: var(--uon-auth-hover); color: var(--uon-auth-ink); }
+.uon-auth-code-actions { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; margin-top: 14px; }
+.uon-auth-link { padding: 6px 4px; border: 0; background: transparent; color: var(--uon-auth-link); font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; }
+.uon-auth-link:hover:not(:disabled) { text-decoration: underline; }
+.uon-auth-link:disabled { color: var(--uon-auth-subtle); font-variant-numeric: tabular-nums; cursor: default; }
+.uon-auth-preview-code { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin: 2px 0 0; padding: 10px 12px; border: 1px dashed var(--uon-auth-line-strong); border-radius: 9px; background: var(--uon-auth-sky); color: var(--uon-auth-slate); font-size: 12px; line-height: 1.45; }
+.uon-auth-preview-code strong { font-family: var(--pim-mono); letter-spacing: .12em; color: var(--uon-auth-ink); }
+.uon-auth-dialog :is(input):focus-visible { outline: 3px solid var(--uon-auth-focus); outline-offset: 2px; }
+.uon-auth-legal a[href^="mailto:"] { white-space: nowrap; }
+.uon-auth-legal { flex-wrap: wrap; }

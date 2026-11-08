@@ -1,0 +1,4 @@
+.conversation-messages > .message.assistant.has-form { width: min(100%, 620px); max-width: min(100%, 620px); min-width: 0; }
+.conversation-recovery { width: min(100%, 620px); min-width: 0; padding: 16px; box-sizing: border-box; border: 1px solid var(--pim-blue-line); border-radius: var(--pim-r-card); background: var(--surface); }
+.conversation-recovery > p { margin: 0 0 12px; color: var(--text); font-size: 13px; line-height: 1.5; }
+.welcome > .conversation-recovery { margin: 16px auto; text-align: left; }

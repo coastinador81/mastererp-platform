@@ -1,0 +1,82 @@
+/* Facturación · diálogos: pago anual (resumen tipo Stripe, tarjeta y casillas),
+   recarga, desistimiento, «Apoya a Uonify», tarjeta nueva y muro de pago. */
+
+.bil-checkout, .bil-recharge, .bil-withdrawal, .bil-support-dialog, .bil-payment-dialog, .bil-paywall, .bil-sales { display: grid; gap: 16px; min-width: 0; }
+.bil-focus-start { outline: none; }
+.bil-focus-start:focus-visible { border-radius: var(--pim-r-card); box-shadow: var(--pim-focus); }
+
+/* Desglose de importes */
+.bil-lines { display: grid; gap: 0; margin: 0; }
+.bil-line { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding: 8px 0; border-bottom: 1px dashed var(--pim-line); }
+.bil-line dt { display: grid; gap: 2px; min-width: 0; color: var(--pim-text); }
+.bil-line dt small { color: var(--pim-muted); font-size: 12px; }
+.bil-line dd { flex: 0 0 auto; margin: 0; color: var(--pim-ink); font-size: 12.5px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.bil-line.is-muted dd { color: var(--pim-muted); }
+.bil-line.is-discount dd { color: var(--pim-success); }
+.bil-line.is-total { padding-top: 12px; border-bottom: 0; }
+.bil-line.is-total dt, .bil-line.is-total dd { color: var(--pim-ink); font-size: 14px; font-weight: 700; }
+
+.bil-summary { display: grid; gap: 8px; padding: 16px; border: 1px solid var(--pim-line); border-radius: var(--pim-r-card); background: var(--pim-surface-soft); }
+.bil-summary-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+.bil-summary-meta { margin-top: 4px; }
+
+/* Método de pago y formulario de Stripe simulado */
+.bil-pay { display: grid; gap: 12px; min-width: 0; margin: 0; padding: 0; border: 0; }
+.bil-pay legend { margin-bottom: 8px; padding: 0; }
+.bil-pay-options { display: grid; gap: 8px; }
+.bil-pay-option { display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 8px 12px; border: 1px solid var(--pim-line); border-radius: var(--pim-r-control); background: var(--pim-surface); cursor: pointer; }
+.bil-pay-option:has(input:checked) { border-color: var(--pim-blue); background: var(--pim-blue-tint); box-shadow: inset 0 0 0 1px var(--pim-blue); }
+.bil-pay-option:has(input:focus-visible) { box-shadow: var(--pim-focus); }
+.bil-pay:disabled .bil-pay-option { cursor: not-allowed; opacity: .7; }
+.bil-stripe { display: grid; gap: 12px; padding: 16px; border: 1px solid var(--pim-line-strong); border-radius: var(--pim-r-control); background: var(--pim-surface); }
+.bil-stripe-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.bil-stripe-title { color: var(--pim-ink); font-weight: 650; }
+.bil-stripe-field { display: grid; gap: 4px; min-width: 0; color: var(--pim-muted); font-size: 12px; }
+.bil-stripe-field .pim-input { background: var(--pim-surface-soft); }
+.bil-stripe-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.bil-stripe-note { display: flex; align-items: flex-start; gap: 6px; margin: 0; color: var(--pim-muted); font-size: 12px; line-height: 1.45; }
+.bil-stripe-note .pim-icon { flex: 0 0 auto; margin-top: 1px; color: var(--pim-success); }
+
+/* Casillas legales */
+.bil-legal { display: grid; gap: 12px; min-width: 0; margin: 0; padding: 0; border: 0; }
+.bil-legal-check { display: flex; align-items: flex-start; gap: 10px; color: var(--pim-text); line-height: 1.5; cursor: pointer; }
+.bil-legal-check .pim-check { flex: 0 0 auto; margin-top: 2px; }
+.bil-legal-check a { color: var(--pim-blue); text-decoration: underline; text-underline-offset: 2px; }
+.bil-legal-check .pim-check[aria-invalid="true"] { outline: 2px solid var(--pim-error); outline-offset: 2px; }
+
+/* Confirmaciones */
+.bil-done { display: flex; align-items: flex-start; gap: 12px; padding: 16px; border: 1px solid var(--pim-success-line); border-radius: var(--pim-r-card); background: var(--pim-success-tint); color: var(--pim-ink); }
+.bil-done p { margin: 0; line-height: 1.55; }
+.bil-done-icon { flex: 0 0 auto; color: var(--pim-success); }
+.bil-done-facts { margin-top: 16px; font-size: 13px; }
+
+/* Recarga */
+.bil-amount { position: relative; max-width: 220px; }
+.bil-amount .pim-input { padding-right: 32px; font-size: 16px; font-variant-numeric: tabular-nums; }
+.bil-amount-unit { position: absolute; top: 50%; right: 12px; color: var(--pim-muted); translate: 0 -50%; pointer-events: none; }
+.bil-recharge-tokens { margin: 0; color: var(--pim-text); }
+.bil-recharge-tokens strong { color: var(--pim-ink); }
+
+/* Documentos del desistimiento */
+.bil-docs { display: grid; gap: 8px; margin: 16px 0 0; padding: 0; list-style: none; }
+.bil-doc { display: flex; align-items: center; gap: 12px; padding: 8px 8px 8px 12px; border: 1px solid var(--pim-line); border-radius: var(--pim-r-control); }
+.bil-doc > .pim-icon { flex: 0 0 auto; color: var(--pim-muted); }
+.bil-doc-text { display: grid; flex: 1; gap: 1px; min-width: 0; }
+.bil-doc-text strong { color: var(--pim-ink); font-weight: 600; overflow-wrap: anywhere; }
+.bil-doc-text small { color: var(--pim-muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+
+/* Muro de pago */
+.bil-paywall-detail { margin: 0 0 16px; color: var(--pim-muted); }
+.bil-options { display: grid; gap: 12px; }
+.bil-option { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; padding: 16px; border: 1px solid var(--pim-line); border-radius: var(--pim-r-card); }
+.bil-option-icon { flex: 0 0 auto; color: var(--pim-blue); }
+.bil-option-text { display: grid; flex: 1 1 220px; gap: 2px; min-width: 0; }
+.bil-option-text h3 { margin: 0; color: var(--pim-ink); font-size: 14px; font-weight: 650; }
+.bil-option-text p { margin: 0; color: var(--pim-muted); line-height: 1.45; }
+.bil-sales p { margin: 0; line-height: 1.55; }
+.bil-sales .pim-btn { justify-self: start; }
+
+@media (max-width: 420px) {
+  .bil-stripe-row { grid-template-columns: 1fr; }
+  .bil-option .pim-btn { width: 100%; justify-content: center; }
+}

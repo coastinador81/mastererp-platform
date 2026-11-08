@@ -1,0 +1,36 @@
+.bil-onboard-offer { margin-block: 24px; color: var(--uon-auth-text); }
+.bil-onboard-offer h3 { margin: 0 0 12px; font-size: 24px; line-height: 1.2; letter-spacing: -.03em; }
+.bil-onboard-offer p { font-size: 14px; line-height: 1.6; color: var(--uon-auth-muted); }
+.bil-onboard-offer fieldset { padding: 0; margin: 20px 0; border: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; min-width: 0; }
+.bil-onboard-offer legend { font-size: 13px; margin-bottom: 12px; }
+.bil-onboard-offer label { display: flex; align-items: center; gap: 14px; padding: 16px; border: 1px solid var(--uon-auth-line); border-radius: 12px; cursor: pointer; }
+.bil-onboard-offer label.is-selected { border-color: var(--uon-auth-action); background: var(--surface); }
+.bil-onboard-offer label span span { display: block; margin-top: 5px; font-size: 14px; }
+.bil-onboard-offer input { width: 18px; height: 18px; flex-shrink: 0; }
+.bil-onboard-offer input:focus-visible { outline: 2px solid var(--uon-auth-action); outline-offset: 4px; }
+.bil-onboard-offer > button { margin: 8px 12px 8px 0; }
+.bil-onboard-offer button:disabled { opacity: .6; cursor: default; }
+.bil-onboard-offer p[role="status"] { min-height: 44px; font-size: 12px; }
+.bil-onboard-summary { display: grid; gap: 10px; padding: 16px; margin: 16px 0; border: 1px solid var(--uon-auth-line); border-radius: 12px; }
+.bil-onboard-summary > div { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 12px; }
+.bil-onboard-summary dd { margin: 0; }
+.bil-onboard-offer .bil-onboard-consent { padding: 0; border: 0; align-items: flex-start; font-size: 13px; line-height: 1.5; }
+.bil-onboard-consent input { margin-top: 2px; }
+.bil-embedded { min-width: 0; max-width: 100%; margin-block: 16px; }
+.bil-embedded-host { min-width: 0; width: 100%; }
+
+@media (max-width: 540px) { .bil-onboard-offer fieldset { grid-template-columns: 1fr; } }
+
+.bil-onboard-compact { margin-block: 0; }
+.bil-onboard-compact h3 { font-size: 20px; margin-bottom: 8px; }
+.bil-onboard-compact p { margin-block: 8px; font-size: 14px; line-height: 1.4; }
+.bil-onboard-compact fieldset { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-block: 12px; }
+.bil-onboard-compact legend { margin-bottom: 8px; }
+.bil-onboard-compact fieldset label { align-items: flex-start; gap: 8px; padding: 10px; }
+.bil-onboard-compact fieldset label strong { font-size: 14px; }
+.bil-onboard-compact fieldset label span span { font-size: 13px; line-height: 1.35; }
+.bil-onboard-compact .bil-onboard-summary { padding: 10px; gap: 6px; margin-block: 10px; font-size: 14px; line-height: 1.35; }
+.bil-onboard-compact .bil-onboard-consent { margin-block: 14px; gap: 10px; font-size: 14px; line-height: 1.4; }
+.bil-onboard-compact p[role="status"] { min-height: 0; }
+.bil-onboard-actions { display: flex; align-items: center; gap: 8px; margin-top: 12px; }
+.bil-onboard-actions > button { flex: 1; min-width: 0; min-height: 44px; padding: 10px 12px; font-size: 14px; line-height: 1.3; }

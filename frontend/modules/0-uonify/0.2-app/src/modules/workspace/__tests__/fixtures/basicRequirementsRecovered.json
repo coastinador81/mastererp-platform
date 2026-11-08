@@ -1,0 +1,41 @@
+{
+  "id": "basic-recovered-form",
+  "title": "Completar los datos para Amazon",
+  "context": {
+    "kind": "product_guide",
+    "sku": "BMB-DRIVE-PILOTO",
+    "revision": 11,
+    "section": "amazon_requirements",
+    "step": "fields",
+    "evaluationId": "basic-recovered-evaluation"
+  },
+  "reasoning": {
+    "id": "basic-recovered-job",
+    "status": "completed",
+    "message": "He terminado de contrastar tu información. Solo quedan los datos que no he podido resolver.",
+    "usage": {
+      "calls": 0,
+      "tokens": 0,
+      "reserved": 0,
+      "unknown": 0
+    },
+    "canRetry": false,
+    "requiresConsumptionAcknowledgement": false
+  },
+  "fields": [
+    {
+      "id": "p_dd33bc8e3b320d8efd9e",
+      "label": "¿Cómo vas a enviar los pedidos?",
+      "type": "select",
+      "required": true,
+      "options": [
+        "Amazon enviará los pedidos (Europa)",
+        "Yo enviaré los pedidos"
+      ],
+      "closed": true,
+      "hint": "Elige una de las opciones aceptadas por Amazon."
+    }
+  ],
+  "submitLabel": "Guardar y continuar",
+  "notice": "Solo te preguntaré los datos que necesita Amazon y que no puedo obtener de tus documentos. Tus respuestas se guardan en esta ficha."
+}

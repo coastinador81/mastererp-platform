@@ -1,0 +1,37 @@
+.conversation-messages > .message.assistant.has-connection {
+  width: min(100%, 620px);
+  max-width: min(100%, 620px);
+  min-width: 0;
+}
+.message-connection {
+  margin-top: 12px;
+  min-width: 0;
+  white-space: normal;
+}
+.message-connection:focus-visible {
+  outline: 2px solid var(--pim-blue-strong);
+  outline-offset: 3px;
+  border-radius: 12px;
+}
+.message-connection-history {
+  display: grid;
+  gap: 6px;
+  margin-top: 12px;
+  white-space: normal;
+  color: var(--pim-muted);
+  font-size: 12px;
+}
+.message-connection-history button {
+  justify-self: start;
+  padding: 4px 0;
+  border: 0;
+  color: var(--pim-blue-strong);
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.message-connection-history button:focus-visible {
+  outline: 2px solid var(--pim-blue-strong);
+  outline-offset: 2px;
+}

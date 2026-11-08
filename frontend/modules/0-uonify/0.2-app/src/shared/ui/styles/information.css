@@ -1,0 +1,10 @@
+.pim-information { margin: 8px 0; min-width: 0; }
+.pim-information .pim-information-toggle { display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 4px 0; border: 0; background: transparent; color: var(--muted); font: inherit; font-size: 12px; text-align: left; cursor: pointer; }
+.pim-information .pim-information-toggle:hover { color: var(--blue-dark); }
+.pim-information .pim-information-toggle:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; border-radius: var(--pim-r-control); }
+.pim-information .pim-information-toggle svg { flex-shrink: 0; }
+.pim-information-content { margin-top: 6px; color: var(--muted); font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; }
+.pim-information-content[hidden] { display: none; }
+.pim-information-content > :first-child { margin-top: 0; }
+.pim-information-content > :last-child { margin-bottom: 0; }
+@media (max-width: 480px) { .pim-information .pim-information-toggle { min-height: 44px; } }

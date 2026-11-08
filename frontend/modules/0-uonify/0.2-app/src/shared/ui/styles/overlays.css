@@ -1,0 +1,40 @@
+/* Kit de interfaz · avisos (toasts), diálogos y movimiento reducido.
+   Origen: pim/core.css del prototipo (líneas 188-224). */
+
+/* Toasts (top-right): neutral surface, the state is carried by the icon and a thin rule. */
+.pim-toaster { position: fixed; z-index: 2000; top: 16px; right: 16px; display: grid; gap: 8px; width: min(360px, calc(100vw - 32px)); pointer-events: none; }
+.pim-toast { display: flex; align-items: flex-start; gap: 8px; padding: 12px 16px; border: 1px solid var(--pim-line); border-left: 3px solid var(--pim-line-strong); border-radius: var(--pim-r-card); background: var(--pim-surface); color: var(--pim-ink); box-shadow: var(--pim-shadow-float); font-size: 13px; pointer-events: auto; animation: pim-toast-in var(--pim-mid) var(--pim-ease); }
+.pim-toast > .pim-icon { flex: 0 0 auto; margin-top: 1px; color: var(--pim-muted); }
+.pim-toast-body { display: grid; flex: 1; gap: 2px; min-width: 0; }
+.pim-toast-body strong { font-weight: 600; overflow-wrap: anywhere; }
+.pim-toast-body span { color: var(--pim-muted); font-size: 12px; overflow-wrap: anywhere; }
+.pim-toast-close { display: grid; place-items: center; width: 24px; height: 24px; padding: 0; border: 0; border-radius: 6px; background: transparent; color: var(--pim-muted); cursor: pointer; }
+.pim-toast-close:hover { background: var(--pim-surface-muted); color: var(--pim-ink); }
+.pim-toast-success { border-left-color: var(--pim-success); } .pim-toast-success > .pim-icon { color: var(--pim-success); }
+.pim-toast-error { border-left-color: var(--pim-error); } .pim-toast-error > .pim-icon { color: var(--pim-error); }
+.pim-toast-warning { border-left-color: var(--pim-warning); } .pim-toast-warning > .pim-icon { color: var(--pim-warning); }
+.pim-toast-info { border-left-color: var(--pim-info); } .pim-toast-info > .pim-icon { color: var(--pim-info); }
+.pim-toast-loading { border-left-color: var(--pim-blue); } .pim-toast-loading > .pim-icon { color: var(--pim-blue); }
+@keyframes pim-toast-in { from { opacity: 0; translate: 0 -8px; } to { opacity: 1; translate: 0 0; } }
+
+/* Dialog: 16 px radius */
+.pim-dialog { width: min(560px, calc(100vw - 32px)); max-height: calc(100svh - 48px); padding: 0; border: 1px solid var(--pim-line); border-radius: var(--pim-r-modal); background: var(--pim-surface); color: var(--pim-ink); box-shadow: 0 24px 64px #15243833; }
+.pim-dialog::backdrop { background: #15243859; }
+.pim-dialog[open] { animation: pim-dialog-in var(--pim-mid) var(--pim-ease); }
+@keyframes pim-dialog-in { from { opacity: 0; translate: 0 8px; } to { opacity: 1; translate: 0 0; } }
+.pim-dialog-sm { width: min(440px, calc(100vw - 32px)); }
+.pim-dialog-lg { width: min(820px, calc(100vw - 32px)); }
+.pim-dialog-xl { width: min(1100px, calc(100vw - 32px)); }
+.pim-dialog-panel { display: flex; flex-direction: column; max-height: calc(100svh - 48px); }
+.pim-dialog-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 24px 24px 16px; }
+.pim-dialog-header h2 { margin: 0; font-size: 16px; font-weight: 650; }
+.pim-dialog-header p { margin: 4px 0 0; color: var(--pim-muted); font-size: 13px; line-height: 1.5; }
+.pim-dialog-x { display: grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 0; border-radius: var(--pim-r-control); background: transparent; color: var(--pim-muted); cursor: pointer; }
+.pim-dialog-x:hover { background: var(--pim-surface-muted); color: var(--pim-ink); }
+.pim-dialog-body { min-height: 0; overflow-y: auto; padding: 0 24px 16px; font-size: 13px; }
+.pim-dialog-footer { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 8px; padding: 16px 24px 24px; border-top: 1px solid var(--pim-line); }
+
+@media (prefers-reduced-motion: reduce) {
+  .pim-tab *, .pim-dialog, .pim-toast { animation: none !important; transition: none !important; }
+}
+:root[data-reduce-motion="true"] :is(.pim-tab *, .pim-dialog, .pim-toast) { animation: none !important; transition: none !important; }

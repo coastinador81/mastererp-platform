@@ -1,0 +1,12 @@
+.uon-setup-dialog .uon-onboard-shell { min-height: 620px; }
+.uon-setup-dialog .uon-onboard-main { padding-top: 30px; }
+.uon-setup-dialog .uon-onboard-side { background: linear-gradient(150deg, var(--uon-auth-side-blue), var(--uon-auth-sky)); }
+.uon-setup-dialog .uon-onboard-side-copy em { font-family: Georgia, serif; font-weight: 400; color: var(--uon-auth-action); }
+.uon-setup-dialog h2 { font-size: clamp(24px, 2.5vw, 29px); line-height: 1.15; letter-spacing: -.04em; margin: 0 0 12px; }
+.uon-setup-progress { display: flex; gap: 16px; list-style: none; padding: 0; margin: 0 28px 22px 0; font-size: 11px; color: var(--uon-auth-muted); }
+.uon-setup-progress li { display: flex; align-items: center; gap: 6px; border-bottom: 2px solid var(--uon-auth-line); padding-bottom: 10px; flex: 1; }
+.uon-setup-progress .is-complete, .uon-setup-progress .is-current { color: var(--uon-auth-action); border-color: var(--uon-auth-action); }
+.uon-setup-progress .is-current { font-weight: 700; }
+.uon-setup-dialog .uon-setup-footer { border-top: 1px solid var(--uon-auth-line); padding-top: 8px; margin-top: 16px; }
+.uon-setup-dialog .uon-setup-footer + button { font-size: 11px; margin-top: 2px; padding-block: 6px; }
+@media (max-width: 480px) { .uon-setup-progress { gap: 10px; margin-bottom: 24px; } .uon-setup-dialog .uon-onboard-main { padding-top: 30px; } }

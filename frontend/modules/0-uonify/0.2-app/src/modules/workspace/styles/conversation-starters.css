@@ -1,0 +1,36 @@
+.conversation-starters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-self: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 760px;
+  margin: auto;
+  padding: 20px 0;
+}
+.conversation-starters button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  max-width: 100%;
+  min-height: 44px;
+  padding: 11px 16px;
+  border: 1px solid var(--pim-blue-line);
+  border-radius: var(--pim-r-card);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  line-height: 1.5;
+  text-align: left;
+  cursor: pointer;
+}
+.conversation-starters button svg { flex: 0 0 auto; color: var(--blue); }
+.conversation-starters button:hover { background: var(--soft); border-color: var(--blue); }
+.conversation-starters button:focus-visible { outline: none; box-shadow: var(--pim-focus); }
+@media (max-width: 480px) {
+  .conversation-starters { flex-direction: column; align-items: center; gap: 12px; }
+  .conversation-starters button { width: min(100%, 310px); justify-content: flex-start; }
+}

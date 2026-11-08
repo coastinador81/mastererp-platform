@@ -1,0 +1,116 @@
+/* Uonify PIM · pestaña «Auditoría IA» (auditoria.js). Clases propias: pim-auditoria-.
+   Identidad corporativa + línea del frontend nuevo (core.css): intro pim-head, las
+   instrucciones como estado vacío (solo sin resultados, como el original), secciones
+   planas separadas por espacio y filete
+   (título a la izquierda, acciones a la derecha) y una sola acción sólida por paso.
+   Superficies blancas; la única tarjeta es la que agrupa un objeto real (la lista de
+   atributos o de campos, un resultado de búsqueda). El color solo dice estado
+   (semánticos) o IA (tinte aqua en la marca del resultado y la barra de la auditoría).
+   Datos técnicos en mono. Sin colores fuera de los tokens de core.css. */
+
+/* Puerto de pim/auditoria.css (1/4): base de la pestaña, instrucciones, URL, resultado de la IA y categoría. */
+
+.pim-auditoria,
+.pim-auditoria-modal { container: pim-auditoria / inline-size; display: grid; gap: 24px; min-width: 0; color: var(--pim-ink); font-size: 13px; line-height: 1.5; }
+.pim-auditoria *,
+.pim-auditoria-modal * { box-sizing: border-box; }
+.pim-auditoria :is(h2, h3, h4, p),
+.pim-auditoria-modal :is(h3, h4, p) { margin: 0; }
+.pim-auditoria .pim-icon,
+.pim-auditoria-modal .pim-icon { flex: 0 0 auto; }
+.pim-auditoria .pim-btn,
+.pim-auditoria-modal .pim-btn { white-space: normal; text-align: center; }
+.pim-auditoria code.pim-mono { color: var(--pim-ink); }
+
+/* Intro: 18 px / 650; el cerebro es estructura, en azul. */
+.pim-auditoria .pim-head .pim-auditoria-head-icon { color: var(--pim-blue); }
+
+/* Instrucciones (E03), solo en vacío: pim-empty sobre tarjeta discontinua, icono en gris,
+   título 14 px / 650 y los cuatro pasos con su numeración y guion visibles, alineados a la
+   izquierda en una columna centrada. */
+.pim-auditoria-intro { gap: 8px; padding: 24px 16px; }
+.pim-auditoria-intro > .pim-icon { margin-bottom: 4px; }
+.pim-auditoria-intro-title { color: var(--pim-ink); font-size: 14px; font-weight: 650; line-height: 1.4; }
+.pim-auditoria-intro-steps { display: grid; gap: 4px; width: fit-content; max-width: 100%; margin: 0 auto; padding: 0; list-style: none; color: var(--pim-text); font-size: 13px; line-height: 1.5; text-align: left; }
+.pim-auditoria-intro-steps li { min-width: 0; overflow-wrap: anywhere; }
+.pim-auditoria-intro-steps strong { color: var(--pim-ink); font-size: 13px; font-weight: 600; }
+.pim-auditoria-intro-n { display: inline-block; min-width: 16px; color: var(--pim-muted); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* Secciones: cabecera que baja las acciones a otra línea cuando no caben. */
+.pim-auditoria .pim-section-head { flex-wrap: wrap; align-items: center; }
+.pim-auditoria-head-main { display: grid; gap: 4px; flex: 1 1 240px; min-width: 0; }
+.pim-auditoria-head-main .pim-section-sub { margin: 0; }
+.pim-auditoria-title-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.pim-auditoria .pim-section-title { min-width: 0; overflow-wrap: anywhere; }
+.pim-auditoria .pim-section-title .pim-ai-mark { margin-left: 4px; }
+.pim-auditoria .pim-section-title.pim-auditoria-title-warn .pim-icon { color: var(--pim-warning); }
+
+/* Rejilla de formulario: 2 columnas; 1 bajo 560 px. */
+.pim-auditoria-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: start; }
+.pim-auditoria-wide { grid-column: 1 / -1; }
+
+/* URL (E04-E09): campo en mono, acción al lado, formatos como ayuda. */
+.pim-auditoria-url-row { display: flex; gap: 8px; min-width: 0; }
+.pim-auditoria-url-row > .pim-input { flex: 1 1 auto; min-width: 0; }
+.pim-auditoria-url-row > .pim-btn { flex: 0 0 auto; }
+.pim-auditoria-formats strong { color: var(--pim-text); font-weight: 600; }
+.pim-auditoria-progress { display: grid; gap: 8px; }
+.pim-auditoria-progress-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; color: var(--pim-text); font-size: 12px; }
+.pim-auditoria-progress-value { color: var(--pim-ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+.pim-auditoria-error span { overflow-wrap: anywhere; }
+
+/* Resultado de la IA (E10-E17): cabecera con la marca IA, indicadores y bloques. */
+.pim-auditoria-ai-result { gap: 24px; }
+.pim-auditoria-summary { display: grid; gap: 12px; }
+.pim-auditoria-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.pim-auditoria-stat { display: grid; align-content: start; gap: 2px; min-width: 0; padding: 0 16px; }
+.pim-auditoria-stat:first-child { padding-left: 0; }
+.pim-auditoria-stat + .pim-auditoria-stat { border-left: 1px solid var(--pim-line); }
+.pim-auditoria-stat-label { color: var(--pim-muted); font-size: 12px; }
+.pim-auditoria-stat-value { color: var(--pim-ink); font-size: 24px; font-weight: 650; line-height: 1.2; letter-spacing: -.01em; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.pim-auditoria-count { display: inline-flex; align-items: center; gap: 4px; color: var(--pim-text); }
+.pim-auditoria-count.pim-auditoria--green .pim-icon { color: var(--pim-success); }
+.pim-auditoria-count.pim-auditoria--red .pim-icon { color: var(--pim-error); }
+.pim-auditoria-count.pim-auditoria--amber .pim-icon { color: var(--pim-warning); }
+
+.pim-auditoria-block { display: grid; gap: 12px; min-width: 0; }
+.pim-auditoria-block-head { display: grid; gap: 4px; }
+.pim-auditoria-block-title { display: flex; align-items: center; gap: 8px; margin: 0; color: var(--pim-ink); font-size: 13px; font-weight: 650; overflow-wrap: anywhere; }
+
+/* Lista acotada (atributos, campos del esquema): la única tarjeta de la sección. */
+.pim-auditoria-list { max-height: 400px; overflow-y: auto; overscroll-behavior: contain; padding: 16px; border: 1px solid var(--pim-line); border-radius: var(--pim-r-card); background: var(--pim-surface); }
+.pim-auditoria-attr { gap: 8px; }
+.pim-auditoria-attr .pim-label { font-weight: 550; }
+.pim-auditoria-attr-label { min-width: 0; overflow-wrap: anywhere; }
+.pim-auditoria--missing .pim-auditoria-attr-input { border-color: var(--pim-error-line); }
+.pim-auditoria--missing .pim-auditoria-attr-input:focus { border-color: var(--pim-blue); }
+
+.pim-auditoria-badges { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+/* Opcionales: botones pequeños que añaden el atributo (8 px, no píldoras). */
+.pim-auditoria-chip { display: inline-flex; align-items: center; gap: 4px; min-height: 28px; padding: 4px 12px 4px 8px; border: 1px solid var(--pim-line-strong); border-radius: var(--pim-r-control); background: var(--pim-surface); color: var(--pim-ink); font: inherit; font-size: 12px; font-weight: 550; cursor: pointer; transition: border-color var(--pim-fast) var(--pim-ease), background var(--pim-fast) var(--pim-ease), color var(--pim-fast) var(--pim-ease); }
+.pim-auditoria-chip .pim-icon { color: var(--pim-subtle); }
+.pim-auditoria-chip:hover { border-color: var(--pim-blue-line); background: var(--pim-blue-tint); color: var(--pim-blue-strong); }
+.pim-auditoria-chip:hover .pim-icon { color: var(--pim-blue); }
+.pim-auditoria-chip:focus-visible { outline: none; border-color: var(--pim-blue); box-shadow: var(--pim-focus); }
+.pim-auditoria-more { min-height: 28px; }
+
+.pim-auditoria-recs { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.pim-auditoria-recs li { display: flex; align-items: flex-start; gap: 8px; color: var(--pim-text); overflow-wrap: anywhere; }
+.pim-auditoria-rec-n { flex: 0 0 auto; min-width: 16px; color: var(--pim-muted); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* Pie de una sección: nota o aviso a la izquierda, acciones a la derecha. */
+.pim-auditoria-footer { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 8px 16px; padding-top: 16px; border-top: 1px solid var(--pim-line); }
+.pim-auditoria-footer:first-child { padding-top: 0; border-top: 0; }
+.pim-auditoria-footer-note { flex: 1 1 200px; min-width: 0; color: var(--pim-muted); font-size: 12px; }
+.pim-auditoria-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+.pim-auditoria-warn { display: flex; flex: 1 1 auto; align-items: center; gap: 8px; min-width: 0; color: var(--pim-error); font-size: 12px; }
+.pim-auditoria-fields .pim-auditoria-footer { padding-top: 0; border-top: 0; }
+
+/* Categoría (E18, E19): sugerencia de la IA en una fila con sus dos acciones. */
+.pim-auditoria-suggest { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; }
+.pim-auditoria-suggest-icon { display: inline-grid; flex: 0 0 auto; align-self: flex-start; padding-top: 2px; color: var(--pim-ai-text); }
+.pim-auditoria-suggest-text { display: grid; flex: 1 1 240px; gap: 2px; min-width: 0; }
+.pim-auditoria-suggest-main { color: var(--pim-ink); font-weight: 550; overflow-wrap: anywhere; }
+.pim-auditoria-suggest-main strong { font-weight: 650; }
+.pim-auditoria-suggest .pim-auditoria-actions { flex: 0 0 auto; }
+

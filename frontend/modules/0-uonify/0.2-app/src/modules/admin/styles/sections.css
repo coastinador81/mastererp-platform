@@ -1,0 +1,11 @@
+/* Detalles de contenido que comparten las secciones del panel. */
+.adm-panel > h2 { margin: 0; font-size: 18px; }
+.adm-panel > p { margin: 0; line-height: 1.6; overflow-wrap: anywhere; }
+.adm-panel form, .adm-panel ul { min-width: 0; }
+.adm-page > .adm-grid-2 > ul { padding: 20px; border: 1px solid var(--line); border-radius: 12px; }
+.adm-page textarea { max-width: 100%; }
+.adm-page .adm-timeline button { justify-self: start; }
+@media (max-width: 600px) {
+ .adm-panel { padding: 16px; }
+ .adm-page .adm-actions-row { justify-content: flex-start; }
+}

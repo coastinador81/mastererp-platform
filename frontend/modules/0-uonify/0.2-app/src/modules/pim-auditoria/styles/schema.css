@@ -1,0 +1,52 @@
+/* Uonify PIM · Auditoría IA (2/4): esquema, datos faltantes, zona de gestión y campos (pim/auditoria.css). */
+
+/* Esquema (E20-E28): progreso, datos faltantes, zona de gestión, campos. */
+.pim-auditoria-pct-inline { flex: 0 0 auto; color: var(--pim-ink); font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.pim-auditoria-drag-list { display: grid; overflow: hidden; border: 1px solid var(--pim-line); border-radius: var(--pim-r-card); background: var(--pim-surface); }
+.pim-auditoria-drag { display: flex; align-items: center; gap: 12px; min-width: 0; padding: 12px 16px; background: var(--pim-surface); cursor: grab; user-select: none; transition: background var(--pim-fast) var(--pim-ease), opacity var(--pim-fast) var(--pim-ease); }
+.pim-auditoria-drag + .pim-auditoria-drag { border-top: 1px solid var(--pim-line); }
+.pim-auditoria-drag:hover { background: var(--pim-surface-soft); }
+.pim-auditoria-drag:hover .pim-auditoria-drag-go { color: var(--pim-blue); }
+.pim-auditoria-drag:active { cursor: grabbing; }
+.pim-auditoria-drag:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--pim-blue); }
+.pim-auditoria-drag.pim-auditoria--dragging { opacity: .5; background: var(--pim-blue-tint); }
+.pim-auditoria-grip { display: inline-grid; place-items: center; flex: 0 0 auto; color: var(--pim-subtle); }
+.pim-auditoria-drag-main { display: grid; gap: 2px; flex: 1 1 auto; min-width: 0; }
+.pim-auditoria-drag-top { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 8px; }
+.pim-auditoria-drag-name { color: var(--pim-ink); font-weight: 600; text-transform: capitalize; overflow-wrap: anywhere; }
+.pim-auditoria-drag-desc { min-width: 0; overflow-wrap: anywhere; }
+.pim-auditoria-empty { padding: 24px 16px; }
+.pim-auditoria-empty > .pim-icon { color: var(--pim-success); }
+.pim-auditoria-empty p { font-size: 12px; }
+
+.pim-auditoria-dropzone { display: grid; justify-items: center; gap: 4px; min-height: 104px; padding: 16px; border: 1.5px dashed var(--pim-line-strong); border-radius: var(--pim-r-card); background: var(--pim-surface-soft); color: var(--pim-muted); text-align: center; transition: border-color var(--pim-fast) var(--pim-ease), background var(--pim-fast) var(--pim-ease); }
+.pim-auditoria-dropzone > .pim-icon { margin-bottom: 4px; color: var(--pim-subtle); }
+.pim-auditoria-dropzone-title { color: var(--pim-ink); font-size: 13px; font-weight: 600; }
+.pim-auditoria-dropzone-text { font-size: 12px; }
+.pim-auditoria-dropzone.pim-auditoria--can-drop { border-color: var(--pim-blue-line); background: var(--pim-blue-tint); }
+.pim-auditoria-dropzone.pim-auditoria--over { border-color: var(--pim-blue); background: var(--pim-blue-tint); }
+.pim-auditoria-dropzone:is(.pim-auditoria--can-drop, .pim-auditoria--over) > .pim-icon { color: var(--pim-blue); }
+
+.pim-auditoria-add-form { display: grid; gap: 16px; }
+
+/* Instrucciones: nota compacta en gris, sin caja. */
+.pim-auditoria-tips { display: grid; gap: 4px; color: var(--pim-muted); font-size: 12px; line-height: 1.5; }
+.pim-auditoria-tips-title { color: var(--pim-text); font-size: 12px; font-weight: 600; }
+.pim-auditoria-tips ul { display: grid; gap: 2px; margin: 0; padding: 0; list-style: none; }
+.pim-auditoria-tips strong { color: var(--pim-text); font-weight: 600; }
+
+/* Campos del esquema: neutros; el estado lo dicen el icono y el texto (y el borde si falta). */
+.pim-auditoria-field { display: grid; align-content: start; gap: 8px; min-width: 0; }
+.pim-auditoria-field-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 28px; }
+.pim-auditoria-field-name { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.pim-auditoria-field-label { min-width: 0; color: var(--pim-ink); font-family: var(--pim-mono); font-size: 12.5px; font-weight: 550; overflow-wrap: anywhere; }
+.pim-auditoria-field-status { display: flex; flex: 0 0 auto; align-items: center; gap: 4px; color: var(--pim-muted); font-size: 11px; white-space: nowrap; }
+.pim-auditoria-vicon { display: inline-grid; place-items: center; flex: 0 0 auto; }
+.pim-auditoria-vicon.pim-auditoria--valid { color: var(--pim-success); }
+.pim-auditoria-vicon.pim-auditoria--review { color: var(--pim-warning); }
+.pim-auditoria-vicon.pim-auditoria--missing { color: var(--pim-error); }
+.pim-auditoria-field:is(.pim-auditoria--missing, .pim-auditoria--required-empty) :is(.pim-input, .pim-select):not(:focus) { border-color: var(--pim-error-line); }
+.pim-auditoria .pim-auditoria-trash { color: var(--pim-muted); }
+.pim-auditoria .pim-auditoria-trash:hover:not(:disabled) { background: var(--pim-error-tint); color: var(--pim-error); }
+

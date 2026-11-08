@@ -1,0 +1,49 @@
+/* Uonify PIM · «Vista Previa de Imagen» de la pestaña «Imágenes»
+   (prototipo: pim/imagenes.css, líneas 85-130). */
+
+/* Visor: ancho del original (95vw). Dos clases: gana a .pim-dialog-xl sea cual sea el
+   orden de carga. */
+.pim-dialog.pim-imagenes-preview-dialog { width: 95vw; }
+
+/* Vista Previa de Imagen */
+.pim-imagenes-viewer { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 24px; min-height: 0; }
+.pim-imagenes-viewer:focus { outline: none; }
+.pim-imagenes-stage { position: relative; display: flex; align-items: center; justify-content: center; height: clamp(260px, calc(100svh - 210px), 640px); overflow: hidden; border: 1px solid var(--pim-line); border-radius: var(--pim-r-card); background: var(--pim-surface-soft); }
+.pim-imagenes-stage-img { width: calc(100% - 32px); height: calc(100% - 32px); object-fit: contain; }
+/* Flechas: flotan sobre la imagen (única sombra de la pestaña fuera de menús y diálogos). */
+.pim-imagenes-stage .pim-imagenes-nav { position: absolute; top: 50%; width: 36px; min-height: 36px; background: var(--pim-surface); box-shadow: 0 1px 3px color-mix(in srgb, var(--pim-ink) 14%, transparent); translate: 0 -50%; }
+.pim-imagenes-stage .pim-imagenes-nav:focus-visible { border-color: var(--pim-blue); box-shadow: var(--pim-focus), 0 1px 3px color-mix(in srgb, var(--pim-ink) 14%, transparent); }
+.pim-imagenes-stage .pim-imagenes-nav-prev { left: 16px; }
+.pim-imagenes-stage .pim-imagenes-nav-next { right: 16px; }
+.pim-imagenes-notfound strong { font-size: 14px; }
+
+.pim-imagenes-details { display: grid; align-content: start; gap: 16px; min-width: 0; }
+.pim-imagenes-details-title { margin: 0; color: var(--pim-ink); font-size: 13px; font-weight: 650; }
+.pim-imagenes-facts { display: grid; margin: 0; }
+.pim-imagenes-fact { display: grid; gap: 4px; padding: 12px 0; border-top: 1px solid var(--pim-line); }
+.pim-imagenes-fact:first-child { padding-top: 0; border-top: 0; }
+.pim-imagenes-fact dt { color: var(--pim-muted); font-size: 12px; }
+.pim-imagenes-fact dd { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-width: 0; margin: 0; }
+.pim-imagenes-fact-value { min-width: 0; color: var(--pim-ink); font-weight: 550; overflow-wrap: anywhere; }
+.pim-imagenes-fact-value.pim-mono { font-size: 12px; font-weight: 500; }
+.pim-imagenes-fact-emoji { flex: 0 0 auto; font-size: 14px; line-height: 1; }
+.pim-imagenes-indicator { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-top: 12px; border-top: 1px solid var(--pim-line); color: var(--pim-muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+.pim-imagenes-dots { display: flex; align-items: center; gap: 4px; }
+.pim-imagenes-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--pim-line-strong); }
+.pim-imagenes-dot.is-active { background: var(--pim-blue); }
+.pim-imagenes-dots small { margin-left: 4px; font-size: 11px; }
+.pim-imagenes-viewer-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.pim-imagenes-facts.is-entering > .pim-imagenes-fact, .pim-imagenes-indicator.is-entering { animation: pim-imagenes-rise var(--pim-slow) var(--pim-ease) both; animation-delay: calc(var(--i, 0) * 40ms); }
+@keyframes pim-imagenes-rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@media (max-width: 760px) {
+  .pim-imagenes-viewer { grid-template-columns: minmax(0, 1fr); }
+  .pim-imagenes-stage { height: clamp(220px, 46svh, 420px); }
+}
+
+/* Movimiento reducido (core.css ya lo aplica dentro de la pestaña; aquí, dentro de los diálogos). */
+@media (prefers-reduced-motion: reduce) {
+  .pim-imagenes-facts.is-entering > .pim-imagenes-fact, .pim-imagenes-indicator.is-entering { animation: none; }
+  .pim-imagenes-thumb { transition: none; }
+}
+:root[data-reduce-motion="true"] :is(.pim-imagenes-facts.is-entering > .pim-imagenes-fact, .pim-imagenes-indicator.is-entering) { animation: none; }
+:root[data-reduce-motion="true"] .pim-imagenes-thumb { transition: none; }

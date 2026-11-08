@@ -1,0 +1,10 @@
+/* Voz · PIEZA 2 — un turno de la conversación por voz escrito en el chat.
+   Diseño aprobado por el dueño (opción A, 27-10). Se apoya en las burbujas reales del hilo
+   (02-conversation + conversation-reply-brand: isotipo ON y cursor de escritura de Uony).
+   Lo nuevo es la marca «voz» (onda). Aqua reservado a la IA (voz/Uony). */
+
+.message.voice-turn { display: flex; flex-direction: column; align-items: flex-start; }
+.voice-turn-body { white-space: pre-wrap; }
+.message.user.voice-turn.is-transcribing .voice-turn-body { color: var(--muted); }
+.voice-turn-tag { display: inline-flex; align-items: center; gap: 4px; margin-bottom: 4px; color: var(--pim-ai-text); font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+.voice-turn-wave { width: 13px; height: 13px; }

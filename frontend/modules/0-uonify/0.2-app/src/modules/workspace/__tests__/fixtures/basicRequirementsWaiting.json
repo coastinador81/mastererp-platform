@@ -1,0 +1,21 @@
+{
+  "id": "basic-reasoning-snapshot",
+  "title": "Revisar documentos e imágenes",
+  "fields": [],
+  "notice": "Estoy reuniendo la información para completar los datos que faltan.",
+  "context": {
+    "sku": "BMB-DRIVE-PILOTO",
+    "kind": "product_guide",
+    "step": "reasoning",
+    "section": "amazon_requirements",
+    "revision": 11
+  },
+  "reasoning": {
+    "id": "basic-reasoning-job",
+    "usage": { "calls": 1, "tokens": 77798, "unknown": 0, "reserved": 0 },
+    "status": "queued",
+    "message": "Estoy reuniendo la información para completar los datos que faltan.",
+    "canRetry": false,
+    "requiresConsumptionAcknowledgement": false
+  }
+}

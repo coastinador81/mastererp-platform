@@ -1,0 +1,15 @@
+.account-deletion-control { display:flex; align-items:center; justify-content:space-between; gap:24px; margin-top:32px; padding-top:24px; border-top:1px solid var(--pim-line); }
+.account-deletion-control h3 { margin:0 0 6px; font-size:15px; color:var(--pim-ink); }
+.account-deletion-control p { margin:0; max-width:62ch; font-size:13px; line-height:1.6; color:var(--pim-muted); }
+.account-deletion-control .account-deletion-open { flex-shrink:0; color:var(--pim-error); border-color:var(--pim-error-line); }
+.account-deletion-control.is-conversation { display:block; margin:0; padding:0; border:0; }
+.account-deletion-control.is-conversation .account-deletion-open { margin-top:14px; }
+.account-deletion-form { display:grid; gap:16px; overflow-wrap:anywhere; }
+.account-deletion-form > p { margin:0; font-size:13px; line-height:1.6; color:var(--pim-text); }
+.account-deletion-counts { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); margin:0; padding:12px; gap:12px; background:var(--pim-surface-soft); border-radius:var(--pim-r-control); }
+.account-deletion-counts div { min-width:0; }
+.account-deletion-counts dt { font-size:12px; color:var(--pim-muted); }
+.account-deletion-counts dd { margin:4px 0 0; font-size:18px; font-weight:600; color:var(--pim-ink); }
+.account-deletion-form .account-deletion-error, .account-deletion-problems { color:var(--pim-error); }
+.account-deletion-actions { display:flex; justify-content:flex-end; flex-wrap:wrap; gap:10px; padding-top:8px; border-top:1px solid var(--pim-line); }
+@media(max-width:560px) { .account-deletion-control { align-items:flex-start; flex-direction:column; gap:14px; } .account-deletion-actions .pim-btn { width:100%; } }
