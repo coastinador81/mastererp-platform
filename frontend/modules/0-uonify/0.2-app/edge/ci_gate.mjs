@@ -99,12 +99,21 @@ function phasePlan(work) {
   return 0;
 }
 
+const ROOT_GATED = /var ROOT_PUBLIC = false;/;
+const kvsKeys = (code) => (code.toString('utf8').match(/^var K_[A-Z_]+ = '[^']*';$/gm) || []).sort().join('\n');
+
 function phasePublish(work) {
   const st = status(work);
   const changed = st.filter((s) => !s.liveSame);
   if (!changed.length) {
     say('= Puerta: LIVE ya es el código de esta carpeta; nada que publicar.');
     return 0;
+  }
+  // Nunca se publica una puerta que deje «/» pública ni que lea claves del KVS distintas de las de
+  // LIVE: con --sin-claves-kvs las pruebas no lo detectarían (todo daría 401 y nadie podría entrar).
+  if (!ROOT_GATED.test(st[0].local.toString('utf8'))) fatal('gate-default.js local deja «/» pública (falta --root-gated): no se publica');
+  for (const s of st) {
+    if (kvsKeys(s.local) !== kvsKeys(s.live)) fatal(`${s.file}: las claves del KVS (var K_*) cambian respecto a LIVE; esa publicación se hace a mano con deploy_edge.mjs`);
   }
   const backup = path.resolve(opt('--backup', path.join(process.env.RUNNER_TEMP || os.tmpdir(), 'puerta-live-anterior')));
   fs.mkdirSync(backup, { recursive: true });
@@ -115,9 +124,12 @@ function phasePublish(work) {
     toDevelopment(s.name, s.local, work);
     say(`+ ${s.name}: ${s.file} subido a DEVELOPMENT`);
   }
+  const tested = Object.fromEntries(st.map((s) => [s.name, describe(s.name).etag]));
   runTests();
   for (const s of changed) {
-    publishLive(s.name);
+    // Se publica exactamente lo probado: si DEVELOPMENT cambió durante las pruebas, no se publica.
+    if (describe(s.name).etag !== tested[s.name]) fatal(`${s.name}: DEVELOPMENT cambió durante las pruebas; no se publica`);
+    aws(['cloudfront', 'publish-function', '--name', s.name, '--if-match', tested[s.name]]);
     say(`+ ${s.name}: publicado en LIVE`);
   }
   for (const s of st) {
@@ -133,6 +145,10 @@ function phaseRollback(work) {
   if (!fs.existsSync(from)) {
     say(`= No hay copia en ${from}: en esta ejecución la puerta no cambió; nada que deshacer.`);
     return 0;
+  }
+  // Volver a una puerta con «/» pública dejaría la app abierta: en ese caso se queda la nueva, ya probada.
+  if (!ROOT_GATED.test(fs.readFileSync(path.join(from, 'gate-default.js'), 'utf8'))) {
+    fatal('la copia guardada deja «/» pública: no se restaura; se mantiene la puerta nueva, ya probada');
   }
   for (const f of FUNCTIONS) {
     const code = fs.readFileSync(path.join(from, f.file));
