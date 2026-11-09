@@ -62,3 +62,7 @@ El workflow usa OIDC con el rol existente `mastererp-dev-agents-frontend-github-
 ## Contenido adaptable
 
 El contenido aprovecha el ancho disponible del panel y usa consultas de contenedor para reorganizar indicadores (cuatro, dos o una columna), tarjetas y etiquetas del catalogo. Las acciones y textos se ajustan sin recortar contenido. Este ajuste conserva el comportamiento del sidebar y no habilita operaciones nuevas.
+
+## Icono de Uony
+
+El encabezado usa el isotipo existente de Uony, tomado de la misma fuente de Finanzas y empaquetado como asset compartido. El boton muestra un aviso accesible de conexion pendiente; no redirige al chat principal ni simula respuestas o una integracion IA. El lanzador de aplicaciones se conserva.

@@ -8,6 +8,7 @@ const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const at=process.argv.indexOf('--port'),port=at<0?5183:Number(process.argv[at+1]);
 if(!Number.isInteger(port)||port<1024||port>65535)throw new Error('Invalid preview port');
 const files=new Map([
+ ['/shared/uonify-isotipo.svg',['frontend/modules/2.2-finance/src/assets/brands/uonify-isotipo.svg','image/svg+xml']],
  ['/', ['frontend/modules/2.6-agent-center/agents-web/index.html','text/html; charset=utf-8']],
  ['/index.html',['frontend/modules/2.6-agent-center/agents-web/index.html','text/html; charset=utf-8']],
  ['/shared/module-launcher.mjs',['frontend/shared/module-launcher/module-launcher.mjs','text/javascript; charset=utf-8']],
