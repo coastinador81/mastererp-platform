@@ -10,15 +10,15 @@ persistencia y aislamiento por sus equivalentes MasterERP.
 | --- | --- | --- |
 | Home, header y menú superior | Recuperación en curso | Catálogo público por tenant + dominio |
 | Tabs Inicio/Categorías/Ofertas/Pedidos/Perfil | Recuperado | Expo Router; cada destino conserva autorización propia |
-| Búsqueda y filtros | Recuperado | Filtro y ordenamiento del catálogo recibido para la tienda |
-| Ofertas | Pantalla recuperada | Solo productos con `offer_price < price`; sin fallback ficticio |
+| Búsqueda y filtros | Recuperado | Categoría, marca, precio, disponibilidad y orden sobre el catálogo de la tienda |
+| Ofertas | Visual recuperada; contrato pendiente | El catálogo aún no devuelve `offer_price`; sin fallback ficticio |
 | Categorías y productos | Recuperado; favoritos pendientes de contrato | `/v1/storefront/catalog` |
 | Carrito | Recuperado | Sesión separada por tenant + dominio |
 | Login, registro y Google | Disponible | Cognito MasterERP Authorization Code + PKCE |
-| Mi cuenta y perfil | Disponible; falta paridad visual completa | `/v1/storefront/me` |
-| Direcciones | Disponible; falta paridad de formularios/mapa | `/v1/storefront/me/addresses` |
-| Mis compras y detalle | Disponible; falta paridad visual completa | `/v1/storefront/orders` |
-| Checkout, entrega y pagos | Disponible; falta separar el recorrido visual | `/v1/storefront/checkout` |
+| Mi cuenta y perfil | Paridad visual principal recuperada | `/v1/storefront/me` |
+| Direcciones | Formularios y tarjetas recuperados; mapa pendiente | `/v1/storefront/me/addresses` |
+| Mis compras y detalle | Recuperado con estados y progreso de seis pasos | `/v1/storefront/orders` |
+| Checkout, entrega y pagos | Recuperado en tres pasos: Entrega, Pago y Revisar | `/v1/storefront/checkout` |
 | Favoritos | Pendiente de contrato MasterERP | No reintroducir persistencia legacy |
 | Notificaciones, ayuda, seguridad y políticas | Pendiente de contrato/contenido | No simular operaciones |
 

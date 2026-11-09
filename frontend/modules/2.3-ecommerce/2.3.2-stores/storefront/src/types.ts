@@ -45,4 +45,15 @@ export type StoreConfiguration = {
 export type CartLine = { product: Product; quantity: number };
 export type CustomerProfile = { id: string; name: string; code: string; phone: string; birthDate: string; photoUrl?: string };
 export type CustomerAddress = { id: string; label: string; address: string; zone: string; unit?: string; reference?: string; latitude: number; longitude: number; default: boolean; version: number };
-export type CustomerOrder = { id: string; number: string; status: string; currency: string; total: number; created_at: string; delivery: Record<string, unknown>; items: { id: string; name: string; quantity: number; unit_price: number; subtotal: number }[] };
+export type CustomerOrder = {
+  id: string;
+  number: string;
+  status: string;
+  currency: string;
+  total: number;
+  created_at: string;
+  updated_at?: string;
+  delivery: Record<string, unknown>;
+  payment?: Record<string, unknown>;
+  items: { id: string; product_id?: string; name: string; quantity: number; unit_price: number; subtotal: number }[];
+};

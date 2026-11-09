@@ -19,6 +19,8 @@ export default function CatalogPage() {
   const [category, setCategory] = useState(params.category || '');
   const [query, setQuery] = useState(params.q || '');
   const [sort, setSort] = useState<Sort>('relevance');
+  const [brand, setBrand] = useState('');
+  const [maxPrice, setMaxPrice] = useState('');
   const [availableOnly, setAvailableOnly] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const products = useMemo(() => {
@@ -27,15 +29,18 @@ export default function CatalogPage() {
       const matchesCategory = !category || product.category_ref === category;
       const matchesQuery = !term || `${product.name} ${product.description || ''} ${product.brand_ref || ''}`.toLocaleLowerCase('es').includes(term);
       const matchesOffers = params.offers !== '1' || effectivePrice(product) < product.price;
-      return matchesCategory && matchesQuery && matchesOffers && (!availableOnly || product.available > 0);
+      const matchesBrand = !brand || product.brand_ref === brand;
+      const matchesPrice = !maxPrice || effectivePrice(product) <= Number(maxPrice);
+      return matchesCategory && matchesQuery && matchesOffers && matchesBrand && matchesPrice && (!availableOnly || product.available > 0);
     });
     if (sort === 'priceAsc') return filtered.sort((left, right) => effectivePrice(left) - effectivePrice(right));
     if (sort === 'priceDesc') return filtered.sort((left, right) => effectivePrice(right) - effectivePrice(left));
     if (sort === 'name') return filtered.sort((left, right) => left.name.localeCompare(right.name, 'es'));
     return filtered;
-  }, [availableOnly, catalog?.products, category, params.offers, query, sort]);
+  }, [availableOnly, brand, catalog?.products, category, maxPrice, params.offers, query, sort]);
+  const brands = useMemo(() => [...new Set((catalog?.products || []).map(product => product.brand_ref).filter(Boolean))] as string[], [catalog?.products]);
   const cardWidth = width < 520 ? '47%' : '31%';
-  const activeFilterCount = Number(availableOnly) + Number(sort !== 'relevance');
+  const activeFilterCount = Number(availableOnly) + Number(sort !== 'relevance') + Number(Boolean(brand)) + Number(Boolean(maxPrice));
 
   return <Screen>
     <View style={styles.intro}><Text style={styles.eyebrow}>CATÁLOGO</Text><Text style={styles.title}>Encuentra lo que necesitas</Text><Text style={styles.subtitle}>Disponibilidad y precios de esta tienda.</Text></View>
@@ -44,8 +49,8 @@ export default function CatalogPage() {
       <FilterChip label="Todos" active={!category} onPress={() => setCategory('')} />
       {catalog?.categories.map(item => <FilterChip key={item.slug} label={item.name} active={category === item.slug} onPress={() => setCategory(item.slug)} />)}
     </ScrollView>
-    {filtersOpen ? <View style={styles.filterPanel}><Text style={styles.filterTitle}>Ordenar por</Text><View style={styles.sortOptions}>{sortOptions.map(([value, label]) => <FilterChip key={value} label={label} active={sort === value} onPress={() => setSort(value)} />)}</View><Pressable style={styles.available} onPress={() => setAvailableOnly(value => !value)}><Ionicons name={availableOnly ? 'checkbox' : 'square-outline'} size={22} color={colors.primaryDark} /><Text style={styles.availableText}>Solo productos disponibles</Text></Pressable></View> : null}
-    <View style={styles.results}><Text style={styles.resultCount}>{products.length} {products.length === 1 ? 'producto' : 'productos'}</Text>{activeFilterCount ? <Pressable onPress={() => { setSort('relevance'); setAvailableOnly(false); }}><Text style={styles.clear}>Limpiar filtros</Text></Pressable> : null}</View>
+    {filtersOpen ? <View style={styles.filterPanel}><Text style={styles.filterTitle}>Ordenar por</Text><View style={styles.sortOptions}>{sortOptions.map(([value, label]) => <FilterChip key={value} label={label} active={sort === value} onPress={() => setSort(value)} />)}</View>{brands.length?<><Text style={styles.filterTitle}>Marca</Text><ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.sortOptions}><FilterChip label="Todas" active={!brand} onPress={()=>setBrand('')}/>{brands.map(value=><FilterChip key={value} label={value} active={brand===value} onPress={()=>setBrand(value)}/>)}</ScrollView></>:null}<Text style={styles.filterTitle}>Precio máximo</Text><View style={styles.priceFilter}><Text style={styles.currency}>$</Text><TextInput value={maxPrice} onChangeText={value=>setMaxPrice(value.replace(/[^0-9.]/g,''))} placeholder="Sin límite" keyboardType="decimal-pad" placeholderTextColor={colors.muted} style={styles.priceInput}/></View><Pressable style={styles.available} onPress={() => setAvailableOnly(value => !value)}><Ionicons name={availableOnly ? 'checkbox' : 'square-outline'} size={22} color={colors.primaryDark} /><Text style={styles.availableText}>Solo productos disponibles</Text></Pressable></View> : null}
+    <View style={styles.results}><Text style={styles.resultCount}>{products.length} {products.length === 1 ? 'producto' : 'productos'}</Text>{activeFilterCount ? <Pressable onPress={() => { setSort('relevance'); setAvailableOnly(false); setBrand(''); setMaxPrice(''); }}><Text style={styles.clear}>Limpiar filtros</Text></Pressable> : null}</View>
     {products.length ? <View style={styles.products}>{products.map(product => <ProductCard key={product.id} product={product} width={cardWidth} />)}</View> : <View style={styles.empty}><Ionicons name="search-outline" size={38} color={colors.primary} /><Text style={styles.emptyTitle}>No encontramos productos</Text><Text style={styles.emptyText}>Prueba otra búsqueda o categoría.</Text></View>}
   </Screen>;
 }
@@ -59,7 +64,7 @@ const styles = StyleSheet.create({
   searchRow: { flexDirection: 'row', gap: spacing.sm }, search: { flex: 1, minHeight: 52, flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingHorizontal: spacing.md, borderWidth: 1, borderColor: colors.line, borderRadius: radii.md, backgroundColor: colors.surface }, input: { flex: 1, color: colors.ink, fontSize: 15, outlineStyle: 'none' } as never,
   filterButton: { width: 52, height: 52, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.line, borderRadius: radii.md, backgroundColor: colors.surface }, filterButtonActive: { borderColor: colors.primary, backgroundColor: colors.primary }, filterBadge: { position: 'absolute', top: -5, right: -5, minWidth: 19, height: 19, alignItems: 'center', justifyContent: 'center', borderRadius: 10, backgroundColor: colors.offer }, filterBadgeText: { color: colors.surface, fontSize: 9, fontWeight: '900' },
   chips: { gap: 8, paddingVertical: spacing.md, paddingRight: spacing.md }, chip: { paddingHorizontal: 15, paddingVertical: 9, borderWidth: 1, borderColor: colors.line, borderRadius: radii.pill, backgroundColor: colors.surface }, chipActive: { borderColor: colors.primary, backgroundColor: colors.primary }, chipText: { color: colors.text, fontSize: 12, fontWeight: '700' }, chipTextActive: { color: colors.surface },
-  filterPanel: { gap: spacing.md, marginBottom: spacing.md, padding: spacing.md, borderWidth: 1, borderColor: colors.line, borderRadius: radii.md, backgroundColor: colors.surface }, filterTitle: { color: colors.ink, fontWeight: '900' }, sortOptions: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 }, available: { flexDirection: 'row', alignItems: 'center', gap: 9 }, availableText: { color: colors.text, fontSize: 13, fontWeight: '700' },
+  filterPanel: { gap: spacing.md, marginBottom: spacing.md, padding: spacing.md, borderWidth: 1, borderColor: colors.line, borderRadius: radii.md, backgroundColor: colors.surface }, filterTitle: { color: colors.ink, fontWeight: '900' }, sortOptions: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 }, priceFilter:{height:48,flexDirection:'row',alignItems:'center',paddingHorizontal:14,borderWidth:1,borderColor:colors.line,borderRadius:radii.md,backgroundColor:colors.canvas},currency:{color:colors.ink,fontWeight:'900'},priceInput:{flex:1,paddingHorizontal:8,color:colors.ink},available: { flexDirection: 'row', alignItems: 'center', gap: 9 }, availableText: { color: colors.text, fontSize: 13, fontWeight: '700' },
   results: { minHeight: 38, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }, resultCount: { color: colors.muted, fontSize: 12 }, clear: { color: colors.primaryDark, fontSize: 12, fontWeight: '800' },
   products: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md }, empty: { alignItems: 'center', marginTop: spacing.xl, padding: spacing.xl, borderRadius: radii.lg, backgroundColor: colors.surface }, emptyTitle: { marginTop: spacing.md, color: colors.ink, fontSize: 20, fontWeight: '900' }, emptyText: { marginTop: spacing.xs, color: colors.muted },
 });
