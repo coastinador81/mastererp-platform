@@ -18,6 +18,7 @@ on:
       - 'frontend/shared/auth/**'
       - 'frontend/shared/module-launcher/**'
       - 'frontend/shared/status-badge/**'
+      - 'frontend/shared/loading-state/**'
       - 'frontend/shared/workspace/**'
       - 'frontend/modules/0-uonify/auth-config.json'
       - '.github/workflows/publish-ecommerce-dev.yml'

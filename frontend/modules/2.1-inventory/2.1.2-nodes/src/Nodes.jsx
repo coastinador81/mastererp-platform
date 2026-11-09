@@ -3,6 +3,7 @@ import "./style.css";
 import { detailFromHash, readableStatus } from "../../../2.3-ecommerce/src/operationView.mjs";
 import FinanceIcon from "../../../2.2-finance/src/FinanceIcon.jsx";
 import StatusBadge from "../../../../shared/status-badge/StatusBadge.jsx";
+import LoadingState from "../../../../shared/loading-state/LoadingState.jsx";
 const call = (r, p, o = {}) =>
   r.request(r.api + p, {
     ...o,
@@ -30,7 +31,7 @@ export default function Nodes({ runtime }) {
       setUsage(counts);
       const requested = detailFromHash("nodes");
       setItems(rows);
-      setSelected(rows.find((x) => x.id === requested) || rows[0] || null);
+      setSelected((current) => rows.find((x) => x.id === (requested || current?.id)) || rows[0] || null);
       setError("");
     } catch (e) {
       setError(e.message);
@@ -92,12 +93,12 @@ export default function Nodes({ runtime }) {
               <span className="row-action"><StatusBadge status={n.status}>{readableStatus(n.status)}</StatusBadge><small>{usage[n.id]??0} pedidos hoy</small><i>›</i></span>
             </button>
           ))}
-          {loading ? <p role="status">Cargando nodos…</p> : !items.length && <p>No hay nodos configurados.</p>}
+          {loading ? <LoadingState label="Cargando nodos…"/> : !items.length && <p>No hay nodos configurados.</p>}
         </div>
         <aside className="panel operation-detail">
           {selected ? (
             write ? (
-              <form onSubmit={save}>
+              <form key={`${selected.id}:${selected.version}`} onSubmit={save}>
                 <div className="node-form-heading"><div><small>UBICACIÓN OPERATIVA</small><h2>{selected.name}</h2></div><StatusBadge status={selected.status}>{readableStatus(selected.status)}</StatusBadge></div>
                 <div className="node-capacity"><span className="ops-metric-icon"><FinanceIcon name="summary"/></span><span className="node-capacity-copy"><small>Capacidad utilizada hoy</small><strong>{usage[selected.id]??0} de {selected.daily_capacity} pedidos</strong><i><span style={{width:`${selected.daily_capacity?Math.min(100,Math.round((usage[selected.id]||0)/selected.daily_capacity*100)):0}%`}}/></i></span><b>{selected.daily_capacity?Math.min(100,Math.round((usage[selected.id]||0)/selected.daily_capacity*100)):0}%</b></div>
                 <label className="ops-switch-row"><span><strong>Acepta pedidos</strong><small>Permite asignar nuevos pedidos a esta ubicación.</small></span><span className="ops-switch"><input name="accepts" type="checkbox" defaultChecked={selected.accepts_orders}/><i/></span></label>

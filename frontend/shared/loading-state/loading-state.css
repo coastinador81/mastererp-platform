@@ -1,0 +1,4 @@
+.loading-state{display:flex;min-height:160px;align-items:center;justify-content:center;gap:10px;padding:32px 20px;color:#5e6b7f;font-size:14px}
+.loading-state-spinner{width:20px;height:20px;flex:0 0 20px;border:2px solid #dbe6f3;border-top-color:#087cf0;border-radius:50%;animation:loading-state-spin .8s linear infinite}
+@keyframes loading-state-spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.loading-state-spinner{animation-duration:2.4s}}

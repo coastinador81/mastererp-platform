@@ -17,6 +17,8 @@
 .ecommerce-app .figma-order-detail .od-button.danger{border-color:#efc2c0;background:#fff;color:#b3261e}
 .ecommerce-app .figma-order-detail .od-button.danger:hover:not(:disabled){background:#fdf3f2}
 .ecommerce-app .figma-order-detail .od-button.full{width:100%;margin:0}
+.ecommerce-app .figma-order-detail a.od-button{text-decoration:none}.ecommerce-app .figma-order-detail .od-button svg{width:15px;height:15px}.ecommerce-app .figma-order-detail .od-button:disabled{cursor:not-allowed;opacity:.55}
+.ecommerce-app .figma-order-detail .od-copy-feedback{display:block;margin-top:6px;color:#b3261e;font-size:11px}.ecommerce-app .figma-order-detail .od-copy-feedback:empty{display:none}
 .ecommerce-app .figma-order-detail .od-layout{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(270px,.65fr);align-items:start;gap:18px}
 .ecommerce-app .figma-order-detail :is(.od-main,.od-side){display:flex;min-width:0;flex-direction:column;gap:16px}
 .ecommerce-app .figma-order-detail .od-card{border:1px solid #e7ebf2;border-radius:13px;background:#fff;box-shadow:0 5px 22px #1f3c5f08;overflow:hidden}

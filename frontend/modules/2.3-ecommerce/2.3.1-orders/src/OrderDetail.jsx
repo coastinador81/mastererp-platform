@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { MODULES } from '../../../../shared/module-launcher/module-launcher.mjs';
 import { FLOW, NEXT, dateTime, money, paymentMethodLabel, paymentStatusLabel, statusLabel } from './orderView.js';
 import FinanceIcon from '../../../2.2-finance/src/FinanceIcon.jsx';
 import StatusBadge from '../../../../shared/status-badge/StatusBadge.jsx';
@@ -24,10 +25,29 @@ function SideCard({ title, children }) {
   return <section className="od-card od-side-card"><div className="od-card-title"><h2>{title}</h2></div><div className="od-side-content">{children}</div></section>;
 }
 
-export default function OrderDetail({ order, writable, transition, close }) {
+function customerHistory(order, customerOrders) {
+  const orders = customerOrders.some(item => item.id === order.id) ? customerOrders : [...customerOrders, order];
+  const since = Math.min(...orders.map(item => new Date(item.created_at).getTime()).filter(Number.isFinite));
+  return `${Number.isFinite(since) ? `Cliente desde ${new Date(since).getFullYear()} · ` : ''}${orders.length} ${orders.length === 1 ? 'pedido' : 'pedidos'}`;
+}
+
+function CopyAddress({ address }) {
+  const [copied, setCopied] = useState('');
+  const copy = async () => {
+    let done = false;
+    try { await navigator.clipboard.writeText(address); done = true; }
+    catch { const field = document.createElement('textarea'); field.value = address; field.setAttribute('readonly', ''); field.style.position = 'fixed'; field.style.opacity = '0'; document.body.append(field); field.select(); done = document.execCommand('copy'); field.remove(); }
+    setCopied(done ? 'Dirección copiada' : 'No se pudo copiar. Selecciona la dirección y cópiala manualmente.');
+    window.setTimeout(() => setCopied(''), 2500);
+  };
+  return <><button type="button" className="od-button secondary full" disabled={!address} onClick={copy}>{copied === 'Dirección copiada' ? <><FinanceIcon name="check"/>Dirección copiada</> : 'Copiar dirección'}</button><span className="od-copy-feedback" role="status">{copied === 'Dirección copiada' ? '' : copied}</span></>;
+}
+
+export default function OrderDetail({ order, writable, transition, close, nodeName, customerOrders = [], canOpenCustomer }) {
   const delivery = order.delivery_snapshot || {}, customer = order.customer_snapshot || {}, payment = order.payment_snapshot || {};
-  const next=(NEXT[order.status]||[]).filter(value=>value!=='CANCELLED'),address=delivery.address||delivery.address_line_1||'Dirección por confirmar';
+  const next=(NEXT[order.status]||[]).filter(value=>value!=='CANCELLED'),address=delivery.address||delivery.address_line_1||'';
   const units=order.items.reduce((sum,item)=>sum+Number(item.quantity||0),0),initials=(customer.name||'C').split(/\s+/).slice(0,2).map(value=>value[0]).join('').toUpperCase();
+  const financeUrl=MODULES.find(module=>module.id==='finance')?.href,customerUrl=canOpenCustomer&&financeUrl&&order.customer_id?`${financeUrl}#/modulos/finanzas/administracion/clientes/${encodeURIComponent(order.customer_id)}`:'';
   return <div className="figma-order-detail">
     <button type="button" className="od-back" onClick={close}><FinanceIcon name="arrow"/>Volver a pedidos</button>
     <div className="od-header"><div><div className="od-breadcrumb">E-commerce <span>/</span> Pedidos <span>/</span> {order.number}</div><h1>Pedido {order.number}</h1><p>Creado el {dateTime(order.created_at)} · Última actualización {dateTime(order.updated_at)}</p></div><div className="od-header-actions"><button type="button" className="od-button secondary" onClick={()=>window.print()}>Imprimir</button></div></div>
@@ -44,8 +64,8 @@ export default function OrderDetail({ order, writable, transition, close }) {
         {writable&&(NEXT[order.status]||[]).includes('CANCELLED')?<div className="od-cancel"><button type="button" className="od-button danger" onClick={()=>transition('CANCELLED')}>Cancelar pedido</button></div>:null}
       </div>
       <div className="od-side">
-        <SideCard title="Cliente"><div className="od-customer"><span>{initials}</span><div><strong>{customer.name||'Cliente del pedido'}</strong>{customer.email||customer.phone?<small>{customer.email||customer.phone}</small>:null}</div></div><SnapshotFields value={customer} exclude={['name']}/></SideCard>
-        <SideCard title="Entrega"><dl className="snapshot-fields"><div><dt>Dirección</dt><dd>{address}</dd></div><div><dt>Método</dt><dd>{order.delivery_method==='scheduled'?'Entrega programada':'Entrega en tiempo real'}</dd></div></dl><DeliveryDetails delivery={delivery}/>{address!=='Dirección por confirmar'?<button type="button" className="od-button secondary full" onClick={()=>navigator.clipboard.writeText(address)}>Copiar dirección</button>:null}</SideCard>
+        <SideCard title="Cliente"><div className="od-customer"><span>{initials}</span><div><strong>{customer.name||'Cliente del pedido'}</strong><small>{customerHistory(order,customerOrders)}</small></div></div><dl className="snapshot-fields"><div><dt>Correo</dt><dd>{customer.email||'Sin registrar'}</dd></div><div><dt>Teléfono</dt><dd>{customer.phone||'Sin registrar'}</dd></div></dl><SnapshotFields value={customer} exclude={['name','email','phone']}/>{customerUrl?<a className="od-button secondary full" href={customerUrl}>Ver ficha del cliente</a>:null}</SideCard>
+        <SideCard title="Entrega"><dl className="snapshot-fields"><div><dt>Dirección</dt><dd>{address||'Dirección por confirmar'}</dd></div><div><dt>Método</dt><dd>{order.delivery_method==='scheduled'?'Entrega programada':'Entrega en tiempo real'}</dd></div>{nodeName?<div><dt>Nodo asignado</dt><dd>{nodeName}</dd></div>:null}</dl><DeliveryDetails delivery={delivery}/><CopyAddress address={address}/></SideCard>
         <SideCard title="Pago"><dl className="snapshot-fields"><div><dt>Método</dt><dd>{paymentMethodLabel(payment.method)}</dd></div><div><dt>Estado</dt><dd>{paymentStatusLabel(payment.status)}</dd></div></dl><PaymentDetails payment={payment}/></SideCard>
       </div>
     </div>
