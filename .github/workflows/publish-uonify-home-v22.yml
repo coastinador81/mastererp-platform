@@ -1,11 +1,8 @@
+# dev.uonify.com usa el bucket uonify-dev-web-* (us-east-1), NO vars.UONIFY_DEV_BUCKET (app-dev, us-west-1).
+# Hasta que exista un rol OIDC con permiso en ese bucket, el job fallará y la publicación es manual (upload_dist / aws s3).
 name: Publish Uonify home-v22 DEV
 on:
   workflow_dispatch:
-  push:
-    branches: [dev]
-    paths:
-      - 'frontend/modules/0-uonify/0.2-app/web/home-v22-propuesta/**'
-      - '.github/workflows/publish-uonify-home-v22.yml'
 
 permissions:
   contents: read
@@ -16,29 +13,18 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  publish:
+  verify-bundle:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: arn:aws:iam::277352717693:role/mastererp-dev-uonify-frontend-github-role
-          aws-region: us-west-1
-      - name: Publish home-v22-propuesta to dev.uonify.com
-        env:
-          BUCKET: ${{ vars.UONIFY_DEV_BUCKET }}
-          DISTRIBUTION: ${{ vars.UONIFY_DEV_DISTRIBUTION_ID }}
+      - name: Comprobar parche del lanzador en home-v22
         run: |
           set -euo pipefail
-          test -n "$BUCKET" && test -n "$DISTRIBUTION"
-          SRC=frontend/modules/0-uonify/0.2-app/web/home-v22-propuesta
-          PREFIX=web/home-v22-propuesta
-          aws s3 cp "$SRC/index.html" "s3://$BUCKET/$PREFIX/index.html" \
-            --content-type 'text/html; charset=utf-8' --cache-control 'no-cache,max-age=0,must-revalidate'
-          aws s3 cp "$SRC/module-launcher.mjs" "s3://$BUCKET/$PREFIX/module-launcher.mjs" \
-            --content-type 'text/javascript; charset=utf-8' --cache-control 'public,max-age=300'
-          invalidation=$(aws cloudfront create-invalidation \
-            --distribution-id "$DISTRIBUTION" \
-            --paths "/$PREFIX/index.html" "/$PREFIX/module-launcher.mjs" \
-            --query Invalidation.Id --output text)
-          aws cloudfront wait invalidation-completed --distribution-id "$DISTRIBUTION" --id "$invalidation"
+          FILE=frontend/modules/0-uonify/0.2-app/web/home-v22-propuesta/index.html
+          grep -q 'mastererp-module-launcher' "$FILE"
+          grep -q 'module-launcher.mjs' "$FILE"
+          ! grep -q 'class="tools-trigger"' "$FILE" || { echo 'portada aún tiene tools-trigger'; exit 1; }
+          ! grep -q 'services-menu' "$FILE" || { echo 'espacio aún tiene services-menu'; exit 1; }
+      - name: Recordatorio de publicación manual
+        run: |
+          echo 'Publicar en s3://uonify-dev-web-277352717693/web/home-v22-propuesta/ (us-east-1) e invalidar E4N1UCPZZ2F0'

@@ -34,6 +34,17 @@ portada = portada.replace(/\s*<dialog id="preferences-dialog"[\s\S]*?<\/dialog>\
 
 html = html.slice(0, start) + portada + html.slice(end);
 
+const espStart = html.indexOf('<template id="view-espacio">');
+const espEnd = espStart >= 0 ? html.indexOf('</template>', espStart) : -1;
+if (espStart >= 0 && espEnd >= 0) {
+  let espacio = html.slice(espStart, espEnd);
+  const servicesRe = /<button class="services-trigger"[\s\S]*?<\/section>\s*(?=\s*<\/header>)/;
+  if (servicesRe.test(espacio)) {
+    espacio = espacio.replace(servicesRe, '<mastererp-module-launcher current-app="uonify"></mastererp-module-launcher>\n        ');
+    html = html.slice(0, espStart) + espacio + html.slice(espEnd);
+  }
+}
+
 const script = '<script type="module" src="module-launcher.mjs"></script>';
 if (!html.includes('module-launcher.mjs')) {
   if (!html.includes(script)) html = html.replace('</head>', `  ${script}\n</head>`);
