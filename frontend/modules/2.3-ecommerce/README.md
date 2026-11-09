@@ -46,3 +46,11 @@ Aplicar el [estándar UX/UI de MasterERP](../../../docs/UX_UI_STANDARD.md) antes
 
 Esta sección orienta el diseño; no acredita implementación ni añade requisitos funcionales. Ver la guía para composición aplicable, pruebas y variantes justificadas.
 <!-- ux-ui-standard:end -->
+
+## Navegacion y panel contextual
+
+Ecommerce conserva el shell base ya compartido con Finanzas. Incluye servicios relacionados (Chat, Finanzas, Ecommerce, Inventario, Agentes), lanzador y menu funcional compacto de 64 px que se expande por mouse, foco o boton. El contenido reserva el ancho del menu y del panel derecho; en movil ambos se presentan como paneles con cierre exterior/Escape. Se conservan rutas hash, permisos y contratos existentes; no se inventan enlaces a capacidades no autorizadas.
+
+Uony reutiliza el componente existente `../2.2-finance/src/FinanceAssistant.jsx`, parametrizado con el nombre y la pantalla de Ecommerce. El borrador solo vive en memoria y se limpia al cambiar sesion, tenant o empresa. No lee registros ni manda mensajes; envio deshabilitado y conexion de IA pendiente. No implica OAuth, Gemini ni otras integraciones. El workflow observa explicitamente los archivos compartidos de los que depende; conserva OIDC, hosting y permisos actuales. La identidad visual propia de Finanzas no se activa por esta reutilizacion.
+
+Validacion local: `npm run build` y `node --test src/access.test.mjs ../../shared/auth/cognito.test.mjs`. La ruta previa del workflow a las pruebas Cognito subia un nivel de mas; se corrige para ejecutar realmente ese archivo existente. Esta correccion no cambia autenticacion ni permisos.

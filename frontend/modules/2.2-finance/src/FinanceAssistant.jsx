@@ -3,16 +3,17 @@ import FinanceIcon from './FinanceIcon.jsx';
 import isotipo from './assets/brands/uonify-isotipo.svg';
 const AssistantContext=createContext(null);
 const labels={'resumen-compras':'Resumen de compras','solicitudes-compra':'Compras','sugerencias-compras':'Sugerencias de compras','ordenes-compra':'Órdenes de compra','facturas-proveedores':'Facturas de proveedores',clientes:'Clientes',proveedores:'Proveedores',ventas:'Ventas'};
-export function FinanceAssistantProvider({children,enabled=true,path=''}){
+export function FinanceAssistantProvider({children,enabled=true,path='',applicationName='Finanzas',contextLabel,contextKey}){
  const [open,setOpen]=useState(false),[draft,setDraft]=useState('');
  const trigger=useRef(null);
- const label=Object.entries(labels).find(([key])=>path.includes(key))?.[1]||'Finanzas';
+ useEffect(()=>{setOpen(false);setDraft('');},[contextKey]);
+ const label=contextLabel||Object.entries(labels).find(([key])=>path.includes(key))?.[1]||'Finanzas';
  const close=()=>{setOpen(false);requestAnimationFrame(()=>trigger.current?.focus());};
- return <AssistantContext.Provider value={enabled?{open,setOpen,draft,setDraft,trigger,close,label}:null}>{children}</AssistantContext.Provider>;
+ return <AssistantContext.Provider value={enabled?{open,setOpen,draft,setDraft,trigger,close,label,applicationName}:null}>{children}</AssistantContext.Provider>;
 }
 export function FinanceAssistantToggle(){
  const a=useContext(AssistantContext);if(!a)return null;
- return <button ref={a.trigger} type="button" className="finance-assistant-toggle secondary" aria-label="Uony en Finanzas" title="Uony" aria-expanded={a.open} aria-controls="finance-assistant" onClick={()=>a.open?a.close():a.setOpen(true)}><img src={isotipo} alt="" aria-hidden="true"/></button>;
+ return <button ref={a.trigger} type="button" className="finance-assistant-toggle secondary" aria-label={'Uony en '+a.applicationName} title="Uony" aria-expanded={a.open} aria-controls="finance-assistant" onClick={()=>a.open?a.close():a.setOpen(true)}><img src={isotipo} alt="" aria-hidden="true"/></button>;
 }
 export function FinanceAssistantPanel(){
  const a=useContext(AssistantContext),panel=useRef(null);

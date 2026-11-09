@@ -41,3 +41,17 @@
 .ecommerce-app .orders-list-title{display:flex;align-items:center;justify-content:space-between;padding:16px;border-bottom:1px solid var(--finance-border)}.ecommerce-app .orders-list-title h2{margin:0;font-size:18px}.ecommerce-app .orders-list-title span{color:var(--finance-muted);font-size:12px}.ecommerce-app .orders-bulk{padding:10px 16px}.ecommerce-app .orders-bulk button{padding:8px 12px}.ecommerce-app .prestashop-orders-table{min-width:1080px}.ecommerce-app .prestashop-orders-table th,.ecommerce-app .prestashop-orders-table td{white-space:normal}.ecommerce-app .prestashop-orders-table th:first-child,.ecommerce-app .prestashop-orders-table td:first-child{width:36px}.ecommerce-app .prestashop-orders-table input[type=checkbox]{width:16px;height:16px}.ecommerce-app .sort-button{border:0;background:transparent;color:inherit;font:inherit;font-weight:700}.ecommerce-app .order-actions{display:flex;gap:6px}.ecommerce-app .order-actions a{display:grid;width:34px;height:34px;place-items:center;border:1px solid var(--finance-control-border);border-radius:7px;background:#fff;color:var(--finance-primary);text-decoration:none}.ecommerce-app .order-actions a:hover,.ecommerce-app .order-actions a:focus-visible{border-color:var(--finance-primary);background:var(--finance-selected)}.ecommerce-app .order-actions svg{width:18px;height:18px}
 .ecommerce-app .orders-bulk{display:flex;align-items:center;gap:8px}.ecommerce-app .orders-bulk select{min-width:210px;padding:8px 10px;border:1px solid var(--finance-control-border);border-radius:7px;background:#fff}
 .ecommerce-app .order-progress{grid-template-columns:repeat(6,minmax(0,1fr))}
+
+/* Same compact, expanding shell and contextual assistant as Finance; Ecommerce only. */
+.ecommerce-app .integrated-nav:not(:hover,:focus-within,.is-open) .administration-nav-children{display:none}
+.ecommerce-app .finance-navigation>a{display:flex;align-items:center;gap:12px}
+.ecommerce-app .finance-navigation .finance-line-icon{flex:none}
+.ecommerce-app .finance-assistant-toggle img{display:block;width:22px;height:22px;object-fit:contain}
+.ecommerce-app .finance-assistant-symbol img{display:block;width:20px;height:20px;object-fit:contain}
+.ecommerce-app .finance-assistant-empty>img{display:block;width:28px;height:28px;object-fit:contain}
+.ecommerce-app .integrated-content :is(.commerce-directory,.operation-directory,.orders-module,.inventory-module){min-width:0;max-width:100%}
+.ecommerce-app .commerce-table-panel{max-width:100%}
+.ecommerce-app .integrated-content :is(.page-heading,.order-actions,.orders-bulk){flex-wrap:wrap}
+@container(max-width:850px){.ecommerce-app .operation-master-detail{grid-template-columns:minmax(0,1fr)}.ecommerce-app .order-progress{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@container(max-width:480px){.ecommerce-app .order-progress{grid-template-columns:repeat(2,minmax(0,1fr))}.ecommerce-app .ecommerce-welcome{padding:24px 0}.ecommerce-app .ecommerce-welcome h1{font-size:32px}}
+@media(max-width:380px){.ecommerce-app .integrated-header{padding:12px 8px;gap:6px}.ecommerce-app .context-controls{gap:2px}.ecommerce-app .brand{font-size:18px}.ecommerce-app .finance-chat-home{width:34px}}

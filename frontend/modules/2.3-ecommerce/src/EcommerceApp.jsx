@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {config, useWorkspace} from '../../../app-shell/src/session.jsx';
 import Orders from '../2.3.1-orders/src/Orders.jsx';
 import Preparation from '../../2.1-inventory/2.1.3-preparation/src/Preparation.jsx';
@@ -13,8 +13,12 @@ import Inventory from '../../2.1-inventory/2.1.1-inventory/src/Inventory.jsx';
 import OperationsNavigation from './OperationsNavigation.jsx';
 import EcommerceSummary from './EcommerceSummary.jsx';
 import {canOpenOperationsRoute, operationsModule} from './access.mjs';
+import RelatedServicesRail from '../../../shared/module-launcher/RelatedServicesRail.jsx';
+import UonifyChatLink from '../../2.2-finance/src/UonifyChatLink.jsx';
+import {FinanceAssistantProvider,FinanceAssistantToggle,FinanceAssistantPanel} from '../../2.2-finance/src/FinanceAssistant.jsx';
 import ModuleLauncher from '../../../shared/module-launcher/ModuleLauncher.jsx';
 
+const routeLabels={summary:'Resumen de Ecommerce',orders:'Pedidos',preparation:'Preparacion',routes:'Rutas',nodes:'Nodos',products:'Productos',categories:'Categorias',attributes:'Atributos',brands:'Marcas',suppliers:'Proveedores',inventory:'Inventario'};
 const routes = new Set(['summary','orders','preparation','routes','nodes','products','categories','attributes','brands','suppliers','inventory']);
 const currentPath = () => {
   const value = window.location.hash.replace(/^#\/?/, '').split('?')[0];
@@ -25,6 +29,8 @@ export default function EcommerceApp() {
   const workspace = useWorkspace();
   const [path, setPath] = useState(currentPath), [menu, setMenu] = useState(false);
   const route=path.split('/')[0];
+  const menuTrigger=useRef(null);
+  useEffect(()=>{const key=e=>{if(e.key==='Escape'&&!e.defaultPrevented&&document.querySelector('.ecommerce-app .integrated-nav:is(.is-open,:focus-within)')){setMenu(false);menuTrigger.current?.focus();}};const media=matchMedia('(max-width:800px)');const reset=()=>setMenu(false);document.addEventListener('keydown',key);media.addEventListener('change',reset);return()=>{document.removeEventListener('keydown',key);media.removeEventListener('change',reset);};},[]);
   useEffect(() => {const change = () => {setPath(currentPath()); setMenu(false);}; window.addEventListener('hashchange', change); return () => window.removeEventListener('hashchange', change);}, []);
   const permissions = workspace.context?.permissions || [];
   const enabled = workspace.context?.modules.some(module=>[operationsModule,'erp.catalog'].includes(module));
@@ -49,9 +55,9 @@ export default function EcommerceApp() {
   else if (route === 'suppliers' && allowed('suppliers')) content = <Suppliers key={path} runtime={runtime}/>;
   else if (route === 'inventory' && allowed('inventory')) content = <Inventory key={path} runtime={runtime}/>;
   else content = <div className="notice error">No tienes permiso para consultar esta capacidad.</div>;
-  return <div className="integrated-app ecommerce-app"><a className="skip-link" href="#content">Saltar al contenido</a>
-    <header className="integrated-header"><button className="menu-toggle secondary" aria-label="Abrir menú" aria-expanded={menu} onClick={() => setMenu(!menu)}>☰</button><a className="brand" href="#/summary">E-commerce<span>MasterERP · Desarrollo</span></a>
-      <div className="context-controls"><ModuleLauncher currentApp="ecommerce"/><button className="secondary" disabled={workspace.authenticating} onClick={workspace.signedIn ? workspace.signOut : workspace.startLogin}>{workspace.signedIn ? 'Salir' : workspace.authenticating ? 'Redirigiendo…' : 'Acceder'}</button></div>
-    </header><div className="integrated-layout"><aside className={`integrated-nav ${menu ? 'is-open' : ''}`}><OperationsNavigation permissions={permissions} route={route} navigate={navigate}/></aside><main id="content" className="integrated-content" tabIndex={-1}><p className="environment">E-commerce · Entorno de desarrollo · Operaciones</p>{workspace.error && <div className="notice error" role="alert">{workspace.error}</div>}{content}</main></div>
-  </div>;
+  return <FinanceAssistantProvider applicationName="E-commerce" contextLabel={routeLabels[route]} contextKey={[workspace.signedIn,workspace.tenant,workspace.company].join(':')}><div className="integrated-app ecommerce-app"><a className="skip-link" href="#content">Saltar al contenido</a>
+    <header className="integrated-header"><button ref={menuTrigger} type="button" className="menu-toggle secondary" aria-controls="ecommerce-navigation" aria-label="Abrir menú" aria-expanded={menu} onClick={() => setMenu(!menu)}>☰</button><a className="brand" href="#/summary">E-commerce<span>MasterERP · Desarrollo</span></a>
+      <div className="context-controls"><FinanceAssistantToggle/><UonifyChatLink/><ModuleLauncher currentApp="ecommerce"/><button className="secondary" disabled={workspace.authenticating} onClick={workspace.signedIn ? workspace.signOut : workspace.startLogin}>{workspace.signedIn ? 'Salir' : workspace.authenticating ? 'Redirigiendo…' : 'Acceder'}</button></div>
+    </header><div className="integrated-layout"><div className="finance-service-rail"><RelatedServicesRail currentApp="ecommerce" services={['uonify','finance','ecommerce','inventory','agents']}/></div><aside id="ecommerce-navigation" aria-label="Navegacion de Ecommerce" className={`integrated-nav ${menu ? 'is-open' : ''}`}><OperationsNavigation permissions={permissions} route={route} navigate={navigate}/></aside>{menu&&<button type="button" className="finance-nav-scrim" aria-label="Cerrar menu de Ecommerce" onClick={()=>{setMenu(false);menuTrigger.current?.focus();}}/>}<main id="content" className="integrated-content" tabIndex={-1}><p className="environment">E-commerce · Entorno de desarrollo · Operaciones</p>{workspace.error && <div className="notice error" role="alert">{workspace.error}</div>}{content}</main><FinanceAssistantPanel/></div>
+  </div></FinanceAssistantProvider>;
 }
