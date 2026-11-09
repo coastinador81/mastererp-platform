@@ -23,11 +23,20 @@ const VALUES: Record<string, string> = {
   // Representante RGPD en la UE y en el Reino Unido: DataRep (ya contratado).
   // Texto final de Legal (08-11-2026), con el domicilio social de DataRep y sus canales.
   REPRESENTANTE_UE:
-    'DataRep (Data Protection Representative Limited), con domicilio social en 77 Camden Street Lower, Dublín D02 XE80, Irlanda. Para dirigirte al representante, usa el formulario de https://www.datarep.com/data-request/ o escribe a datarequest@datarep.com, indicando que tu solicitud es para ETHICS CLOUD & SECURITY SERVICES LLC (Uonify)',
+    'DataRep (Data Protection Representative Limited), con domicilio en 77 Camden Street Lower, Dublín D02 XE80, Irlanda. Para ejercer tus derechos a través del representante, usa el formulario https://www.datarep.com/data-request/ o escribe a datarequest@datarep.com, indicando que tu solicitud es para ETHICS CLOUD & SECURITY SERVICES LLC (Uonify)',
   REPRESENTANTE_UK:
-    'DataRep UK, la sociedad del grupo DataRep en el Reino Unido, por esos mismos canales',
+    'DataRep UK, la sociedad hermana de DataRep en el Reino Unido, por los mismos medios (el formulario https://www.datarep.com/data-request/ o datarequest@datarep.com), indicando que tu solicitud es para ETHICS CLOUD & SECURITY SERVICES LLC (Uonify)',
   LEY_APLICABLE: 'Florida (EE. UU.)',
   REGION_DATOS: 'Irlanda (Unión Europea)',
+  // Tribunales y sede de arbitraje (DATOS-EMPRESA, confirmados por el dueño).
+  TRIBUNALES: 'los tribunales estatales y federales con sede en el condado de Miami-Dade, Florida (EE. UU.)',
+  SEDE_ARBITRAJE: 'Miami, Florida',
+  // Precios provisionales (D-MODELO-NEGOCIO): 9,90 € netos + IVA de cada país.
+  PRECIO_MES: '9,90 € al mes más el IVA de tu país (en España, 11,98 € al mes, IVA incluido)',
+  PRECIO_ANO: '118,80 € al año más el IVA de tu país (en España, 143,75 € al año, IVA incluido)',
+  // Agente DMCA designado (DATOS-EMPRESA).
+  AGENTE_DMCA:
+    'Departamento Legal (Legal Department), ETHICS CLOUD & SECURITY SERVICES LLC, 4572 NW 114th Ave 1301, Doral, Florida 33178, EE. UU.; teléfono +34 676 520 899',
   // Pendiente de confirmar por el dueño (DATOS-EMPRESA: «a confirmar»; dev.uonify.com es el de pruebas).
   DOMINIO: 'uonify.com',
   // ÚNICO sitio de la fecha de vigor. Provisional: el dueño/CEO fija la fecha real

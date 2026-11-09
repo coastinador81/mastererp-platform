@@ -212,15 +212,21 @@ describe('páginas legales', () => {
     expect(screen.getByRole('link', { name: 'Volver a Uonify' })).toHaveAttribute('href', '/espacio');
   });
 
-  test('Privacidad no deja marcadores sin rellenar y su índice tiene los 17 apartados', () => {
+  test('Privacidad no deja marcadores sin rellenar e incluye la Política de cookies en el índice', () => {
     renderPage(<LegalPage doc="privacidad" />, '/privacidad');
     expect(document.body.innerHTML).not.toMatch(/\{\{|\}\}/);
-    expect(document.querySelectorAll('.legal-toc li')).toHaveLength(17);
+    // Los 16 apartados + «Lo esencial» + la Política de cookies.
+    expect(document.querySelectorAll('.legal-toc li')).toHaveLength(18);
+    expect(document.querySelector('.legal-toc')?.textContent).toContain('Política de cookies');
   });
 
-  test('Condiciones no deja marcadores sin rellenar', () => {
+  test('Condiciones no deja marcadores sin rellenar y reúne el Aviso legal, las Condiciones de uso y sus documentos', () => {
     renderPage(<LegalPage doc="terminos" />, '/terminos');
     expect(document.body.innerHTML).not.toMatch(/\{\{|\}\}/);
-    expect(document.querySelectorAll('.legal-toc li').length).toBeGreaterThanOrEqual(3);
+    const toc = document.querySelector('.legal-toc');
+    expect(toc).not.toBeNull();
+    for (const name of ['Aviso legal', 'Condiciones de uso', 'Acuerdo de tratamiento de datos', 'Política de propiedad intelectual']) {
+      expect(toc?.textContent).toContain(name);
+    }
   });
 });

@@ -20,10 +20,10 @@ Este texto está en español y en inglés. Si las versiones no coinciden, preval
 1.1. **Responsable.** El responsable del tratamiento de tus datos es {{LLC_NOMBRE}} («Uonify», «nosotros»), con domicilio en {{LLC_DOMICILIO}}. Puedes escribirnos a {{EMAIL_PRIVACIDAD}}.
 
 1.2. **Representantes.**
-- Representante en la Unión Europea (artículo 27 del RGPD): {{REPRESENTANTE_UE}}.
-- Representante en el Reino Unido (artículo 27 del UK GDPR): {{REPRESENTANTE_UK}}.
+- **Representante en la Unión Europea (artículo 27 del RGPD):** {{REPRESENTANTE_UE}}.
+- **Representante en el Reino Unido (artículo 27 del UK GDPR):** {{REPRESENTANTE_UK}}.
 
-Puedes dirigirte a ellos para cualquier cuestión sobre tus datos.
+Puedes dirigirte a ellos, o directamente a nosotros en privacidad@uonify.com, para cualquier cuestión sobre tus datos.
 
 1.3. **Contacto de privacidad.** {{CONTACTO_PRIVACIDAD}}, en {{EMAIL_PRIVACIDAD}}. Esta persona también es nuestro *encarregado* a efectos de la LGPD de Brasil y la persona responsable de la protección de la información personal a efectos de la ley de Quebec.
 
@@ -136,7 +136,7 @@ Debes tener una base legal para usar esos datos y, cuando proceda, el consentimi
 - No usamos las imágenes ni las voces para identificar a nadie, ni creamos huellas de voz. Por eso no las tratamos como datos biométricos.
 - Si en el futuro ofrecemos clonar voces, te informaremos antes y te pediremos permisos específicos.
 
-3.11. **Solicitudes de Partner.** Si envías el formulario de Partner: empresa, país, persona de contacto y correo, y, si los das, cargo, teléfono y web; el tipo de colaboración y tu mensaje; y los datos técnicos de la solicitud (fecha, dirección IP o un valor equivalente, y la versión del texto que aceptaste).
+3.11. **Si solicitas ser Partner.** Cuando rellenas el formulario de solicitud de Partner, tratamos los datos que nos facilitas: tu nombre y tu correo electrónico y, si los indicas, el nombre de tu empresa, tu cargo, tu teléfono, tu web y el mensaje que nos escribes. Los usamos para gestionar tu solicitud y ponernos en contacto contigo.
 
 ## 4. Para qué usamos tus datos y con qué base legal
 
@@ -159,7 +159,7 @@ La «base legal» es lo que exige la normativa europea y británica. Las demás 
 | Cumplir la ley: impuestos, requerimientos de autoridades, sanciones y conservación de registros | Los necesarios en cada caso | Obligación legal |
 | Defender nuestros derechos ante reclamaciones | Los necesarios en cada caso | Interés legítimo |
 | Usar cookies que no sean técnicas, si alguna vez las usamos | Datos de navegación | Tu consentimiento |
-| Gestionar y evaluar las solicitudes de Partner y contactar con quien las envía | Datos del formulario de Partner | Medidas precontractuales e interés legítimo |
+| Gestionar tu solicitud de Partner y ponernos en contacto contigo | Datos del formulario de Partner | Medidas precontractuales tomadas a petición tuya e interés legítimo en valorar y responder tu solicitud |
 
 Cuando usamos el interés legítimo, hemos comprobado que no prevalecen tus derechos. Puedes oponerte (apartado 11).
 
@@ -283,7 +283,7 @@ No accedemos a datos personales de tus compradores.
 - envío de correos;
 - soporte.
 
-Solo pueden usar los datos para prestarnos su servicio, y lo hacen con obligaciones de confidencialidad y seguridad. La lista actualizada, con su función y su país, está en {{DOMINIO}}/proveedores.
+Solo pueden usar los datos para prestarnos su servicio, y lo hacen con obligaciones de confidencialidad y seguridad. La lista actualizada de estos proveedores, con su función y su país, forma parte de nuestro Acuerdo de tratamiento de datos (anexo III); puedes pedírnosla en cualquier momento escribiendo a {{EMAIL_PRIVACIDAD}}.
 
 8.2. **Servicios que conectas tú.** Los contratas y los pagas tú directamente a cada proveedor, desde tu cuenta. Reciben los datos necesarios porque tú nos lo pides:
 - Google, en tu proyecto y en tu Drive;
@@ -331,7 +331,7 @@ Más información en la política de privacidad de Stripe: stripe.com/privacy.
 | Huella cifrada de identidad (para evitar abusos de la garantía de 14 días) y recibo del cierre de la cuenta | Hasta 3 años desde el cierre de la cuenta. |
 | Soporte | 2 años desde que se resuelve la consulta. |
 | Comunicaciones comerciales | Hasta que te des de baja. |
-| Solicitudes de Partner | Durante la evaluación y, si no hay colaboración, hasta 1 año; si hay colaboración, mientras dure y los plazos legales. |
+| Solicitudes de Partner (apartado 3.11) | Mientras gestionamos tu solicitud; si no llegamos a colaborar, un máximo de 1 año, salvo que debamos conservarla más por una obligación legal o para defender nuestros derechos. |
 
 Al terminar el plazo, borramos los datos o los anonimizamos.
 

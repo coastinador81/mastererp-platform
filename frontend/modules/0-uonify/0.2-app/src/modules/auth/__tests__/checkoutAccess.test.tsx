@@ -36,7 +36,7 @@ function account(address: string, plan: Profile['desiredPlan'] = 'basic') {
   // La guarda aislada recibe un perfil terminado; las rutas reales también lo validan.
   setSession({ ...parseSession(signInAs(address)), profileReady: true });
 }
-const payment = { planId: 'basic' as const, interval: 'monthly' as const, paymentMethod: 'new', newCard: { id: 'pm_access', brand: 'visa' as const, last4: '4242', expMonth: 12, expYear: 2035 }, acceptedTerms: true, acceptedWithdrawal: true, termsVersion: '2026-09-27' };
+const payment = { planId: 'basic' as const, interval: 'monthly' as const, paymentMethod: 'new', newCard: { id: 'pm_access', brand: 'visa' as const, last4: '4242', expMonth: 12, expYear: 2035 }, acceptedTerms: true, acceptedWithdrawal: true, termsVersion: '2026-11-09' };
 function mount() {
   return render(<QueryClientProvider client={queryClient}><WorkspaceAccessGate><h1>Contenido privado</h1></WorkspaceAccessGate></QueryClientProvider>);
 }

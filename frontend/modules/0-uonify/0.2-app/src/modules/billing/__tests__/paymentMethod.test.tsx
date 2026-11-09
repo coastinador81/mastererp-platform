@@ -24,7 +24,7 @@ const server = setupServer(...handlers);
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
 afterAll(() => server.close());
 beforeEach(() => { account.email = 'new@example.test'; resetBillingMocks(); });
-const request = { planId: 'basic' as const, interval: 'monthly' as const, paymentMethod: 'new', newCard: NEW_CARD, acceptedTerms: true, acceptedWithdrawal: true, termsVersion: '2026-09-27' };
+const request = { planId: 'basic' as const, interval: 'monthly' as const, paymentMethod: 'new', newCard: NEW_CARD, acceptedTerms: true, acceptedWithdrawal: true, termsVersion: '2026-11-09' };
 
 function mountCheckout() {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } });
