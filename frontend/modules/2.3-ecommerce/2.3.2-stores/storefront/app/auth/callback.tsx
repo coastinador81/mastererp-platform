@@ -9,10 +9,10 @@ import { colors } from '@/theme';
 
 export default function AuthCallbackPage() {
   const router = useRouter();
-  const { authenticated, loading, error } = useStore();
-  useEffect(() => { if (!loading && authenticated) router.replace('/'); }, [authenticated, loading, router]);
-  if (loading || authenticated) return <Screen><AppLoading title="Iniciando sesión…" detail="Estamos preparando tu cuenta y tu tienda." /></Screen>;
-  return <Screen><View style={styles.wrap}><Text style={styles.title}>No pudimos iniciar sesión</Text><Text style={styles.text}>{error || 'Intenta nuevamente para continuar.'}</Text><Pressable style={styles.button} onPress={() => void startLogin()}><Text style={styles.buttonText}>Intentar de nuevo</Text></Pressable></View></Screen>;
+  const { authenticated, sessionLoading, sessionError } = useStore();
+  useEffect(() => { if (!sessionLoading && authenticated) router.replace('/'); }, [authenticated, sessionLoading, router]);
+  if (sessionLoading || authenticated) return <Screen><AppLoading title="Iniciando sesión…" detail="Estamos preparando tu cuenta." /></Screen>;
+  return <Screen><View style={styles.wrap}><Text style={styles.title}>No pudimos iniciar sesión</Text><Text style={styles.text}>{sessionError || 'Intenta nuevamente para continuar.'}</Text><Pressable style={styles.button} onPress={() => void startLogin()}><Text style={styles.buttonText}>Intentar de nuevo</Text></Pressable></View></Screen>;
 }
 
 const styles = StyleSheet.create({

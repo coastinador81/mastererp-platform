@@ -9,6 +9,8 @@ type StoreState = {
   cart: CartLine[];
   authenticated: boolean;
   loading: boolean;
+  sessionLoading: boolean;
+  sessionError: string;
   error: string;
   add: (product: Product, quantity?: number) => void;
   setQuantity: (id: string, quantity: number) => void;
@@ -29,30 +31,24 @@ export function StoreProvider({ children }: PropsWithChildren) {
   const [cart, setCart] = useState<CartLine[]>(initialCart);
   const [authenticated, setAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [sessionLoading, setSessionLoading] = useState(true);
+  const [sessionError, setSessionError] = useState('');
   const [error, setError] = useState('');
 
   useEffect(() => {
     let cancelled = false;
-    (async () => {
-      try {
-        const [nextCatalog, session] = await Promise.all([
-          loadCatalog(),
-          completeLoginIfNeeded().catch((reason: Error) => {
-            if (isAuthenticated()) return true;
-            throw reason;
-          }),
-        ]);
+    loadCatalog()
+      .then(nextCatalog => { if (!cancelled) setCatalog(nextCatalog); })
+      .catch(reason => { if (!cancelled) setError(reason instanceof Error ? reason.message : 'No se pudo abrir la tienda.'); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    completeLoginIfNeeded()
+      .then(session => { if (!cancelled) setAuthenticated(session); })
+      .catch(reason => {
         if (cancelled) return;
-        setCatalog(nextCatalog);
-        setAuthenticated(session);
-      } catch (reason) {
-        if (!cancelled) {
-          setError(reason instanceof Error ? reason.message : 'No se pudo abrir la tienda.');
-        }
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    })();
+        setAuthenticated(isAuthenticated());
+        setSessionError(reason instanceof Error ? reason.message : 'No se pudo recuperar la sesión.');
+      })
+      .finally(() => { if (!cancelled) setSessionLoading(false); });
     return () => { cancelled = true; };
   }, []);
 
@@ -67,7 +63,7 @@ export function StoreProvider({ children }: PropsWithChildren) {
   useEffect(() => { if (!loading && typeof sessionStorage !== 'undefined') sessionStorage.setItem(cartKey(), JSON.stringify(cart)); }, [cart, loading]);
 
   const value = useMemo<StoreState>(() => ({
-    catalog, cart, authenticated, loading, error,
+    catalog, cart, authenticated, loading, sessionLoading, sessionError, error,
     add: (product, quantity = 1) => setCart(lines => {
       const found = lines.find(line => line.product.id === product.id);
       return found
@@ -78,8 +74,12 @@ export function StoreProvider({ children }: PropsWithChildren) {
       ? lines.filter(line => line.product.id !== id)
       : lines.map(line => line.product.id === id ? { ...line, quantity } : line)),
     clearCart: () => setCart([]),
-    refreshSession: async () => setAuthenticated(await completeLoginIfNeeded()),
-  }), [authenticated, cart, catalog, error, loading]);
+    refreshSession: async () => {
+      setSessionLoading(true); setSessionError('');
+      try { setAuthenticated(await completeLoginIfNeeded()); }
+      finally { setSessionLoading(false); }
+    },
+  }), [authenticated, cart, catalog, error, loading, sessionError, sessionLoading]);
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;
 }

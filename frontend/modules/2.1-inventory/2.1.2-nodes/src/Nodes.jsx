@@ -14,9 +14,11 @@ const call = (r, p, o = {}) =>
 export default function Nodes({ runtime, onSelect }) {
   const [items, setItems] = useState([]),
     [selected, setSelected] = useState(null),
+    [loading, setLoading] = useState(true),
     [error, setError] = useState(""),
     write = runtime.permissions.includes("operations.nodes.write");
   const load = useCallback(async () => {
+    setLoading(true);
     try {
       const rows = (
         await call(runtime, `/v1/companies/${runtime.company}/nodes`)
@@ -27,6 +29,8 @@ export default function Nodes({ runtime, onSelect }) {
       setError("");
     } catch (e) {
       setError(e.message);
+    } finally {
+      setLoading(false);
     }
   }, [runtime]);
   useEffect(() => {
@@ -64,7 +68,7 @@ export default function Nodes({ runtime, onSelect }) {
           <h1>Nodos</h1>
           <p className="supplier-subtitle">Configura las ubicaciones que atienden tus pedidos.</p>
         </div>
-        <button onClick={load}>Actualizar</button>
+        <button disabled={loading} onClick={load}>{loading ? "Actualizando…" : "Actualizar"}</button>
       </div>
       {error && <p className="error" role="alert">No se pudieron cargar los nodos. Intenta nuevamente.</p>}
       <div className="operation-master-detail">
@@ -80,7 +84,7 @@ export default function Nodes({ runtime, onSelect }) {
               <span className="row-action"><b className="status">{readableStatus(n.status)}</b><span onClick={() => onSelect?.(n)}><DetailLink route="nodes" id={n.id}/></span></span>
             </div>
           ))}
-          {!items.length && <p>No hay nodos configurados.</p>}
+          {loading ? <p role="status">Cargando nodos…</p> : !items.length && <p>No hay nodos configurados.</p>}
         </div>
         <aside className="panel operation-detail">
           {selected && <DetailBackLink route="nodes" label="nodos"/>}

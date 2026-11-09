@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { usePathname, useRouter } from 'expo-router';
+import { Link, usePathname } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, contentWidth, spacing } from '../theme';
 import { useStore } from '../store/StoreProvider';
@@ -13,18 +13,17 @@ const items = [
 ] as const;
 
 export function BottomNav() {
-  const router = useRouter();
   const pathname = usePathname();
   const { cart } = useStore();
   const count = cart.reduce((total, line) => total + line.quantity, 0);
   return <View style={styles.shell}><View style={styles.nav}>{items.map(item => {
     const target = item.path.split('?')[0];
     const active = target === '/' ? pathname === '/' : pathname.startsWith(target);
-    return <Pressable key={item.label} style={styles.item} onPress={() => router.push(item.path)} accessibilityLabel={item.label}>
-      <View><Ionicons name={active ? item.activeIcon : item.icon} size={22} color={active ? colors.primary : colors.muted} />
-        {item.label === 'Compras' && count ? <View style={styles.badge}><Text style={styles.badgeText}>{count}</Text></View> : null}
-      </View><Text style={[styles.label, active && styles.active]}>{item.label}</Text>
-    </Pressable>;
+    return <Link key={item.label} href={item.path} prefetch asChild><Pressable style={styles.item} accessibilityLabel={item.label}>
+        <View><Ionicons name={active ? item.activeIcon : item.icon} size={22} color={active ? colors.primary : colors.muted} />
+          {item.label === 'Compras' && count ? <View style={styles.badge}><Text style={styles.badgeText}>{count}</Text></View> : null}
+        </View><Text style={[styles.label, active && styles.active]}>{item.label}</Text>
+      </Pressable></Link>;
   })}</View></View>;
 }
 

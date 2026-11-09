@@ -5,6 +5,7 @@ import {
   identityToken,
   login,
   logout,
+  restoreSession,
   sessionExpiresAt,
 } from '../../../../../shared/auth/cognito.mjs';
 import { assertStorefrontContext, storefrontConfig, storefrontScope } from './config';
@@ -45,6 +46,8 @@ export async function completeLoginIfNeeded() {
   }
   if (window.location.pathname === '/auth/callback') {
     await completeLogin(authConfig);
+  } else if (!isAuthenticated()) {
+    await restoreSession(authConfig);
   }
   const authenticated = isAuthenticated();
   const pendingInvitation = sessionStorage.getItem(invitationKey());
