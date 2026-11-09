@@ -20,18 +20,19 @@ const VALUES: Record<string, string> = {
   EMAIL_COPYRIGHT: 'copyright@uonify.com',
   EMAIL_SEGURIDAD: 'security@uonify.com',
   CONTACTO_PRIVACIDAD: 'Edward Gonzalez, responsable de privacidad de ETHICS CLOUD & SECURITY SERVICES LLC',
-  // Representante RGPD en la UE y en el Reino Unido: DataRep, con sus canales verificados.
-  // La dirección postal del nombramiento llega al contratar (DATOS-EMPRESA, pendiente).
+  // Representante RGPD en la UE y en el Reino Unido: DataRep (ya contratado).
+  // Texto final de Legal (08-11-2026), con el domicilio social de DataRep y sus canales.
   REPRESENTANTE_UE:
-    'DataRep (Data Protection Representative Limited, Irlanda). Puedes contactar con DataRep en el formulario https://www.datarep.com/data-request o en datarequest@datarep.com, indicando que tu solicitud es para Uonify',
+    'DataRep (Data Protection Representative Limited), con domicilio social en 77 Camden Street Lower, Dublín D02 XE80, Irlanda. Para dirigirte al representante, usa el formulario de https://www.datarep.com/data-request/ o escribe a datarequest@datarep.com, indicando que tu solicitud es para ETHICS CLOUD & SECURITY SERVICES LLC (Uonify)',
   REPRESENTANTE_UK:
-    'DataRep UK (la sociedad hermana de DataRep en el Reino Unido), por los mismos canales: el formulario https://www.datarep.com/data-request o datarequest@datarep.com',
+    'DataRep UK, la sociedad del grupo DataRep en el Reino Unido, por esos mismos canales',
   LEY_APLICABLE: 'Florida (EE. UU.)',
   REGION_DATOS: 'Irlanda (Unión Europea)',
   // Pendiente de confirmar por el dueño (DATOS-EMPRESA: «a confirmar»; dev.uonify.com es el de pruebas).
   DOMINIO: 'uonify.com',
-  // La fecha exacta se fija al publicar (DATOS-EMPRESA). Hasta entonces, texto neutro.
-  FECHA_VIGOR: 'día de su publicación',
+  // ÚNICO sitio de la fecha de vigor. Provisional: el dueño/CEO fija la fecha real
+  // justo antes de publicar (se cambia solo aquí).
+  FECHA_VIGOR: '9 de noviembre de 2026',
 };
 
 /** Sustituye las marcas {{CLAVE}} de un texto legal por su valor final.

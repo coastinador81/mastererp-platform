@@ -18,10 +18,12 @@ Este aviso da cumplimiento al artículo 10 de la Ley 34/2002, de servicios de la
 
 ### 2. Representantes y puntos de contacto
 
+**Representante en materia de protección de datos.** ETHICS CLOUD & SECURITY SERVICES LLC ha designado a DataRep (Data Protection Representative Limited), con domicilio social en 77 Camden Street Lower, Dublín D02 XE80, Irlanda, como su representante en la Unión Europea (art. 27 del RGPD) y, a través de DataRep UK, en el Reino Unido (art. 27 del UK GDPR). Los interesados pueden dirigirse al representante mediante el formulario de https://www.datarep.com/data-request/ o en datarequest@datarep.com, indicando que su solicitud es para Uonify.
+
+Otros puntos de contacto:
+
 | Para qué | Contacto |
 |---|---|
-| Representante en la Unión Europea a efectos de protección de datos (RGPD, art. 27) | {{REPRESENTANTE_UE}} |
-| Representante en el Reino Unido (UK GDPR, art. 27) | {{REPRESENTANTE_UK}} |
 | Contacto para autoridades | {{EMAIL_LEGAL}}, en español o en inglés |
 | Privacidad | {{EMAIL_PRIVACIDAD}} |
 | Derechos de autor y denuncias | {{EMAIL_COPYRIGHT}} y {{EMAIL_LEGAL}} |
@@ -71,13 +73,13 @@ Cómo tratamos los datos personales y qué cookies usamos se explica en la Polí
 
 ## Recursos adicionales por servicio
 
-**1. Qué incluye tu suscripción.** Tu suscripción de 9,90 € al mes más el IVA de tu país (en España, 11,98 € IVA incluido) te da acceso a Uonify y a sus servicios. Algunos servicios incluyen una cantidad determinada de recursos o de uso.
+**1. Qué incluye tu suscripción.** Tu suscripción de 9,90 € al mes más el IVA de tu país (en España, 11,98 € al mes, IVA incluido) te da acceso a Uonify y a sus servicios. Algunos servicios incluyen una cantidad determinada de recursos o de uso.
 
 **2. Si agotas los recursos de un servicio.** Si agotas los recursos incluidos de un servicio, te lo avisamos y podrás, si quieres, pagar por recursos adicionales para seguir usándolo. Comprarlos es voluntario e independiente de tu suscripción.
 
-**3. Precio y consentimiento expreso antes de cada cobro.** Antes de cada cobro adicional te mostramos en la aplicación qué obtienes y su precio total con impuestos, y te pedimos tu confirmación expresa. Sin esa confirmación no te cobramos nada. No usamos casillas premarcadas ni cobros automáticos de recursos adicionales. Los precios se muestran en la aplicación en el momento de la compra y pueden cambiar; siempre los verás antes de confirmar.
+**3. Precio y consentimiento expreso antes de cada cobro.** Antes de cada cobro adicional te mostramos en la aplicación qué obtienes y su precio total con los impuestos que correspondan, y te pedimos tu confirmación expresa. Sin esa confirmación no te cobramos nada. No usamos casillas premarcadas ni cobros automáticos de recursos adicionales. Los precios se muestran en la aplicación en el momento de la compra y pueden cambiar; siempre los verás antes de confirmar.
 
-**4. Ejecución inmediata y desistimiento.** Si pides empezar a usar un recurso adicional de inmediato, aceptas expresamente que su prestación comience en ese momento y reconoces que, una vez prestado o consumido, pierdes el derecho de desistimiento de 14 días sobre esa compra concreta (artículo 103 del TRLGDCU). Tu suscripción conserva su derecho de desistimiento según el apartado de desistimiento.
+**4. Ejecución inmediata y desistimiento.** Si pides empezar a usar un recurso adicional de inmediato, aceptas expresamente que su prestación comience en ese momento y reconoces que, una vez prestado o consumido, pierdes el derecho de desistimiento de 14 días sobre esa compra concreta (artículo 103 del texto refundido de la Ley General para la Defensa de los Consumidores y Usuarios). Tu suscripción conserva su derecho de desistimiento según el apartado de desistimiento.
 
 ## Tus aceptaciones
 

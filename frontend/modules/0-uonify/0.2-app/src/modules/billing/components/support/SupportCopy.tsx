@@ -13,7 +13,7 @@ export function SupportPerks() {
 export function SupportLegalNote() {
   return (
     <p className="bil-fine">
-      Uonify LLC es una empresa con ánimo de lucro. Este pago es una suscripción de apoyo, no una donación, y no es deducible como
+      Uonify es un servicio de ETHICS CLOUD &amp; SECURITY SERVICES LLC, una empresa con ánimo de lucro. Este pago es una suscripción de apoyo, no una donación, y no es deducible como
       donativo. Recibirás una factura con los impuestos que correspondan. Puedes cancelarla cuando quieras desde Configuración › Plan y
       facturación.
     </p>

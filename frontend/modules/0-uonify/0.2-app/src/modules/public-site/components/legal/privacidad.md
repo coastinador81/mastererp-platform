@@ -1,6 +1,7 @@
 # Política de privacidad de Uonify
 
-Versión en vigor desde el {{FECHA_VIGOR}}  
+Versión en vigor desde el {{FECHA_VIGOR}}.
+
 Este texto está en español y en inglés. Si las versiones no coinciden, prevalece la española (Condiciones de uso, apartado 26.8).
 
 ## Lo esencial
@@ -135,6 +136,8 @@ Debes tener una base legal para usar esos datos y, cuando proceda, el consentimi
 - No usamos las imágenes ni las voces para identificar a nadie, ni creamos huellas de voz. Por eso no las tratamos como datos biométricos.
 - Si en el futuro ofrecemos clonar voces, te informaremos antes y te pediremos permisos específicos.
 
+3.11. **Solicitudes de Partner.** Si envías el formulario de Partner: empresa, país, persona de contacto y correo, y, si los das, cargo, teléfono y web; el tipo de colaboración y tu mensaje; y los datos técnicos de la solicitud (fecha, dirección IP o un valor equivalente, y la versión del texto que aceptaste).
+
 ## 4. Para qué usamos tus datos y con qué base legal
 
 La «base legal» es lo que exige la normativa europea y británica. Las demás leyes tienen su propio apartado (apartado 12).
@@ -156,6 +159,7 @@ La «base legal» es lo que exige la normativa europea y británica. Las demás 
 | Cumplir la ley: impuestos, requerimientos de autoridades, sanciones y conservación de registros | Los necesarios en cada caso | Obligación legal |
 | Defender nuestros derechos ante reclamaciones | Los necesarios en cada caso | Interés legítimo |
 | Usar cookies que no sean técnicas, si alguna vez las usamos | Datos de navegación | Tu consentimiento |
+| Gestionar y evaluar las solicitudes de Partner y contactar con quien las envía | Datos del formulario de Partner | Medidas precontractuales e interés legítimo |
 
 Cuando usamos el interés legítimo, hemos comprobado que no prevalecen tus derechos. Puedes oponerte (apartado 11).
 
@@ -327,6 +331,7 @@ Más información en la política de privacidad de Stripe: stripe.com/privacy.
 | Huella cifrada de identidad (para evitar abusos de la garantía de 14 días) y recibo del cierre de la cuenta | Hasta 3 años desde el cierre de la cuenta. |
 | Soporte | 2 años desde que se resuelve la consulta. |
 | Comunicaciones comerciales | Hasta que te des de baja. |
+| Solicitudes de Partner | Durante la evaluación y, si no hay colaboración, hasta 1 año; si hay colaboración, mientras dure y los plazos legales. |
 
 Al terminar el plazo, borramos los datos o los anonimizamos.
 

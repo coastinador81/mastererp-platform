@@ -1,6 +1,7 @@
 /**
  * Datos de Uonify que comparten las etiquetas de la cabecera, el JSON-LD, llms.txt y
- * el sitemap. Contacto y razón social: decisiones del dueño (hola@uonify.com, Uonify LLC).
+ * el sitemap. Contacto y razón social: decisiones del dueño (hola@uonify.com,
+ * ETHICS CLOUD & SECURITY SERVICES LLC; «Uonify» es el nombre comercial).
  */
 export interface SeoImage {
   /** Ruta pública (se sirve desde /assets). */
@@ -12,7 +13,7 @@ export interface SeoImage {
 
 export const SITE = {
   name: 'Uonify',
-  legalName: 'Uonify LLC',
+  legalName: 'ETHICS CLOUD & SECURITY SERVICES LLC',
   email: 'hola@uonify.com',
   slogan: 'Hazlo posible',
   /** Idioma de todas las páginas (hreflang, og:locale, inLanguage). */

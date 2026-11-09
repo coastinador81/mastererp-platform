@@ -116,7 +116,7 @@ function renderTable(rows: string[], key: number): ReactNode {
   const header = cells(rows[0]);
   const body = rows.slice(1).filter(r => !/^\|?[\s:|-]+\|?$/.test(r));
   return (
-    <div className="legal-table-wrap" key={key}>
+    <div className="legal-table-wrap" key={key} tabIndex={0} role="group" aria-label="Tabla (desplázala en horizontal)">
       <table className="legal-table">
         <thead>
           <tr>

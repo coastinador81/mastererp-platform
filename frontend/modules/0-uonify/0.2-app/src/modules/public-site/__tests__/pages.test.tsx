@@ -211,4 +211,16 @@ describe('páginas legales', () => {
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Aviso legal y condiciones.');
     expect(screen.getByRole('link', { name: 'Volver a Uonify' })).toHaveAttribute('href', '/espacio');
   });
+
+  test('Privacidad no deja marcadores sin rellenar y su índice tiene los 17 apartados', () => {
+    renderPage(<LegalPage doc="privacidad" />, '/privacidad');
+    expect(document.body.innerHTML).not.toMatch(/\{\{|\}\}/);
+    expect(document.querySelectorAll('.legal-toc li')).toHaveLength(17);
+  });
+
+  test('Condiciones no deja marcadores sin rellenar', () => {
+    renderPage(<LegalPage doc="terminos" />, '/terminos');
+    expect(document.body.innerHTML).not.toMatch(/\{\{|\}\}/);
+    expect(document.querySelectorAll('.legal-toc li').length).toBeGreaterThanOrEqual(3);
+  });
 });
