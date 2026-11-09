@@ -25,7 +25,7 @@ export default function Nodes({ runtime, onSelect }) {
       ).items;
       const requested = detailFromHash("nodes");
       setItems(rows);
-      setSelected(requested ? rows.find((x) => x.id === requested) || null : null);
+      setSelected(rows.find((x) => x.id === requested) || rows[0] || null);
       setError("");
     } catch (e) {
       setError(e.message);
@@ -64,7 +64,7 @@ export default function Nodes({ runtime, onSelect }) {
     <section className={`canonical-module nodes-module operation-directory ${selected ? "detail-open" : "list-open"}`}>
       <div className="page-heading">
         <div>
-          <nav className="supplier-breadcrumb"><span>E-commerce</span><span>/</span><span className="current">Gestión de e-Commerce</span></nav>
+          <nav className="supplier-breadcrumb"><span>E-commerce</span><span>/</span><span className="current">Operaciones</span></nav>
           <h1>Nodos</h1>
           <p className="supplier-subtitle">Configura las ubicaciones que atienden tus pedidos.</p>
         </div>

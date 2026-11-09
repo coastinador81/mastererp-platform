@@ -43,7 +43,7 @@ export default function EcommerceApp() {
   else if (!workspace.tenant) content = <div className="notice">Selecciona un espacio para continuar.</div>;
   else if (!workspace.company) content = <div className="notice">Selecciona una empresa para consultar sus operaciones.</div>;
   else if (!enabled) content = <div className="notice error">E-commerce no está habilitado para este espacio.</div>;
-  else if (route === 'summary' && allowed('summary')) content = <EcommerceSummary context={workspace.context} navigate={navigate}/>;
+  else if (route === 'summary' && allowed('summary')) content = <EcommerceSummary context={workspace.context} runtime={runtime} navigate={navigate}/>;
   else if (route === 'orders' && allowed('orders')) content = <Orders key={path} runtime={runtime}/>;
   else if (route === 'payments' && allowed('payments')) content = <PaymentConfiguration key={path} runtime={runtime}/>;
   else if (route === 'preparation' && allowed('preparation')) content = <Preparation key={path} runtime={runtime}/>;

@@ -1,16 +1,24 @@
-import React from 'react';
-import {canOpenOperationsRoute} from './access.mjs';
+import React,{useCallback,useEffect,useMemo,useState}from'react';
+import FinanceIcon from '../../2.2-finance/src/FinanceIcon.jsx';
+import{canOpenOperationsRoute}from'./access.mjs';
+import{money,statusLabel,STATUS}from'../2.3.1-orders/src/orderView.js';
 
-const cards=[
-  ['orders','Pedidos','Consulta y gestiona el ciclo operativo de cada pedido.'],
-  ['preparation','Preparación','Organiza los productos antes de su entrega.'],
-  ['routes','Rutas','Consulta la planificación de entregas.'],
-  ['nodes','Nodos','Administra las capacidades de cada ubicación.'],
-  ['products','Productos','Gestiona la ficha comercial del catálogo.'],
-  ['inventory','Inventario','Consulta existencias disponibles por nodo.'],
-];
+const call=(runtime,path)=>runtime.request(runtime.api+path,{headers:{'X-Tenant-Id':runtime.tenant,'Content-Type':'application/json'}});
+const endpoints={orders:'orders?limit=100',preparation:'preparations',routes:'routes',nodes:'nodes'};
 
-export default function EcommerceSummary({context,navigate}){
-  const visible=cards.filter(([route])=>canOpenOperationsRoute(context,route));
-  return <section><p className="eyebrow">Módulo habilitado</p><h1>Resumen de Pedidos</h1><p>Administración de E-commerce, operaciones y catálogo de tu empresa.</p><div className="cards">{visible.map(([route,title,description])=><a key={route} className="panel module-card" href={`#/${route}`} onClick={event=>{event.preventDefault();navigate(route);}}><h3>{title}</h3><p>{description}</p><strong>Abrir →</strong></a>)}</div>{!visible.length&&<p className="notice">No tienes capacidades de E-commerce autorizadas.</p>}</section>;
+export default function EcommerceSummary({context,runtime,navigate}){
+  const[data,setData]=useState({orders:[],preparation:[],routes:[],nodes:[]}),[loading,setLoading]=useState(true),[error,setError]=useState('');
+  const load=useCallback(async()=>{setLoading(true);setError('');try{const entries=await Promise.all(Object.entries(endpoints).map(async([route,path])=>canOpenOperationsRoute(context,route)?[route,(await call(runtime,`/v1/companies/${runtime.company}/${path}`)).items]:[route,[]]));setData(Object.fromEntries(entries));}catch(problem){setError(problem.message||'No se pudo cargar el resumen.');}finally{setLoading(false);}},[context,runtime]);
+  useEffect(()=>{if(runtime.company)void load();},[runtime.company,load]);
+  const orders=data.orders,today=new Date().toDateString(),todayOrders=orders.filter(order=>new Date(order.created_at).toDateString()===today);
+  const counts=useMemo(()=>Object.fromEntries(Object.keys(STATUS).map(status=>[status,orders.filter(order=>order.status===status).length])),[orders]);
+  const metrics=[['Pedidos de hoy',todayOrders.length,'Registros creados hoy','order','blue'],['Por preparar',data.preparation.filter(item=>item.status!=='DONE').length,'Cola operativa actual','document','orange'],['En ruta',counts.OUT_FOR_DELIVERY||0,`${data.routes.length} rutas registradas`,'sales','violet'],['Ventas de hoy',money(todayOrders.reduce((sum,item)=>sum+Number(item.total||0),0),todayOrders[0]?.currency||'USD'),'Total de pedidos creados hoy','summary','green']];
+  const flow=[['CONFIRMED','Confirmados','blue'],['PREPARING','En preparación','violet'],['OUT_FOR_DELIVERY','En ruta','orange'],['DELIVERED','Entregados','green']],total=flow.reduce((sum,[key])=>sum+(counts[key]||0),0);
+  const visible=[['orders','order','Gestionar pedidos','Revisa y actualiza el estado de cada pedido'],['preparation','document','Preparar productos','Organiza los pedidos antes del despacho'],['routes','sales','Planificar rutas','Consulta y organiza las entregas'],['nodes','supplier','Configurar nodos','Administra ubicaciones y capacidades']].filter(([route])=>canOpenOperationsRoute(context,route));
+  return <section className="ops-modern ops-summary"><div className="ops-page-heading"><div><nav>E-commerce <span>/</span> Operaciones</nav><h1>Resumen de operaciones</h1><p>Estado actual de pedidos, preparación, rutas y nodos.</p></div><button className="ops-button secondary" onClick={()=>void load()} disabled={loading}><span aria-hidden="true">↻</span>{loading?'Actualizando…':'Actualizar'}</button></div>
+    {error?<p className="notice error" role="alert">{error}</p>:null}<div className="ops-metrics">{metrics.map(([label,value,meta,icon,tone])=><article key={label}><span className={`ops-metric-icon ${tone}`}><FinanceIcon name={icon}/></span><div><small>{label}</small><strong>{value}</strong><em>{meta}</em></div></article>)}</div>
+    <div className="ops-dashboard-grid"><article className="ops-panel"><header><div><h2>Pedidos recientes</h2><p>Últimos movimientos registrados</p></div><button onClick={()=>navigate('orders')}>Ver todos →</button></header><div className="ops-recent-orders">{orders.slice(0,5).map(order=><a key={order.id} href={`#/orders/${encodeURIComponent(order.id)}/view`}><span className="ops-row-icon"><FinanceIcon name="order"/></span><span><strong>{order.number}</strong><small>{order.customer_snapshot?.name||'Cliente del pedido'} · {order.items?.length||0} productos</small></span><b>{money(order.total,order.currency)}</b><i className={`status ${STATUS[order.status]?.tone||'neutral'}`}>{statusLabel(order.status)}</i><span>›</span></a>)}{!orders.length&&!loading?<p className="ops-empty">No hay pedidos registrados.</p>:null}</div></article>
+      <article className="ops-panel ops-flow"><header><div><h2>Flujo de pedidos</h2><p>Distribución actual</p></div></header><div className="ops-donut-wrap"><div className="ops-donut" style={{background:donutGradient(flow,counts,total)}}><span><strong>{total}</strong><small>pedidos</small></span></div><div className="ops-legend">{flow.map(([key,label,tone])=><span key={key}><i className={tone}/>{label}<b>{counts[key]||0}</b></span>)}</div></div>{canOpenOperationsRoute(context,'preparation')?<button className="ops-button secondary full" onClick={()=>navigate('preparation')}>Gestionar preparación</button>:null}</article></div>
+    <article className="ops-panel ops-quick"><header><div><h2>Accesos rápidos</h2><p>Continúa con las tareas autorizadas</p></div></header><div>{visible.map(([route,icon,title,description])=><button key={route} onClick={()=>navigate(route)}><span className="ops-row-icon"><FinanceIcon name={icon}/></span><span><strong>{title}</strong><small>{description}</small></span><b>›</b></button>)}</div></article></section>;
 }
+function donutGradient(flow,counts,total){if(!total)return'#e8edf5';const colors={blue:'#1685eb',violet:'#7161e8',orange:'#f4a340',green:'#32b477'};let current=0;return`conic-gradient(${flow.map(([key,,tone])=>{const start=current;current+=(counts[key]||0)/total*100;return`${colors[tone]} ${start}% ${current}%`;}).join(',')})`;}

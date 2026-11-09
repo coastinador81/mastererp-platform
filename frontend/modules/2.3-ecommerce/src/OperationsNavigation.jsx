@@ -2,6 +2,7 @@ import React from 'react';
 import {routePermissions} from './access.mjs';
 import FinanceIcon from '../../2.2-finance/src/FinanceIcon.jsx';
 import {ChevronDownIcon} from '../../0-uonify/components/ShellIcons.tsx';
+import WorkspaceCard from '../../../shared/workspace/WorkspaceCard.jsx';
 
 const operations = [
   ['orders', 'Pedidos', 'order'],
@@ -23,6 +24,7 @@ export default function OperationsNavigation({permissions, route, navigate}) {
   const operationLinks=visible(operations),catalogLinks=visible(catalog);
   const items = links => links.map(([value, label, icon]) => <li key={value}><a href={`#/${value}`} className="subnav" title={label} aria-current={route === value ? 'page' : undefined} onClick={event => {if(event.button!==0||event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return;event.preventDefault(); navigate(value);}}><FinanceIcon name={icon}/><span className="finance-nav-label">{label}</span></a></li>);
   return <nav className="finance-navigation" aria-label="Operaciones">
+    <WorkspaceCard application="E-commerce" section="Operaciones" icon="summary"/>
     <p className="nav-caption">E-COMMERCE</p>
     <a href="#/summary" title="Resumen de Pedidos" aria-current={route==='summary'?'page':undefined} onClick={event=>{if(event.button!==0||event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return;event.preventDefault();navigate('summary');}}><FinanceIcon name="summary"/><span className="finance-nav-label">Resumen de Pedidos</span></a>
     <details className="administration-nav" open><summary className="administration-nav-title" title="Operaciones"><FinanceIcon name="sales"/><span className="finance-nav-label">Operaciones</span><ChevronDownIcon className="finance-disclosure-icon"/></summary><div className="administration-nav-children"><ul>{items(operationLinks)}<li><span className="finance-nav-pending"><FinanceIcon name="invoice"/><span>Facturas</span><small>Pendiente</small></span></li></ul></div></details>
