@@ -5,9 +5,10 @@ Este texto está en español y en inglés. Si las versiones no coinciden, preval
 
 ## Lo esencial
 
-- Hoy solo usamos cookies y almacenamiento técnicos, que son necesarios para que Uonify funcione y sea seguro.
-- No usamos cookies de análisis ni de publicidad. Por eso no te pedimos permiso para ellas.
-- Si algún día usamos otras, te pediremos permiso antes y podrás rechazarlas con la misma facilidad con la que las aceptas.
+- La web pública de Uonify solo usa cookies y almacenamiento técnicos, necesarios para que funcione y sea segura.
+- No usamos cookies de análisis ni de publicidad en la web pública. Por eso no te pedimos permiso ni mostramos avisos de cookies.
+- La analítica y el marketing solo existen dentro de la app, cuando inicias sesión, y los gestionas en Configuración → Privacidad.
+- Si algún día la web pública usara otras cookies, te pediríamos permiso antes y podrías rechazarlas con la misma facilidad con la que las aceptas.
 
 ---
 
@@ -15,7 +16,7 @@ Este texto está en español y en inglés. Si las versiones no coinciden, preval
 
 Las cookies son pequeños archivos que una web guarda en tu navegador. Funcionan de forma parecida otras tecnologías, como el almacenamiento local (*localStorage*) y el almacenamiento de sesión (*sessionStorage*). En esta política, «cookies» incluye todas ellas.
 
-## 2. Qué cookies usamos
+## 2. Qué cookies usamos en la web pública
 
 | Qué es | De quién | Para qué | Cuánto dura |
 |---|---|---|---|
@@ -48,38 +49,11 @@ Encontrarás cómo hacerlo en la ayuda de tu navegador:
 - Firefox;
 - Edge.
 
-## 5. Si en el futuro usamos otras cookies
+## 5. Análisis, publicidad y cambios futuros
 
-Si alguna vez usamos cookies que no sean técnicas, por ejemplo de análisis o de publicidad:
-- antes de instalarlas te pediremos tu consentimiento, con un aviso que te permitirá aceptarlas, rechazarlas o configurarlas con la misma facilidad;
-- actualizaremos esta política con su nombre, su proveedor, su finalidad y su duración;
-- podrás cambiar tu decisión cuando quieras desde «Preferencias de cookies», en el pie de la web;
-- te volveremos a preguntar, como máximo, cada 24 meses.
+- **En la web pública no hay análisis ni publicidad.** Si algún día usáramos en la web pública cookies que no sean técnicas (por ejemplo, de análisis o de publicidad), antes de instalarlas te pediríamos tu consentimiento, con un aviso que te permitiría aceptarlas, rechazarlas o configurarlas con la misma facilidad; actualizaríamos esta política con su nombre, su proveedor, su finalidad y su duración, y te volveríamos a preguntar como máximo cada 24 meses.
+- **Dentro de la app.** La analítica y el marketing solo existen cuando inicias sesión en Uonify. Están apagados salvo que los actives, y puedes activarlos o desactivarlos cuando quieras en Configuración → Privacidad. Te explicamos qué miden y para qué en esa misma pantalla y en la Política de privacidad (apartado 4).
 
 ## 6. Más información
 
 Encontrarás cómo tratamos tus datos personales en la Política de privacidad. Para cualquier duda, escríbenos a {{EMAIL_PRIVACIDAD}}.
-
----
-
-## Anexo · Textos del aviso y del panel, para cuando se usen cookies no técnicas
-
-*Hoy no se muestran: Uonify solo usa cookies técnicas. Se usarán tal cual el día en que se añada cualquier cookie que necesite consentimiento.*
-
-**Aviso, en la primera visita.** Los tres botones con el mismo tamaño y el mismo estilo:
-
-> **Tu privacidad en Uonify**
-> Usamos cookies técnicas para que la web funcione y, si nos dejas, cookies de [análisis / publicidad] para [entender cómo se usa la web y mejorarla / mostrarte anuncios de Uonify en otras webs]. Puedes aceptarlas, rechazarlas o elegir cuáles. Más información en la [Política de cookies].
-> [Rechazar] [Configurar] [Aceptar]
-
-**Panel «Preferencias de cookies»:**
-
-> **Preferencias de cookies**
-> - **Técnicas** · Siempre activas. Necesarias para iniciar sesión, trabajar sin perder tus cambios, proteger tu cuenta y pagar.
-> - **Análisis** · [Interruptor, apagado por defecto]. Nos ayudan a entender cómo se usa Uonify para mejorarlo.
-> - **Publicidad** · [Interruptor, apagado por defecto]. Permiten mostrarte anuncios de Uonify en otras webs y medir su eficacia.
->
-> [Rechazar todas] [Guardar mi elección] [Aceptar todas]
-> Puedes cambiar tu elección cuando quieras en «Preferencias de cookies», en el pie de la web.
-
-**Enlace del pie de la web.** Hoy, «Cookies», que abre esta política. El día que haya cookies no técnicas, se añade «Preferencias de cookies».
