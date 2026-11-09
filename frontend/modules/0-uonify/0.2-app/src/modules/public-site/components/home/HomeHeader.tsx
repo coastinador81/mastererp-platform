@@ -33,6 +33,8 @@ export function HomeHeader() {
         <Link to={PATHS.comoFunciona}>Cómo funciona</Link>
         <Link to={PATHS.productos}>Servicios</Link>
         <Link to={PATHS.loQuePuedesHacer}>Lo que puedes hacer</Link>
+        <Link to={PATHS.partners}>Partners</Link>
+        <Link to={PATHS.clientes}>Clientes</Link>
         <Link to={PATHS.precios}>Precios</Link>
         <Link to="/ayuda">Ayuda</Link>
       </nav>

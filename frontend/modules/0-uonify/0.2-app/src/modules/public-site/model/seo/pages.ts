@@ -27,6 +27,8 @@ const CRUMBS: Record<Exclude<PublicViewKey, 'portada'>, string> = {
   'como-funciona': 'Cómo funciona',
   'lo-que-puedes-hacer': 'Lo que puedes hacer',
   precios: 'Precios',
+  partners: 'Partners',
+  clientes: 'Clientes',
   seguridad: 'Seguridad',
   'para-empresas': 'Para equipos y marcas',
   empresa: 'Sobre Uonify',

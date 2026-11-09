@@ -22,14 +22,16 @@ beforeEach(() => {
 });
 
 describe('Productos', () => {
-  test('cabecera con la página actual, clase del body y pie propio', () => {
+  test('cabecera con la página actual, clase del body y el pie global de la Home', () => {
     renderPage(<ProductosPage />, '/productos');
     expect(document.title).toBe('Servicios — Uonify');
     const nav = screen.getByRole('navigation', { name: 'Navegación principal' });
     expect(within(nav).getByRole('link', { name: 'Servicios' })).toHaveAttribute('aria-current', 'page');
     expect(within(nav).getByRole('link', { name: 'Cómo funciona' })).toHaveAttribute('href', '/como-funciona');
-    expect(screen.getByRole('contentinfo')).toHaveTextContent('Uonify · Hazlo posible.');
-    expect(document.head.querySelectorAll('style[data-uon-view-style="producto"]')).toHaveLength(4);
+    // Regla del dueño (08-11-2026): un solo pie, el de la Home, en todas las páginas públicas.
+    expect(screen.getByRole('contentinfo')).toHaveTextContent('Para equipos y marcasCómo funciona UonifyPrivacidadCondicionesPreferencias');
+    // Marco + productos, juego, galería, Administración (ERP) y la hoja rica (con la vista previa del cliente).
+    expect(document.head.querySelectorAll('style[data-uon-view-style="producto"]')).toHaveLength(6);
   });
 
   test('«Iniciar sesión» abre el acceso sin salir de la página', async () => {
