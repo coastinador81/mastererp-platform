@@ -10,6 +10,7 @@ import Attributes from '../2.3.4-catalog/2.3.4.3-attributes/src/Attributes.jsx';
 import Brands from '../2.3.4-catalog/2.3.4.4-brands/src/Brands.jsx';
 import Suppliers from '../2.3.4-catalog/2.3.4.5-suppliers/src/Suppliers.jsx';
 import Inventory from '../../2.1-inventory/2.1.1-inventory/src/Inventory.jsx';
+import PaymentConfiguration from '../2.3.2-stores/src/PaymentConfiguration.jsx';
 import OperationsNavigation from './OperationsNavigation.jsx';
 import EcommerceSummary from './EcommerceSummary.jsx';
 import {canOpenOperationsRoute, operationsModule} from './access.mjs';
@@ -17,8 +18,8 @@ import RelatedServicesRail from '../../../shared/module-launcher/RelatedServices
 import {FinanceAssistantProvider,FinanceAssistantToggle,FinanceAssistantPanel} from '../../2.2-finance/src/FinanceAssistant.jsx';
 import ModuleLauncher from '../../../shared/module-launcher/ModuleLauncher.jsx';
 
-const routeLabels={summary:'Resumen de Ecommerce',orders:'Pedidos',preparation:'Preparacion',routes:'Rutas',nodes:'Nodos',products:'Productos',categories:'Categorias',attributes:'Atributos',brands:'Marcas',suppliers:'Proveedores',inventory:'Inventario'};
-const routes = new Set(['summary','orders','preparation','routes','nodes','products','categories','attributes','brands','suppliers','inventory']);
+const routeLabels={summary:'Resumen de Ecommerce',orders:'Pedidos',payments:'Métodos de pago',preparation:'Preparacion',routes:'Rutas',nodes:'Nodos',products:'Productos',categories:'Categorias',attributes:'Atributos',brands:'Marcas',suppliers:'Proveedores',inventory:'Inventario'};
+const routes = new Set(['summary','orders','payments','preparation','routes','nodes','products','categories','attributes','brands','suppliers','inventory']);
 const currentPath = () => {
   const value = window.location.hash.replace(/^#\/?/, '').split('?')[0];
   return routes.has(value.split('/')[0]) ? value : 'summary';
@@ -44,6 +45,7 @@ export default function EcommerceApp() {
   else if (!enabled) content = <div className="notice error">E-commerce no está habilitado para este espacio.</div>;
   else if (route === 'summary' && allowed('summary')) content = <EcommerceSummary context={workspace.context} navigate={navigate}/>;
   else if (route === 'orders' && allowed('orders')) content = <Orders key={path} runtime={runtime}/>;
+  else if (route === 'payments' && allowed('payments')) content = <PaymentConfiguration key={path} runtime={runtime}/>;
   else if (route === 'preparation' && allowed('preparation')) content = <Preparation key={path} runtime={runtime}/>;
   else if (route === 'routes' && allowed('routes')) content = <Routes key={path} runtime={runtime}/>;
   else if (route === 'nodes' && allowed('nodes')) content = <Nodes key={path} runtime={runtime}/>;

@@ -5,6 +5,7 @@ import {ChevronDownIcon} from '../../0-uonify/components/ShellIcons.tsx';
 
 const operations = [
   ['orders', 'Pedidos', 'order'],
+  ['payments', 'Métodos de pago', 'invoice'],
   ['preparation', 'Preparación', 'document'],
   ['routes', 'Rutas', 'sales'],
   ['nodes', 'Nodos', 'supplier'],

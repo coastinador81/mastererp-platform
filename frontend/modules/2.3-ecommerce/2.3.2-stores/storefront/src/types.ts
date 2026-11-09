@@ -17,7 +17,7 @@ export type StorefrontCatalog = {
     name: string;
     modules?: string[];
     configuration?: StoreConfiguration;
-    branding?: { primaryColor?: string };
+    branding?: { primaryColor?: string; logoUrl?: string };
   };
   categories: Category[];
   products: Product[];

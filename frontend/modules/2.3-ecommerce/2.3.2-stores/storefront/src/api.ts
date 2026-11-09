@@ -18,6 +18,7 @@ export const loadProfile = () => authorizedIdentityFetch(portalUrl('/v1/storefro
 export const saveProfile = (profile: Pick<CustomerProfile, 'name' | 'phone' | 'birthDate' | 'photoUrl'>) => authorizedIdentityFetch(portalUrl('/v1/storefront/me'), portalOptions({ method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(profile) })) as Promise<CustomerProfile>;
 export const loadAddresses = async () => (await authorizedIdentityFetch(portalUrl('/v1/storefront/me/addresses'), portalOptions()) as { items: CustomerAddress[] }).items;
 export const saveAddress = (address: Omit<CustomerAddress, 'id' | 'version'>) => authorizedIdentityFetch(portalUrl('/v1/storefront/me/addresses'), portalOptions({ method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(address) }));
+export const updateAddress = (address: CustomerAddress) => authorizedIdentityFetch(portalUrl(`/v1/storefront/me/addresses/${encodeURIComponent(address.id)}`), portalOptions({ method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(address) }));
 export const loadOrders = async () => (await authorizedIdentityFetch(portalUrl('/v1/storefront/orders'), portalOptions()) as { items: CustomerOrder[] }).items;
 export const loadOrder = (id: string) => authorizedIdentityFetch(portalUrl(`/v1/storefront/orders/${encodeURIComponent(id)}`), portalOptions()) as Promise<CustomerOrder>;
 

@@ -2,18 +2,24 @@ import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
-import { loadAddresses, loadProfile, saveAddress, saveProfile } from '../api';
+import { loadProfile, saveProfile } from '../api';
 import { signOut, startLogin, startRegistration } from '../auth';
 import { AppLoading } from '../components/AppLoading';
+import { AddressManager } from '../components/AddressManager';
 import { Screen } from '../components/Screen';
 import { useStore } from '../store/StoreProvider';
 import { colors, radii, spacing } from '../theme';
-import type { CustomerAddress, CustomerProfile } from '../types';
+import type { CustomerProfile } from '../types';
 
 const MENU = [
-  { label: 'Perfil y direcciones', detail: 'Nombre, teléfono y lugares de entrega', icon: 'person-outline', route: '/profile' },
+  { label: 'Mis datos y direcciones', detail: 'Nombre, teléfono y lugares de entrega', icon: 'person-outline', route: '/profile' },
+  { label: 'Métodos de pago', detail: 'Opciones habilitadas por esta tienda', icon: 'card-outline', route: '/payment-methods' },
   { label: 'Mis compras', detail: 'Consulta pedidos y entregas', icon: 'bag-handle-outline', route: '/orders' },
   { label: 'Mi carrito', detail: 'Continúa tu compra actual', icon: 'cart-outline', route: '/cart' },
+  { label: 'Notificaciones', detail: 'Elige qué avisos quieres recibir', icon: 'notifications-outline', route: '/notifications' },
+  { label: 'Seguridad', detail: 'Acceso y protección de tu cuenta', icon: 'lock-closed-outline', route: '/security' },
+  { label: 'Privacidad', detail: 'Conoce cómo se usan tus datos', icon: 'shield-checkmark-outline', route: '/privacy' },
+  { label: 'Ayuda', detail: 'Respuestas para comprar y recibir pedidos', icon: 'help-circle-outline', route: '/help' },
 ] as const;
 
 export function AccountExperience() {
@@ -32,18 +38,14 @@ export function AccountExperience() {
 
 export function ProfileExperience() {
   const { authenticated, sessionLoading } = useStore();
-  const [name,setName]=useState(''),[phone,setPhone]=useState('+58'),[birthDate,setBirthDate]=useState(''),[addresses,setAddresses]=useState<CustomerAddress[]>([]),[loading,setLoading]=useState(true);
-  const [label,setLabel]=useState('Casa'),[address,setAddress]=useState(''),[zone,setZone]=useState(''),[unit,setUnit]=useState(''),[reference,setReference]=useState(''),[latitude,setLatitude]=useState(''),[longitude,setLongitude]=useState(''),[message,setMessage]=useState('');
-  const reload=()=>{setLoading(true);return Promise.all([loadProfile(),loadAddresses()]).then(([profile,items])=>{setName(profile.name);setPhone(profile.phone||'+58');setBirthDate(profile.birthDate||'');setAddresses(items);setMessage('');}).catch(()=>setMessage('No pudimos cargar tu perfil.')).finally(()=>setLoading(false));};
-  useEffect(()=>{if(authenticated)Promise.all([loadProfile(),loadAddresses()]).then(([profile,items])=>{setName(profile.name);setPhone(profile.phone||'+58');setBirthDate(profile.birthDate||'');setAddresses(items);}).catch(()=>setMessage('No pudimos cargar tu perfil.')).finally(()=>setLoading(false));},[authenticated]);
+  const [name,setName]=useState(''),[phone,setPhone]=useState('+58'),[birthDate,setBirthDate]=useState(''),[loading,setLoading]=useState(true),[message,setMessage]=useState('');
+  useEffect(()=>{if(authenticated)loadProfile().then(profile=>{setName(profile.name);setPhone(profile.phone||'+58');setBirthDate(profile.birthDate||'');}).catch(()=>setMessage('No pudimos cargar tu perfil.')).finally(()=>setLoading(false));},[authenticated]);
   const update=async()=>{try{await saveProfile({name,phone:phone.replace(/[\s()-]/g,''),birthDate,photoUrl:''});setMessage('Perfil actualizado.');}catch{setMessage('Revisa teléfono (+58) y fecha AAAA-MM-DD.');}};
-  const add=async()=>{try{await saveAddress({label,address,zone,unit,reference,latitude:Number(latitude),longitude:Number(longitude),default:addresses.length===0});setAddress('');setUnit('');setReference('');await reload();setMessage('Dirección guardada.');}catch{setMessage('Completa dirección, zona y coordenadas válidas.');}};
   if(sessionLoading||authenticated&&loading)return <Screen><AppLoading title="Cargando tu perfil…" detail="Consultando tus datos y direcciones." /></Screen>;
   if(!authenticated)return <Screen><View style={styles.page}><Text style={styles.title}>Perfil y direcciones</Text><Text style={styles.message}>Inicia sesión para consultar los datos de esta tienda.</Text><Pressable style={styles.primary} onPress={()=>void startLogin()}><Text style={styles.whiteText}>Iniciar sesión</Text></Pressable></View></Screen>;
   return <Screen><View style={styles.page}><Text style={styles.eyebrow}>TUS DATOS</Text><Text style={styles.title}>Perfil y direcciones</Text>
     <View style={styles.formCard}><View style={styles.sectionHeading}><View style={styles.optionIcon}><Ionicons name="person-outline" size={21} color={colors.primary} /></View><View><Text style={styles.sectionTitle}>Información personal</Text><Text style={styles.optionDetail}>Datos utilizados en tus compras.</Text></View></View><Field label="Nombre completo" value={name} onChange={setName}/><Field label="Teléfono" value={phone} onChange={setPhone} placeholder="+584121234567"/><Field label="Fecha de nacimiento" value={birthDate} onChange={setBirthDate} placeholder="AAAA-MM-DD"/><Pressable style={styles.primary} onPress={()=>void update()}><Text style={styles.whiteText}>Guardar mis datos</Text></Pressable></View>
-    <Text style={styles.sectionTitle}>Mis direcciones</Text>{addresses.map(item=><View key={item.id} style={styles.addressCard}><View style={styles.addressIcon}><Ionicons name="location" size={20} color={colors.primaryDark}/></View><View style={styles.optionCopy}><Text style={styles.optionTitle}>{item.label}{item.default?' · Principal':''}</Text><Text style={styles.optionDetail}>{[item.address,item.unit,item.zone].filter(Boolean).join(', ')}</Text>{item.reference?<Text style={styles.reference}>{item.reference}</Text>:null}</View></View>)}
-    <View style={styles.formCard}><Text style={styles.sectionTitle}>Agregar dirección</Text><Field label="Etiqueta" value={label} onChange={setLabel}/><Field label="Dirección completa" value={address} onChange={setAddress}/><Field label="Zona de entrega" value={zone} onChange={setZone}/><Field label="Piso, apartamento o casa" value={unit} onChange={setUnit}/><Field label="Punto de referencia" value={reference} onChange={setReference}/><View style={styles.coordinates}><View style={styles.flex}><Field label="Latitud" value={latitude} onChange={setLatitude}/></View><View style={styles.flex}><Field label="Longitud" value={longitude} onChange={setLongitude}/></View></View><Pressable style={styles.primary} onPress={()=>void add()}><Text style={styles.whiteText}>Guardar dirección</Text></Pressable></View>{message?<Text style={styles.message}>{message}</Text>:null}
+    <AddressManager />{message?<Text style={styles.message}>{message}</Text>:null}
   </View></Screen>;
 }
 
