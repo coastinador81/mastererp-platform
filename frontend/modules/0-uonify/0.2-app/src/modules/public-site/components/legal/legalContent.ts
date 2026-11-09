@@ -1,7 +1,8 @@
 import privacidadMd from './privacidad.md?raw';
 import cookiesMd from './cookies.md?raw';
 import avisoLegalMd from './aviso-legal.md?raw';
-import condicionesUsoMd from './condiciones-uso.md?raw';
+import condicionesUso1 from './condiciones-uso-1.md?raw';
+import condicionesUso2 from './condiciones-uso-2.md?raw';
 import usoAceptableMd from './uso-aceptable.md?raw';
 import estudioMd from './estudio.md?raw';
 import pagoMd from './pago.md?raw';
@@ -68,7 +69,9 @@ function panel(id: LegalTabId, title: string, md: string): LegalPanel {
 /** Paneles de /terminos (todas las pestañas salvo Privacidad). La Lista de proveedores
  *  es el Anexo III del DPA (va dentro de su pestaña, no en la barra). */
 export const TERMINOS_PANELS: readonly LegalPanel[] = [
-  panel('terminos', 'Términos y condiciones', condicionesUsoMd),
+  // Las Condiciones de uso van en dos ficheros (regla de 500 líneas); su unión, sin
+  // separador, es idéntica a la fuente de Legal.
+  panel('terminos', 'Términos y condiciones', condicionesUso1 + condicionesUso2),
   panel('aviso-legal', 'Aviso legal', avisoLegalMd),
   panel('tus-datos', 'Tus datos, la portabilidad y el cambio de proveedor', tusDatosMd),
   panel('cookies', 'Política de cookies', cookiesMd),
