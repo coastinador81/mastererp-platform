@@ -8,6 +8,15 @@ declare module '../../../../../shared/auth/cognito.mjs' {
   export const sessionExpiresAt: () => number;
 }
 
+declare module './src/storefront-context.mjs' {
+  export function resolveStorefrontContext(input: {
+    browserDomain: string;
+    configuredDomain: string;
+    tenantMapValue?: string;
+    defaultTenant: string;
+  }): { domain: string; hostDomain: string; tenant: string };
+}
+
 type AuthConfig = {
   clientId: string;
   loginBaseUrl: string;

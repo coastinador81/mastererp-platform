@@ -15,7 +15,6 @@ const catalog = [
   ['attributes', 'Atributos', 'quote'],
   ['brands', 'Marcas', 'sales'],
   ['suppliers', 'Proveedores', 'supplier'],
-  ['inventory', 'Inventario', 'invoice'],
 ];
 
 export default function OperationsNavigation({permissions, route, navigate}) {
@@ -25,7 +24,7 @@ export default function OperationsNavigation({permissions, route, navigate}) {
   return <nav className="finance-navigation" aria-label="Operaciones">
     <p className="nav-caption">E-COMMERCE</p>
     <a href="#/summary" title="Resumen de Pedidos" aria-current={route==='summary'?'page':undefined} onClick={event=>{if(event.button!==0||event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return;event.preventDefault();navigate('summary');}}><FinanceIcon name="summary"/><span className="finance-nav-label">Resumen de Pedidos</span></a>
-    <details className="administration-nav" open><summary className="administration-nav-title" title="Gestion de Ecommerce"><FinanceIcon name="sales"/><span className="finance-nav-label">Gestión de e-Commerce</span><ChevronDownIcon className="finance-disclosure-icon"/></summary><div className="administration-nav-children"><ul>{items(operationLinks)}<li><span className="finance-nav-pending"><FinanceIcon name="invoice"/><span>Facturas</span><small>Pendiente</small></span></li></ul></div></details>
-    <details className="administration-nav" open><summary className="administration-nav-title" title="Gestion de Catalogo"><FinanceIcon name="order"/><span className="finance-nav-label">Gestión de Catálogo</span><ChevronDownIcon className="finance-disclosure-icon"/></summary><div className="administration-nav-children"><ul>{items(catalogLinks)}</ul></div></details>
+    <details className="administration-nav" open><summary className="administration-nav-title" title="Operaciones"><FinanceIcon name="sales"/><span className="finance-nav-label">Operaciones</span><ChevronDownIcon className="finance-disclosure-icon"/></summary><div className="administration-nav-children"><ul>{items(operationLinks)}<li><span className="finance-nav-pending"><FinanceIcon name="invoice"/><span>Facturas</span><small>Pendiente</small></span></li></ul></div></details>
+    <details className="administration-nav" open><summary className="administration-nav-title" title="Catálogo"><FinanceIcon name="order"/><span className="finance-nav-label">Catálogo</span><ChevronDownIcon className="finance-disclosure-icon"/></summary><div className="administration-nav-children"><ul>{items(catalogLinks)}</ul></div></details>
   </nav>;
 }

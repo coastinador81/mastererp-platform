@@ -1,7 +1,6 @@
 import authConfig from '../auth-config.json';
 import {
   ApiError,
-  authorizedIdentityFetch,
   completeLogin,
   identityToken,
   login,
