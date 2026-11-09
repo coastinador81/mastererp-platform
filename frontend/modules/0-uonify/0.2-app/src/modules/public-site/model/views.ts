@@ -120,8 +120,8 @@ export const PUBLIC_VIEWS: Record<PublicViewKey, PublicViewMeta> = {
   terminos: {
     key: 'terminos',
     path: '/terminos',
-    title: 'Condiciones — Uonify',
-    description: 'Condiciones de Uonify: el aviso legal de la empresa, sus representantes y puntos de contacto, y las condiciones aplicables a los recursos adicionales de cada servicio.',
+    title: 'Términos y condiciones — Uonify',
+    description: 'Centro legal de Uonify: las condiciones de uso, el aviso legal de la empresa, sus representantes y puntos de contacto, y los documentos que forman el contrato.',
   },
 };
 

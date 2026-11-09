@@ -75,9 +75,9 @@ export const PRIVACY_PANEL: LegalPanel = panel('privacidad', 'Política de priva
 
 export const PAGE_META: Record<LegalPageKey, { eyebrow: string; title: string; lead: string }> = {
   terminos: {
-    eyebrow: 'UONIFY · CONDICIONES',
-    title: 'Aviso legal y condiciones.',
-    lead: 'El centro legal de Uonify: el aviso legal, las condiciones de uso y los documentos que forman el contrato, cada uno en su pestaña.',
+    eyebrow: 'UONIFY · TÉRMINOS Y CONDICIONES',
+    title: 'Términos y condiciones',
+    lead: 'El centro legal de Uonify: las condiciones de uso, el aviso legal y los documentos que forman el contrato, cada uno en su pestaña.',
   },
   privacidad: {
     eyebrow: 'UONIFY · PRIVACIDAD',

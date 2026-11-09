@@ -16,7 +16,7 @@ var K_HMAC = 'gate_hmac_key';
 // links.ts LEGACY_FILES sin index.html, que es alias de «/» (ver target).
 var LEGACY = '|/producto.html|/como-funciona.html|/para-empresas.html|/empresa.html|/novedades.html|/privacidad.html|/terminos.html|';
 var APPQ = ['auth', 'billing', 'drive', 'cloud', 'view'];
-// BEGIN GENERATED por build_gate.mjs (no editar a mano) · dist 47ac66cf50988e88
+// BEGIN GENERATED por build_gate.mjs (no editar a mano) · dist bbb19697f76a6905
 var ROOT_PUBLIC = false;
 var LEGAL_NOJS = true;
 var PRERENDERED = '|/ayuda|/ayuda/cancelar-la-renovacion|/ayuda/conectar-cuenta-amazon|/ayuda/conectar-google-drive|/ayuda/crear-imagen-o-video|/ayuda/creditos-de-google|/ayuda/darse-de-baja|/ayuda/el-alta-paso-a-paso|/ayuda/elegir-tus-archivos|/ayuda/entrar-en-uonify|/ayuda/entrenar-la-ia|/ayuda/exportar-o-borrar-tus-datos|/ayuda/hablar-con-uony|/ayuda/lo-que-uony-puede-hacer|/ayuda/los-elementos|/ayuda/nexus-y-desconectar|/ayuda/precio-maximo-y-visto-bueno|/ayuda/precio-y-pago|/ayuda/preparar-una-ficha|/ayuda/que-cobra-uonify-y-cada-proveedor|/ayuda/que-datos-de-drive-usa-uony|/ayuda/que-es-uonify-y-uony|/ayuda/que-ve-uony-y-que-no|/ayuda/quien-paga-imagenes-y-videos|/ayuda/revisar-y-enviar-a-amazon|/ayuda/si-algo-falla|/ayuda/tu-proyecto-de-google|/ayuda/tus-derechos-de-privacidad|/ayuda/versiones-biblioteca-y-publicar|/clientes|/como-funciona|/lo-que-puedes-hacer|/novedades|/para-empresas|/partners|/precios|/privacidad|/productos|/seguridad|/sobre-uonify|/terminos|';

@@ -27,8 +27,8 @@ describe('rutas de la web pública', () => {
 
   test('Privacidad y Condiciones se abren sin sesión', async () => {
     renderAt('/terminos');
-    expect(await screen.findByRole('heading', { level: 1, name: 'Aviso legal y condiciones.' })).toBeInTheDocument();
-    expect(document.title).toBe('Condiciones — Uonify');
+    expect(await screen.findByRole('heading', { level: 1, name: 'Términos y condiciones' })).toBeInTheDocument();
+    expect(document.title).toBe('Términos y condiciones — Uonify');
   });
 
   test('las URL del prototipo redirigen a su ruta', async () => {
