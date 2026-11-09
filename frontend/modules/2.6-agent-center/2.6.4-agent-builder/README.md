@@ -3,7 +3,7 @@
 Objetivo específico: Definir composición y herramientas de agentes.
 
 Responsabilidad: Constructor de agentes, dentro de Centro de Agentes.
-Estado: pendiente de implementación en esta capa. Sin código vacío.
+Estado: asistente de creación **demo local** en `agents-web/crear-agente.html` (sin backend ni activación operativa). Integración productiva pendiente de contratos API.
 
 
 ## Contrato y estado de esta capa

@@ -1,7 +1,6 @@
 import { USE_MOCKS } from '@/shared/api/config';
 import { useEffect, useRef, type MouseEvent, type ReactNode } from 'react';
-import { flushSync } from 'react-dom';
-import { closeAccountMenu, closeNavDrawer, closeServices, setChatPanel, startNewThread, returnToChat } from '../hooks/actions';
+import { closeAccountMenu, closeNavDrawer, setChatPanel, startNewThread, returnToChat } from '../hooks/actions';
 import { setUi, useRegisterRef, useUiStore } from '../hooks/uiStore';
 import { useWorkspaceRoute } from '../hooks/useWorkspaceRoute';
 import { chatLayout, type ChatLayout } from '../model/chatPanel';
@@ -9,8 +8,8 @@ import { workspacePageOf } from '../model/pages';
 import { SERVICES, serviceIcon } from '../model/services';
 import { AccountMenu } from './AccountMenu';
 import { HelpButton, NotificationsBell } from './moduleBridge';
-import { ServicesMenu } from './ServicesMenu';
-import { ChatPanelIcon, LauncherIcon, SettingsIcon } from './ShellIcons';
+import { PlatformModuleLauncher } from './PlatformModuleLauncher';
+import { ChatPanelIcon, SettingsIcon } from './ShellIcons';
 import '../styles/01-shell.css';
 import '../styles/03-responsive-navigation.css';
 import '../styles/04-module-layout.css';
@@ -27,16 +26,13 @@ import '../styles/07-header-limit.css';
 export function Topbar({ layout = chatLayout({ service: null, centred: true, narrow: false, sheetOpen: false, collapsed: false }), inert, preparing = false, accountMenu }: { layout?: ChatLayout; inert: boolean; preparing?: boolean; accountMenu?: ReactNode }) {
   const { service, pathname } = useWorkspaceRoute();
   const page = service ? null : workspacePageOf(pathname);
-  const servicesOpen = useUiStore(state => state.servicesOpen);
   const centerCount = useUiStore(state => state.topbarCenterCount);
-  const trigger = useRef<HTMLButtonElement>(null);
   const chatToggle = useRef<HTMLButtonElement>(null);
-  useRegisterRef('servicesTrigger', trigger);
   useRegisterRef('chatToggle', chatToggle);
   useEffect(() => {
     if (!preparing) return;
-    closeAccountMenu(); closeServices();
-    return () => { closeAccountMenu(); closeServices(); };
+    closeAccountMenu();
+    return () => { closeAccountMenu(); };
   }, [preparing]);
 
   // El logotipo equivale a «Inicio» con sesión: lienzo en blanco sin proyecto.
@@ -47,12 +43,6 @@ export function Topbar({ layout = chatLayout({ service: null, centred: true, nar
     closeNavDrawer(false);
     if (preparing) { document.querySelector<HTMLElement>('#activation-progress')?.focus(); return; }
     startNewThread();
-  };
-  const toggleServices = () => {
-    const next = !servicesOpen;
-    closeAccountMenu();
-    flushSync(() => setUi({ servicesOpen: next }));
-    if (next) document.querySelector<HTMLElement>('#services-menu button')?.focus();
   };
   const panelOpen = layout.sidePanel && layout.open;
 
@@ -103,23 +93,9 @@ export function Topbar({ layout = chatLayout({ service: null, centred: true, nar
         </button>
         {!preparing && USE_MOCKS && <NotificationsBell />}
         <HelpButton />
-        <button
-          ref={trigger}
-          className="services-trigger"
-          id="services-trigger"
-          type="button"
-          aria-label="Abrir servicios de Uonify"
-          data-tooltip="Servicios de Uonify"
-          data-tooltip-pos="below"
-          aria-expanded={servicesOpen}
-          aria-controls="services-menu"
-          onClick={toggleServices}
-        >
-          <LauncherIcon />
-        </button>
+        {!preparing && <PlatformModuleLauncher currentApp="uonify" />}
         {accountMenu ?? <AccountMenu />}
       </div>
-      <ServicesMenu trigger={trigger} preparing={preparing} />
     </header>
   );
 }

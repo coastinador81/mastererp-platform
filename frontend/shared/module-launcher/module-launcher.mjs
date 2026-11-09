@@ -9,6 +9,7 @@ export const MODULES=Object.freeze([
  {id:'marketing',name:'Marketing',color:'orange',icon:'marketing'},
  {id:'services',name:'Servicios',color:'teal',icon:'services'},
  {id:'agents',name:'Centro de Agentes',color:'violet',icon:'agents',href:'https://agentes-dev.uonify.com/'},
+ {id:'nexus',name:'Nexus',color:'blue',icon:'nexus',href:'https://nexus-dev.uonify.com/'},
  {id:'studio',name:'Estudio',color:'slate',icon:'studio'},
  {id:'productivity',name:'Productividad',color:'indigo',icon:'productivity'},
  {id:'pos',name:'Punto de venta',color:'orange',icon:'pos'},
@@ -24,6 +25,7 @@ const paths={
  marketing:'<path d="m4 10 13-5v14L4 14v-4Zm13 0h4v4h-4M7 15l2 6h4l-2-5"/>',
  services:'<path d="m14 5 5 5M9 10l-6 6a3 3 0 0 0 5 5l6-6M14 3a6 6 0 0 0-6 8l5 5a6 6 0 0 0 8-6l-4 3-4-4 3-4-2-2Z"/>',
  agents:'<rect x="4" y="7" width="16" height="14" rx="4"/><path d="M12 7V3M2 12v5m20-5v5M9 16h6"/><circle cx="9" cy="12" r=".5"/><circle cx="15" cy="12" r=".5"/>',
+ nexus:'<circle cx="6" cy="12" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="18" cy="18" r="2"/><path d="M8 11.2 16 7.2m0 9.6L8 12.8"/>',
  studio:'<rect x="3" y="4" width="18" height="16" rx="3"/><path d="m10 9 5 3-5 3V9ZM3 8h18"/>',
  productivity:'<rect x="4" y="4" width="16" height="17" rx="3"/><path d="M8 3v3m8-3v3M4 10h16m-12 5 3 3 5-5"/>',
  pos:'<rect x="3" y="3" width="18" height="12" rx="2"/><path d="M9 15v5m6-5v5M6 21h12M7 7h5m-5 4h9"/>',
@@ -42,6 +44,7 @@ const styles=`
  @media(max-width:600px){.panel{position:fixed;right:16px;top:84px;width:350px;max-height:calc(100dvh - 100px)}.grid{gap:4px}}
 `;
 const svg=name=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name]}</svg>`;
+export function launcherIconSvg(name){return paths[name]?svg(name):'';}
 
 if(typeof window!=='undefined'&&!window.customElements.get('mastererp-module-launcher')){
  class ModuleLauncher extends HTMLElement{
@@ -67,8 +70,8 @@ if(typeof window!=='undefined'&&!window.customElements.get('mastererp-module-lau
    this.close();const current=this.getAttribute('current-app');
    // Only fixed catalogue constants are rendered; no remote code or user-provided HTML.
    this.shadowRoot.innerHTML=`<style>${styles}</style>
-    <button class="trigger" type="button" aria-label="Abrir módulos" title="Módulos de MasterERP" aria-expanded="false" aria-controls="module-panel"><svg viewBox="0 0 24 24" aria-hidden="true">${[5,12,19].flatMap(y=>[5,12,19].map(x=>`<circle cx="${x}" cy="${y}" r="1.6"/>`)).join('')}</svg></button>
-    <section id="module-panel" class="panel" aria-label="Módulos de MasterERP" hidden><div class="heading"><div><strong>Tu espacio de trabajo</strong><p>MasterERP + Uonify</p></div><button type="button" class="close" aria-label="Cerrar módulos">×</button></div>
+    <button class="trigger" type="button" aria-label="Abrir aplicaciones" title="Aplicaciones Uonify" aria-expanded="false" aria-controls="module-panel"><svg viewBox="0 0 24 24" aria-hidden="true">${[5,12,19].flatMap(y=>[5,12,19].map(x=>`<circle cx="${x}" cy="${y}" r="1.6"/>`)).join('')}</svg></button>
+    <section id="module-panel" class="panel" aria-label="Aplicaciones Uonify" hidden><div class="heading"><div><strong>Tu espacio de trabajo</strong><p>Uonify</p></div><button type="button" class="close" aria-label="Cerrar aplicaciones">×</button></div>
      <div class="grid">${MODULES.map(module=>{
       const active=module.id===current,content=`<span class="icon ${module.color}">${svg(module.icon)}</span><span>${module.name}</span><small>${active?'Estás aquí':module.href?'Abrir aplicación':'Pendiente'}</small>`;
       return active?`<div class="tile current" aria-current="true">${content}</div>`:module.href?`<a class="tile" href="${module.href}" target="_self">${content}</a>`:`<div class="tile" aria-disabled="true">${content}</div>`;

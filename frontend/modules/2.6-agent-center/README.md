@@ -51,7 +51,7 @@ El segundo nivel conserva las secciones existentes de Agentes. En escritorio par
 
 En móvil, servicios en horizontal y menú funcional por botón; cierre por selección, fondo y Escape. Navegación interna mediante `?vista=...`, con recarga, historial y enlaces nativos. Las pantallas y operaciones existentes se conservan; la base no añade autenticación, permisos ni capacidades de agentes.
 
-Vista local sin herramientas nuevas: `node scripts/preview_agents_frontend.mjs --port 5183` desde Platform, URL http://127.0.0.1:5183/. El servidor local solo expone la entrada y assets compartidos expresamente permitidos. Inter y su licencia se toman de la fuente ya existente de Finanzas, sin duplicar el archivo fuente.
+Vista local sin herramientas nuevas: `node scripts/preview_agents_frontend.mjs --port 5183` desde Platform, URL http://127.0.0.1:5183/. El asistente **Crear agente** (demo local, sin backend) está en `agents-web/crear-agente.html` (p. ej. http://127.0.0.1:5183/crear-agente.html). El servidor local solo expone la entrada y assets compartidos expresamente permitidos. Inter y su licencia se toman de la fuente ya existente de Finanzas, sin duplicar el archivo fuente.
 
 El workflow propietario prepara HTML, lanzador, Inter y licencia desde Platform. Se modificó únicamente su empaquetado/publicación de archivos; no cambian roles, bucket, CloudFront, DNS o certificados. Validación local completada. Publicación mediante el workflow DEV propietario; su resultado se verifica en GitHub Actions y en el dominio, sin cambios de recursos AWS.
 
