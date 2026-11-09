@@ -4,18 +4,18 @@ import { PATHS, PUBLIC_VIEWS } from '../../model/views';
 import { HomeFooter } from '../home/HomeFooter';
 import { HomeLink } from '../common/HomeLink';
 import { PublicView } from '../common/PublicView';
-import { LegalMarkdown } from './LegalMarkdown';
-import { LEGAL_DOCUMENTS, type LegalKey } from './legalContent';
+import { LegalCenter } from './LegalCenter';
+import { PAGE_META, type LegalPageKey } from './legalContent';
 
 const SHEETS = viewSheets(legalCss);
 
 /**
- * Privacidad y Condiciones (#view-privacidad y #view-terminos). Públicas en todos
- * los entornos y sin sesión: se abren desde el acceso en otra pestaña. El cuerpo es
- * el texto de Legal, con un índice para saltar a cada apartado.
+ * Centro legal de Uonify (#view-privacidad y #view-terminos). Público en todos los
+ * entornos y sin sesión. Una barra de pestañas común lleva a cada texto; /terminos
+ * reúne el contrato y /privacidad es su propia pestaña. Lleva el pie global de la Home.
  */
-export function LegalPage({ doc }: { doc: LegalKey }) {
-  const content = LEGAL_DOCUMENTS[doc];
+export function LegalPage({ doc }: { doc: LegalPageKey }) {
+  const meta = PAGE_META[doc];
   return (
     <PublicView view={PUBLIC_VIEWS[doc]} sheets={SHEETS}>
       <header>
@@ -25,22 +25,10 @@ export function LegalPage({ doc }: { doc: LegalKey }) {
         <HomeLink to={PATHS.composer}>Volver a Uonify</HomeLink>
       </header>
       <main>
-        <p className="eyebrow">{content.eyebrow}</p>
-        <h1>{content.title}</h1>
-        <p className="lead">{content.lead}</p>
-        <nav className="legal-toc" aria-label="Índice de apartados">
-          <p className="legal-toc-title">En esta página</p>
-          <ol>
-            {content.toc.map(item => (
-              <li key={item.id}>
-                <a href={`#${item.id}`}>{item.label}</a>
-              </li>
-            ))}
-          </ol>
-        </nav>
-        <div className="legal-body">
-          <LegalMarkdown source={content.body} />
-        </div>
+        <p className="eyebrow">{meta.eyebrow}</p>
+        <h1>{meta.title}</h1>
+        <p className="lead">{meta.lead}</p>
+        <LegalCenter page={doc} />
         <HomeLink className="back" to={PATHS.composer}>Volver a Uonify →</HomeLink>
       </main>
       <HomeFooter />

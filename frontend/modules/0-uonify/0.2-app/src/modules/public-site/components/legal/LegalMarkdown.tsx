@@ -8,14 +8,16 @@ import { Fragment, type ReactNode } from 'react';
  * este componente no lo reescribe.
  */
 
-/** Convierte un título en un id estable para el ancla del índice. */
-export function slugify(text: string): string {
-  return text
+/** Convierte un título en un id estable para el ancla del índice. Con `prefix`,
+ *  el id se namespacea por panel (evita colisiones entre documentos de una misma página). */
+export function slugify(text: string, prefix?: string): string {
+  const base = text
     .toLowerCase()
     .normalize('NFD')
     .replace(/[̀-ͯ]/g, '')
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)/g, '');
+  return prefix ? `${prefix}-${base}` : base;
 }
 
 export interface TocItem {
@@ -23,12 +25,12 @@ export interface TocItem {
   label: string;
 }
 
-/** Títulos de nivel 2 (los apartados) para el índice de la página. */
-export function tocFromMarkdown(md: string): TocItem[] {
+/** Títulos de nivel 2 (los apartados) para el índice de la página o del panel. */
+export function tocFromMarkdown(md: string, prefix?: string): TocItem[] {
   const items: TocItem[] = [];
   for (const line of md.split('\n')) {
     const m = /^(#{2,6})\s+(.+?)\s*$/.exec(line);
-    if (m && m[1].length === 2) items.push({ id: slugify(m[2]), label: m[2] });
+    if (m && m[1].length === 2) items.push({ id: slugify(m[2], prefix), label: m[2] });
   }
   return items;
 }
@@ -141,8 +143,10 @@ function renderTable(rows: string[], key: number): ReactNode {
 
 const SPECIAL = /^(#{2,6})\s|^>|^\||^\s*[-*]\s+|^---+\s*$/;
 
-/** Renderiza un documento legal en markdown (ya con sus datos rellenados). */
-export function LegalMarkdown({ source }: { source: string }): ReactNode {
+/** Renderiza un documento legal en markdown (ya con sus datos rellenados).
+ *  `idPrefix` namespacea las anclas de los títulos cuando varios documentos conviven
+ *  en una misma página (centro legal con pestañas). */
+export function LegalMarkdown({ source, idPrefix }: { source: string; idPrefix?: string }): ReactNode {
   const lines = source.split('\n').filter(l => !/^#\s/.test(l));
   const blocks: ReactNode[] = [];
   let i = 0;
@@ -155,7 +159,7 @@ export function LegalMarkdown({ source }: { source: string }): ReactNode {
     }
     const heading = /^(#{2,6})\s+(.+?)\s*$/.exec(line);
     if (heading) {
-      const id = slugify(heading[2]);
+      const id = slugify(heading[2], idPrefix);
       blocks.push(
         heading[1].length === 2 ? (
           <h2 id={id} key={key++}>

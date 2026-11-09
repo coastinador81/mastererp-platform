@@ -212,21 +212,24 @@ describe('páginas legales', () => {
     expect(screen.getByRole('link', { name: 'Volver a Uonify' })).toHaveAttribute('href', '/espacio');
   });
 
-  test('Privacidad no deja marcadores sin rellenar e incluye la Política de cookies en el índice', () => {
+  test('Privacidad: sin marcadores, con la barra de pestañas común y la pestaña Privacidad activa', () => {
     renderPage(<LegalPage doc="privacidad" />, '/privacidad');
     expect(document.body.innerHTML).not.toMatch(/\{\{|\}\}/);
-    // Los 16 apartados + «Lo esencial» + la Política de cookies.
-    expect(document.querySelectorAll('.legal-toc li')).toHaveLength(18);
-    expect(document.querySelector('.legal-toc')?.textContent).toContain('Política de cookies');
+    const tabs = document.querySelector('.legal-tabs');
+    expect(tabs?.textContent).toContain('Términos y condiciones');
+    expect(tabs?.textContent).toContain('Cookies');
+    expect(document.querySelector('[data-tab="privacidad"]')).toHaveAttribute('aria-current', 'page');
+    expect(document.getElementById('panel-privacidad')).not.toBeNull();
   });
 
-  test('Condiciones no deja marcadores sin rellenar y reúne el Aviso legal, las Condiciones de uso y sus documentos', () => {
+  test('Condiciones: sin marcadores, reúne el contrato en paneles con pestañas y anclas namespaceadas', () => {
     renderPage(<LegalPage doc="terminos" />, '/terminos');
     expect(document.body.innerHTML).not.toMatch(/\{\{|\}\}/);
-    const toc = document.querySelector('.legal-toc');
-    expect(toc).not.toBeNull();
-    for (const name of ['Aviso legal', 'Condiciones de uso', 'Acuerdo de tratamiento de datos', 'Política de propiedad intelectual']) {
-      expect(toc?.textContent).toContain(name);
+    for (const id of ['panel-terminos', 'panel-aviso-legal', 'panel-cookies', 'panel-dpa', 'panel-propiedad-intelectual']) {
+      expect(document.getElementById(id)).not.toBeNull();
     }
+    // La pestaña Privacidad enlaza a su propia página; las anclas se namespacean por panel.
+    expect(document.querySelector('[data-tab="privacidad"]')).toHaveAttribute('href', '/privacidad');
+    expect(document.querySelector('#panel-dpa [id^="dpa-"]')).not.toBeNull();
   });
 });

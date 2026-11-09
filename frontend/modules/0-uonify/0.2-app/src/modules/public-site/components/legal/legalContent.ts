@@ -11,67 +11,77 @@ import propiedadIntelectualMd from './propiedad-intelectual.md?raw';
 import { fillLegal } from './legalData';
 import { tocFromMarkdown, type TocItem } from './LegalMarkdown';
 
-/** Textos de las páginas legales públicas (#view-privacidad, #view-terminos).
- *  El cuerpo es la copia fiel de los textos de Legal (platform/docs/legal), con los
- *  datos de la empresa rellenados desde legalData.ts. /terminos reúne, en una sola
- *  página con índice, el Aviso legal, las Condiciones de uso y los documentos que las
- *  forman (cada uno como apartado con su ancla). */
-export type LegalKey = 'privacidad' | 'terminos';
+/** Centro legal de Uonify. Los textos son la copia fiel de Legal (platform/docs/legal),
+ *  con los datos rellenados desde legalData.ts. Se presentan como pestañas: /terminos
+ *  reúne todos los documentos del contrato (paneles con ancla, funcionan sin JS) y
+ *  /privacidad es la pestaña de Privacidad en su propia página. La barra de pestañas es
+ *  la misma en las dos páginas públicas (las únicas que la puerta sirve sin contraseña). */
+export type LegalPageKey = 'terminos' | 'privacidad';
+export type LegalTabId =
+  | 'terminos' | 'aviso-legal' | 'privacidad' | 'cookies'
+  | 'uso-aceptable' | 'pago' | 'estudio' | 'dpa' | 'propiedad-intelectual';
 
-export interface LegalDocument {
-  eyebrow: string;
+export interface LegalTab {
+  id: LegalTabId;
+  label: string;
+  /** Privacidad vive en su propia página; el resto son paneles de /terminos. */
+  page: LegalPageKey;
+}
+
+export const LEGAL_TABS: readonly LegalTab[] = [
+  { id: 'terminos', label: 'Términos y condiciones', page: 'terminos' },
+  { id: 'aviso-legal', label: 'Aviso legal', page: 'terminos' },
+  { id: 'privacidad', label: 'Privacidad', page: 'privacidad' },
+  { id: 'cookies', label: 'Cookies', page: 'terminos' },
+  { id: 'uso-aceptable', label: 'Uso aceptable', page: 'terminos' },
+  { id: 'pago', label: 'Pago y reembolsos', page: 'terminos' },
+  { id: 'estudio', label: 'Estudio e IA', page: 'terminos' },
+  { id: 'dpa', label: 'Tratamiento de datos', page: 'terminos' },
+  { id: 'propiedad-intelectual', label: 'Propiedad intelectual', page: 'terminos' },
+];
+
+export interface LegalPanel {
+  id: LegalTabId;
   title: string;
-  lead: string;
   body: string;
   toc: TocItem[];
 }
 
-/** Deja la línea «Versión en vigor…» como su propio párrafo (no la une con la de idioma). */
+/** Deja la línea «Versión en vigor…» como su propio párrafo. */
 function fixPreamble(md: string): string {
   return md.replace(/(Versión en vigor desde el \{\{FECHA_VIGOR\}\})[ \t]*\n/, '$1.\n\n');
 }
 
-/** Documento referenciado: su título pasa a nivel 2 y sus apartados internos bajan un nivel,
- *  para que en el índice de la página aparezca solo el título del documento. */
-function asSubDoc(md: string): string {
-  return fixPreamble(md)
-    .split('\n')
-    .map(line => (/^#{1,6} /.test(line) ? `#${line}` : line))
-    .join('\n');
+function panel(id: LegalTabId, title: string, md: string): LegalPanel {
+  const body = fillLegal(fixPreamble(md));
+  // Las anclas de los apartados se namespacean con el id del panel (sin colisiones).
+  return { id, title, body, toc: tocFromMarkdown(body, id) };
 }
 
-/** Documento principal: quita su «# Título» y lo pinta bajo un apartado de nivel 2. */
-function asMainDoc(title: string, md: string): string {
-  return `## ${title}\n\n${fixPreamble(md).replace(/^# .+\n/m, '')}`;
-}
+/** Paneles de /terminos (todas las pestañas salvo Privacidad). */
+export const TERMINOS_PANELS: readonly LegalPanel[] = [
+  panel('terminos', 'Términos y condiciones', `${condicionesUso1}\n${condicionesUso2}`),
+  panel('aviso-legal', 'Aviso legal', avisoLegalMd),
+  panel('cookies', 'Política de cookies', cookiesMd),
+  panel('uso-aceptable', 'Política de uso aceptable', usoAceptableMd),
+  panel('pago', 'Condiciones de suscripción, pago y reembolsos', pagoMd),
+  panel('estudio', 'Condiciones del Estudio y del contenido creado con IA', estudioMd),
+  panel('dpa', 'Acuerdo de tratamiento de datos', dpaMd),
+  panel('propiedad-intelectual', 'Política de propiedad intelectual y de denuncias', propiedadIntelectualMd),
+];
 
-const privacidad = fillLegal(`${fixPreamble(privacidadMd)}\n\n${asSubDoc(cookiesMd)}`);
+/** Contenido de la página de Privacidad (su propia pestaña). */
+export const PRIVACY_PANEL: LegalPanel = panel('privacidad', 'Política de privacidad', privacidadMd);
 
-const terminos = fillLegal(
-  [
-    fixPreamble(avisoLegalMd),
-    asMainDoc('Condiciones de uso', `${condicionesUso1}\n${condicionesUso2}`),
-    asSubDoc(usoAceptableMd),
-    asSubDoc(estudioMd),
-    asSubDoc(pagoMd),
-    asSubDoc(dpaMd),
-    asSubDoc(propiedadIntelectualMd),
-  ].join('\n\n'),
-);
-
-export const LEGAL_DOCUMENTS: Record<LegalKey, LegalDocument> = {
-  privacidad: {
-    eyebrow: 'UONIFY · PRIVACIDAD',
-    title: 'Tu información, bajo tu control.',
-    lead: 'La política de privacidad completa de Uonify, con la Política de cookies: qué datos tratamos, para qué, con quién los compartimos y cómo ejerces tus derechos.',
-    body: privacidad,
-    toc: tocFromMarkdown(privacidad),
-  },
+export const PAGE_META: Record<LegalPageKey, { eyebrow: string; title: string; lead: string }> = {
   terminos: {
     eyebrow: 'UONIFY · CONDICIONES',
     title: 'Aviso legal y condiciones.',
-    lead: 'El aviso legal de Uonify, las Condiciones de uso completas y los documentos que forman el contrato: uso aceptable, Estudio e IA, pago y reembolsos, tratamiento de datos y propiedad intelectual.',
-    body: terminos,
-    toc: tocFromMarkdown(terminos),
+    lead: 'El centro legal de Uonify: el aviso legal, las condiciones de uso y los documentos que forman el contrato, cada uno en su pestaña.',
+  },
+  privacidad: {
+    eyebrow: 'UONIFY · PRIVACIDAD',
+    title: 'Tu información, bajo tu control.',
+    lead: 'La política de privacidad completa de Uonify. Desde las pestañas llegas al resto de textos legales.',
   },
 };
