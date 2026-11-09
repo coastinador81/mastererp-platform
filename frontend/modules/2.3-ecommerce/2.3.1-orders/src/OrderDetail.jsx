@@ -1,8 +1,11 @@
 import React from 'react';
-import { FLOW, NEXT, STATUS, dateTime, money, paymentMethodLabel, paymentStatusLabel, statusLabel } from './orderView.js';
+import { FLOW, NEXT, dateTime, money, paymentMethodLabel, paymentStatusLabel, statusLabel } from './orderView.js';
+import FinanceIcon from '../../../2.2-finance/src/FinanceIcon.jsx';
+import StatusBadge from '../../../../shared/status-badge/StatusBadge.jsx';
+import './order-detail.css';
 
 const fieldLabels={name:'Nombre',email:'Correo',phone:'Teléfono',document:'Documento',company:'Empresa',recipient:'Recibe',address:'Dirección',address_line_1:'Dirección',address_line_2:'Complemento',city:'Ciudad',state:'Estado',postal_code:'Código postal',country:'País',reference:'Referencia',transaction_id:'Transacción',bank:'Banco'};
-function SnapshotFields({value,exclude=[]}){const fields=Object.entries(value||{}).filter(([key,item])=>!exclude.includes(key)&&!/(^id$|_id$|uuid|customer.?id)/i.test(key)&&item!=null&&item!==''&&typeof item!=='object'&&!/^[0-9a-f]{8}-[0-9a-f-]{27}$/i.test(String(item)));return fields.length?<dl className="snapshot-fields">{fields.map(([key,item])=><div key={key}><dt>{fieldLabels[key]||key.replaceAll('_',' ')}</dt><dd>{String(item)}</dd></div>)}</dl>:<p>Sin información adicional registrada.</p>}
+function SnapshotFields({value,exclude=[]}){const fields=Object.entries(value||{}).filter(([key,item])=>!exclude.includes(key)&&!/(^id$|_id$|uuid|customer.?id)/i.test(key)&&item!=null&&item!==''&&typeof item!=='object'&&!/^[0-9a-f]{8}-[0-9a-f-]{27}$/i.test(String(item)));return fields.length?<dl className="snapshot-fields">{fields.map(([key,item])=><div key={key}><dt>{fieldLabels[key]||key.replaceAll('_',' ')}</dt><dd>{String(item)}</dd></div>)}</dl>:null}
 
 const paymentKeys=['method','status','currency','amount','amountUSD','amountVES','reference','exchangeRate','exchangeRateSource','exchangeRateEffectiveDate'];
 const deliveryKeys=['address','address_line_1','zone','label','latitude','longitude'];
@@ -12,13 +15,39 @@ function DeliveryDetails({delivery}){return <><dl className="snapshot-fields">{d
 
 function Progress({ status }) {
   const current = FLOW.indexOf(status);
-  return <div className="order-progress" aria-label={`Progreso: ${statusLabel(status)}`}>
-    {FLOW.map((step, index) => <div className={index <= current ? 'done' : ''} key={step}><i>{index < current ? '✓' : index + 1}</i><span>{statusLabel(step)}</span></div>)}
+  return <div className="od-stepper" aria-label={`Progreso: ${statusLabel(status)}`}>
+    {FLOW.map((step, index) => <div className={index <= current ? 'complete' : ''} key={step}><span>{index < current ? <FinanceIcon name="check"/> : index + 1}</span><small>{statusLabel(step)}</small></div>)}
   </div>;
+}
+
+function SideCard({ title, children }) {
+  return <section className="od-card od-side-card"><div className="od-card-title"><h2>{title}</h2></div><div className="od-side-content">{children}</div></section>;
 }
 
 export default function OrderDetail({ order, writable, transition, close }) {
   const delivery = order.delivery_snapshot || {}, customer = order.customer_snapshot || {}, payment = order.payment_snapshot || {};
   const next=(NEXT[order.status]||[]).filter(value=>value!=='CANCELLED'),address=delivery.address||delivery.address_line_1||'Dirección por confirmar';
-  return <div className="figma-order-detail"><div className="detail-toolbar"><button className="quiet" onClick={close}>← Volver a pedidos</button></div><div className="detail-title"><div><nav>E-commerce / Pedidos / {order.number}</nav><h1>Pedido {order.number}</h1><p>Creado {dateTime(order.created_at)} · Última actualización {dateTime(order.updated_at)}</p></div><button className="secondary" onClick={()=>window.print()}>Imprimir</button></div><div className="order-detail-layout"><main><section className="ops-detail-card status-card"><header><div><small>ESTADO ACTUAL</small><b className={`status ${STATUS[order.status]?.tone||'neutral'}`}>{statusLabel(order.status)}</b></div><strong>{money(order.total,order.currency)}</strong></header>{order.status==='CANCELLED'?<p className="cancelled-note">Este pedido fue cancelado y su ciclo operativo terminó.</p>:<Progress status={order.status}/>} {next[0]&&writable?<div className="next-step"><span><strong>Siguiente etapa: {statusLabel(next[0])}</strong><small>La actualización quedará registrada en el pedido.</small></span><button className="primary" onClick={()=>transition(next[0])}>Marcar como {statusLabel(next[0])}</button></div>:null}</section><section className="ops-detail-card products-detail"><div className="section-heading"><div><h3>Productos del pedido</h3><span>{order.items.reduce((sum,item)=>sum+Number(item.quantity||0),0)} unidades en total</span></div></div>{order.items.map((item,index)=><article className="detail-product-row" key={item.id||item.position||index}><span className="product-cube">◇</span><span><strong>{item.product_name||'Producto sin nombre'}</strong><small>SKU: {item.product_code||'Sin referencia'} · Cantidad: {item.quantity}</small></span><span>{money(item.unit_price,order.currency)}</span><b>{money(item.subtotal,order.currency)}</b></article>)}<dl className="totals"><div><dt>Subtotal</dt><dd>{money(order.subtotal,order.currency)}</dd></div><div><dt>Entrega</dt><dd>{money(order.delivery_fee,order.currency)}</dd></div><div className="grand-total"><dt>Total</dt><dd>{money(order.total,order.currency)}</dd></div></dl></section>{writable&&(NEXT[order.status]||[]).includes('CANCELLED')?<div className="cancel-action"><button className="danger" onClick={()=>transition('CANCELLED')}>Cancelar pedido</button></div>:null}</main><aside className="detail-side"><section className="ops-detail-card"><h3>Cliente</h3><div className="customer-summary"><i>{(customer.name||'C').split(/\s+/).slice(0,2).map(value=>value[0]).join('').toUpperCase()}</i><strong>{customer.name||'Cliente del pedido'}</strong></div><SnapshotFields value={customer} exclude={['name']}/></section><section className="ops-detail-card"><h3>Entrega</h3><dl className="snapshot-fields"><div><dt>Dirección</dt><dd>{address}</dd></div><div><dt>Método</dt><dd>{order.delivery_method==='scheduled'?'Entrega programada':'Entrega en tiempo real'}</dd></div></dl><DeliveryDetails delivery={delivery}/>{address!=='Dirección por confirmar'?<button className="secondary full" onClick={()=>navigator.clipboard.writeText(address)}>Copiar dirección</button>:null}</section><section className="ops-detail-card"><h3>Pago</h3><p>{paymentMethodLabel(payment.method)}</p><p>{paymentStatusLabel(payment.status)}</p><PaymentDetails payment={payment}/></section></aside></div></div>;
+  const units=order.items.reduce((sum,item)=>sum+Number(item.quantity||0),0),initials=(customer.name||'C').split(/\s+/).slice(0,2).map(value=>value[0]).join('').toUpperCase();
+  return <div className="figma-order-detail">
+    <button type="button" className="od-back" onClick={close}><FinanceIcon name="arrow"/>Volver a pedidos</button>
+    <div className="od-header"><div><div className="od-breadcrumb">E-commerce <span>/</span> Pedidos <span>/</span> {order.number}</div><h1>Pedido {order.number}</h1><p>Creado el {dateTime(order.created_at)} · Última actualización {dateTime(order.updated_at)}</p></div><div className="od-header-actions"><button type="button" className="od-button secondary" onClick={()=>window.print()}>Imprimir</button></div></div>
+    <div className="od-layout">
+      <div className="od-main">
+        <section className="od-card"><div className="od-status-heading"><div><span>ESTADO ACTUAL</span><StatusBadge status={order.status}>{statusLabel(order.status)}</StatusBadge></div><strong>{money(order.total,order.currency)}</strong></div>
+          {order.status==='CANCELLED'?<p className="cancelled-note od-cancelled">Este pedido fue cancelado y su ciclo operativo terminó.</p>:<Progress status={order.status}/>}
+          {next[0]&&writable?<div className="od-status-action"><div><strong>Siguiente etapa: {statusLabel(next[0])}</strong><small>La actualización quedará registrada en el historial del pedido.</small></div><button type="button" className="od-button primary" onClick={()=>transition(next[0])}>Marcar como {statusLabel(next[0])}</button></div>:null}
+        </section>
+        <section className="od-card od-products"><div className="od-card-title"><div><h2>Productos del pedido</h2><p>{units} {units===1?'unidad':'unidades'} en total</p></div></div>
+          {order.items.map((item,index)=><div className="od-product-line" key={item.id||item.position||index}><span className="od-product-image"><FinanceIcon name="package"/></span><div><strong>{item.product_name||'Producto sin nombre'}</strong><small>SKU: {item.product_code||'Sin referencia'} · Cantidad: {item.quantity}</small></div><span>{money(item.unit_price,order.currency)}</span><strong>{money(item.subtotal,order.currency)}</strong></div>)}
+          <div className="od-totals"><span>Subtotal <b>{money(order.subtotal,order.currency)}</b></span><span>Entrega <b>{money(order.delivery_fee,order.currency)}</b></span><span>Total <b>{money(order.total,order.currency)}</b></span></div>
+        </section>
+        {writable&&(NEXT[order.status]||[]).includes('CANCELLED')?<div className="od-cancel"><button type="button" className="od-button danger" onClick={()=>transition('CANCELLED')}>Cancelar pedido</button></div>:null}
+      </div>
+      <div className="od-side">
+        <SideCard title="Cliente"><div className="od-customer"><span>{initials}</span><div><strong>{customer.name||'Cliente del pedido'}</strong>{customer.email||customer.phone?<small>{customer.email||customer.phone}</small>:null}</div></div><SnapshotFields value={customer} exclude={['name']}/></SideCard>
+        <SideCard title="Entrega"><dl className="snapshot-fields"><div><dt>Dirección</dt><dd>{address}</dd></div><div><dt>Método</dt><dd>{order.delivery_method==='scheduled'?'Entrega programada':'Entrega en tiempo real'}</dd></div></dl><DeliveryDetails delivery={delivery}/>{address!=='Dirección por confirmar'?<button type="button" className="od-button secondary full" onClick={()=>navigator.clipboard.writeText(address)}>Copiar dirección</button>:null}</SideCard>
+        <SideCard title="Pago"><dl className="snapshot-fields"><div><dt>Método</dt><dd>{paymentMethodLabel(payment.method)}</dd></div><div><dt>Estado</dt><dd>{paymentStatusLabel(payment.status)}</dd></div></dl><PaymentDetails payment={payment}/></SideCard>
+      </div>
+    </div>
+  </div>;
 }

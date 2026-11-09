@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import "./style.css";
 import { detailFromHash, readableStatus } from "../../../2.3-ecommerce/src/operationView.mjs";
 import FinanceIcon from "../../../2.2-finance/src/FinanceIcon.jsx";
+import StatusBadge from "../../../../shared/status-badge/StatusBadge.jsx";
 const call = (r, p, o = {}) =>
   r.request(r.api + p, {
     ...o,
@@ -88,7 +89,7 @@ export default function Nodes({ runtime }) {
                 <strong>{n.name}</strong>
                 <small>{n.code}</small>
               </span>
-              <span className="row-action"><b className="status">{readableStatus(n.status)}</b><small>{usage[n.id]??0} pedidos hoy</small><i>›</i></span>
+              <span className="row-action"><StatusBadge status={n.status}>{readableStatus(n.status)}</StatusBadge><small>{usage[n.id]??0} pedidos hoy</small><i>›</i></span>
             </button>
           ))}
           {loading ? <p role="status">Cargando nodos…</p> : !items.length && <p>No hay nodos configurados.</p>}
@@ -97,7 +98,7 @@ export default function Nodes({ runtime }) {
           {selected ? (
             write ? (
               <form onSubmit={save}>
-                <div className="node-form-heading"><div><small>UBICACIÓN OPERATIVA</small><h2>{selected.name}</h2></div><span className="status">{readableStatus(selected.status)}</span></div>
+                <div className="node-form-heading"><div><small>UBICACIÓN OPERATIVA</small><h2>{selected.name}</h2></div><StatusBadge status={selected.status}>{readableStatus(selected.status)}</StatusBadge></div>
                 <div className="node-capacity"><span className="ops-metric-icon"><FinanceIcon name="summary"/></span><span className="node-capacity-copy"><small>Capacidad utilizada hoy</small><strong>{usage[selected.id]??0} de {selected.daily_capacity} pedidos</strong><i><span style={{width:`${selected.daily_capacity?Math.min(100,Math.round((usage[selected.id]||0)/selected.daily_capacity*100)):0}%`}}/></i></span><b>{selected.daily_capacity?Math.min(100,Math.round((usage[selected.id]||0)/selected.daily_capacity*100)):0}%</b></div>
                 <label className="ops-switch-row"><span><strong>Acepta pedidos</strong><small>Permite asignar nuevos pedidos a esta ubicación.</small></span><span className="ops-switch"><input name="accepts" type="checkbox" defaultChecked={selected.accepts_orders}/><i/></span></label>
                 <label>
@@ -141,7 +142,7 @@ export default function Nodes({ runtime }) {
                 </label>
                 <div className="node-form-actions"><button type="reset" className="secondary">Descartar</button><button className="primary">Guardar cambios</button></div>
               </form>
-            ) : <div><div className="node-form-heading"><div><small>UBICACIÓN OPERATIVA</small><h2>{selected.name}</h2></div><span className="status">{readableStatus(selected.status)}</span></div><dl className="node-summary"><div><dt>Acepta pedidos</dt><dd>{selected.accepts_orders ? "Sí" : "No"}</dd></div><div><dt>Cobertura</dt><dd>{selected.coverage_radius_km} km</dd></div><div><dt>Capacidad diaria</dt><dd>{selected.daily_capacity}</dd></div><div><dt>Pedido mínimo</dt><dd>{selected.minimum_order}</dd></div><div><dt>Tarifa de entrega</dt><dd>{selected.delivery_fee}</dd></div></dl></div>
+            ) : <div><div className="node-form-heading"><div><small>UBICACIÓN OPERATIVA</small><h2>{selected.name}</h2></div><StatusBadge status={selected.status}>{readableStatus(selected.status)}</StatusBadge></div><dl className="node-summary"><div><dt>Acepta pedidos</dt><dd>{selected.accepts_orders ? "Sí" : "No"}</dd></div><div><dt>Cobertura</dt><dd>{selected.coverage_radius_km} km</dd></div><div><dt>Capacidad diaria</dt><dd>{selected.daily_capacity}</dd></div><div><dt>Pedido mínimo</dt><dd>{selected.minimum_order}</dd></div><div><dt>Tarifa de entrega</dt><dd>{selected.delivery_fee}</dd></div></dl></div>
           ) : (
             <div className="operation-empty"><h2>Selecciona un nodo</h2><p>Verás aquí su configuración operativa.</p></div>
           )}

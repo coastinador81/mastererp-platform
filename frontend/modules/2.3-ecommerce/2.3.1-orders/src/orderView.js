@@ -1,11 +1,11 @@
 export const STATUS = {
-  PENDING: { label: 'Pendiente', tone: 'neutral' },
-  CONFIRMED: { label: 'Confirmado', tone: 'info' },
-  PREPARING: { label: 'En preparación', tone: 'warning' },
-  READY: { label: 'Listo', tone: 'success' },
-  OUT_FOR_DELIVERY: { label: 'En reparto', tone: 'violet' },
-  DELIVERED: { label: 'Entregado', tone: 'success' },
-  CANCELLED: { label: 'Cancelado', tone: 'danger' },
+  PENDING: { label: 'Pendiente' },
+  CONFIRMED: { label: 'Confirmado' },
+  PREPARING: { label: 'En preparación' },
+  READY: { label: 'Listo' },
+  OUT_FOR_DELIVERY: { label: 'En ruta' },
+  DELIVERED: { label: 'Entregado' },
+  CANCELLED: { label: 'Cancelado' },
 };
 
 export const NEXT = {
