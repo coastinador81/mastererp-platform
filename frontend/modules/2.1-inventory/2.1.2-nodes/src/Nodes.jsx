@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import "./style.css";
-import { DetailBackLink, DetailLink } from "../../../../app-shell/src/CommerceDetailLinks.jsx";
 import { detailFromHash, readableStatus } from "../../../2.3-ecommerce/src/operationView.mjs";
+import FinanceIcon from "../../../2.2-finance/src/FinanceIcon.jsx";
 const call = (r, p, o = {}) =>
   r.request(r.api + p, {
     ...o,
@@ -11,7 +11,7 @@ const call = (r, p, o = {}) =>
       ...(o.headers || {}),
     },
   });
-export default function Nodes({ runtime, onSelect }) {
+export default function Nodes({ runtime }) {
   const [items, setItems] = useState([]),
     [selected, setSelected] = useState(null),
     [usage, setUsage] = useState({}),
@@ -77,26 +77,28 @@ export default function Nodes({ runtime, onSelect }) {
       {error && <p className="error" role="alert">No se pudieron cargar los nodos. Intenta nuevamente.</p>}
       <div className="operation-master-detail">
         <div className="panel operation-list">
+          <header><div><h2>Ubicaciones operativas</h2><p>{items.length} nodos activos</p></div></header>
           {items.map((n) => (
-            <div className="operation-list-item"
+            <button type="button" className={`operation-list-item ${selected?.id===n.id?'selected':''}`}
               key={n.id}
+              onClick={()=>setSelected(n)}
             >
+              <span className="ops-row-icon"><FinanceIcon name="location"/></span>
               <span>
                 <strong>{n.name}</strong>
                 <small>{n.code}</small>
               </span>
-              <span className="row-action"><b className="status">{readableStatus(n.status)}</b><span onClick={() => onSelect?.(n)}><DetailLink route="nodes" id={n.id}/></span></span>
-            </div>
+              <span className="row-action"><b className="status">{readableStatus(n.status)}</b><small>{usage[n.id]??0} pedidos hoy</small><i>›</i></span>
+            </button>
           ))}
           {loading ? <p role="status">Cargando nodos…</p> : !items.length && <p>No hay nodos configurados.</p>}
         </div>
         <aside className="panel operation-detail">
-          {selected && <DetailBackLink route="nodes" label="nodos"/>}
           {selected ? (
             write ? (
               <form onSubmit={save}>
                 <div className="node-form-heading"><div><small>UBICACIÓN OPERATIVA</small><h2>{selected.name}</h2></div><span className="status">{readableStatus(selected.status)}</span></div>
-                <div className="node-capacity"><span><small>Capacidad utilizada hoy</small><strong>{usage[selected.id]??0} de {selected.daily_capacity} pedidos</strong></span><b>{selected.daily_capacity?Math.min(100,Math.round((usage[selected.id]||0)/selected.daily_capacity*100)):0}%</b><i><span style={{width:`${selected.daily_capacity?Math.min(100,Math.round((usage[selected.id]||0)/selected.daily_capacity*100)):0}%`}}/></i></div>
+                <div className="node-capacity"><span className="ops-metric-icon"><FinanceIcon name="summary"/></span><span className="node-capacity-copy"><small>Capacidad utilizada hoy</small><strong>{usage[selected.id]??0} de {selected.daily_capacity} pedidos</strong><i><span style={{width:`${selected.daily_capacity?Math.min(100,Math.round((usage[selected.id]||0)/selected.daily_capacity*100)):0}%`}}/></i></span><b>{selected.daily_capacity?Math.min(100,Math.round((usage[selected.id]||0)/selected.daily_capacity*100)):0}%</b></div>
                 <label className="ops-switch-row"><span><strong>Acepta pedidos</strong><small>Permite asignar nuevos pedidos a esta ubicación.</small></span><span className="ops-switch"><input name="accepts" type="checkbox" defaultChecked={selected.accepts_orders}/><i/></span></label>
                 <label>
                   Cobertura de entrega (km)

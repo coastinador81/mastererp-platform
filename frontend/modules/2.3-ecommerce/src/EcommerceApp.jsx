@@ -38,8 +38,8 @@ export default function EcommerceApp() {
   const navigate = value => {window.location.hash = `/${value}`;};
   const allowed = value => canOpenOperationsRoute(workspace.context, value);
   let content = null;
-  if (!workspace.signedIn) content = <section className="ecommerce-welcome"><p className="eyebrow">MASTERERP · E-COMMERCE</p><h1>Controla tus pedidos y operaciones.</h1><p>Accede con Cognito para consultar únicamente las empresas y datos autorizados para tu tenant.</p><button disabled={workspace.authenticating} onClick={workspace.startLogin}>{workspace.authenticating ? 'Redirigiendo…' : 'Acceder a E-commerce'}</button></section>;
-  else if (workspace.loading) content = <p role="status">Validando espacio y permisos…</p>;
+  if (!workspace.signedIn) content = <section className="ecommerce-welcome"><p className="eyebrow">E-COMMERCE</p><h1>Controla tus pedidos y operaciones.</h1><p>Gestiona tu tienda, catálogo y entregas desde un solo lugar.</p><button disabled={workspace.authenticating} onClick={workspace.startLogin}>{workspace.authenticating ? 'Iniciando sesión…' : 'Iniciar sesión'}</button></section>;
+  else if (workspace.loading) content = <p role="status">Preparando tu espacio de trabajo…</p>;
   else if (!workspace.tenant) content = <div className="notice">Selecciona un espacio para continuar.</div>;
   else if (!workspace.company) content = <div className="notice">Selecciona una empresa para consultar sus operaciones.</div>;
   else if (!enabled) content = <div className="notice error">E-commerce no está habilitado para este espacio.</div>;
