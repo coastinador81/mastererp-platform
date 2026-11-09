@@ -10,7 +10,7 @@ type StoreState = {
   authenticated: boolean;
   loading: boolean;
   error: string;
-  add: (product: Product) => void;
+  add: (product: Product, quantity?: number) => void;
   setQuantity: (id: string, quantity: number) => void;
   clearCart: () => void;
   refreshSession: () => Promise<void>;
@@ -68,11 +68,11 @@ export function StoreProvider({ children }: PropsWithChildren) {
 
   const value = useMemo<StoreState>(() => ({
     catalog, cart, authenticated, loading, error,
-    add: product => setCart(lines => {
+    add: (product, quantity = 1) => setCart(lines => {
       const found = lines.find(line => line.product.id === product.id);
       return found
-        ? lines.map(line => line.product.id === product.id ? { ...line, quantity: line.quantity + 1 } : line)
-        : [...lines, { product, quantity: 1 }];
+        ? lines.map(line => line.product.id === product.id ? { ...line, quantity: line.quantity + quantity } : line)
+        : [...lines, { product, quantity }];
     }),
     setQuantity: (id, quantity) => setCart(lines => quantity < 1
       ? lines.filter(line => line.product.id !== id)
