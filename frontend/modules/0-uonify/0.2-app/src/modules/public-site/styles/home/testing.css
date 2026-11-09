@@ -11,6 +11,8 @@
   --tools-ink: #0A0B0D;
   --tools-line: #E1E3E8;
   --tools-hover: #F0F2F6;
+  --tools-blue-600: #006AE1; /* azul 600 del manual: texto/enlaces azules pequeños */
+  --tools-muted: #536272;    /* gris de apoyo del manual (contraste AA) */
 }
 body { min-height: 100svh; display: flex; flex-direction: column; }
 .header { flex: 0 0 auto; }
@@ -141,6 +143,12 @@ body { min-height: 100svh; display: flex; flex-direction: column; }
 .tools-grid .tool-entry:hover, .tools-grid .tool-entry:focus-visible { background: var(--tools-hover); }
 .tools-grid .tool-entry:focus-visible { outline: 2px solid var(--tools-blue); outline-offset: -2px; }
 .tools-grid .tool-entry[aria-disabled="true"] { cursor: default; }
+.tools-heading .tools-know { flex: 0 0 auto; color: var(--tools-blue-600); font-size: 13px; font-weight: 600; text-decoration: none; white-space: nowrap; }
+.tools-heading .tools-know:hover { color: var(--tools-blue-deep); text-decoration: underline; }
+.tools-heading .tools-know:focus-visible { outline: 2px solid var(--tools-blue); outline-offset: 2px; border-radius: 4px; }
+.tools-grid .tool-entry.is-coming { color: var(--tools-muted); }
+.tools-grid .tool-entry.is-coming .product-icon { opacity: .5; }
+.tools-grid .tool-entry .coming-tag { font-size: 10px; font-weight: 600; letter-spacing: .02em; text-transform: uppercase; color: var(--tools-muted); }
 .product-icon { display: block; width: 72px; height: 72px; max-width: 100%; flex: 0 0 auto; object-fit: contain; filter: drop-shadow(0 1px 1px rgba(30,55,80,.24)); }
 html:has(.preferences-dialog[open]) { overflow: hidden; }
 .preferences-dialog { width: min(440px,calc(100vw - 32px)); max-height: calc(100svh - 32px); margin: auto; padding: 24px; overflow: auto; color: #203548; background: #fff; border: 1px solid #d7e2ed; border-radius: 22px; box-shadow: 0 24px 80px #18344b26; }

@@ -1,35 +1,45 @@
 import { forwardRef } from 'react';
 import { SiteLink } from '../common/SiteLink';
+import { SERVICE_CATALOG, type CatalogServiceId } from '@/modules/workspace/model/services';
 
-/** Herramientas del panel «Tu espacio Uonify» (sin `to`: aún no disponibles). */
-export const TOOL_ENTRIES: ReadonlyArray<{ label: string; icon: string; to?: string }> = [
-  { label: 'ERP', icon: 'erp', to: '/espacio?service=erp' },
-  { label: 'Catálogo', icon: 'catalogo', to: '/productos#catalogo' },
-  { label: 'Analítica', icon: 'analitica', to: '/productos#ventas' },
-  { label: 'Captura y auditoría', icon: 'auditoria', to: '/espacio?service=auditoria' },
-  { label: 'Agentes', icon: 'hive', to: '/espacio?service=agentes' },
-  { label: 'Academy', icon: 'academy' },
-  { label: 'Logística', icon: 'logistica' },
-  { label: 'Fábrica y proveedores', icon: 'fabrica', to: '/productos#proveedores' },
-  { label: 'Nexus', icon: 'nexus', to: '/espacio?service=nexus' },
-];
+/**
+ * Destino comercial de cada servicio activo en la Home. Los «Próximamente» se
+ * muestran deshabilitados, sin enlace. La lista, el orden, los nombres, los
+ * iconos y los estados salen de SERVICE_CATALOG (fuente única que comparte con el
+ * lanzador del espacio).
+ */
+const HOME_LINKS: Partial<Record<CatalogServiceId, string>> = {
+  producto: '/productos#catalogo',
+  estudio: '/productos',
+  erp: '/espacio?service=erp',
+  nexus: '/espacio?service=nexus',
+};
 
 /** Panel de herramientas de la portada (#tools-panel). */
 export const ToolsPanel = forwardRef<HTMLElement, { open: boolean }>(function ToolsPanel({ open }, ref) {
   return (
     <section ref={ref} id="tools-panel" className="tools-panel" aria-labelledby="tools-heading" hidden={!open}>
-      <div className="tools-heading"><h2 id="tools-heading">Tu espacio Uonify</h2></div>
+      <div className="tools-heading">
+        <h2 id="tools-heading">Tu espacio Uonify</h2>
+        <SiteLink className="tools-know" to="/productos">Conocer Uonify <span aria-hidden="true">↗</span></SiteLink>
+      </div>
       <nav className="tools-grid" aria-label="Herramientas">
-        {TOOL_ENTRIES.map(tool => {
+        {SERVICE_CATALOG.map(entry => {
           const content = (
             <>
-              <img className="product-icon" src={`/assets/product-icons/${tool.icon}.png`} width="72" height="72" alt="" />
-              <span>{tool.label}</span>
+              <img className="product-icon" src={entry.iconSrc} width="72" height="72" alt="" />
+              <span>{entry.name}</span>
             </>
           );
-          return tool.to
-            ? <SiteLink key={tool.label} className="tool-entry" to={tool.to}>{content}</SiteLink>
-            : <button key={tool.label} className="tool-entry" type="button" aria-disabled="true">{content}</button>;
+          const to = entry.status === 'active' ? HOME_LINKS[entry.id] : undefined;
+          return to
+            ? <SiteLink key={entry.id} className="tool-entry" to={to}>{content}</SiteLink>
+            : (
+              <button key={entry.id} className="tool-entry is-coming" type="button" disabled aria-disabled="true" title="Próximamente">
+                {content}
+                <small className="coming-tag">Próximamente</small>
+              </button>
+            );
         })}
       </nav>
     </section>

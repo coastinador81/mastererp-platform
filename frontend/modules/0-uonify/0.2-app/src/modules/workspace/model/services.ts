@@ -66,6 +66,41 @@ export function serviceIcon(service: ServiceId): string {
   return `/assets/product-icons/${SERVICES[service].icon}`;
 }
 
+/** Estado de un servicio en el catálogo: disponible o «Próximamente». */
+export type ServiceCatalogStatus = 'active' | 'soon';
+/** Id del catálogo: un servicio del espacio o «estudio» (acceso directo al chat, sin vista de módulo). */
+export type CatalogServiceId = ServiceId | 'estudio';
+
+export interface ServiceCatalogEntry {
+  id: CatalogServiceId;
+  name: string;
+  /** Ruta del icono en public/assets/product-icons. */
+  iconSrc: string;
+  status: ServiceCatalogStatus;
+}
+
+/** Icono de una entrada del catálogo (Estudio tiene icono propio y no es un ServiceId del espacio). */
+export function catalogIconSrc(id: CatalogServiceId): string {
+  return id === 'estudio' ? '/assets/product-icons/estudio.png' : serviceIcon(id);
+}
+
+const ACTIVE_CATALOG: CatalogServiceId[] = ['producto', 'estudio', 'erp', 'nexus'];
+const SOON_CATALOG: CatalogServiceId[] = ['analitica', 'auditoria', 'agentes', 'academy', 'logistica', 'fabrica'];
+
+/**
+ * Fuente única de los servicios que muestran el lanzador del espacio (ServicesMenu)
+ * y el panel de la Home (ToolsPanel), con su estado. Orden y estados fijados por el
+ * dueño (09-11-2026): activos Producto, Estudio, ERP y Nexus; el resto, «Próximamente».
+ * Nombre e icono salen de SERVICES; Estudio es un acceso directo al chat, con icono
+ * propio y sin vista de módulo.
+ */
+export const SERVICE_CATALOG: ServiceCatalogEntry[] = [...ACTIVE_CATALOG, ...SOON_CATALOG].map(id => ({
+  id,
+  name: id === 'estudio' ? 'Estudio' : SERVICES[id].name,
+  iconSrc: catalogIconSrc(id),
+  status: ACTIVE_CATALOG.includes(id) ? 'active' : 'soon',
+}));
+
 /** Ruta de un servicio y su vista (equivale a `selectService(service, view)` del PROTO). */
 export function servicePath(service: ServiceId | null, view: string = DEFAULT_VIEW): string {
   if (!service) return WORKSPACE_PATH;

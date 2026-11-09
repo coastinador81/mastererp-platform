@@ -19,7 +19,7 @@ export function HomeHeader() {
   const triggerRef = useRef<HTMLButtonElement>(null);
 
   useLayoutEffect(() => {
-    if (toolsOpen) panelRef.current?.querySelector<HTMLElement>('a,button')?.focus();
+    if (toolsOpen) panelRef.current?.querySelector<HTMLElement>('.tools-grid a,.tools-grid button')?.focus();
   }, [toolsOpen]);
   useEventListener('pointerdown', event => {
     const target = event.target as Node;

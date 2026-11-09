@@ -154,9 +154,13 @@ describe('portada', () => {
     renderPage(<HomePage />);
     const trigger = screen.getByRole('button', { name: 'Herramientas de Uonify' });
     await user.click(trigger);
-    expect(screen.getByRole('link', { name: 'ERP' })).toHaveFocus();
-    expect(screen.getByRole('link', { name: 'Catálogo' })).toHaveAttribute('href', '/productos#catalogo');
-    expect(screen.getByRole('button', { name: 'Academy' })).toHaveAttribute('aria-disabled', 'true');
+    // Enfoca la primera herramienta (Producto) y la fuente única pone su nombre y su destino.
+    expect(screen.getByRole('link', { name: 'Producto' })).toHaveFocus();
+    expect(screen.getByRole('link', { name: 'Producto' })).toHaveAttribute('href', '/productos#catalogo');
+    expect(screen.getByRole('link', { name: /Conocer Uonify/ })).toHaveAttribute('href', '/productos');
+    // Los servicios «Próximamente» aparecen deshabilitados con su etiqueta.
+    expect(screen.getByRole('button', { name: /Academy/ })).toBeDisabled();
+    expect(screen.getByRole('button', { name: /Academy/ })).toHaveTextContent('Próximamente');
     await user.keyboard('{Escape}');
     expect(trigger).toHaveAttribute('aria-expanded', 'false');
   });

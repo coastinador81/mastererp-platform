@@ -6,18 +6,17 @@ import { useUiStore } from '../hooks/uiStore';
 import { useDismissOnPointerDown } from '../hooks/useDismiss';
 import { useWorkspaceRoute } from '../hooks/useWorkspaceRoute';
 import { servicesMenuRight } from '../model/placement';
-import { SERVICES, serviceIcon, WORKSPACE_PATH, type ServiceId } from '../model/services';
+import { SERVICE_CATALOG, WORKSPACE_PATH, type ServiceId } from '../model/services';
 
 /**
- * Menú de servicios de Uonify (lanzador del espacio). Muestra pocos servicios y
- * el resto bajo «Más servicios próximamente» (decisión del dueño 23-10). Orden:
- * Producto, Estudio, ERP, Nexus; los demás, al desplegar, deshabilitados como
- * «Próximamente». El Estudio es un acceso directo al chat (vive en la
- * conversación), no una vista de módulo.
+ * Menú de servicios de Uonify (lanzador del espacio). Muestra los servicios
+ * activos y el resto bajo «Más servicios próximamente» (decisión del dueño 23-10).
+ * La lista, el orden y los estados salen de SERVICE_CATALOG (fuente única que
+ * comparte con el panel de la Home). El Estudio es un acceso directo al chat
+ * (vive en la conversación), no una vista de módulo.
  */
-const VISIBLE_AFTER_PRODUCTO: ServiceId[] = ['erp', 'nexus'];
-const MORE: ServiceId[] = ['analitica', 'auditoria', 'agentes', 'academy', 'logistica', 'fabrica'];
-const ESTUDIO_ICON = '/assets/product-icons/estudio.png';
+const ACTIVE_ENTRIES = SERVICE_CATALOG.filter(entry => entry.status === 'active');
+const SOON_ENTRIES = SERVICE_CATALOG.filter(entry => entry.status === 'soon');
 
 export function ServicesMenu({ trigger, preparing = false }: { trigger: RefObject<HTMLButtonElement | null>; preparing?: boolean }) {
   const open = useUiStore(state => state.servicesOpen);
@@ -47,13 +46,6 @@ export function ServicesMenu({ trigger, preparing = false }: { trigger: RefObjec
     openWorkspacePage(WORKSPACE_PATH);
   };
 
-  const serviceButton = (service: ServiceId) => (
-    <button key={service} type="button" data-service={service} className={service === active ? 'is-active' : undefined} onClick={() => goService(service)}>
-      <img src={serviceIcon(service)} alt="" />
-      <span>{SERVICES[service].name}</span>
-    </button>
-  );
-
   return (
     <section ref={menu} className="services-menu" id="services-menu" aria-label="Servicios de Uonify" hidden={!open} style={right === undefined ? undefined : { right }} onKeyDown={event => {
       if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); closeServices(true); }
@@ -66,16 +58,25 @@ export function ServicesMenu({ trigger, preparing = false }: { trigger: RefObjec
       </div>
       {preparing && <p className="services-preparation-note">Termina de preparar tu cuenta para utilizar estas herramientas.</p>}
       <div className="services-grid">
-        {serviceButton('producto')}
-        <button key="estudio" type="button" data-service="estudio" onClick={openEstudio}>
-          <img src={ESTUDIO_ICON} alt="" />
-          <span>Estudio</span>
-        </button>
-        {VISIBLE_AFTER_PRODUCTO.map(serviceButton)}
-        {more && MORE.map(service => (
-          <button key={service} type="button" className="is-coming" disabled aria-disabled="true" title="Próximamente">
-            <img src={serviceIcon(service)} alt="" />
-            <span>{SERVICES[service].name}</span>
+        {ACTIVE_ENTRIES.map(entry => {
+          if (entry.id === 'estudio') return (
+            <button key="estudio" type="button" data-service="estudio" onClick={openEstudio}>
+              <img src={entry.iconSrc} alt="" />
+              <span>{entry.name}</span>
+            </button>
+          );
+          const service = entry.id as ServiceId;
+          return (
+            <button key={service} type="button" data-service={service} className={service === active ? 'is-active' : undefined} onClick={() => goService(service)}>
+              <img src={entry.iconSrc} alt="" />
+              <span>{entry.name}</span>
+            </button>
+          );
+        })}
+        {more && SOON_ENTRIES.map(entry => (
+          <button key={entry.id} type="button" className="is-coming" disabled aria-disabled="true" title="Próximamente">
+            <img src={entry.iconSrc} alt="" />
+            <span>{entry.name}</span>
             <small className="coming-tag">Próximamente</small>
           </button>
         ))}
