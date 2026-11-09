@@ -27,6 +27,22 @@ describe('portada', () => {
     expect(document.head.querySelectorAll('style[data-uon-view-style]')).toHaveLength(0);
   });
 
+  test('cabecera mínima: sin sesión solo «Sobre Uonify» y «Cómo funciona»; con sesión, ningún enlace comercial', () => {
+    const { unmount } = renderPage(<HomePage />);
+    const nav = screen.getByRole('navigation', { name: 'Navegación principal' });
+    expect(within(nav).getByRole('link', { name: 'Sobre Uonify' })).toHaveAttribute('href', '/sobre-uonify');
+    expect(within(nav).getByRole('link', { name: 'Cómo funciona' })).toHaveAttribute('href', '/como-funciona');
+    // Reorganización (09-11-2026): fuera Servicios, Lo que puedes hacer, Partners, Clientes, Precios y Ayuda de la Home.
+    ['Servicios', 'Lo que puedes hacer', 'Partners', 'Clientes', 'Precios', 'Ayuda'].forEach(name =>
+      expect(within(nav).queryByRole('link', { name })).toBeNull(),
+    );
+    unmount();
+    authState.status = 'ready';
+    renderPage(<HomePage />);
+    // Con sesión la cabecera no muestra enlaces comerciales (E1).
+    expect(within(screen.getByRole('navigation', { name: 'Navegación principal' })).queryByRole('link')).toBeNull();
+  });
+
   test('una petición vacía también abre el acceso; con texto conserva la petición', async () => {
     const user = userEvent.setup();
     renderPage(<HomePage />);

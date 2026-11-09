@@ -1,7 +1,8 @@
 import { useLayoutEffect, useRef, useState } from 'react';
 import { Link } from 'react-router';
 import { useEventListener } from '@/shared/hooks';
-import { startAccess, usePublicSession } from '../../hooks/usePublicSession';
+import { useSession } from '@/modules/auth';
+import { isSignedIn, startAccess, usePublicSession } from '../../hooks/usePublicSession';
 import { PATHS } from '../../model/views';
 import { HomeLink } from '../common/HomeLink';
 import { ToolsPanel } from './ToolsPanel';
@@ -11,6 +12,8 @@ const documentTarget = typeof document === 'undefined' ? null : document;
 /** Cabecera de la portada: logotipo, navegación, acceso y panel de herramientas. */
 export function HomeHeader() {
   const { links } = usePublicSession();
+  const { status } = useSession();
+  const signedIn = isSignedIn(status);
   const [toolsOpen, setToolsOpen] = useState(false);
   const panelRef = useRef<HTMLElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -30,13 +33,12 @@ export function HomeHeader() {
         <img data-uonify-logo="relief" src="/assets/brands/uonify-wordmark-3d.webp" width="789" height="166" alt="Uonify" />
       </HomeLink>
       <nav className="nav" aria-label="Navegación principal">
-        <Link to={PATHS.comoFunciona}>Cómo funciona</Link>
-        <Link to={PATHS.productos}>Servicios</Link>
-        <Link to={PATHS.loQuePuedesHacer}>Lo que puedes hacer</Link>
-        <Link to={PATHS.partners}>Partners</Link>
-        <Link to={PATHS.clientes}>Clientes</Link>
-        <Link to={PATHS.precios}>Precios</Link>
-        <Link to="/ayuda">Ayuda</Link>
+        {!signedIn && (
+          <>
+            <Link to={PATHS.sobreUonify}>Sobre Uonify</Link>
+            <Link to={PATHS.comoFunciona}>Cómo funciona</Link>
+          </>
+        )}
       </nav>
       <div className="header-actions">
         <button type="button" className="identity-trigger" data-auth-trigger onClick={() => startAccess()}>{links.identityTrigger}</button>
