@@ -31,7 +31,8 @@ export function tocFromMarkdown(md: string, prefix?: string): TocItem[] {
   const items: TocItem[] = [];
   for (const line of md.split('\n')) {
     const m = /^(#{2,6})\s+(.+?)\s*$/.exec(line);
-    if (m && m[1].length === 2) items.push({ id: slugify(m[2], prefix), label: m[2] });
+    // La etiqueta se muestra limpia (sin marcas de `código` ni *énfasis*); el id no cambia.
+    if (m && m[1].length === 2) items.push({ id: slugify(m[2], prefix), label: m[2].replace(/[`*]/g, '') });
   }
   return items;
 }
@@ -176,7 +177,7 @@ function renderTable(rows: string[], key: number): ReactNode {
   );
 }
 
-const SPECIAL = /^(#{2,6})\s|^>|^\||^\s*(?:[-*]|\d+\.)\s+|^---+\s*$/;
+const SPECIAL = /^(#{2,6})\s|^>|^\||^\s*(?:[-*]|\d+\.)\s+|^---+\s*$|^```/;
 
 /** Renderiza un documento legal en markdown (ya con sus datos rellenados).
  *  `idPrefix` namespacea las anclas de los títulos cuando varios documentos conviven
@@ -193,6 +194,14 @@ export function LegalMarkdown(
     const line = lines[i];
     if (!line.trim()) {
       i++;
+      continue;
+    }
+    if (/^```/.test(line)) {
+      i++;
+      const buf: string[] = [];
+      while (i < lines.length && !/^```/.test(lines[i])) { buf.push(lines[i]); i++; }
+      if (i < lines.length) i++; // salta el cierre ```
+      blocks.push(<pre className="legal-pre" key={key++}><code>{buf.join('\n')}</code></pre>);
       continue;
     }
     const heading = /^(#{2,6})\s+(.+?)\s*$/.exec(line);

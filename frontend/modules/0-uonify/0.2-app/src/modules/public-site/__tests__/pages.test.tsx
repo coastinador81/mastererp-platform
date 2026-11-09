@@ -264,6 +264,28 @@ describe('páginas legales', () => {
     expect(dpa?.querySelector('h3')).not.toBeNull();
     expect(dpa?.querySelector('h2:not(.panel-title)')).toBeNull();
   });
+
+  test('las pestañas nuevas (Tus datos, Transparencia de la IA, Seguridad) están en la barra y en /terminos', () => {
+    renderPage(<LegalPage doc="terminos" />, '/terminos');
+    const tabs = document.querySelector('.legal-tabs');
+    for (const label of ['Tus datos', 'Transparencia de la IA', 'Seguridad']) expect(tabs?.textContent).toContain(label);
+    for (const id of ['panel-tus-datos', 'panel-transparencia-ia', 'panel-seguridad']) expect(document.getElementById(id)).not.toBeNull();
+  });
+
+  test('la Lista de proveedores va DENTRO de la pestaña del DPA (Anexo III), no como pestaña propia', () => {
+    renderPage(<LegalPage doc="terminos" />, '/terminos');
+    const dpa = document.getElementById('panel-dpa');
+    expect(dpa?.textContent).toContain('Lista de proveedores');
+    expect(dpa?.textContent).toContain('Amazon Web Services');
+    expect(document.querySelector('[data-tab="lista-proveedores"]')).toBeNull();
+  });
+
+  test('las marcas nuevas se rellenan (DataRep, Amazon SES, caducidad del security.txt)', () => {
+    renderPage(<LegalPage doc="terminos" />, '/terminos');
+    expect(document.getElementById('panel-aviso-legal')?.textContent).toContain('DataRep');
+    expect(document.getElementById('panel-dpa')?.textContent).toContain('Amazon SES');
+    expect(document.getElementById('panel-seguridad')?.textContent).toContain('2027-11-09');
+  });
 });
 
 describe('renderizador de los textos legales', () => {
@@ -296,6 +318,15 @@ describe('renderizador de los textos legales', () => {
   test('`código` dentro de *cursiva* también se renderiza (sin comilla a la vista)', () => {
     const { container } = render(<LegalMarkdown source={'*Identificador `estudio-ia` guardado.*'} />);
     expect(container.querySelector('em code')?.textContent).toBe('estudio-ia');
+    expect(container.textContent).not.toContain('`');
+  });
+
+  test('bloque de código con ``` → <pre><code> (sin comillas invertidas a la vista)', () => {
+    const src = 'Antes.\n\n```\nContact: mailto:x@y.com\nExpires: 2027-11-09T00:00:00Z\n```\n\nDespués.';
+    const { container } = render(<LegalMarkdown source={src} />);
+    const pre = container.querySelector('pre code');
+    expect(pre?.textContent).toContain('Contact: mailto:x@y.com');
+    expect(pre?.textContent).toContain('Expires: 2027-11-09T00:00:00Z');
     expect(container.textContent).not.toContain('`');
   });
 

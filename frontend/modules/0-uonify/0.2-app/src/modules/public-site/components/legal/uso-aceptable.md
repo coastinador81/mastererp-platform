@@ -1,7 +1,7 @@
 # Política de uso aceptable de Uonify
 
-Versión en vigor desde el {{FECHA_VIGOR}}
-Este texto está en español y en inglés. Si las versiones no coinciden, prevalece la española (Condiciones de uso, apartado 26.8).
+Versión en vigor desde el {{FECHA_VIGOR}}  
+Este texto está en español (la versión en inglés estará disponible próximamente). Si las versiones no coinciden, prevalece la española (Condiciones de uso, apartado 26.8).
 
 Esta política forma parte de las Condiciones de uso. Se aplica a todo lo que haces con Uonify: lo que pides a Uony, lo que subes o conectas, lo que creas en el Estudio y lo que publicas a través de Uonify. Si incumples esta política, podemos tomar las medidas del apartado 6.
 
@@ -22,7 +22,7 @@ Usa Uonify de forma legal, honesta y respetuosa con los derechos de los demás. 
 - Subir imágenes, vídeos o voces de menores reales, o generar contenido a partir de ellos, ya sea como referencia, como Elemento o de cualquier otra forma.
 
 2.3. **Personas reales sin su permiso.**
-- Usar la imagen, la voz o cualquier rasgo identificable de una persona real sin su consentimiento expreso. Si lo tienes, debe ser por escrito, y en la Ayuda tienes un modelo de autorización.
+- Usar la imagen, la voz o cualquier rasgo identificable de una persona real sin su consentimiento expreso. Si lo tienes, debe ser por escrito; puedes pedirnos un modelo de autorización en {{EMAIL_SOPORTE}}.
 - Imitar a famosos o a personajes públicos, o hacer creer que respaldan tu producto.
 - Ultrafalsificaciones (*deepfakes*) que puedan engañar sobre lo que una persona real dijo o hizo.
 

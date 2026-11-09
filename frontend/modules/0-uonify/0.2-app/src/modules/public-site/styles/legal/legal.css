@@ -120,6 +120,9 @@ blockquote {
 
 /* Tablas (datos, bases legales, plazos) */
 .legal-table-wrap { overflow-x: auto; margin: 14px 0; }
+.legal-pre { overflow-x: auto; margin: 14px 0; padding: 14px 16px; background: #f4f7fb; border: 1px solid #e1e8f1; border-radius: 10px; }
+.legal-pre code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; line-height: 1.5; color: #152438; white-space: pre; }
+.legal-body :not(pre) > code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .9em; padding: 1px 5px; background: #eef2f8; border-radius: 5px; }
 .legal-table {
   width: 100%;
   border-collapse: collapse;
@@ -203,7 +206,13 @@ blockquote {
     .legal-center:not(.is-hydrated):has(#panel-dpa:target) [data-tab="dpa"],
     .legal-center:not(.is-hydrated):has(#panel-dpa :target) [data-tab="dpa"],
     .legal-center:not(.is-hydrated):has(#panel-propiedad-intelectual:target) [data-tab="propiedad-intelectual"],
-    .legal-center:not(.is-hydrated):has(#panel-propiedad-intelectual :target) [data-tab="propiedad-intelectual"]
+    .legal-center:not(.is-hydrated):has(#panel-propiedad-intelectual :target) [data-tab="propiedad-intelectual"],
+    .legal-center:not(.is-hydrated):has(#panel-tus-datos:target) [data-tab="tus-datos"],
+    .legal-center:not(.is-hydrated):has(#panel-tus-datos :target) [data-tab="tus-datos"],
+    .legal-center:not(.is-hydrated):has(#panel-transparencia-ia:target) [data-tab="transparencia-ia"],
+    .legal-center:not(.is-hydrated):has(#panel-transparencia-ia :target) [data-tab="transparencia-ia"],
+    .legal-center:not(.is-hydrated):has(#panel-seguridad:target) [data-tab="seguridad"],
+    .legal-center:not(.is-hydrated):has(#panel-seguridad :target) [data-tab="seguridad"]
   ) { color: #152438; border-bottom-color: #0178F7; }
 }
 /* Pestaña Privacidad activa sin JS en su propia página (no marca Términos a la vez). */

@@ -1,7 +1,7 @@
 # Política de cookies de Uonify
 
-Versión en vigor desde el {{FECHA_VIGOR}}
-Este texto está en español y en inglés. Si las versiones no coinciden, prevalece la española (Condiciones de uso, apartado 26.8).
+Versión en vigor desde el {{FECHA_VIGOR}}  
+Este texto está en español (la versión en inglés estará disponible próximamente). Si las versiones no coinciden, prevalece la española (Condiciones de uso, apartado 26.8).
 
 ## Lo esencial
 
