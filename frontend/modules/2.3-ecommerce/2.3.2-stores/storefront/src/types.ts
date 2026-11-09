@@ -8,6 +8,7 @@ export type Product = {
   brand_ref?: string;
   category_ref?: string;
   price: number;
+  offer_price?: number;
   available: number;
 };
 

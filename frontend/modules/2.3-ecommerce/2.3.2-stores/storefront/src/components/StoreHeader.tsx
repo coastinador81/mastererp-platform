@@ -4,6 +4,7 @@ import { Platform, Pressable, StyleSheet, Text, View, useWindowDimensions } from
 import { isAuthenticated, signOut, startLogin } from '../auth';
 import { colors, contentWidth, radii, spacing } from '../theme';
 import { useStore } from '../store/StoreProvider';
+import { HeaderMenu } from './HeaderMenu';
 
 export function StoreHeader() {
   const router = useRouter();
@@ -19,6 +20,7 @@ export function StoreHeader() {
   return (
     <View style={styles.shell}>
       <View style={styles.header}>
+        {compact ? <HeaderMenu /> : null}
         <Pressable style={styles.brand} onPress={() => router.push('/')} accessibilityLabel="Ir al inicio">
           <View style={styles.mark}><Text style={styles.markText}>M</Text></View>
           <View style={styles.brandCopy}><Text style={styles.name} numberOfLines={1}>{catalog?.store.name || 'MasterERP'}</Text>{compact ? null : <Text style={styles.tag}>Tu tienda, a tu manera</Text>}</View>
@@ -45,7 +47,7 @@ export function StoreHeader() {
 const styles = StyleSheet.create({
   shell: { backgroundColor: colors.surface, borderBottomWidth: 1, borderBottomColor: colors.line },
   header: { width: '100%', maxWidth: contentWidth, minHeight: 76, alignSelf: 'center', paddingHorizontal: spacing.md, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.md },
-  brand: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minWidth: 0 },
+  brand: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.sm, minWidth: 0 },
   brandCopy: { flexShrink: 1, minWidth: 0 },
   mark: { width: 39, height: 39, flexShrink: 0, borderRadius: 13, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.primary },
   markText: { color: colors.surface, fontSize: 21, fontWeight: '900' },
