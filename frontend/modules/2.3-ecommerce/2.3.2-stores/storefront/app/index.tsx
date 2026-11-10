@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { useEffect, useState } from 'react';
 import { ImageBackground, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Screen } from '@/components/Screen';
 import { ShoppingAssistant } from '@/components/ShoppingAssistant';
@@ -7,19 +8,31 @@ import { ProductCard } from '@/components/ProductCard';
 import { AppLoading } from '@/components/AppLoading';
 import { useStore } from '@/store/StoreProvider';
 import { useLayoutWidth } from '@/useLayoutWidth';
+import { loadProfile } from '@/api';
 import { colors, radii, spacing } from '@/theme';
 
 const categoryImages = ['/storefront/cat-frutas.jpg', '/storefront/cat-despensa.jpg', '/storefront/cat-hogar.jpg'];
+const greeting = (hour = new Date().getHours()) => hour < 12 ? 'Buenos días' : hour < 19 ? 'Buenas tardes' : 'Buenas noches';
 
 export default function HomePage() {
   const router = useRouter();
   const width = useLayoutWidth();
-  const { catalog, loading, error } = useStore();
+  const { catalog, loading, error, authenticated } = useStore();
+  const [profileName, setFirstName] = useState('');
+  const firstName = authenticated ? profileName : '';
+  useEffect(() => {
+    if (!authenticated) return;
+    let active = true;
+    void loadProfile()
+      .then(profile => { if (active) setFirstName(profile.name?.trim().split(/\s+/)[0] || ''); })
+      .catch(() => { if (active) setFirstName(''); });
+    return () => { active = false; };
+  }, [authenticated]);
   const cardWidth = width < 520 ? '47%' : '31%';
   if (loading) return <Screen><AppLoading title="Preparando tu tienda…" detail="Estamos cargando productos, precios y disponibilidad." /></Screen>;
   if (!catalog) return <Screen><Text style={styles.error}>{error || 'No se pudo abrir la tienda.'}</Text></Screen>;
   return <Screen>
-    <View style={styles.intro}><Text style={styles.eyebrow}>Buenas tardes</Text><Text style={styles.title}>¿Qué necesitas hoy?</Text></View>
+    <View style={styles.intro}><Text style={styles.eyebrow}>{firstName ? `${greeting()}, ${firstName}` : greeting()}</Text><Text style={styles.title}>¿Qué necesitas hoy?</Text></View>
     <ShoppingAssistant />
     <View style={styles.heading}><Text style={styles.sectionTitle}>Explora por categoría</Text><Pressable onPress={() => router.push('/catalog')}><Text style={styles.seeAll}>Ver todas</Text></Pressable></View>
     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categories}>{catalog.categories.map((category, index) => <Pressable key={category.slug} style={styles.category} onPress={() => router.push({ pathname: '/catalog', params: { category: category.slug } })}>

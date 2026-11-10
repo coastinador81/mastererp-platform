@@ -8,6 +8,15 @@ import { DeliveryMapPicker } from './DeliveryMapPicker';
 
 type Draft = Omit<CustomerAddress, 'id' | 'version'>;
 const EMPTY: Draft = { label: 'Casa', address: '', zone: '', unit: '', reference: '', latitude: 0, longitude: 0, default: false };
+const saveError = (reason: unknown) => {
+  const { status, code } = (reason || {}) as { status?: number; code?: string };
+  if (status === 401 || code === 'session_expired') return 'Tu sesión expiró. Vuelve a iniciar sesión para guardar la dirección.';
+  if (status === 404) return 'Tu cuenta aún no está vinculada a esta tienda. Cierra sesión e ingresa nuevamente.';
+  if (status === 409) return 'Esta dirección cambió en otra sesión. Recarga la página e inténtalo nuevamente.';
+  if (status === 403) return 'No tienes permiso para guardar direcciones en esta tienda.';
+  if (status === 400) return 'Revisa los datos: la dirección debe tener al menos 5 caracteres y la zona al menos 2.';
+  return 'No pudimos guardar la dirección. Inténtalo nuevamente en unos minutos.';
+};
 
 export function AddressManager() {
   const [addresses, setAddresses] = useState<CustomerAddress[]>([]);
@@ -45,8 +54,8 @@ export function AddressManager() {
   };
   const save = async () => {
     const lat = Number(latitude), lng = Number(longitude);
-    if (!draft.address.trim()) return setMessage('Ingresa la dirección de entrega.');
-    if (!draft.zone.trim()) return setMessage('Ingresa la zona de entrega.');
+    if (draft.address.trim().length < 5) return setMessage('Ingresa la dirección de entrega completa.');
+    if (draft.zone.trim().length < 2) return setMessage('Ingresa la zona de entrega.');
     if (!latitude || !longitude || !Number.isFinite(lat) || !Number.isFinite(lng)) return setMessage('Selecciona el punto de entrega en el mapa.');
     setSaving(true); setMessage('');
     const payload = { ...draft, address: draft.address.trim(), zone: draft.zone.trim(), latitude: lat, longitude: lng, default: editing?.default || addresses.length === 0 };
@@ -54,7 +63,7 @@ export function AddressManager() {
       if (editing) await updateAddress({ ...payload, id: editing.id, version: editing.version });
       else await saveAddress(payload);
       reset(); await reload(); setMessage(editing ? 'Dirección actualizada.' : 'Dirección guardada.');
-    } catch { setMessage('No pudimos guardar la dirección. Revisa los datos e inténtalo nuevamente.'); }
+    } catch (reason) { setMessage(saveError(reason)); }
     finally { setSaving(false); }
   };
   const set = <K extends keyof Draft>(key: K, value: Draft[K]) => setDraft(current => ({ ...current, [key]: value }));

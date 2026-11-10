@@ -13,18 +13,18 @@ export function ProductCard({ product, width }: { product: Product; width: numbe
   const available = product.available > 0;
   const price = product.offer_price != null && product.offer_price < product.price ? product.offer_price : product.price;
   const onOffer = price < product.price;
+  const discount = onOffer ? Math.round((1 - price / product.price) * 100) : 0;
   return (
     <Pressable style={[styles.card, { width }]} onPress={() => router.push(`/product/${product.id}`)}>
       <View style={styles.imageWrap}>
         {product.image_url ? <Image source={{ uri: product.image_url }} style={styles.image} /> : <Ionicons name="basket-outline" size={48} color={colors.primary} />}
-        <View style={[styles.stock, onOffer && styles.offer]}><Text style={[styles.stockText, onOffer && styles.offerText]}>{onOffer ? 'Oferta' : available ? 'Disponible' : 'Agotado'}</Text></View>
+        <View style={[styles.stock, onOffer && styles.offer]}><Text style={[styles.stockText, onOffer && styles.offerText]}>{onOffer ? (discount > 0 ? `-${discount}%` : 'Oferta') : available ? 'Disponible' : 'Agotado'}</Text></View>
       </View>
       <View style={styles.copy}>
-        <Text style={styles.brand}>{product.brand_ref || 'Selección de la tienda'}</Text>
+        {product.brand_ref ? <Text style={styles.brand} numberOfLines={1}>{product.brand_ref}</Text> : null}
         <Text style={styles.name} numberOfLines={2}>{product.name}</Text>
-        <Text style={styles.description} numberOfLines={2}>{product.description || 'Producto disponible en tu tienda.'}</Text>
         <View style={styles.bottom}>
-          <View>{onOffer ? <Text style={styles.oldPrice}>{money(product.price)}</Text> : null}<Text style={styles.price}>{money(price)}</Text></View>
+          <View>{onOffer ? <Text style={styles.oldPrice}>{money(product.price)}</Text> : null}<Text style={[styles.price, onOffer && styles.offerPrice]}>{money(price)}</Text></View>
           <Pressable
             style={[styles.add, !available && styles.disabled]}
             disabled={!available}
@@ -48,9 +48,9 @@ const styles = StyleSheet.create({
   copy: { padding: spacing.md },
   brand: { color: colors.primary, fontSize: 10, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 0.7 },
   name: { minHeight: 44, marginTop: 5, color: colors.ink, fontSize: 17, lineHeight: 22, fontWeight: '800' },
-  description: { minHeight: 38, marginTop: 5, color: colors.muted, fontSize: 12, lineHeight: 18 },
   bottom: { marginTop: spacing.md, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   price: { color: colors.ink, fontSize: 18, fontWeight: '900' },
+  offerPrice: { color: colors.offer },
   oldPrice: { color: colors.muted, fontSize: 11, textDecorationLine: 'line-through' },
   add: { width: 39, height: 39, alignItems: 'center', justifyContent: 'center', borderRadius: 12, backgroundColor: colors.primary },
   disabled: { opacity: 0.4 },

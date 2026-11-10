@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
   link: { color: colors.muted, fontSize: 14, fontWeight: '700', paddingVertical: 10 },
   active: { color: colors.primary },
   actions: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: spacing.sm },
-  actionsCompact: { flex: 0 },
+  actionsCompact: { flexGrow: 0, flexShrink: 0, flexBasis: 'auto' },
   session: { minHeight: 40, flexDirection: 'row', alignItems: 'center', gap: 7, paddingHorizontal: 12, borderRadius: radii.pill, backgroundColor: colors.primarySoft },
   sessionText: { color: colors.primaryDark, fontSize: 12, fontWeight: '800' },
   cart: { width: 43, height: 43, alignItems: 'center', justifyContent: 'center', borderRadius: 14, backgroundColor: colors.primary },
