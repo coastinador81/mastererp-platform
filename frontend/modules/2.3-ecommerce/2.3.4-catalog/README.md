@@ -7,6 +7,9 @@ Proveedores comparte `src/CatalogPage.jsx`, `CatalogListPage.jsx`,
 `CatalogEditorPage.jsx`, `catalogModel.mjs` y `catalog.css`. Los componentes
 Toolbar, Table, StatusBadge, BulkActions, FormSection, PublishPanel y EmptyState
 se componen dentro de esos archivos; no hay cinco copias de una página.
+Las cargas de listados y fichas de las cinco entidades reutilizan
+`frontend/shared/loading-state/LoadingState.jsx`, el mismo spinner de Operaciones,
+sin duplicar estilos ni modificar las solicitudes al backend.
 Los entrypoints funcionales conservan sus rutas y propietarios. Los `main.js`
 standalone históricos permanecen sin cambios; esta entrega moderniza el admin
 React de Ecommerce, no esos frontends independientes.

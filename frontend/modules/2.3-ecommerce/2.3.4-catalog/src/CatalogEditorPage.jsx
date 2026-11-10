@@ -1,4 +1,5 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useState} from 'react';
+import CatalogImageGallery from './CatalogImageGallery.jsx';
 import {CatalogStatusBadge} from './CatalogListPage.jsx';
 import {catalogHref, statusLabels} from './catalogModel.mjs';
 import {MODULES} from '../../../../shared/module-launcher/module-launcher.mjs';
@@ -11,23 +12,6 @@ export function CatalogFormSection({title, description, children}) {
 const dateText = value => value && !Number.isNaN(Date.parse(value)) ? new Date(value).toLocaleString('es') : 'No disponible';
 export function CatalogPublishPanel({record, status, setStatus, disabled, canSetStatus, remove}) {
   return <div className="cat-editor-side"><section className="cat-surface"><h2 className="cat-panel-title">Publicación</h2><div className="cat-panel-body"><label className="cat-switch-row"><span>Visible / activo<small>Estado del registro en el catálogo</small></span><input type="checkbox" role="switch" checked={status === 'ACTIVE'} disabled={disabled || !canSetStatus} onChange={e => setStatus(e.target.checked ? 'ACTIVE' : 'INACTIVE')}/></label>{!canSetStatus && <p>Los nuevos registros se crean activos. Puedes cambiar su estado después de guardarlos.</p>}<dl><dt>Estado</dt><dd><CatalogStatusBadge status={status}/></dd><dt>Creado</dt><dd>{dateText(record?.created_at)}</dd><dt>Actualizado</dt><dd>{dateText(record?.updated_at)}</dd></dl></div></section>{record && !disabled && <section className="cat-surface cat-danger"><h2>Eliminar registro</h2><p>Simulación local: la eliminación aún no está disponible. No se borrarán datos.</p><button type="button" onClick={remove}>Probar eliminación</button></section>}</div>;
-}
-
-function ImagePreview({value, onChange, disabled}) {
-  const [files, setFiles] = useState([]), [error, setError] = useState(''), [primary, setPrimary] = useState(0);
-  const urls = useRef([]);
-  useEffect(() => () => urls.current.forEach(URL.revokeObjectURL), []);
-  function choose(list) {
-    const incoming = Array.from(list);
-    if (incoming.length > 8 || incoming.some(file => !['image/jpeg', 'image/png', 'image/webp'].includes(file.type) || file.size > 5 * 1024 * 1024)) {setError('Selecciona hasta 8 imágenes JPG, PNG o WebP de máximo 5 MB cada una.'); return;}
-    urls.current.forEach(URL.revokeObjectURL);
-    const next = incoming.map(file => ({name: file.name, url: URL.createObjectURL(file)}));
-    urls.current = next.map(file => file.url); setFiles(next); setPrimary(0); setError('');
-  }
-  return <><label className="cat-full">Imagen principal publicada (URL)<input type="url" value={value || ''} disabled={disabled} onChange={e => onChange(e.target.value || null)}/></label>
-    {value && /^https?:\/\//.test(value) && <img className="cat-image" src={value} alt="Imagen publicada del producto"/>}
-    <div className="cat-upload cat-full" onDragOver={e => e.preventDefault()} onDrop={e => {e.preventDefault(); if (!disabled) choose(e.dataTransfer.files);}}><strong>Arrastra tus imágenes o busca archivos</strong><p>Vista previa local, sin subida ni guardado. JPG, PNG o WebP · máximo 5 MB por imagen.</p><label>Buscar archivos<input type="file" accept="image/jpeg,image/png,image/webp" multiple disabled={disabled} onChange={e => choose(e.target.files)}/></label></div>
-    {error && <p role="alert">{error}</p>}{files.map((file, index) => <div key={file.url} className="cat-image-preview"><img src={file.url} alt={file.name}/><button type="button" disabled={disabled} aria-pressed={primary === index} onClick={() => setPrimary(index)}>{primary === index ? 'Principal (vista previa)' : 'Hacer principal (vista previa)'}</button></div>)}</>;
 }
 
 export default function CatalogEditorPage({definition, route, record, writable, busy, save, notify}) {
@@ -76,7 +60,7 @@ export default function CatalogEditorPage({definition, route, record, writable, 
           <div className="cat-local cat-full"><strong>Vista previa local · no se guarda</strong><label>Etiquetas<input disabled={disabled} placeholder="Separadas por comas"/></label></div>
         </CatalogFormSection>}
         {key === 'price' && <CatalogFormSection title="Precio" description="Gestiona el precio de venta del producto en el catálogo.">{field('price', 'Precio de venta *', {type: 'number', min: 0.000001, step: 0.000001})}<div className="cat-full"><h2>Inventario</h2><p>Las existencias, los movimientos y las alertas se gestionan en el módulo de Inventario, con sus permisos correspondientes.</p>{inventoryUrl && <a className="cat-detail-link" href={inventoryUrl} target="_blank" rel="noopener noreferrer">Abrir Inventario (nueva pestaña)</a>}</div></CatalogFormSection>}
-        {key === 'images' && <CatalogFormSection title="Imágenes" description="Publica una imagen mediante su URL o prueba archivos locales."><ImagePreview value={draft.image_url} onChange={value => update('image_url', value)} disabled={disabled}/></CatalogFormSection>}
+        {key === 'images' && <CatalogFormSection title="Imágenes" description="Revisa la imagen principal y previsualiza otras fotografías del producto."><CatalogImageGallery value={draft.image_url} onChange={value => update('image_url', value)} disabled={disabled}/></CatalogFormSection>}
       </div>)}
       <div className="cat-editor-footer"><a href={catalogHref(route)} onClick={back}>Cancelar</a>{writable && <button className="cat-primary" disabled={busy}>Guardar {definition.singular}</button>}</div>
     </div><CatalogPublishPanel record={record} status={draft.status} setStatus={value => update('status', value)} disabled={disabled} canSetStatus={canSetStatus} remove={() => {if (window.confirm('Simulación: ¿confirmas la prueba de eliminación? El registro real se conservará.')) notify('Prueba confirmada. No se eliminó ningún registro; la eliminación real sigue pendiente.');}}/></div>

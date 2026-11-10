@@ -1,6 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import CatalogListPage from './CatalogListPage.jsx';
 import CatalogEditorPage from './CatalogEditorPage.jsx';
+import LoadingState from '../../../../shared/loading-state/LoadingState.jsx';
 import {catalogHref, catalogRequest, legacyCatalogRoutes, definitions, exportCsv, payloadFor} from './catalogModel.mjs';
 import './catalog.css';
 
@@ -79,7 +80,7 @@ function CatalogSession({runtime, route}) {
   return <section className="catalog-ui" aria-label={definition.title}>
     {notice && <p className="cat-notice" role="status">{notice}</p>}{error && <div className="cat-error" role="alert"><p>{error}</p><button type="button" disabled={busy} onClick={refresh}>Actualizar</button></div>}
     {location.mode === 'list' ? <CatalogListPage {...{definition, route, items, loading, busy, writable, refresh, publish, download, error}} searchRemote={route === 'products' ? (search, status) => setQuery({search, status}) : null}/>
-      : loading ? <p role="status">Cargando ficha…</p>
+      : loading ? <LoadingState label="Cargando ficha…"/>
       : location.mode === 'invalid' || (location.mode === 'view' && !record) ? <a href={catalogHref(route)}>Volver a {definition.title.toLowerCase()}</a>
       : <CatalogEditorPage key={`${location.mode}:${record?.[definition.key] || 'new'}:${record?.version || ''}`} {...{definition, route, record, writable, busy, save}} notify={setNotice}/>}
   </section>;

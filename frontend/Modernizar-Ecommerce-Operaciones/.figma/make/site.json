@@ -1,0 +1,10 @@
+{
+  "description": "A unified ERP dashboard for business teams to access authorized modules, manage ecommerce and operations, and work with shared tools and context.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}

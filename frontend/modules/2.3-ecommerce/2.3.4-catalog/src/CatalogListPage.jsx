@@ -1,6 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import FinanceIcon from '../../../2.2-finance/src/FinanceIcon.jsx';
 import StatusBadge from '../../../../shared/status-badge/StatusBadge.jsx';
+import LoadingState from '../../../../shared/loading-state/LoadingState.jsx';
 import {catalogHref, cellText, filterRecords, statusLabels} from './catalogModel.mjs';
 
 export function CatalogStatusBadge({status}) {
@@ -38,7 +39,7 @@ export default function CatalogListPage({definition, route, items, loading, busy
     <section className="cat-surface" aria-busy={loading}><CatalogToolbar definition={definition} query={query} status={status} onQuery={value => {setQuery(value); setPage(1); setSelection(new Set());}} onStatus={value => {setStatus(value); setPage(1); setSelection(new Set());}} refresh={refresh} busy={busy || loading} searchRemote={searchRemote ? () => searchRemote(query, status) : null}/>
       <p className="cat-scope">Búsqueda, indicadores y páginas sobre los registros cargados (máximo 100).{route === 'products' ? ' Usa «Buscar en catálogo» para consultar otros productos.' : ' La consulta no ofrece paginación adicional.'}</p>
       <CatalogBulkActions count={selected.length} writable={writable} busy={busy || loading} publish={() => publish(selected)} download={() => download(selected)} clear={() => setSelection(new Set())}/>
-      {loading ? <p className="cat-empty" role="status">Cargando catálogo…</p> : !error && <><CatalogTable {...{definition, route, rows, selection, setSelection, busy}}/>{!filtered.length && <CatalogEmptyState filtered={Boolean(query || status)}/>}</>}
+      {loading ? <LoadingState label={`Cargando ${definition.title.toLowerCase()}…`}/> : !error && <><CatalogTable {...{definition, route, rows, selection, setSelection, busy}}/>{!filtered.length && <CatalogEmptyState filtered={Boolean(query || status)}/>}</>}
       <footer className="cat-pagination"><span>{filtered.length} resultados · Página {current} de {pages}</span><div><button disabled={current === 1 || loading} onClick={() => setPage(current - 1)}>Anterior</button><button disabled={current === pages || loading} onClick={() => setPage(current + 1)}>Siguiente</button></div></footer>
     </section></>;
 }

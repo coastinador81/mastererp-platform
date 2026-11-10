@@ -1,1 +1,28 @@
-.payment-config-layout{display:grid;grid-template-columns:minmax(220px,300px) minmax(0,1fr);gap:18px}.payment-store-list{align-self:start;padding:16px}.payment-store-list h2{margin:0 0 12px}.payment-store-list button{width:100%;display:flex;flex-direction:column;gap:3px;margin:0 0 8px;padding:12px;text-align:left;border:1px solid #e8edf3;border-radius:10px;background:#fff;color:#374151}.payment-store-list button.selected{border-color:#096bdc;background:#eef6ff}.payment-store-list small,.payment-config-detail header p{color:#667085}.payment-config-detail{padding:20px}.payment-config-detail header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:18px}.payment-config-detail h2,.payment-config-detail p{margin:3px 0}.payment-store-status{padding:5px 9px;border-radius:999px;background:#eef6ff;color:#096bdc;font-size:11px}.payment-config-detail fieldset{display:grid;gap:12px;padding:0;border:0}.payment-config-detail legend{margin-bottom:10px;color:#374151;font-size:16px;font-weight:600}.payment-toggle{display:flex!important;align-items:flex-start;gap:10px;padding:13px;border:1px solid #e8edf3;border-radius:10px;background:#fff}.payment-toggle input{width:18px;height:18px}.payment-toggle span{display:flex;flex-direction:column;gap:3px}.payment-toggle small{color:#667085}.payment-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:0 12px 12px}.payment-fields label{display:flex;flex-direction:column;gap:5px;color:#4b5563;font-size:12px}.payment-fields input{min-height:42px;padding:0 11px;border:1px solid #e8edf3;border-radius:8px}.payment-config-detail .primary{margin-top:18px}@media(max-width:760px){.payment-config-layout{grid-template-columns:1fr}.payment-fields{grid-template-columns:1fr}}
+.ecommerce-app .payment-config-module .operation-master-detail { grid-template-columns: minmax(280px,.75fr) minmax(420px,1.25fr); }
+.payment-config-module .operation-list { align-self: start; }
+.payment-config-module .payment-store-name { min-width: 0; overflow-wrap: anywhere; }
+.ecommerce-app .payment-config-module .operation-list-item { display: grid; grid-template-columns: 38px minmax(0,1fr) auto; border-left: 3px solid transparent; }
+.ecommerce-app .payment-config-module .operation-list-item.selected { border-left-color: var(--finance-primary,#096bdc); background: #f7faff; }
+.ecommerce-app .payment-config-module .operation-list-item:hover { background: #f1f6fd; }
+.payment-config-module .row-action { justify-items: end; }
+.payment-config-module .operation-empty { padding: 24px; color: var(--finance-muted,#667085); }
+.payment-config-module .operation-empty h2,.payment-config-module .operation-empty h3 { font-size: 18px; color: var(--finance-text,#4b5563); }
+.payment-config-detail form { display: grid; gap: 20px; }
+.payment-config-detail .node-form-heading { margin: 0; }
+.payment-config-detail .node-form-heading div { min-width: 0; overflow-wrap: anywhere; }
+.payment-config-detail .node-form-heading p { margin: 6px 0 0; color: var(--finance-muted,#667085); }
+.payment-config-detail fieldset { display: grid; gap: 16px; padding: 0; margin: 0; border: 0; min-width: 0; }
+.payment-config-detail legend { margin-bottom: 12px; font-size: 16px; }
+.payment-config-detail .ops-switch-row { padding: 14px 0; border-bottom: 1px solid var(--finance-border,#e8edf3); gap: 16px; }
+.payment-config-detail .ops-switch { flex-shrink: 0; }
+.payment-config-detail .ops-switch input:focus-visible+i { outline: 2px solid #3b82f6; outline-offset: 3px; }
+.payment-config-detail .ops-switch-row small { color: var(--finance-muted,#667085); }
+.payment-fields { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; }
+.payment-fields label { display: grid; gap: 6px; color: var(--finance-text,#4b5563); }
+.payment-fields input { width: 100%; min-width: 0; box-sizing: border-box; min-height: 44px; padding: 0 12px; border: 1px solid var(--finance-border,#e8edf3); border-radius: 8px; }
+.payment-form-actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 8px; padding-top: 16px; border-top: 1px solid var(--finance-border,#e8edf3); }
+.ecommerce-app .payment-form-actions button { width: auto; flex: 0 0 auto; margin: 0; }
+.payment-config-module :is(button,input):focus-visible { outline: 2px solid #3b82f6; outline-offset: 2px; }
+.payment-config-module :is(button,input):disabled { cursor: not-allowed; }
+@media(max-width:900px) { .ecommerce-app .payment-config-module .operation-master-detail { grid-template-columns: minmax(0,1fr); } }
+@media(max-width:600px) { .payment-fields { grid-template-columns: minmax(0,1fr); } }
