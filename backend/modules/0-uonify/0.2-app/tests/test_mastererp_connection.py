@@ -205,8 +205,10 @@ def test_connects_in_a_window_selects_the_only_company_and_keeps_tokens_on_the_s
         assert "script-src 'nonce-" in page.headers['content-security-policy']
         assert flow(client, start.json()) == {'status': 'success'}
         status = client.get(BASE).json()
+        # PR #22: el estado lleva también los módulos y permisos del espacio (el menú de Finanzas los usa).
         assert status['connection'] == {'status': 'connected', 'email': erp.email, 'spaces': erp.spaces,
-            'tenantId': TENANT, 'companies': erp.contexts[TENANT][1], 'companyId': COMPANY}
+            'tenantId': TENANT, 'companies': erp.contexts[TENANT][1], 'companyId': COMPANY,
+            'modules': erp.contexts[TENANT][0], 'permissions': ['administration.purchases.read']}
         assert status['accessAllowed'] and not any(secret in page.text + json.dumps(status)
                                                    for secret in erp.issued + erp.verifiers + [erp.sub])
         saved = row(db)
@@ -218,7 +220,8 @@ def test_connects_in_a_window_selects_the_only_company_and_keeps_tokens_on_the_s
         assert len(erp.verifiers) == 1 and flow(client, start.json()) == {'status': 'success'}
         # Sin ventana, vuelve a Uonify.
         _, redirect, _ = connect(client, erp, popup=False)
-        assert redirect.status_code == 303 and redirect.headers['location'] == config.origin + '/?erp=return'
+        # Vuelve a la app, no a «/?…» (PR #23): la puerta de DEV deja «/» en la portada.
+        assert redirect.status_code == 303 and redirect.headers['location'] == config.origin + '/espacio?service=erp&erp=return'
 
 
 def test_attempt_is_bound_to_the_session_cancellable_and_rejects_bad_tokens(environment, erp):
@@ -331,7 +334,7 @@ def test_selection_is_checked_against_the_erp_and_drops_foreign_refs(environment
     with client_for(config, google) as client:
         ready(client, google, db); connect(client, erp)
         assert client.get(BASE).json()['connection'] == {'status': 'connected', 'email': erp.email,
-            'spaces': erp.spaces, 'tenantId': None, 'companies': [], 'companyId': None}
+            'spaces': erp.spaces, 'tenantId': None, 'companies': [], 'companyId': None, 'modules': [], 'permissions': []}
         with pytest.raises(ErpError) as rejected:
             store.credential_provider(db, config, user_id(db))()
         assert rejected.value.code == 'erp_selection_required' and erp.refreshes == 1  # Solo el estado.

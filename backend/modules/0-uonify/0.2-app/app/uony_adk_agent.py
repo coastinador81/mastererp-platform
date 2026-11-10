@@ -19,7 +19,7 @@ from google.genai import types
 from pydantic import PrivateAttr
 
 from .drive_read_tools import DRIVE_READ_NAMES
-from .finance_read_tools import FINANCE_READ_NAMES, TURN_ENDING as FINANCE_TURN_ENDING
+from .finance_read_tools import FINANCE_READ_NAMES, TURN_ENDING as FINANCE_TURN_ENDING, turn_empty_notice
 from .google_cloud_provider import CloudError
 from .google_setup_diagnostics import REASONS, api_error_reason
 from .uony_adk_provider import _model_for_request, _provider_error
@@ -156,7 +156,8 @@ class AdkAgentProvider(UonyProvider):
             bounded_model = _model_for_request(
                 token, project, model, types, model_type=_BoundedGemini)
             used = set()  # The tools this turn called: logged with the last call (lote 7).
-            last_call = LastCall(declared, used)
+            # 10-11-2026: if every ERP list of the turn came back empty, its fixed «No hay …» closes it.
+            last_call = LastCall(declared, used, notice=turn_empty_notice)
             # F1-S: never in a form repair, nor after a tool whose effect replaces the reply.
             live = on_text and on_clear and LiveText(on_text, on_clear, lambda: (
                 not repair_form and used <= LIVE_TEXT_TOOLS))

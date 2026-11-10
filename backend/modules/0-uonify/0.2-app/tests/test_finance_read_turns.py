@@ -8,15 +8,16 @@ import httpx
 import pytest
 
 pytest.importorskip('google.adk.runners')
+from google.genai import types
 
 from app import mastererp_api, mastererp_store, uony_bounded_gemini
-from app.finance_read_tools import FINANCE_READ_NAMES, NOT_CONNECTED, _SOFT
+from app.finance_read_tools import EMPTY_LIST, EMPTY_RULE, FINANCE_READ_NAMES, NOT_CONNECTED, _SOFT
 from app.uony_adk_agent import AdkAgentProvider, _BoundedGemini
 from app.uony_conversation_queue import FAILURE_MESSAGES
 from app.uony_conversation_worker import ADK_ALLOWED_TOOLS
 from app.uony_erp_focus import RULE
 from conftest import client_for
-from test_finance_read_tools import COMPANY, TENANT, Erp, Provider, clean, purchase
+from test_finance_read_tools import COMPANY, TENANT, Erp, Provider, clean, party, purchase
 from test_google_cloud import Cloud
 from test_uony import ready
 from test_uony_adk_agent import FakeSdkClient, model_response, text, tool
@@ -98,6 +99,49 @@ def test_written_turn_reads_finance_with_the_connection_and_closes_with_it(turn)
     listed = clean(answers['list_finance_documents'])
     assert [row['referencia'] for row in listed['untrusted_document']['documentos']] == ['SC-0001', 'SC-0002']
     assert turn.provider.calls == 1 and len(turn.fake.requests) == 1 and turn.status() == 'connected'
+
+
+def test_empty_erp_lists_close_the_turn_with_their_fixed_text_when_the_last_call_misbehaves(turn):
+    # 10-11-2026 (dev.uonify.com): «dame los datos de 1 orden de compra» con la empresa sin órdenes. Uony
+    # leyó órdenes y compras (vacías) y en la última llamada pidió otra lectura: «No he podido terminar…».
+    turn.connect_erp()
+    turn.sdk.responses = [model_response([tool('list_finance_documents', {'tipo': 'ordenes'})]),
+                          model_response([tool('list_finance_documents', {'tipo': 'compras'})]),
+                          model_response([tool('list_finance_documents', {'tipo': 'facturas'})])]
+    state = turn.run('dame los datos de 1 orden de compra')
+    assert state['status'] == 'success', state
+    assert state['response']['reply'] == EMPTY_LIST['ordenes'] + ' ' + EMPTY_LIST['compras']
+    _, system, answers = sent(turn.sdk.calls[1])
+    listed = answers['list_finance_documents']
+    assert listed['vacio'] == EMPTY_LIST['ordenes'] and listed['aviso'] == EMPTY_RULE
+    assert 'Si un listado llega vacío' in system and 'como mucho cuatro' in system
+    assert len(turn.sdk.calls) == 3 and len(turn.fake.requests) == 2  # La lectura de la última llamada no se hace.
+
+
+def test_own_text_and_a_card_still_win_over_the_empty_text(turn):
+    turn.connect_erp()
+    own = model_response([types.Part(text='No tienes órdenes de compra todavía.'),
+                          tool('list_finance_documents', {'tipo': 'facturas'})])
+    turn.sdk.responses = [model_response([tool('list_finance_documents', {'tipo': 'ordenes'})]),
+                          model_response([tool('list_finance_documents', {'tipo': 'compras'})]), own]
+    state = turn.run('dame los datos de 1 orden de compra')
+    assert state['status'] == 'success' and state['response']['reply'] == 'No tienes órdenes de compra todavía.', state
+    turn.sdk.responses = [model_response([tool('show_connection', {'provider': 'erp'})]),
+                          model_response([tool('list_finance_documents', {'tipo': 'ordenes'})]),
+                          model_response([tool('list_finance_documents', {'tipo': 'compras'})])]
+    state = turn.run('¿Tengo órdenes de compra?')
+    assert state['status'] == 'success', state
+    assert state['response']['reply'] == 'Aquí tienes la conexión de ERP · Finanzas.'
+
+
+def test_a_turn_that_read_data_never_closes_with_the_empty_text(turn):
+    turn.connect_erp()
+    turn.fake.add('proveedores', party('P-1'))
+    turn.sdk.responses = [model_response([tool('list_finance_documents', {'tipo': 'proveedores'})]),
+                          model_response([tool('list_finance_documents', {'tipo': 'compras'})]),
+                          model_response([tool('list_finance_documents', {'tipo': 'facturas'})])]
+    state = turn.run('¿Qué proveedores y compras tengo?')
+    assert state['status'] == 'error' and state['error']['code'] == 'agent_unanswered', state
 
 
 def test_lost_erp_access_ends_the_turn_with_the_erp_card(turn):
