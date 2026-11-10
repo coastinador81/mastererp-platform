@@ -36,7 +36,8 @@ PRIVATE_TABLES = (
     'products', 'google_billing_sync', 'google_billing_observations', 'drive_uploads', 'drive_materials',
     'drive_onboarding_preferences', 'drive_popup_flows', 'drive_oauth_attempts',
     'cloud_popup_flows', 'cloud_oauth_attempts', 'amazon_oauth_attempts',
-    'google_drive_connections', 'google_cloud_connections', 'amazon_connections',
+    'erp_popup_flows', 'erp_oauth_attempts', 'uony_erp_refs',
+    'google_drive_connections', 'google_cloud_connections', 'amazon_connections', 'erp_connections',
     'billing_subscriptions', 'billing_checkouts', 'subscription_selections',
     'access_periods', 'consent_acceptances', 'onboarding_profiles', 'sessions',
 )

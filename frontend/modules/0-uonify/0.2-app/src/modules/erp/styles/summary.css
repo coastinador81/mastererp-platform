@@ -1,0 +1,31 @@
+/* Resumen de Gestión de compras (PurchasesSummary.jsx del equipo) con el kit de Uonify:
+   tarjetas pim-card, secciones pim-section, tokens y retícula de 8 px. Los iconos de los
+   indicadores van en neutro: el manual no recoge los fondos de color de la demo. */
+.erp-workbench .erp-heading-icon svg,
+.erp-workbench .erp-indicator-icon svg { fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.erp-workbench .erp-heading-icon svg { width: 26px; height: 26px; }
+
+.erp-workbench .erp-summary-filters { display: grid; gap: 16px; }
+.erp-workbench .erp-summary-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; }
+.erp-workbench .erp-summary-fields .pim-input,
+.erp-workbench .erp-summary-fields .pim-select { height: 36px; font-size: 13px; }
+.erp-workbench .erp-summary-footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; }
+
+.erp-workbench .erp-summary-scope { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 16px; color: var(--pim-muted); font-size: 12px; }
+.erp-workbench .erp-summary-scope strong { margin-left: 8px; color: var(--pim-ink); font-weight: 600; }
+.erp-workbench .erp-summary-scope p { margin: 0; }
+
+.erp-workbench .erp-indicators { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin: 0; }
+.erp-workbench .erp-indicator { display: grid; gap: 8px; }
+.erp-workbench .erp-indicator-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.erp-workbench .erp-indicator dt { color: var(--pim-ink); font-size: 13px; font-weight: 600; }
+.erp-workbench .erp-indicator dd { display: flex; align-items: baseline; gap: 8px; margin: 0; color: var(--pim-ink); font-family: var(--pim-mono); font-size: 20px; }
+.erp-workbench .erp-indicator dd small { color: var(--pim-muted); font-size: 12px; }
+.erp-workbench .erp-indicator p { margin: 0; color: var(--pim-muted); font-size: 12px; }
+.erp-workbench .erp-indicator-icon { width: 32px; height: 32px; display: grid; flex: 0 0 auto; place-items: center; border-radius: var(--pim-r-control); color: var(--pim-muted); background: var(--pim-surface-muted); }
+.erp-workbench .erp-indicator-icon svg { width: 16px; height: 16px; }
+
+.erp-workbench .erp-table-narrow { min-width: 480px; }
+.erp-workbench .erp-summary-empty { display: grid; justify-items: center; gap: 8px; padding: 24px 16px; text-align: center; }
+.erp-workbench .erp-summary-empty h3 { margin: 0; color: var(--pim-ink); font-size: 13px; font-weight: 600; }
+.erp-workbench .erp-summary-empty p { margin: 0; color: var(--pim-muted); font-size: 12px; }
