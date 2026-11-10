@@ -17,6 +17,11 @@ export default function CatalogPage() {
   const width = useLayoutWidth();
   const { catalog } = useStore();
   const [category, setCategory] = useState(params.category || '');
+  const [requestedCategory, setRequestedCategory] = useState(params.category);
+  if (params.category !== requestedCategory) {
+    setRequestedCategory(params.category);
+    setCategory(params.category || '');
+  }
   const [query, setQuery] = useState(params.q || '');
   const [sort, setSort] = useState<Sort>('relevance');
   const [brand, setBrand] = useState('');

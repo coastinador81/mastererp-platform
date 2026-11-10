@@ -1,8 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Link, usePathname, useRouter } from 'expo-router';
 import { Image, Platform, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
-import { isAuthenticated, signOut, startLogin } from '../auth';
-import { colors, contentWidth, radii, spacing } from '../theme';
+import { colors, contentWidth, spacing } from '../theme';
 import { useStore } from '../store/StoreProvider';
 import { HeaderMenu } from './HeaderMenu';
 
@@ -11,15 +10,11 @@ export function StoreHeader() {
   const { width } = useWindowDimensions();
   const compact = Platform.OS === 'web' || width < 700;
   const pathname = usePathname();
-  const { catalog, cart, authenticated } = useStore();
+  const { catalog, cart } = useStore();
   const count = cart.reduce((total, line) => total + line.quantity, 0);
   const storeName = catalog?.store.name || '';
   const configuredLogoUrl = catalog?.store.branding?.logoUrl;
   const logoUrl = configuredLogoUrl?.startsWith('https://') ? configuredLogoUrl : '';
-  const onSession = async () => {
-    if (isAuthenticated()) signOut();
-    else await startLogin();
-  };
   return (
     <View style={styles.shell}>
       <View style={styles.header}>
@@ -33,10 +28,6 @@ export function StoreHeader() {
           <Link href="/catalog" asChild><Pressable><Text style={[styles.link, pathname === '/catalog' && styles.active]}>Catálogo</Text></Pressable></Link>
         </View>}
         <View style={[styles.actions, compact && styles.actionsCompact]}>
-          <Pressable style={styles.session} onPress={() => void onSession()} accessibilityLabel={authenticated ? 'Cerrar sesión' : 'Acceder'}>
-            <Ionicons name={authenticated ? 'person-circle' : 'person-outline'} size={21} color={colors.primaryDark} />
-            {compact ? null : <Text style={styles.sessionText}>{authenticated ? 'Mi cuenta' : 'Acceder'}</Text>}
-          </Pressable>
           <Pressable style={styles.cart} onPress={() => router.push('/cart')} accessibilityLabel={`Carrito con ${count} productos`}>
             <Ionicons name="bag-handle-outline" size={22} color={colors.surface} />
             {count > 0 ? <View style={styles.badge}><Text style={styles.badgeText}>{count}</Text></View> : null}
@@ -65,8 +56,6 @@ const styles = StyleSheet.create({
   active: { color: colors.primary },
   actions: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: spacing.sm },
   actionsCompact: { flexGrow: 0, flexShrink: 0, flexBasis: 'auto' },
-  session: { minHeight: 40, flexDirection: 'row', alignItems: 'center', gap: 7, paddingHorizontal: 12, borderRadius: radii.pill, backgroundColor: colors.primarySoft },
-  sessionText: { color: colors.primaryDark, fontSize: 12, fontWeight: '800' },
   cart: { width: 43, height: 43, alignItems: 'center', justifyContent: 'center', borderRadius: 14, backgroundColor: colors.primary },
   badge: { position: 'absolute', top: -5, right: -5, minWidth: 20, height: 20, paddingHorizontal: 4, alignItems: 'center', justifyContent: 'center', borderRadius: 10, backgroundColor: colors.accent, borderWidth: 2, borderColor: colors.surface },
   badgeText: { color: colors.ink, fontSize: 10, fontWeight: '900' },

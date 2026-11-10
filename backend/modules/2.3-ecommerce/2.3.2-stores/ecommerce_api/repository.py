@@ -62,7 +62,7 @@ class EcommerceRepository:
 
     def save_address(self, claims, domain, payload, address_id=None):
         return self.connection.execute(
-            "SELECT ventas_digitales.cliente_direccion_guardar(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) value",
+            "SELECT ventas_digitales.cliente_direccion_guardar(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s::numeric,%s::numeric,%s,%s) value",
             (claims["iss"], claims["sub"], domain, address_id, payload.get("label"),
              payload.get("address"), payload.get("zone"), payload.get("unit"), payload.get("reference"),
              payload.get("latitude"), payload.get("longitude"), payload.get("default", False), payload.get("version")),

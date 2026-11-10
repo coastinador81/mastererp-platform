@@ -112,6 +112,15 @@ class EcommerceApiTest(unittest.TestCase):
         repository.customer_read.assert_called_once_with(
             claims, "shop.example.invalid", "orders", limit=25)
 
+    def test_address_coordinates_are_cast_to_numeric(self):
+        from ecommerce_api.repository import EcommerceRepository
+        connection = Mock()
+        connection.execute.return_value.fetchone.return_value = {"value": {"id": "a", "version": 1}}
+        EcommerceRepository(connection).save_address(
+            {"iss": "issuer", "sub": "subject"}, "shop.example.invalid",
+            {"label": "Casa", "address": "Calle 1", "zone": "Centro", "latitude": 10.48, "longitude": -66.9})
+        self.assertIn("%s::numeric,%s::numeric", connection.execute.call_args.args[0])
+
     @patch("ecommerce_api.handler._verified_profile")
     def test_customer_portal_requires_store_domain(self, verify):
         verify.return_value = {"iss": "issuer", "sub": "subject"}
