@@ -35,7 +35,7 @@ export default function EcommerceApp() {
   useEffect(()=>{const key=e=>{if(e.key==='Escape'&&!e.defaultPrevented&&document.querySelector('.ecommerce-app .integrated-nav:is(.is-open,:focus-within)')){setMenu(false);menuTrigger.current?.focus();}};const media=matchMedia('(max-width:800px)');const reset=()=>setMenu(false);document.addEventListener('keydown',key);media.addEventListener('change',reset);return()=>{document.removeEventListener('keydown',key);media.removeEventListener('change',reset);};},[]);
   useEffect(() => {const change = () => {setPath(currentPath()); setMenu(false);}; window.addEventListener('hashchange', change); return () => window.removeEventListener('hashchange', change);}, []);
   const permissions = workspace.context?.permissions || [];
-  const enabled = workspace.context?.modules.some(module=>[operationsModule,'erp.catalog'].includes(module));
+  const enabled = workspace.context?.modules.some(module=>[operationsModule,'erp.catalog','erp.transport'].includes(module));
   const runtime = useMemo(() => ({api: config.adminApiUrl, tenant: workspace.tenant, company: workspace.company, permissions, request: workspace.request}), [workspace.tenant, workspace.company, permissions, workspace.request]);
   const navigate = value => {window.location.hash = `/${value}`;};
   const allowed = value => canOpenOperationsRoute(workspace.context, value);

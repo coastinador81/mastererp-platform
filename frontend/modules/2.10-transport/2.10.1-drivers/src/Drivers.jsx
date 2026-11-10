@@ -1,140 +1,50 @@
-import React, { useCallback, useEffect, useState } from "react";
-const call = (r, p, o = {}) =>
-  r.request(r.api + p, {
-    ...o,
-    headers: {
-      "X-Tenant-Id": r.tenant,
-      "Content-Type": "application/json",
-      ...(o.headers || {}),
-    },
-  });
-export default function Drivers({ runtime }) {
-  const [items, setItems] = useState([]),
-    [selected, setSelected] = useState(null),
-    [error, setError] = useState(""),
-    write = runtime.permissions.includes("transport.drivers.write");
-  const load = useCallback(async () => {
-    try {
-      const rows = (
-        await call(runtime, `/v1/companies/${runtime.company}/drivers`)
-      ).items;
-      setItems(rows);
-      setSelected((x) => rows.find((y) => y.id === x?.id) || null);
-      setError("");
-    } catch (e) {
-      setError(e.message);
-    }
-  }, [runtime]);
-  useEffect(() => {
-    if (runtime.company) load();
-  }, [runtime.company]);
-  async function save(e) {
-    e.preventDefault();
-    const f = new FormData(e.currentTarget);
-    try {
-      await call(
-        runtime,
-        `/v1/companies/${runtime.company}/drivers/${selected.id}`,
-        {
-          method: "PATCH",
-          body: JSON.stringify({
-            version: selected.version,
-            name: f.get("name"),
-            phone: f.get("phone"),
-            email: f.get("email") || null,
-            status: f.get("status"),
-            availability: f.get("availability"),
-            access_status: selected.access_status,
-            user_id: selected.user_id,
-            vehicle: selected.vehicle,
-            license: selected.license,
-          }),
-        },
-      );
-      await load();
-    } catch (x) {
-      setError(x.message);
-    }
-  }
-  return (
-    <section className="canonical-module drivers-module">
-      <header>
-        <div>
-          <small>TRANSPORTE · REPARTIDORES</small>
-          <h1>Repartidores</h1>
-          <p>Módulo independiente inyectado cuando el tenant lo habilita.</p>
-        </div>
-        <button onClick={load}>Actualizar</button>
-      </header>
-      {error && (
-        <p className="error" role="alert">
-          {error}
-        </p>
-      )}
-      <div className="layout">
-        <div className="list">
-          {items.map((x) => (
-            <button key={x.id} onClick={() => setSelected(x)}>
-              <span>
-                <strong>{x.name}</strong>
-                <small>
-                  {x.phone} · {x.availability}
-                </small>
-              </span>
-              <b>{x.status}</b>
-            </button>
-          ))}
-        </div>
-        <aside>
-          {selected ? (
-            write ? (
-              <form onSubmit={save}>
-                <h2>{selected.name}</h2>
-                <label>
-                  Nombre
-                  <input name="name" defaultValue={selected.name} required />
-                </label>
-                <label>
-                  Teléfono
-                  <input name="phone" defaultValue={selected.phone} required />
-                </label>
-                <label>
-                  Email
-                  <input
-                    name="email"
-                    type="email"
-                    defaultValue={selected.email || ""}
-                  />
-                </label>
-                <label>
-                  Estado
-                  <select name="status" defaultValue={selected.status}>
-                    <option>ACTIVE</option>
-                    <option>INACTIVE</option>
-                    <option>SUSPENDED</option>
-                  </select>
-                </label>
-                <label>
-                  Disponibilidad
-                  <select
-                    name="availability"
-                    defaultValue={selected.availability}
-                  >
-                    <option>OFFLINE</option>
-                    <option>AVAILABLE</option>
-                    <option>ON_ROUTE</option>
-                  </select>
-                </label>
-                <button className="primary">Guardar perfil</button>
-              </form>
-            ) : (
-              <p>Acceso de solo lectura.</p>
-            )
-          ) : (
-            <p>Selecciona un repartidor.</p>
-          )}
-        </aside>
-      </div>
-    </section>
-  );
+import React,{useCallback,useEffect,useMemo,useState}from'react';
+import'./style.css';
+import'./driverDetail.css';
+import FinanceIcon from'../../../2.2-finance/src/FinanceIcon.jsx';
+import StatusBadge from'../../../../shared/status-badge/StatusBadge.jsx';
+import LoadingState from'../../../../shared/loading-state/LoadingState.jsx';
+import{detailFromHash,detailHref,listHref,readableStatus,shortReference}from'../../../2.3-ecommerce/src/operationView.mjs';
+import{driverAccess,driverAvailability,driverStats,routeOutcome}from'./driverView.mjs';
+
+const call=(runtime,path,options={})=>runtime.request(runtime.api+path,{...options,headers:{'X-Tenant-Id':runtime.tenant,'Content-Type':'application/json',...(options.headers||{})}});
+const formatDate=value=>{if(!value)return'—';const parsed=new Date(value);return new Intl.DateTimeFormat('es-VE',{dateStyle:'medium',...(/^\d{4}-\d{2}-\d{2}$/.test(value)?{timeZone:'UTC'}:{})}).format(parsed);};
+
+function DriverProfile({driver,writable,saving,onSave}){
+  if(!writable)return <dl className="driver-profile-read"><div><dt>Teléfono</dt><dd>{driver.phone}</dd></div><div><dt>Correo</dt><dd>{driver.email||'Sin correo'}</dd></div><div><dt>Estado</dt><dd>{readableStatus(driver.status)}</dd></div><div><dt>Disponibilidad</dt><dd>{driverAvailability(driver.availability)}</dd></div></dl>;
+  return <form className="driver-profile-form" onSubmit={onSave}><label>Nombre<input name="name" defaultValue={driver.name} required/></label><label>Teléfono<input name="phone" defaultValue={driver.phone} required/></label><label>Correo<input name="email" type="email" defaultValue={driver.email||''}/></label><label>Estado<select name="status" defaultValue={driver.status}><option value="ACTIVE">Activo</option><option value="INACTIVE">Inactivo</option><option value="SUSPENDED">Suspendido</option></select></label><label>Disponibilidad<select name="availability" defaultValue={driver.availability}><option value="OFFLINE">Desconectado</option><option value="AVAILABLE">Disponible</option><option value="ON_ROUTE">En ruta</option></select></label><div className="driver-form-actions"><button type="reset" className="secondary">Descartar</button><button className="primary" disabled={saving}>{saving?'Guardando…':'Guardar cambios'}</button></div></form>;
+}
+
+function DriverEquipment({driver}){
+  const vehicle=driver.vehicle||{},license=driver.license||{};
+  return <dl className="driver-equipment"><div><dt>Vehículo</dt><dd>{[vehicle.brand,vehicle.model,vehicle.type].filter(Boolean).join(' · ')||'Sin registrar'}</dd></div><div><dt>Placa</dt><dd>{vehicle.plate||'Sin registrar'}</dd></div><div><dt>Licencia</dt><dd>{license.number||license.code||'Sin registrar'}</dd></div><div><dt>Vencimiento</dt><dd>{license.expires_at?formatDate(license.expires_at):'Sin registrar'}</dd></div></dl>;
+}
+
+function NodeAssignments({driver,nodes,canRead,canAssign,saving,onToggle}){
+  if(!canRead)return <p className="driver-section-note">Necesitas permiso de lectura de nodos para ver sus asignaciones.</p>;
+  if(!nodes.length)return <p className="driver-section-note">No hay nodos disponibles para esta empresa.</p>;
+  return <div className="driver-nodes">{nodes.map(node=>{const assigned=(driver.node_ids||[]).includes(node.id);return <div key={node.id}><span className="ops-row-icon"><FinanceIcon name="location"/></span><span><strong>{node.name}</strong><small>{node.code}</small></span><span className="driver-node-state">{assigned?'Asignado':'Sin asignar'}</span>{canAssign?<label className="ops-switch" aria-label={`${assigned?'Desasignar':'Asignar'} ${node.name}`}><input type="checkbox" checked={assigned} disabled={saving} onChange={event=>onToggle(node.id,event.target.checked)}/><i/></label>:null}</div>})}</div>;
+}
+
+function RouteHistory({routes,canReadOrders}){
+  if(!routes.length)return <p className="driver-section-note">Este repartidor todavía no tiene rutas registradas.</p>;
+  return <div className="driver-routes">{routes.map(route=><article key={route.id}><header><div><strong>Ruta {shortReference(route.id,'#')}</strong><small>{formatDate(route.date)} · {route.delivery_window_ref||'Sin franja'}</small></div><StatusBadge status={route.status}>{readableStatus(route.status)}</StatusBadge></header><div className="driver-route-stops">{route.stops.map(stop=><div key={stop.order_id}><span className="stop-number">{stop.sequence}</span><span><strong>{canReadOrders?<a href={detailHref('orders',stop.order_id)}>Pedido {shortReference(stop.order_id,'#')}</a>:`Pedido ${shortReference(stop.order_id,'#')}`}</strong><small>{routeOutcome(route.status,stop.status)}</small></span><StatusBadge status={stop.status}>{routeOutcome(route.status,stop.status)}</StatusBadge></div>)}</div></article>)}</div>;
+}
+
+function DriverDetail({runtime,driver,nodes,routes,saving,onSave,onToggleNode}){
+  const stats=driverStats(routes),writable=runtime.permissions.includes('transport.drivers.write'),canAssign=runtime.permissions.includes('transport.drivers.assign'),canReadNodes=runtime.permissions.includes('operations.nodes.read'),canReadOrders=runtime.permissions.includes('operations.orders.read');
+  return <div className="driver-detail"><a className="detail-back" href={listHref('drivers')}>← Volver a repartidores</a><div className="detail-title"><div><nav>Transporte / Repartidores / {driver.code}</nav><h1>{driver.name}</h1><p>{driver.phone} · Actualizado {formatDate(driver.updated_at)}</p></div><div className="driver-badges"><StatusBadge status={driver.status}>{readableStatus(driver.status)}</StatusBadge><StatusBadge status={driver.availability}>{driverAvailability(driver.availability)}</StatusBadge></div></div><div className="driver-metrics"><span><small>Rutas</small><strong>{routes.length}</strong></span><span><small>Entregados</small><strong>{stats.delivered}</strong></span><span><small>Fallidos</small><strong>{stats.failed}</strong></span><span><small>Pendientes</small><strong>{stats.pending}</strong></span></div><section className="ops-detail-card"><header><div><h2>Perfil del repartidor</h2><p>Código {driver.code} · Acceso {driverAccess(driver.access_status)}</p></div></header><DriverProfile key={`${driver.id}:${driver.version}`} driver={driver} writable={writable} saving={saving} onSave={onSave}/><DriverEquipment driver={driver}/></section><section className="ops-detail-card"><header><div><h2>Nodos asignados</h2><p>{(driver.node_ids||[]).length} ubicaciones operativas</p></div></header><NodeAssignments driver={driver} nodes={nodes} canRead={canReadNodes} canAssign={canAssign} saving={saving} onToggle={onToggleNode}/></section><section className="ops-detail-card"><header><div><h2>Historial de rutas y pedidos</h2><p>Resultados disponibles en las rutas registradas.</p></div></header><RouteHistory routes={routes} canReadOrders={canReadOrders}/></section></div>;
+}
+
+export default function Drivers({runtime}){
+  const[items,setItems]=useState([]),[selected,setSelected]=useState(null),[nodes,setNodes]=useState([]),[routes,setRoutes]=useState([]),[loading,setLoading]=useState(true),[saving,setSaving]=useState(false),[error,setError]=useState(''),[notice,setNotice]=useState('');
+  const canReadNodes=runtime.permissions.includes('operations.nodes.read'),canReadRoutes=runtime.permissions.includes('operations.routes.read');
+  const load=useCallback(async()=>{setLoading(true);setError('');try{const[drivers,nodeRows,routeRows]=await Promise.all([call(runtime,`/v1/companies/${runtime.company}/drivers?limit=100`).then(value=>value.items),canReadNodes?call(runtime,`/v1/companies/${runtime.company}/nodes`).then(value=>value.items):[],canReadRoutes?call(runtime,`/v1/companies/${runtime.company}/routes?limit=100`).then(value=>value.items):[]]),requested=detailFromHash('drivers');setItems(drivers);setNodes(nodeRows);setRoutes(routeRows);setSelected(drivers.find(driver=>driver.id===requested)||null);}catch(problem){setError(problem.message||'No se pudo cargar la información.');}finally{setLoading(false);}},[runtime,canReadNodes,canReadRoutes]);
+  useEffect(()=>{if(runtime.company)void load();},[runtime.company,load]);
+  const driverRoutes=useMemo(()=>routes.filter(route=>route.driver_id===selected?.id).sort((a,b)=>String(b.date).localeCompare(String(a.date))),[routes,selected]);
+  const updateDriver=driver=>{setSelected(driver);setItems(current=>current.map(item=>item.id===driver.id?driver:item));};
+  const save=async event=>{event.preventDefault();const form=new FormData(event.currentTarget);setSaving(true);setError('');try{const driver=await call(runtime,`/v1/companies/${runtime.company}/drivers/${selected.id}`,{method:'PATCH',body:JSON.stringify({version:selected.version,name:form.get('name'),phone:form.get('phone'),email:form.get('email')||null,status:form.get('status'),availability:form.get('availability'),access_status:selected.access_status,user_id:selected.user_id,vehicle:selected.vehicle,license:selected.license})});updateDriver(driver);setNotice('Perfil actualizado.');}catch(problem){setError(problem.message||'No se pudo guardar el perfil.');}finally{setSaving(false);}};
+  const toggleNode=async(nodeId,active)=>{setSaving(true);setError('');try{const driver=await call(runtime,`/v1/companies/${runtime.company}/nodes/${nodeId}/drivers/${selected.id}`,{method:'PUT',body:JSON.stringify({active})});updateDriver(driver);setNotice(active?'Nodo asignado.':'Nodo desasignado.');}catch(problem){setError(problem.message||'No se pudo cambiar la asignación.');}finally{setSaving(false);}};
+  if(selected)return <section className="canonical-module drivers-module">{notice&&<p className="driver-notice" role="status">{notice}</p>}{error&&<p className="error" role="alert">{error}</p>}<DriverDetail runtime={runtime} driver={selected} nodes={nodes} routes={driverRoutes} saving={saving} onSave={save} onToggleNode={toggleNode}/></section>;
+  return <section className="canonical-module drivers-module"><div className="page-heading"><div><nav className="supplier-breadcrumb"><span>E-commerce</span><span>/</span><span className="current">Operaciones</span></nav><h1>Repartidores</h1><p className="supplier-subtitle">Gestiona disponibilidad, nodos asignados y desempeño de entregas.</p></div><button disabled={loading} onClick={load}>{loading?'Actualizando…':'Actualizar'}</button></div>{error&&<p className="error" role="alert">No se pudieron cargar los repartidores. Intenta nuevamente.</p>}<div className="panel operation-list"><header><div><h2>Equipo de reparto</h2><p>{items.length} repartidores registrados</p></div></header>{items.map(driver=><a className="operation-list-item driver-list-item" href={detailHref('drivers',driver.id)} key={driver.id}><span className="ops-row-icon"><FinanceIcon name="supplier"/></span><span><strong>{driver.name}</strong><small>{driver.code} · {driver.phone}</small></span><span className="row-action"><StatusBadge status={driver.availability}>{driverAvailability(driver.availability)}</StatusBadge><small>{(driver.node_ids||[]).length} {(driver.node_ids||[]).length===1?'nodo':'nodos'}</small><i>›</i></span></a>)}{loading?<LoadingState label="Cargando repartidores…"/>:!items.length&&<p className="table-message">No hay repartidores registrados.</p>}</div></section>;
 }

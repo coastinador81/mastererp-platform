@@ -4,6 +4,7 @@ import { detailFromHash, readableStatus } from "../../../2.3-ecommerce/src/opera
 import FinanceIcon from "../../../2.2-finance/src/FinanceIcon.jsx";
 import StatusBadge from "../../../../shared/status-badge/StatusBadge.jsx";
 import LoadingState from "../../../../shared/loading-state/LoadingState.jsx";
+import { localDateKey, operationalOrdersByNode } from "./nodeUsage.mjs";
 const call = (r, p, o = {}) =>
   r.request(r.api + p, {
     ...o,
@@ -24,11 +25,9 @@ export default function Nodes({ runtime }) {
     setLoading(true);
     try {
       const rows = (await call(runtime, `/v1/companies/${runtime.company}/nodes`)).items;
-      const canReadOrders=runtime.permissions.includes("operations.orders.read"),canReadPreparation=runtime.permissions.includes("operations.preparation.read");
-      const [orders,preparations]=await Promise.all([canReadOrders?call(runtime,`/v1/companies/${runtime.company}/orders?limit=100`).then(value=>value.items).catch(()=>[]):[],canReadPreparation?call(runtime,`/v1/companies/${runtime.company}/preparations`).then(value=>value.items).catch(()=>[]):[]]);
-      const preparationNodes=new Map(preparations.map(item=>[item.order_id,item.node_id])),today=new Date().toISOString().slice(0,10),counts={};
-      orders.filter(order=>String(order.created_at||'').slice(0,10)===today).forEach(order=>{const node=order.branch_id||order.node_id||order.node_ref||preparationNodes.get(order.id);if(node)counts[node]=(counts[node]||0)+1;});
-      setUsage(counts);
+      const canReadOrders=runtime.permissions.includes("operations.orders.read"),canReadPreparation=runtime.permissions.includes("operations.preparation.read"),canReadRoutes=runtime.permissions.includes("operations.routes.read");
+      const [orders,preparations,routes]=await Promise.all([canReadOrders?call(runtime,`/v1/companies/${runtime.company}/orders?limit=100`).then(value=>value.items):[],canReadPreparation?call(runtime,`/v1/companies/${runtime.company}/preparations`).then(value=>value.items):[],canReadRoutes?call(runtime,`/v1/companies/${runtime.company}/routes?limit=100`).then(value=>value.items):[]]);
+      setUsage(operationalOrdersByNode({orders,preparations,routes,today:localDateKey()}));
       const requested = detailFromHash("nodes");
       setItems(rows);
       setSelected((current) => rows.find((x) => x.id === (requested || current?.id)) || rows[0] || null);
@@ -90,7 +89,7 @@ export default function Nodes({ runtime }) {
                 <strong>{n.name}</strong>
                 <small>{n.code}</small>
               </span>
-              <span className="row-action"><StatusBadge status={n.status}>{readableStatus(n.status)}</StatusBadge><small>{usage[n.id]??0} pedidos hoy</small><i>›</i></span>
+              <span className="row-action"><StatusBadge status={n.status}>{readableStatus(n.status)}</StatusBadge><small>{usage[n.id]??0} pedidos operados hoy</small><i>›</i></span>
             </button>
           ))}
           {loading ? <LoadingState label="Cargando nodos…"/> : !items.length && <p>No hay nodos configurados.</p>}
@@ -100,7 +99,7 @@ export default function Nodes({ runtime }) {
             write ? (
               <form key={`${selected.id}:${selected.version}`} onSubmit={save}>
                 <div className="node-form-heading"><div><small>UBICACIÓN OPERATIVA</small><h2>{selected.name}</h2></div><StatusBadge status={selected.status}>{readableStatus(selected.status)}</StatusBadge></div>
-                <div className="node-capacity"><span className="ops-metric-icon"><FinanceIcon name="summary"/></span><span className="node-capacity-copy"><small>Capacidad utilizada hoy</small><strong>{usage[selected.id]??0} de {selected.daily_capacity} pedidos</strong><i><span style={{width:`${selected.daily_capacity?Math.min(100,Math.round((usage[selected.id]||0)/selected.daily_capacity*100)):0}%`}}/></i></span><b>{selected.daily_capacity?Math.min(100,Math.round((usage[selected.id]||0)/selected.daily_capacity*100)):0}%</b></div>
+                <div className="node-capacity"><span className="ops-metric-icon"><FinanceIcon name="summary"/></span><span className="node-capacity-copy"><small>Capacidad operada hoy</small><strong>{usage[selected.id]??0} de {selected.daily_capacity} pedidos</strong><i><span style={{width:`${selected.daily_capacity?Math.min(100,Math.round((usage[selected.id]||0)/selected.daily_capacity*100)):0}%`}}/></i></span><b>{selected.daily_capacity?Math.min(100,Math.round((usage[selected.id]||0)/selected.daily_capacity*100)):0}%</b></div>
                 <label className="ops-switch-row"><span><strong>Acepta pedidos</strong><small>Permite asignar nuevos pedidos a esta ubicación.</small></span><span className="ops-switch"><input name="accepts" type="checkbox" defaultChecked={selected.accepts_orders}/><i/></span></label>
                 <label>
                   Cobertura de entrega (km)
