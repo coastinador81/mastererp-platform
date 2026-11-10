@@ -4,23 +4,30 @@ import { HomeLink } from './HomeLink';
 import { LoginLink } from './LoginLink';
 import { SkipLink } from './SkipLink';
 
+type NavItem = { view: PublicViewKey; to: string; label: string };
+
 /**
- * Menú comercial completo de las páginas interiores (D-HOME-REORG-20261109): Servicios,
- * Lo que puedes hacer, Precios, Para equipos y marcas, Seguridad, Novedades, Partners,
- * Clientes, Sobre Uonify y Cómo funciona. Se muestra igual con y sin sesión. «Ayuda»
- * pasa al pie global; «Servicios» es la página de productos.
+ * Menú comercial completo de las páginas interiores (D-HOME-REORG-20261109), en DOS filas
+ * con las 10 páginas siempre a la vista (decisión del dueño 09-11-2026: «dos filas, todo
+ * visible»). Fila 1: lo que ofrece Uonify; fila 2: la empresa y su comunidad. Son dos
+ * filas de enlaces, no menús desplegables. «Ayuda» va al pie global; «Servicios» es la
+ * página de productos. Se muestra igual con y sin sesión.
  */
-const MAIN_NAV: ReadonlyArray<{ view: PublicViewKey; to: string; label: string }> = [
-  { view: 'producto', to: PATHS.productos, label: 'Servicios' },
-  { view: 'lo-que-puedes-hacer', to: PATHS.loQuePuedesHacer, label: 'Lo que puedes hacer' },
-  { view: 'precios', to: PATHS.precios, label: 'Precios' },
-  { view: 'para-empresas', to: PATHS.paraEmpresas, label: 'Para equipos y marcas' },
-  { view: 'seguridad', to: PATHS.seguridad, label: 'Seguridad' },
-  { view: 'novedades', to: PATHS.novedades, label: 'Novedades' },
-  { view: 'partners', to: PATHS.partners, label: 'Partners' },
-  { view: 'clientes', to: PATHS.clientes, label: 'Clientes' },
-  { view: 'empresa', to: PATHS.sobreUonify, label: 'Sobre Uonify' },
-  { view: 'como-funciona', to: PATHS.comoFunciona, label: 'Cómo funciona' },
+const NAV_ROWS: ReadonlyArray<ReadonlyArray<NavItem>> = [
+  [
+    { view: 'producto', to: PATHS.productos, label: 'Servicios' },
+    { view: 'lo-que-puedes-hacer', to: PATHS.loQuePuedesHacer, label: 'Lo que puedes hacer' },
+    { view: 'como-funciona', to: PATHS.comoFunciona, label: 'Cómo funciona' },
+    { view: 'precios', to: PATHS.precios, label: 'Precios' },
+    { view: 'para-empresas', to: PATHS.paraEmpresas, label: 'Para equipos y marcas' },
+  ],
+  [
+    { view: 'empresa', to: PATHS.sobreUonify, label: 'Sobre Uonify' },
+    { view: 'seguridad', to: PATHS.seguridad, label: 'Seguridad' },
+    { view: 'partners', to: PATHS.partners, label: 'Partners' },
+    { view: 'clientes', to: PATHS.clientes, label: 'Clientes' },
+    { view: 'novedades', to: PATHS.novedades, label: 'Novedades' },
+  ],
 ];
 
 /** Cabecera de las páginas públicas (todas menos la portada y las legales). */
@@ -28,16 +35,22 @@ export function PageHeader({ current, loginLabel }: { current: PublicViewKey; lo
   return (
     <>
       <SkipLink />
-      <header className="header">
+      <header className="header header--rows">
         <HomeLink className="brand" brand aria-label="Uonify, inicio">
           <img data-uonify-logo="relief" src="/assets/brands/uonify-wordmark-3d.webp" width="126" height="40" alt="Uonify" />
         </HomeLink>
-        <nav className="main-nav" aria-label="Navegación principal">
-          {MAIN_NAV.map(item => (
-            <Link key={item.to} to={item.to} aria-current={item.view === current ? 'page' : undefined}>{item.label}</Link>
+        <div className="header-actions">
+          <LoginLink pageLabel={loginLabel} />
+        </div>
+        <nav className="main-nav main-nav--rows" aria-label="Navegación principal">
+          {NAV_ROWS.map((row, index) => (
+            <div className="nav-row" key={index}>
+              {row.map(item => (
+                <Link key={item.to} to={item.to} aria-current={item.view === current ? 'page' : undefined}>{item.label}</Link>
+              ))}
+            </div>
           ))}
         </nav>
-        <LoginLink pageLabel={loginLabel} />
       </header>
     </>
   );

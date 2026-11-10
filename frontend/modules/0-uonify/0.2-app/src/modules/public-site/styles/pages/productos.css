@@ -27,6 +27,24 @@ h1,h2,h3{font-weight:500;letter-spacing:-.045em;line-height:1.13}
 .main-nav a[aria-current]:after{content:"";height:3px;position:absolute;bottom:0;left:0;right:0;background:var(--blue)}
 .login-link{margin-left:auto;font-size:.9rem;color:var(--blue-dark);display:flex;gap:12px;align-items:center}
 .login-link:hover,.main-nav a:hover{color:var(--blue-dark)}
+/* Dos filas, todo visible (D-HOME-REORG-20261109): el logo y los accesos arriba, el menú
+   comercial en dos filas debajo del logo; la actual, marcada. Retícula de 8 en el
+   espaciado (16 px entre el logo y el menú, 8 px entre las dos filas). */
+.header.header--rows{min-height:0;padding:16px 40px;display:grid;grid-template-columns:auto 1fr auto;grid-template-areas:"brand . actions" "nav nav nav";align-items:center;column-gap:24px;row-gap:16px}
+.header--rows .brand{grid-area:brand}
+.header--rows .header-actions{grid-area:actions;display:flex;align-items:center;gap:16px;margin-left:0}
+.header--rows .login-link{margin-left:0}
+.header--rows .main-nav--rows{grid-area:nav;flex-direction:column;align-items:flex-start;gap:8px}
+.header--rows .nav-row{display:flex;flex-wrap:nowrap;align-items:center;gap:28px}
+.header--rows .nav-row a{white-space:nowrap;padding-bottom:5px}
+.header--rows .nav-row a:focus-visible{outline:2px solid var(--blue);outline-offset:3px;border-radius:4px}
+/* Móvil: el menú no se parte ni se corta; las filas se reflujan (propuesta a revisar). */
+@media(max-width:620px){
+  .header.header--rows{grid-template-columns:1fr auto;grid-template-areas:"brand actions" "nav nav";padding:12px 16px;column-gap:12px;row-gap:12px}
+  .header--rows .main-nav--rows{gap:10px}
+  .header--rows .nav-row{flex-wrap:wrap;gap:9px 18px}
+  .header--rows .nav-row a{padding-bottom:3px}
+}
 .universe{padding-top:36px}
 .marquee-shell{position:relative;display:flex;align-items:center;gap:18px;padding-inline:32px;max-width:1600px;margin:auto}
 .marquee{overflow:hidden;flex:1;mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent)}
