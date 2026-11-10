@@ -1,12 +1,28 @@
+import { useLayoutEffect, useRef, useState } from 'react';
 import { Link } from 'react-router';
+import { useEventListener } from '@/shared/hooks';
 import { startAccess, usePublicSession } from '../../hooks/usePublicSession';
 import { PATHS } from '../../model/views';
 import { HomeLink } from '../common/HomeLink';
-import { PublicModuleLauncher } from './PublicModuleLauncher';
+import { ToolsPanel } from './ToolsPanel';
 
-/** Cabecera de la portada: logotipo, navegación, acceso y lanzador de aplicaciones. */
+const documentTarget = typeof document === 'undefined' ? null : document;
+
+/** Cabecera de la portada: logotipo, navegación, acceso y panel de herramientas. */
 export function HomeHeader() {
   const { links } = usePublicSession();
+  const [toolsOpen, setToolsOpen] = useState(false);
+  const panelRef = useRef<HTMLElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+
+  useLayoutEffect(() => {
+    if (toolsOpen) panelRef.current?.querySelector<HTMLElement>('a,button')?.focus();
+  }, [toolsOpen]);
+  useEventListener('pointerdown', event => {
+    const target = event.target as Node;
+    if (toolsOpen && !panelRef.current?.contains(target) && !triggerRef.current?.contains(target)) setToolsOpen(false);
+  }, documentTarget);
+  useEventListener('keydown', event => { if (event.key === 'Escape' && toolsOpen) setToolsOpen(false); }, documentTarget);
 
   return (
     <header className="header">
@@ -24,8 +40,22 @@ export function HomeHeader() {
       </nav>
       <div className="header-actions">
         <button type="button" className="identity-trigger" data-auth-trigger onClick={() => startAccess()}>{links.identityTrigger}</button>
-        <PublicModuleLauncher />
+        <button
+          ref={triggerRef}
+          type="button"
+          className="tools-trigger"
+          aria-label="Herramientas de Uonify"
+          aria-expanded={toolsOpen}
+          aria-controls="tools-panel"
+          title="Herramientas de Uonify"
+          onClick={() => setToolsOpen(open => !open)}
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            {[5, 12, 19].flatMap(cy => [5, 12, 19].map(cx => <circle key={`${cx}-${cy}`} cx={cx} cy={cy} r="1.7" />))}
+          </svg>
+        </button>
       </div>
+      <ToolsPanel ref={panelRef} open={toolsOpen} />
     </header>
   );
 }

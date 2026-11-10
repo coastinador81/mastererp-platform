@@ -68,6 +68,18 @@ export const liveSelect = async (tenantId: string, companyId?: string) =>
 
 export const liveDisconnect = () => guarded(() => api.delete<unknown>('/connections/erp'));
 
+/**
+ * Acceso a MasterERP en esta misma pestaña, sin ventana emergente: el servidor prepara el intento
+ * ligado a la sesión y, al terminar, vuelve a /espacio?service=erp&erp=<resultado>. Solo se sale
+ * hacia la pantalla de acceso de MasterERP; cualquier otro destino se rechaza.
+ */
+export async function liveStart(): Promise<string> {
+  const body = await guarded(() => api.post<{ authUrl?: unknown }>('/connections/erp/start', { popup: false }));
+  const url = URL.canParse(String(body.authUrl)) ? new URL(String(body.authUrl)) : null;
+  if (!url || url.origin !== MASTERERP_LOGIN_ORIGIN || url.username || url.password) throw new MastererpError(503, 'erp_unavailable');
+  return url.href;
+}
+
 export async function liveList<T>(collection: FinanceCollection, options: { after?: string; limit?: number; q?: string; signal?: AbortSignal } = {}): Promise<Page<T>> {
   const body = await guarded(() => api.get<{ items?: T[]; nextCursor?: string | null }>(`/erp/${KINDS[collection]}`, {
     signal: options.signal,
