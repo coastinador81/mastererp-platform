@@ -3,8 +3,8 @@
 // Con API_OPEN = false exige la cookie de puerta que emite gate-default.js, salvo GET/HEAD
 // /api/health y POST /api/billing/stripe/webhook (billing_checkout.py: lo firma Stripe). Sin cookie
 // válida: 401 JSON {"error":"gate_required"} SIN WWW-Authenticate (nunca sale el diálogo del navegador).
-// API_OPEN = true (decisión del dueño, 10-11-2026, para que cualquiera use dev.uonify.com como él):
-// la puerta deja pasar todo /api/*; cada ruta sigue exigiendo su sesión de Uonify en el backend.
+// API_OPEN = true dejaba pasar todo /api/* (excepción del dueño del 10-11-2026 para un demo); el
+// 11-11-2026 ordenó volver a cerrar DEV: «devuelve el candado que tenía».
 // Siempre borra Authorization y la cookie de puerta. NO toca la URI ni la query: el puente de
 // voz (/api/uony/live, WebSocket) rechaza cualquier handshake con Authorization o con query.
 import cf from 'cloudfront';
@@ -15,7 +15,7 @@ var TTL = 691200;
 var SKEW = 300;
 var K_HMAC = 'gate_hmac_key';
 var OPEN = '|GET /api/health|HEAD /api/health|POST /api/billing/stripe/webhook|';
-var API_OPEN = true;
+var API_OPEN = false;
 var kvs = cf.kvs();
 
 function same(a, b) {
