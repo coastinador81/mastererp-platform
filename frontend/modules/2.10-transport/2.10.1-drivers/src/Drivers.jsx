@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useState } from "react";
-import "./style.css";
 const call = (r, p, o = {}) =>
   r.request(r.api + p, {
     ...o,

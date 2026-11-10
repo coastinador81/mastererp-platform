@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readyOrdersForNode, routePayload } from './routePlanning.mjs';
+import { deliveryWindowRange, readyOrdersForNode, routePayload } from './routePlanning.mjs';
 
 test('offers only READY orders without a route from the selected node', () => {
   const orders = [
@@ -13,7 +13,13 @@ test('offers only READY orders without a route from the selected node', () => {
 });
 
 test('builds the existing route creation contract', () => {
-  assert.deepEqual(routePayload({ nodeId: 'node-a', date: '2026-11-10', deliveryWindow: ' tarde ', orderIds: ['order-1'] }), {
-    node_id: 'node-a', date: '2026-11-10', delivery_window_ref: 'tarde', order_ids: ['order-1'],
+  assert.deepEqual(routePayload({ nodeId: 'node-a', date: '2026-11-10', deliveryStart: '14:00', deliveryEnd: '17:00', orderIds: ['order-1'] }), {
+    node_id: 'node-a', date: '2026-11-10', delivery_window_ref: '14:00-17:00', order_ids: ['order-1'],
   });
+});
+
+test('requires an ordered delivery time range', () => {
+  assert.equal(deliveryWindowRange('14:00', '17:00'), '14:00-17:00');
+  assert.equal(deliveryWindowRange('17:00', '14:00'), '');
+  assert.equal(deliveryWindowRange('', '17:00'), '');
 });

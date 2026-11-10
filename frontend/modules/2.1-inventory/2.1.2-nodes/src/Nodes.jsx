@@ -27,7 +27,7 @@ export default function Nodes({ runtime }) {
       const canReadOrders=runtime.permissions.includes("operations.orders.read"),canReadPreparation=runtime.permissions.includes("operations.preparation.read");
       const [orders,preparations]=await Promise.all([canReadOrders?call(runtime,`/v1/companies/${runtime.company}/orders?limit=100`).then(value=>value.items).catch(()=>[]):[],canReadPreparation?call(runtime,`/v1/companies/${runtime.company}/preparations`).then(value=>value.items).catch(()=>[]):[]]);
       const preparationNodes=new Map(preparations.map(item=>[item.order_id,item.node_id])),today=new Date().toISOString().slice(0,10),counts={};
-      orders.filter(order=>String(order.created_at||'').slice(0,10)===today).forEach(order=>{const node=order.node_id||order.node_ref||preparationNodes.get(order.id);if(node)counts[node]=(counts[node]||0)+1;});
+      orders.filter(order=>String(order.created_at||'').slice(0,10)===today).forEach(order=>{const node=order.branch_id||order.node_id||order.node_ref||preparationNodes.get(order.id);if(node)counts[node]=(counts[node]||0)+1;});
       setUsage(counts);
       const requested = detailFromHash("nodes");
       setItems(rows);
