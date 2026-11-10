@@ -13,16 +13,23 @@ const documentTarget = typeof document === 'undefined' ? null : document;
  * Botón de servicios (9 puntos) con el panel «Tu espacio Uonify». Es el mismo en la cabecera
  * de la portada y en la de las páginas interiores (D-HOME-REORG-20261109: a la derecha,
  * «Iniciar sesión» y el botón de servicios). Al abrirse enfoca el primer servicio; un clic
- * fuera o Escape lo cierran, y Escape devuelve el foco al botón.
+ * fuera o Escape lo cierran, y Escape devuelve el foco al botón. Al elegir un servicio el panel
+ * se cierra y el foco vuelve al botón antes de abrir el acceso (sin sesión), así al cerrar el
+ * acceso el foco regresa aquí y no a un servicio oculto. El foco se mueve sin desplazar la
+ * página (preventScroll): el botón y el panel van en la cabecera, siempre a la vista.
  */
 export function ServicesButton() {
   useViewStyles('tools-panel', SHEETS);
   const [open, setOpen] = useState(false);
   const panelRef = useRef<HTMLElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const choose = () => {
+    setOpen(false);
+    triggerRef.current?.focus({ preventScroll: true });
+  };
 
   useLayoutEffect(() => {
-    if (open) panelRef.current?.querySelector<HTMLElement>('.tools-grid a,.tools-grid button')?.focus();
+    if (open) panelRef.current?.querySelector<HTMLElement>('.tools-grid a,.tools-grid button')?.focus({ preventScroll: true });
   }, [open]);
   useEventListener('pointerdown', event => {
     const target = event.target as Node;
@@ -31,7 +38,7 @@ export function ServicesButton() {
   useEventListener('keydown', event => {
     if (event.key !== 'Escape' || !open) return;
     setOpen(false);
-    triggerRef.current?.focus();
+    triggerRef.current?.focus({ preventScroll: true });
   }, documentTarget);
 
   return (
@@ -50,7 +57,7 @@ export function ServicesButton() {
           {[5, 12, 19].flatMap(cy => [5, 12, 19].map(cx => <circle key={`${cx}-${cy}`} cx={cx} cy={cy} r="1.7" />))}
         </svg>
       </button>
-      <ToolsPanel ref={panelRef} open={open} />
+      <ToolsPanel ref={panelRef} open={open} onChoose={choose} />
     </>
   );
 }

@@ -20,7 +20,7 @@
 .header .tools-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 8px 15px; }
 .header .tools-heading h2 { margin: 0; font-size: 14px; font-weight: 650; }
 .header .tools-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 6px; }
-.header .tools-grid .tool-entry { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 7px; min-width: 0; min-height: 128px; padding: 9px 3px 12px; border: 0; border-radius: 15px; color: var(--tools-ink); background: transparent; text-decoration: none; text-align: center; font-family: inherit; font-size: .875rem; font-weight: 500; line-height: 1.25; }
+.header .tools-grid .tool-entry { position: relative; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 7px; min-width: 0; min-height: 128px; padding: 9px 3px 12px; border: 0; border-radius: 15px; color: var(--tools-ink); background: transparent; text-decoration: none; text-align: center; font-family: inherit; font-size: .875rem; font-weight: 500; line-height: 1.25; }
 .header .tools-grid .tool-entry:hover, .header .tools-grid .tool-entry:focus-visible { background: var(--tools-hover); }
 .header .tools-grid .tool-entry:focus-visible { outline: 2px solid var(--tools-blue); outline-offset: -2px; }
 .header .tools-grid .tool-entry[aria-disabled="true"] { cursor: default; }

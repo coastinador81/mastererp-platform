@@ -57,17 +57,9 @@
 .hlp-chat-error { color: var(--pim-error); }
 @media (prefers-reduced-motion: reduce) { .hlp-composer { transition: none; } }
 
-/* ── Centro de ayuda público (/ayuda), con el estilo de la web pública ── */
+/* ── Centro de ayuda público (/ayuda), con el estilo de la web pública. La cabecera es la de
+   todas las páginas públicas (PageHeader) y trae su propia hoja. ── */
 .hlp-shell { color: #17212d; background: #fff; }
-.hlp-site-header { max-width: 1200px; margin: 0 auto; min-height: 82px; display: flex; align-items: center; gap: 32px; padding: 14px 40px; border-bottom: 1px solid #eef1f4; flex-wrap: wrap; }
-.hlp-brand { flex-shrink: 0; display: flex; }
-.hlp-brand img { width: 126px; display: block; }
-.hlp-site-nav { display: flex; align-items: center; gap: 28px; font-size: .9rem; color: #5d6977; }
-.hlp-site-nav a { text-decoration: none; color: inherit; }
-.hlp-site-nav a:hover { color: #0052bc; }
-.hlp-site-nav a[aria-current] { color: #17212d; font-weight: 600; }
-.hlp-login { margin-left: auto; font-size: .9rem; color: #0052bc; text-decoration: none; }
-.hlp-login:hover { text-decoration: underline; }
 .hlp-page { max-width: 1200px; margin: 0 auto; padding: 0 40px 72px; color: #17212d; line-height: 1.65; }
 .hlp-eyebrow { font-size: .8125rem; font-weight: 600; letter-spacing: .09em; text-transform: uppercase; color: #0052bc; margin: 0 0 14px; }
 .hlp-hero { text-align: center; padding: 64px 0 8px; max-width: 760px; margin: 0 auto; }
@@ -106,5 +98,4 @@
 .hlp-notfound { max-width: 760px; margin: 0 auto; padding: 48px 0; }
 /* Nota de marcas, justo encima del pie global (SiteFooter, con su propia hoja). */
 .hlp-trademarks { max-width: 1200px; margin: 0 auto; padding: 24px 40px 32px; border-top: 1px solid var(--pim-line); color: var(--pim-muted); font-size: 13px; line-height: 1.6; }
-@media (max-width: 920px) { .hlp-site-nav { display: none; } }
-@media (max-width: 760px) { .hlp-site-header { padding: 14px 16px; min-height: 64px; } .hlp-page { padding: 0 16px 56px; } .hlp-support-grid { grid-template-columns: minmax(0, 1fr); } .hlp-grid { grid-template-columns: minmax(0, 1fr); } .hlp-trademarks { padding: 24px 16px 32px; } .hlp-hero { padding-top: 40px; } }
+@media (max-width: 760px) { .hlp-page { padding: 0 16px 56px; } .hlp-support-grid { grid-template-columns: minmax(0, 1fr); } .hlp-grid { grid-template-columns: minmax(0, 1fr); } .hlp-trademarks { padding: 24px 16px 32px; } .hlp-hero { padding-top: 40px; } }

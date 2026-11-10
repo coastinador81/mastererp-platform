@@ -1,7 +1,8 @@
 /* Páginas legales de Uonify (Privacidad y Condiciones). Identidad del manual:
    azul #0178F7 solo para titular, foco y decoración; azul 600 #006AE1 para el texto
    azul pequeño y los enlaces (regla del 600). Tinta #152438. Inter.
-   Se inyecta solo mientras la vista está montada (useViewStyles). */
+   Se inyecta solo mientras la vista está montada (useViewStyles). La cabecera es la de
+   todas las páginas públicas y trae su hoja (styles/common/page-header.css). */
 * { box-sizing: border-box; }
 body {
   margin: 0;
@@ -11,24 +12,6 @@ body {
   line-height: 1.7;
   -webkit-font-smoothing: antialiased;
 }
-
-header {
-  max-width: 1060px;
-  padding: 24px max(24px, env(safe-area-inset-left, 0px));
-  margin: auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-}
-header img { display: block; }
-header > a:last-child {
-  font-size: 13px;
-  color: #006AE1;
-  text-decoration: none;
-  font-weight: 600;
-}
-header > a:last-child:hover { text-decoration: underline; }
 
 main {
   max-width: 788px;
@@ -153,7 +136,8 @@ blockquote {
 }
 .back:hover { text-decoration: underline; }
 
-:focus-visible { outline: 3px solid #0178F7; outline-offset: 4px; border-radius: 3px; }
+/* Foco del documento legal; la cabecera y el pie traen el suyo. */
+main :focus-visible { outline: 3px solid #0178F7; outline-offset: 4px; border-radius: 3px; }
 
 @media (max-width: 640px) {
   main { margin-top: 18px; }

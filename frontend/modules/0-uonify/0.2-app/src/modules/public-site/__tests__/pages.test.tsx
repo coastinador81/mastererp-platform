@@ -1,5 +1,8 @@
 import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { MemoryRouter } from 'react-router';
+import { PageHeader } from '../components/common/PageHeader';
 import { ComoFuncionaPage } from '../components/como-funciona/ComoFuncionaPage';
 import { LegalPage } from '../components/legal/LegalPage';
 import { LegalMarkdown } from '../components/legal/LegalMarkdown';
@@ -27,7 +30,8 @@ describe('Productos', () => {
     renderPage(<ProductosPage />, '/productos');
     expect(document.title).toBe('Servicios — Uonify');
     const nav = screen.getByRole('navigation', { name: 'Navegación principal' });
-    expect(within(nav).getByRole('link', { name: 'Servicios' })).toHaveAttribute('aria-current', 'page');
+    expect(within(nav).getByRole('button', { name: 'Servicios' })).toHaveClass('is-active');
+    expect(nav.querySelector('a[href="/productos"]')).toHaveAttribute('aria-current', 'page');
     expect(within(nav).getByRole('link', { name: 'Cómo funciona' })).toHaveAttribute('href', '/como-funciona');
     // Pie global (09-11-2026): el mismo en todas las páginas, también en las interiores.
     const footer = screen.getByRole('contentinfo');
@@ -35,6 +39,36 @@ describe('Productos', () => {
     expect(within(footer).getByRole('button', { name: 'Idioma' })).toHaveAttribute('aria-haspopup', 'dialog');
     // Marco + productos, juego, galería, Administración (ERP) y la hoja rica (con la vista previa del cliente).
     expect(document.head.querySelectorAll('style[data-uon-view-style="producto"]')).toHaveLength(6);
+  });
+
+  test('la cabecera despliega «Servicios» y «Empresa» de uno en uno, y Escape cierra y devuelve el foco', async () => {
+    const user = userEvent.setup();
+    renderPage(<ProductosPage />, '/productos');
+    const nav = screen.getByRole('navigation', { name: 'Navegación principal' });
+    const servicios = within(nav).getByRole('button', { name: 'Servicios' });
+    const empresa = within(nav).getByRole('button', { name: 'Empresa' });
+    await user.click(servicios);
+    expect(servicios).toHaveAttribute('aria-expanded', 'true');
+    expect(document.getElementById('hnav-servicios')).not.toHaveAttribute('hidden');
+    expect(within(nav).getByRole('link', { name: /Lo que puedes hacer/ })).toHaveAttribute('href', '/lo-que-puedes-hacer');
+    await user.click(empresa);
+    expect(servicios).toHaveAttribute('aria-expanded', 'false');
+    expect(empresa).toHaveAttribute('aria-expanded', 'true');
+    await user.keyboard('{Escape}');
+    expect(empresa).toHaveAttribute('aria-expanded', 'false');
+    expect(empresa).toHaveFocus();
+  });
+
+  test('en pantallas estrechas, el botón de menú abre la lista completa y Escape la cierra', async () => {
+    const user = userEvent.setup();
+    renderPage(<ProductosPage />, '/productos');
+    await user.click(screen.getByRole('button', { name: 'Abrir el menú' }));
+    const sheet = screen.getByRole('navigation', { name: 'Menú' });
+    expect(within(sheet).getAllByRole('link')).toHaveLength(10);
+    expect(within(sheet).getByRole('link', { name: 'Servicios' })).toHaveAttribute('aria-current', 'page');
+    await user.keyboard('{Escape}');
+    expect(screen.queryByRole('navigation', { name: 'Menú' })).toBeNull();
+    expect(screen.getByRole('button', { name: 'Abrir el menú' })).toHaveFocus();
   });
 
   test('a la derecha, como en la portada: «Iniciar sesión» y el botón de servicios', async () => {
@@ -45,12 +79,51 @@ describe('Productos', () => {
     const trigger = within(actions).getByRole('button', { name: 'Herramientas de Uonify' });
     await user.click(trigger);
     const panel = document.getElementById('tools-panel')!;
-    // El mismo panel que la portada: los 10 servicios y «Conocer Uonify», con el primero enfocado.
-    expect(within(panel).getByRole('link', { name: 'Producto' })).toHaveFocus();
-    expect(within(panel).getAllByRole('link')).toHaveLength(11);
+    // El mismo panel que la portada, con el primero enfocado. Sin sesión, los 10 servicios son
+    // botones que abren «Iniciar sesión»; el único enlace es «Conocer Uonify».
+    expect(within(panel).getByRole('button', { name: 'Producto' })).toHaveFocus();
+    expect(within(panel).getAllByRole('button')).toHaveLength(10);
+    expect(within(panel).getAllByRole('link')).toHaveLength(1);
+    expect(within(panel).getByRole('link', { name: 'Conocer Uonify' })).toHaveAttribute('href', '/productos');
     await user.keyboard('{Escape}');
     expect(trigger).toHaveAttribute('aria-expanded', 'false');
     expect(trigger).toHaveFocus();
+  });
+
+  test('sin sesión, cada servicio abre «Iniciar sesión» y recuerda cuál; el panel se cierra', async () => {
+    const user = userEvent.setup();
+    const { router } = renderPage(<ProductosPage />, '/productos');
+    const trigger = screen.getByRole('button', { name: 'Herramientas de Uonify' });
+    await user.click(trigger);
+    await user.click(within(document.getElementById('tools-panel')!).getByRole('button', { name: 'ERP' }));
+    expect(openSignIn).toHaveBeenCalledTimes(1);
+    expect(openSignIn).toHaveBeenLastCalledWith({ service: 'erp' });
+    expect(document.getElementById('tools-panel')).not.toBeVisible();
+    expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    // El foco vuelve al botón: al cerrar el acceso, auth lo devuelve ahí y no a un servicio oculto.
+    expect(trigger).toHaveFocus();
+    expect(router.state.location.pathname).toBe('/productos');
+    // El Estudio vive en la conversación del espacio: abre el acceso sin servicio pendiente.
+    await user.click(trigger);
+    await user.click(within(document.getElementById('tools-panel')!).getByRole('button', { name: 'Estudio' }));
+    expect(openSignIn).toHaveBeenLastCalledWith({});
+  });
+
+  test('con sesión, cada servicio enlaza a su vista del espacio', async () => {
+    authState.status = 'ready';
+    const user = userEvent.setup();
+    const { router } = renderPage(<ProductosPage />, '/productos');
+    const trigger = screen.getByRole('button', { name: 'Herramientas de Uonify' });
+    await user.click(trigger);
+    const panel = document.getElementById('tools-panel')!;
+    expect(within(panel).queryByRole('button')).toBeNull();
+    expect(within(panel).getByRole('link', { name: 'ERP' })).toHaveAttribute('href', '/espacio?service=erp');
+    expect(within(panel).getByRole('link', { name: 'Producto' })).toHaveAttribute('href', '/espacio?service=producto');
+    expect(within(panel).getByRole('link', { name: 'Estudio' })).toHaveAttribute('href', '/espacio');
+    expect(within(panel).getAllByRole('link')).toHaveLength(11);
+    await user.click(within(panel).getByRole('link', { name: 'ERP' }));
+    expect(openSignIn).not.toHaveBeenCalled();
+    expect(`${router.state.location.pathname}${router.state.location.search}`).toBe('/espacio?service=erp');
   });
 
   test('«Iniciar sesión» abre el acceso sin salir de la página', async () => {
@@ -202,6 +275,17 @@ describe('Sobre Uonify y Novedades', () => {
   });
 });
 
+describe('cabecera de las páginas públicas', () => {
+  test('las interiores marcan su página y prerenderizan el botón de servicios; con noJs no se pinta sin JS', () => {
+    renderPage(<SobreUonifyPage />, '/sobre-uonify');
+    const nav = screen.getByRole('navigation', { name: 'Navegación principal' });
+    expect([...nav.querySelectorAll('[aria-current="page"]')].map(link => link.getAttribute('href'))).toEqual(['/sobre-uonify']);
+    const markup = (noJs: boolean) => renderToStaticMarkup(<MemoryRouter><PageHeader current="precios" loginLabel="Tu espacio Uonify" noJs={noJs} /></MemoryRouter>);
+    expect(markup(false)).toMatch(/<button[^>]*class="tools-trigger"/);
+    expect(markup(true)).not.toMatch(/<button\b/);
+  });
+});
+
 describe('interfaces actuales en la landing', () => {
   test.each([
     ['/productos', ProductosPage], ['/para-empresas', ParaEmpresasPage],
@@ -224,11 +308,38 @@ describe('páginas legales', () => {
     expect(screen.getByRole('link', { name: 'Volver a Uonify →' })).toHaveAttribute('href', '/#composer');
   });
 
-  test('con sesión, «Volver a Uonify» lleva al espacio', () => {
+  test('con sesión, «Volver a Uonify →» y el acceso de la cabecera llevan al espacio', () => {
     authState.status = 'ready';
     renderPage(<LegalPage doc="terminos" />, '/terminos');
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Términos y condiciones');
-    expect(screen.getByRole('link', { name: 'Volver a Uonify' })).toHaveAttribute('href', '/espacio');
+    expect(screen.getByRole('link', { name: 'Volver a Uonify →' })).toHaveAttribute('href', '/espacio');
+    expect(screen.getByRole('link', { name: /Volver a mi espacio/ })).toHaveAttribute('href', '/espacio');
+  });
+
+  test('llevan la cabecera de las páginas públicas, sin página actual y con su propia hoja', () => {
+    renderPage(<LegalPage doc="privacidad" />, '/privacidad');
+    const header = document.querySelector<HTMLElement>('header.header.header--row')!;
+    const nav = within(header).getByRole('navigation', { name: 'Navegación principal' });
+    // Las 10 páginas: 3 enlaces directos y 7 dentro de los dos desplegables.
+    expect(nav.querySelectorAll('a')).toHaveLength(10);
+    expect(nav.querySelector('[aria-current]')).toBeNull();
+    // Con JS, el botón de servicios sí está (sin JS, no: ver la prueba siguiente).
+    expect(within(header).getByRole('button', { name: 'Herramientas de Uonify' })).toBeInTheDocument();
+    expect(document.head.querySelectorAll('style[data-uon-view-style="page-header"]')).toHaveLength(1);
+    // «Saltar al contenido» lleva al documento legal.
+    expect(screen.getByRole('link', { name: 'Saltar al contenido' })).toHaveAttribute('href', '#contenido');
+    expect(screen.getByRole('main')).toHaveAttribute('id', 'contenido');
+  });
+
+  test.each(['terminos', 'privacidad'] as const)('sin JS (HTML prerenderizado), /%s no lleva ningún <button>: la cabecera, solo enlaces', doc => {
+    const html = renderToStaticMarkup(<MemoryRouter initialEntries={[`/${doc}`]}><LegalPage doc={doc} /></MemoryRouter>);
+    expect(html).not.toMatch(/<button\b/);
+    const header = new DOMParser().parseFromString(html, 'text/html').querySelector('header.header.header--row');
+    // Sin JS, «Servicios» y «Empresa» son enlaces a su primera página: 5 enlaces y ningún desplegable.
+    expect([...header!.querySelectorAll('nav[aria-label="Navegación principal"] a')].map(link => link.getAttribute('href'))).toEqual(['/productos', '/como-funciona', '/precios', '/clientes', '/sobre-uonify']);
+    expect(header?.querySelector('.hnav-burger, .hnav-panel')).toBeNull();
+    expect(header?.querySelector('.tools-trigger, #tools-panel')).toBeNull();
+    expect(header?.querySelector('a.login-link')?.getAttribute('href')).toBe('/#composer');
   });
 
   test('Privacidad: sin marcadores, con la barra de pestañas común y la pestaña Privacidad activa', () => {

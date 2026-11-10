@@ -1,5 +1,6 @@
 import { billingApi } from '@/modules/billing';
 import { isPaidPlan } from '../model/plans';
+import { readKey, removeKey, STORAGE_KEYS } from '../model/storage';
 import { delay, nextFrame, timing } from '../model/timing';
 import { getUi, patchTransition } from '../state/authUi';
 import { currentSession } from '../state/session';
@@ -30,7 +31,10 @@ function decodeBrand(): Promise<void> {
  */
 async function openWorkspace(): Promise<void> {
   if (navigation.onWorkspace()) return;
-  navigation.go(WORKSPACE_PATH);
+  // Servicio pulsado sin sesión en la web: el espacio lo abre con su enlace profundo ?service=.
+  const service = readKey(STORAGE_KEYS.pendingService);
+  removeKey(STORAGE_KEYS.pendingService);
+  navigation.go(service ? `${WORKSPACE_PATH}?service=${encodeURIComponent(service)}` : WORKSPACE_PATH);
   await navigation.waitFor(() => navigation.onWorkspace(), timing.workspaceTimeout);
   await nextFrame();
   await nextFrame();

@@ -23,7 +23,7 @@ const SHEETS = viewSheets(productosCss, juegoCss, galeriaCss, adminErpCss, richC
 export function ProductosPage() {
   return (
     <PublicView view={PUBLIC_VIEWS.producto} sheets={SHEETS}>
-      <PageHeader current="producto" loginLabel="Iniciar sesión" />
+      <PageHeader current="producto" loginLabel="Tu espacio Uonify" />
       <main id="contenido" tabIndex={-1}>
         <UniverseSection />
         <SectionNav />

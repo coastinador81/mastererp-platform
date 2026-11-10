@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router';
+import { AuthDialogs } from '@/modules/auth';
 import { Field, Input } from '@/shared/ui';
-import { PATHS, SiteFooter, useSeoHead, useViewStyles } from '@/modules/public-site';
+import { PageHeader, SiteFooter, useSeoHead, useViewStyles } from '@/modules/public-site';
 import { SEED_ARTICLES, SEED_COLLECTIONS } from '../content';
 import { buildIndex, search } from '../model/search';
 import { ArticleBody } from './ArticleBody';
@@ -9,25 +10,6 @@ import css from './help.css?inline';
 
 const sheets = [css];
 const index = buildIndex(SEED_ARTICLES);
-
-/** Cabecera común de la web pública (logotipo, menú y acceso), con «Ayuda» activo. */
-function HelpHeader() {
-  return (
-    <header className="hlp-site-header">
-      <Link className="hlp-brand" to="/" aria-label="Uonify, inicio">
-        <img data-uonify-logo="relief" src="/assets/brands/uonify-wordmark-3d.webp" width="126" height="40" alt="Uonify" />
-      </Link>
-      <nav className="hlp-site-nav" aria-label="Navegación principal">
-        <Link to={PATHS.comoFunciona}>Cómo funciona</Link>
-        <Link to={PATHS.productos}>Servicios</Link>
-        <Link to={PATHS.loQuePuedesHacer}>Lo que puedes hacer</Link>
-        <Link to={PATHS.precios}>Precios</Link>
-        <Link to="/ayuda" aria-current="page">Ayuda</Link>
-      </nav>
-      <Link className="hlp-login" to="/espacio">Iniciar sesión</Link>
-    </header>
-  );
-}
 
 /**
  * Nota de marcas de las guías, justo encima del pie global. El aviso legal (§9, Marcas de
@@ -61,7 +43,11 @@ function SupportBlock() {
   );
 }
 
-/** Centro de ayuda público (`/ayuda` y `/ayuda/:slug`). */
+/**
+ * Centro de ayuda público (`/ayuda` y `/ayuda/:slug`). Lleva la cabecera de las páginas
+ * públicas (sin página actual: Ayuda no está en el menú, va en el pie) y, como esas páginas,
+ * los diálogos de acceso: «Iniciar sesión» y los servicios del panel los abren aquí mismo.
+ */
 export function HelpPage() {
   useViewStyles('help', sheets);
   const { slug } = useParams();
@@ -77,7 +63,7 @@ export function HelpPage() {
   const results = q.trim() ? search(index, q) : [];
   return (
     <div className="hlp-shell">
-      <HelpHeader />
+      <PageHeader loginLabel="Tu espacio Uonify" />
       <main id="contenido" className="hlp-page" tabIndex={-1}>
         {article ? (
           <article className="hlp-article">
@@ -125,6 +111,7 @@ export function HelpPage() {
       </main>
       <aside className="hlp-trademarks" aria-label="Marcas de terceros">{TRADEMARKS_NOTE}</aside>
       <SiteFooter />
+      <AuthDialogs />
     </div>
   );
 }

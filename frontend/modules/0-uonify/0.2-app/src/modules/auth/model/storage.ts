@@ -6,6 +6,8 @@
 export const STORAGE_KEYS = {
   /** Petición escrita antes de entrar; el espacio la recoge con takePendingPrompt(). */
   pendingPrompt: 'uonify-auth-pending-prompt',
+  /** Servicio pulsado sin sesión en el panel de la web; al entrar, el espacio abre ese servicio. */
+  pendingService: 'uonify-auth-pending-service',
   /** Última cuenta con la que se entró (para detectar el cambio de cuenta). */
   identity: 'uonify-auth-preview-identity',
   /** Borrador del alta (datos de la propia persona) para retomarlo donde se dejó. */

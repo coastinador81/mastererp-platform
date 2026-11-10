@@ -1,4 +1,5 @@
-import { act, cleanup, render, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, render, screen, waitFor, within } from '@testing-library/react';
+import type { UserEvent } from '@testing-library/user-event';
 import { http, HttpResponse, type RequestHandler } from 'msw';
 import { setupServer } from 'msw/node';
 import { createMemoryRouter, RouterProvider } from 'react-router';
@@ -63,7 +64,7 @@ export function setupSmokeServer(): void {
   afterAll(() => server.close());
 }
 
-const SMOKE_EMAIL = 'ana@uonify.test';
+export const SMOKE_EMAIL = 'ana@uonify.test';
 
 /**
  * Sesión simulada lista (alta completa y mayor de edad), escrita donde la guarda
@@ -72,6 +73,14 @@ const SMOKE_EMAIL = 'ana@uonify.test';
  */
 export function seedSignedInSession(): void {
   sessionStorage.setItem('uonify-mock:auth-session', JSON.stringify({ email: SMOKE_EMAIL, provider: 'chatgpt', startedAt: new Date().toISOString() }));
+  seedCompleteAccount();
+}
+
+/**
+ * Cuenta con el alta completa (aceptaciones y perfil de SMOKE_EMAIL), sin sesión abierta:
+ * al entrar con ese correo en el modo demostración, el acceso va directo al espacio.
+ */
+export function seedCompleteAccount(): void {
   sessionStorage.setItem('uonify-mock:auth-consents', JSON.stringify([{ id: SMOKE_EMAIL, consents: ['terms', 'privacy', 'ai-third-party'].map(id => ({ id, version: id === 'ai-third-party' ? '2026-09-26' : '2026-11-09', acceptedAt: new Date().toISOString() })) }]));
   sessionStorage.setItem('uonify-mock:auth-profiles', JSON.stringify([{
     id: SMOKE_EMAIL,
@@ -90,6 +99,25 @@ export function seedSignedInSession(): void {
       desiredPlan: 'free',
     },
   }]));
+}
+
+/** Abre el panel de servicios («Herramientas de Uonify») de la cabecera, con la sesión ya resuelta, y lo devuelve. */
+export async function openServicePanel(user: UserEvent): Promise<HTMLElement> {
+  const trigger = await screen.findByRole('button', { name: 'Herramientas de Uonify' }, { timeout: 5000 });
+  await settle();
+  await user.click(trigger);
+  const panel = document.getElementById('tools-panel');
+  expect(panel).toBeVisible();
+  return panel as HTMLElement;
+}
+
+/** En «Entra en Uonify»: «Continuar con ChatGPT» y, en el modo demostración, la cuenta de SMOKE_EMAIL. */
+export async function enterWithDemoAccount(user: UserEvent): Promise<void> {
+  const signIn = await screen.findByRole('dialog', { name: 'Entra en Uonify' }, { timeout: 5000 });
+  await user.click(within(signIn).getByRole('button', { name: 'Continuar con ChatGPT' }));
+  const connect = await screen.findByRole('dialog', { name: 'Continúa en Uonify' }, { timeout: 8000 });
+  await user.type(within(connect).getByLabelText('Correo electrónico'), SMOKE_EMAIL);
+  await user.click(within(connect).getByRole('button', { name: 'Continuar' }));
 }
 
 /** Errores de la consola durante la prueba (React y el router los registran ahí). */

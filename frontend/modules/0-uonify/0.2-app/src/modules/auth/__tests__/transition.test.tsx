@@ -5,10 +5,11 @@ import { setupServer } from 'msw/node';
 import { mock } from '@/shared/mocks/utils';
 import { openSignIn } from '../index';
 import { navigation } from '../flows/navigation';
+import { STORAGE_KEYS } from '../model/storage';
 import { configureTiming } from '../model/timing';
 import { signInAs } from '../mocks/authDb';
 import { handlers } from '@/shared/mocks/handlers';
-import { completeProfile, FAST, locationText, renderAuthApp, resetAll } from './harness';
+import { completeProfile, connectAs, FAST, locationText, renderAuthApp, resetAll } from './harness';
 
 vi.mock('@/shared/mocks/utils', async importOriginal => ({
   ...(await importOriginal<typeof import('@/shared/mocks/utils')>()),
@@ -89,5 +90,62 @@ describe('capa de transición', () => {
     expect(steps()).toEqual(['is-complete', 'is-complete', 'is-complete']);
     expect(layer).toHaveClass('is-ready');
     await waitFor(() => expect(locationText()).toBe('/espacio'), { timeout: 3000 });
+  });
+});
+
+describe('servicio pulsado sin sesión en el panel «Tu espacio Uonify»', () => {
+  test('openSignIn({ service: "erp" }) lo guarda y, al entrar, el espacio se abre en /espacio?service=erp', async () => {
+    const user = userEvent.setup();
+    renderAuthApp('/');
+    await waitFor(() => expect(screen.getByTestId('status')).toHaveTextContent('signed-out'));
+    await act(() => openSignIn({ service: 'erp' }));
+    expect(sessionStorage.getItem(STORAGE_KEYS.pendingService)).toBe('erp');
+    expect(screen.getByRole('dialog', { name: 'Entra en Uonify' })).toBeVisible();
+    await connectAs(user, 'ana@tienda.es');
+    await completeProfile(user);
+    await waitFor(() => expect(locationText()).toBe('/espacio?service=erp'), { timeout: 3000 });
+    // Se usa una sola vez: la siguiente entrada ya no lo arrastra.
+    expect(sessionStorage.getItem(STORAGE_KEYS.pendingService)).toBeNull();
+  });
+
+  test('sin servicio pendiente, al entrar el espacio se abre en /espacio', async () => {
+    const user = userEvent.setup();
+    signInAs('ana@tienda.es');
+    renderAuthApp('/');
+    await act(() => openSignIn());
+    expect(sessionStorage.getItem(STORAGE_KEYS.pendingService)).toBeNull();
+    await completeProfile(user);
+    await waitFor(() => expect(locationText()).toBe('/espacio'), { timeout: 3000 });
+  });
+
+  test('cerrar el acceso descarta el servicio: después, «Iniciar sesión» entra en /espacio', async () => {
+    const user = userEvent.setup();
+    renderAuthApp('/');
+    await waitFor(() => expect(screen.getByTestId('status')).toHaveTextContent('signed-out'));
+    await act(() => openSignIn({ service: 'erp' }));
+    expect(sessionStorage.getItem(STORAGE_KEYS.pendingService)).toBe('erp');
+    await user.click(screen.getByRole('button', { name: 'Cerrar acceso' }));
+    expect(sessionStorage.getItem(STORAGE_KEYS.pendingService)).toBeNull();
+    await user.click(screen.getByRole('button', { name: 'Iniciar sesión' }));
+    await connectAs(user, 'ana@tienda.es');
+    await completeProfile(user);
+    await waitFor(() => expect(locationText()).toBe('/espacio'), { timeout: 3000 });
+  });
+
+  test('manda la última intención: un acceso sin servicio descarta el que quedaba pendiente', async () => {
+    renderAuthApp('/');
+    await waitFor(() => expect(screen.getByTestId('status')).toHaveTextContent('signed-out'));
+    sessionStorage.setItem(STORAGE_KEYS.pendingService, 'erp');
+    await act(() => openSignIn());
+    expect(sessionStorage.getItem(STORAGE_KEYS.pendingService)).toBeNull();
+    expect(screen.getByRole('dialog', { name: 'Entra en Uonify' })).toBeVisible();
+  });
+
+  test('solo guarda un identificador de servicio válido', async () => {
+    renderAuthApp('/');
+    await waitFor(() => expect(screen.getByTestId('status')).toHaveTextContent('signed-out'));
+    await act(() => openSignIn({ service: 'erp?next=/admin' }));
+    expect(sessionStorage.getItem(STORAGE_KEYS.pendingService)).toBeNull();
+    expect(screen.getByRole('dialog', { name: 'Entra en Uonify' })).toBeVisible();
   });
 });

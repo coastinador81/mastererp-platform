@@ -5,12 +5,15 @@
 .partner-hero h1 span { color: #0178F7; }
 .partner-hero .lead { margin: 16px auto 0; max-width: 62ch; }
 
-.partner-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding: 30px 0; }
+/* Ritmo común (--section-space, de productos.css): las tarjetas ya dejan aire dentro, 16 px menos. */
+.partner-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding: calc(var(--section-space) - 16px) 0; }
 .partner-steps .pstep { background: #f8fafe; border: 1px solid #e1e8f1; border-radius: 16px; padding: 22px; }
 .partner-steps .pstep h3 { font-size: 17px; color: #152438; margin: 0 0 6px; }
 .partner-steps .pstep p { margin: 0; color: #5e7186; font-size: 14px; }
 
-.partner-dir { padding: 24px 0; }
+/* Va tras el marco de «Cómo trabaja un partner», que ya deja aire dentro: 16 px menos arriba
+   (el resto, de .logo-strip-section en rich.css). */
+.partners-page .partner-dir { padding-top: calc(var(--section-space) - 16px); }
 .partner-dir .pcards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-top: 18px; }
 .pcard { background: #fff; border: 1px solid #e1e8f1; border-radius: 16px; padding: 20px; min-width: 0; }
 .plogo { height: 76px; border-radius: 12px; background: #eaf3ff; display: flex; align-items: center; justify-content: center; padding: 10px 14px; margin-bottom: 14px; text-align: center; }
@@ -19,7 +22,8 @@
 .pcard h3 { font-size: 16px; color: #152438; margin: 0 0 2px; }
 .pmeta { margin: 0; color: #5e7186; font-size: 13px; }
 
-.partner-apply { padding: 22px 0 56px; }
+/* Termina en el recuadro de protección de datos, que ya deja aire dentro: abajo, 16 px menos. */
+.partner-apply { padding: var(--section-space) 0 calc(var(--section-space) - 16px); }
 .pform { background: #fff; border: 1px solid #e1e8f1; border-radius: 16px; padding: 24px; margin-top: 18px; max-width: 760px; }
 .pform-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .pfield { display: flex; flex-direction: column; gap: 6px; min-width: 0; }

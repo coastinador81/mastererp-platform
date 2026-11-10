@@ -1,11 +1,12 @@
 /* Copia fiel de como-funciona.css del prototipo (home-v22-propuesta).
    Se inyecta solo mientras la vista está montada (hooks/useViewStyles), como el PROTO. */
 .how-page{--how-blue:#0052bc;--how-aqua:#3acebc;--how-ink:#101c29;--how-muted:#596b7c;--how-line:#dce6ed;--how-soft:#f2f8fc;background:#fff;color:var(--how-ink)}
-.how-page .header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.96);backdrop-filter:blur(18px)}
 .how-page h1,.how-page h2,.how-page h3{font-weight:500}
 .how-page h1 span,.how-page h2 span{color:var(--how-blue)}
 .how-page .eyebrow{font-size:.8125rem;letter-spacing:.1em}
-.how-hero{min-height:780px;display:grid;grid-template-columns:.88fr 1.12fr;gap:clamp(50px,7vw,105px);align-items:center;padding-block:clamp(82px,9vw,140px)}
+/* Ritmo común (--section-space, de productos.css). Junto al índice de etapas (.how-index),
+   16 px más: el contenido queda a la misma distancia que entre dos secciones. */
+.how-hero{display:grid;grid-template-columns:.88fr 1.12fr;gap:clamp(50px,7vw,105px);align-items:center;padding-block:var(--section-space) calc(var(--section-space) + 16px)}
 .how-hero h1{font-size:clamp(3.55rem,6.35vw,6.45rem);line-height:.95;letter-spacing:-.065em;margin:24px 0 28px}
 .how-lead{max-width:620px;color:var(--how-muted);font-size:1.125rem;line-height:1.75;margin-bottom:32px}
 .how-actions{display:flex;flex-wrap:wrap;gap:12px}
@@ -42,9 +43,12 @@
 .how-index a:last-child{border-right:0}
 .how-index a span{color:var(--how-blue);font-size:.6875rem}
 .how-index a:hover{color:var(--how-blue)}
-.journey-section{padding-block:clamp(105px,12vw,175px)}
-.journey-heading{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(45px,8vw,130px);align-items:end;margin-bottom:55px}
-.journey-heading .eyebrow{grid-column:1/-1;margin-bottom:-18px}
+/* Termina en un recuadro (la demo) y le sigue una banda: abajo, el ritmo común entero, para que
+   el recuadro no se quede pegado a la banda. */
+.journey-section{padding-block:calc(var(--section-space) + 16px) var(--section-space)}
+/* El hueco ancho es solo entre columnas: entre el antetítulo y el título, 40 px (24 con su margen). */
+.journey-heading{display:grid;grid-template-columns:1.05fr .95fr;column-gap:clamp(45px,8vw,130px);row-gap:40px;align-items:end;margin-bottom:55px}
+.journey-heading .eyebrow{grid-column:1/-1;margin-bottom:-16px}
 .journey-heading h2{font-size:clamp(2.8rem,4.9vw,4.85rem);line-height:1.02;margin:0}
 .journey-heading>p:last-child{color:var(--how-muted);font-size:1.0625rem;margin:0}
 .journey-demo{border:1px solid #d7e4ed;border-radius:30px;overflow:hidden;background:#f1f7fb}
@@ -56,7 +60,11 @@
 .journey-tabs button>span{grid-row:1/3;color:var(--how-aqua);font-size:.6875rem}
 .journey-tabs strong{font-size:.9375rem;font-weight:550}
 .journey-tabs small{font-size:.6875rem;color:#8195a5}
-.journey-panel{display:grid;grid-template-columns:1.2fr .8fr;min-height:560px}
+/* Alto mínimo del paso más alto en cada tramo de anchos (retícula de 8): al cambiar de pestaña,
+   el panel no cambia de alto y la página no salta. Lo que sobra va a la fila de la captura (1fr),
+   que la centra; la barra de arriba y el texto conservan su alto. */
+.journey-panel{display:grid;grid-template-columns:1.2fr .8fr;grid-template-rows:auto 1fr;min-height:480px}
+@media(min-width:1700px){.journey-panel{min-height:512px}}
 .journey-panel-top{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid #dbe5ed;color:#607688;font-size:.6875rem;letter-spacing:.07em}
 .journey-panel-top strong{color:var(--how-blue);font-size:.75rem;letter-spacing:0}
 .journey-panel-visual{position:relative;display:flex;flex-direction:column;justify-content:center;padding:55px;background:linear-gradient(145deg,#fafdff,#e9f5fc);overflow:hidden}
@@ -71,7 +79,7 @@
 .journey-panel-copy>span{font-size:.6875rem;color:var(--how-blue)}
 .journey-panel-copy h3{font-size:2.15rem;line-height:1.12;margin:0 0 18px}
 .journey-panel-copy p{color:var(--how-muted);font-size:.9375rem;margin:0}
-.how-story{padding-block:clamp(105px,12vw,170px);scroll-margin-top:88px}
+.how-story{padding-block:var(--section-space);scroll-margin-top:88px}
 .story-layout,.connect-story,.publish-layout{display:grid;grid-template-columns:.88fr 1.12fr;gap:clamp(55px,8vw,120px);align-items:center}
 .story-copy h2{font-size:clamp(2.8rem,4.6vw,4.65rem);line-height:1.02;margin:21px 0 28px}
 .story-copy>p:not(.eyebrow){color:var(--how-muted);font-size:1.0625rem}
@@ -88,7 +96,6 @@
 .conversation-answer span{font-size:.875rem;line-height:1.65;color:#3f5669}
 .conversation-compose{display:flex;justify-content:space-between;align-items:center;margin-top:30px;padding:13px 13px 13px 18px;border:1px solid #d7e2ea;border-radius:30px;color:#8192a0;font-size:.8125rem}
 .conversation-compose b{width:34px;height:34px;display:grid;place-items:center;background:var(--how-blue);color:#fff;border-radius:50%}
-.connect-story{min-height:850px}
 .connection-canvas{position:relative;min-height:590px;background:linear-gradient(145deg,#f7fbff,#ebf7fc);border:1px solid #d6e5ee;border-radius:30px}
 .connection-canvas svg{position:absolute;inset:0;width:100%;height:100%;fill:none;stroke:#a7c6d9;stroke-width:1.3;stroke-dasharray:7 8}
 .connection-core{position:absolute;z-index:2;left:50%;top:50%;transform:translate(-50%,-50%);width:210px;height:210px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#fff;border:1px solid #c3dce9;border-radius:50%;box-shadow:0 22px 58px #164b7016}
@@ -164,15 +171,15 @@
 .publish-destinations strong{font-size:.875rem;margin:7px 0 3px}
 .publish-destinations span{font-size:.6875rem;color:#9eb1c0}
 .text-action{margin-top:22px;padding:0 0 8px;border:0;border-bottom:1px solid var(--how-blue);background:transparent;color:var(--how-blue);font-size:.875rem}
-.how-principles{display:grid;grid-template-columns:.82fr 1.18fr;gap:clamp(55px,8vw,120px);align-items:start;padding-block:clamp(105px,12vw,170px)}
+.how-principles{display:grid;grid-template-columns:.82fr 1.18fr;gap:clamp(55px,8vw,120px);align-items:start;padding-block:var(--section-space)}
 .how-principles h2{font-size:clamp(2.8rem,4.4vw,4.5rem);line-height:1.03;margin:20px 0 0}
 .principles-grid{display:grid;grid-template-columns:1fr 1fr;border-top:3px solid var(--how-ink)}
-.principles-grid article{min-height:220px;padding:24px;border-bottom:1px solid #cfdee7}
+.principles-grid article{padding:24px;border-bottom:1px solid #cfdee7}
 .principles-grid article:nth-child(odd){border-right:1px solid #cfdee7}
 .principles-grid article>span{font-size:.6875rem;color:var(--how-blue)}
 .principles-grid h3{font-size:1.25rem;margin:45px 0 10px}
 .principles-grid p{margin:0;color:var(--how-muted);font-size:.875rem}
-.how-close{text-align:center;padding:clamp(95px,10vw,145px) 30px;background:linear-gradient(135deg,#f0f7ff,#edf9f7);border-radius:32px;margin-bottom:110px}
+.how-close{text-align:center;padding:var(--section-space) 30px;background:linear-gradient(135deg,#f0f7ff,#edf9f7);border-radius:32px}
 .how-close>img{margin:0 auto 20px}
 .how-close h2{font-size:clamp(3rem,5vw,5rem);line-height:1.02;margin:21px 0 25px}
 .how-close>p:not(.eyebrow){max-width:680px;margin:0 auto 30px;color:var(--how-muted);font-size:1.0625rem}
@@ -184,7 +191,7 @@
 @keyframes resultBreath{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
 @keyframes publishDot{0%{left:0;opacity:0}18%{opacity:1}82%{opacity:1}100%{left:calc(100% - 7px);opacity:0}}
 @media(max-width:1100px){
-  .how-hero{grid-template-columns:1fr;min-height:auto}
+  .how-hero{grid-template-columns:1fr}
   .how-hero-copy{text-align:center}
   .how-lead{margin-inline:auto}
   .how-actions{justify-content:center}
@@ -198,13 +205,14 @@
   .coordinate-agents article{border-bottom:1px solid #385064}
   .connection-canvas,.publish-canvas{min-height:590px}
   .how-principles>div:first-child{max-width:720px}
+  .journey-panel{min-height:464px}
 }
 @media(max-width:800px){
   .how-index{grid-template-columns:repeat(5,165px);overflow-x:auto}
   .how-index a:first-child{padding-left:18px}
   .journey-demo{border-radius:22px}
   .journey-tabs{grid-template-columns:repeat(5,155px);overflow-x:auto}
-  .journey-panel{grid-template-columns:1fr}
+  .journey-panel{grid-template-columns:1fr;grid-template-rows:auto 1fr auto}
   .journey-panel-copy{padding:35px 30px}
   .workflow-browser{padding:20px;min-height:565px}
   .workflow-route{gap:8px}
@@ -220,7 +228,6 @@
   .how-principles{padding-inline:0}
 }
 @media(max-width:560px){
-  .how-hero{padding-top:62px}
   .how-hero h1{font-size:2.8rem}
   .how-lead{font-size:1rem}
   .how-actions{flex-direction:column}
@@ -239,6 +246,7 @@
   .journey-panel-copy{display:block}
   .journey-panel-copy>span{display:block;margin-bottom:16px}
   .journey-panel-copy h3{font-size:1.8rem}
+  .journey-panel{min-height:592px}
   .conversation-canvas{padding:20px}
   .conversation-title{display:block}
   .conversation-title span{display:block;margin-top:5px}
@@ -246,14 +254,18 @@
   .conversation-answer{grid-template-columns:38px 1fr}
   .conversation-answer img{width:38px;height:38px}
   .connection-canvas{min-height:820px}
+  /* Bandas que siguen a un recuadro (la demo, el lienzo): el recuadro queda a 40 px de la banda
+     y la banda empieza 16 px más arriba por dentro; los nodos de arriba y abajo del lienzo, a
+     16 px de su borde. Así el hueco entre textos no pasa de 112 px. */
+  .ask-story,.coordinate-story{padding-top:calc(var(--section-space) - 16px)}
   .connection-canvas svg{display:none}
   .connection-core{width:170px;height:170px}
   .connection-core img{width:78px;height:78px}
   .connection-node{width:155px}
-  .node-one{left:3%;top:4%}
+  .node-one{left:3%;top:2%}
   .node-two{right:3%;top:22%}
   .node-three{left:3%;bottom:22%}
-  .node-four{right:3%;bottom:4%}
+  .node-four{right:3%;bottom:2%}
   .coordinate-agents{grid-template-columns:1fr}
   .coordinate-agents article{border-right:0;min-height:240px}
   .review-canvas>article{grid-template-columns:42px 1fr}
@@ -267,8 +279,6 @@
   .principles-grid article:nth-child(odd){border-right:0}
   .how-close{padding-inline:22px}
   .how-close h2{font-size:2.65rem}
-  .main-nav{justify-content:flex-start;overflow-x:auto;flex-wrap:nowrap!important}
-  .main-nav a{flex:0 0 auto}
 }
 @media(prefers-reduced-motion:reduce){
   .how-page *{animation-duration:.01ms!important;animation-iteration-count:1!important}
@@ -277,10 +287,6 @@
 .journey-panel[data-active-step="coordinate"] .journey-panel-visual{background:linear-gradient(145deg,#f5f9ff,#e7f1ff)}
 .journey-panel[data-active-step="review"] .journey-panel-visual{background:linear-gradient(145deg,#fffdf8,#fff5df)}
 .journey-panel[data-active-step="publish"] .journey-panel-visual{background:linear-gradient(145deg,#f7fbff,#e9f8f4)}
-@media(max-width:560px){
-  .how-page .main-nav{justify-content:center;overflow:visible;flex-wrap:wrap!important}
-  .how-page .main-nav a{flex:0 1 auto}
-}
 .how-hero h1{font-size:clamp(3.15rem,5vw,5.15rem);line-height:.98}
 .journey-heading h2{font-size:clamp(2.55rem,4vw,3.85rem);line-height:1.06}
 .story-copy h2{font-size:clamp(2.45rem,3.75vw,3.75rem);line-height:1.06}

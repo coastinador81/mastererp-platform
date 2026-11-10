@@ -1,12 +1,11 @@
 /* Copia fiel de para-empresas.css del prototipo (home-v22-propuesta).
    Se inyecta solo mientras la vista está montada (hooks/useViewStyles), como el PROTO. */
 .enterprise-page{--enterprise-blue:#0052bc;--enterprise-aqua:#3acebc;--enterprise-ink:#101c29;--enterprise-muted:#596b7c;--enterprise-line:#dce5ed;--enterprise-soft:#f3f8fc;background:#fff;color:var(--enterprise-ink)}
-.enterprise-page .header{background:rgba(255,255,255,.96);position:sticky;top:0;z-index:50;backdrop-filter:blur(18px)}
-.enterprise-page .main-nav a[aria-current="page"]{color:var(--enterprise-blue)}
 .enterprise-page h1,.enterprise-page h2,.enterprise-page h3{font-weight:500}
 .enterprise-page h1 span,.enterprise-page h2 span{color:var(--enterprise-blue)}
 .enterprise-page .eyebrow{font-size:.8125rem;letter-spacing:.1em}
-.enterprise-hero{min-height:760px;display:grid;grid-template-columns:.84fr 1.16fr;gap:clamp(48px,7vw,100px);align-items:center;padding-block:clamp(78px,9vw,135px)}
+/* Ritmo común de las secciones: --section-space (productos.css). */
+.enterprise-hero{display:grid;grid-template-columns:.84fr 1.16fr;gap:clamp(48px,7vw,100px);align-items:center;padding-block:var(--section-space)}
 .enterprise-hero h1{font-size:clamp(3.5rem,6.5vw,6.5rem);line-height:.95;margin:24px 0 28px;letter-spacing:-.065em}
 .enterprise-lead{max-width:590px;color:var(--enterprise-muted);font-size:1.125rem;line-height:1.75;margin-bottom:32px}
 .enterprise-actions{display:flex;flex-wrap:wrap;gap:12px}
@@ -50,7 +49,7 @@
 .enterprise-index a:last-child{border-right:0}
 .enterprise-index a span{color:var(--enterprise-blue)}
 .enterprise-index a:hover{color:var(--enterprise-blue)}
-.enterprise-section{padding-top:clamp(100px,11vw,165px);padding-bottom:clamp(100px,11vw,165px)}
+.enterprise-section{padding-block:var(--section-space)}
 .enterprise-section-heading{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(40px,8vw,130px);align-items:end;margin-bottom:56px}
 .enterprise-section-heading .eyebrow{grid-column:1/-1;margin-bottom:-18px}
 .enterprise-section-heading h2{font-size:clamp(2.8rem,5vw,4.9rem);line-height:1.02;margin:0}
@@ -183,7 +182,7 @@
 .teams-grid img{width:76px;height:76px;object-fit:contain;margin:38px 0 26px}
 .teams-grid h3{font-size:1.45rem;margin-bottom:10px}
 .teams-grid p{color:#5a6f80;font-size:.875rem;margin:0}
-.enterprise-close{text-align:center;padding-top:clamp(105px,12vw,175px);padding-bottom:clamp(95px,11vw,150px)}
+.enterprise-close{text-align:center;padding-block:var(--section-space)}
 .enterprise-close>img{margin:0 auto 24px}
 .enterprise-close h2{font-size:clamp(3rem,5.3vw,5.2rem);line-height:1.02;margin:20px 0 26px}
 .enterprise-close>p:not(.eyebrow){max-width:680px;margin:0 auto 30px;color:var(--enterprise-muted);font-size:1.0625rem}
@@ -196,7 +195,7 @@
 @keyframes destinationPulse{0%,30%,100%{transform:translateX(0)}50%,70%{transform:translateX(-7px)}}
 @keyframes toastIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 @media(max-width:1050px){
-  .enterprise-hero{grid-template-columns:1fr;min-height:auto}
+  .enterprise-hero{grid-template-columns:1fr}
   .enterprise-hero-copy{text-align:center}
   .enterprise-hero-copy .enterprise-lead{margin-inline:auto}
   .enterprise-hero-copy .enterprise-actions{justify-content:center}
@@ -212,8 +211,6 @@
   .ecosystem-map{min-height:600px}
 }
 @media(max-width:800px){
-  .enterprise-page .main-nav:after{display:none}
-  .enterprise-hero{padding-top:62px}
   .enterprise-hero h1{font-size:3.7rem}
   .orbit-window{min-height:535px;padding:20px}
   .orbit-metrics{grid-template-columns:1fr}
