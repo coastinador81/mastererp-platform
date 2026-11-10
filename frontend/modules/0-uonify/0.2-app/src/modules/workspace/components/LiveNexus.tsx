@@ -8,13 +8,21 @@ import { AmazonConnectionSettings, amazonReady, clearAmazonIntent, useAmazonConn
 import { BlenderConnectionSettings, useBlenderConnection } from '@/modules/blender';
 import { Dialog } from '@/shared/ui';
 import { useServiceStatus } from '../hooks/serviceStatus';
-import { NEXUS_APPS, NEXUS_CONNECTORS, NEXUS_FEATURED_REQUEST, NEXUS_PLATFORMS, type NexusApp, type NexusConnector } from '../model/nexusCatalog';
+import { NEXUS_APPS, NEXUS_CONNECTOR_ICONS, NEXUS_CONNECTORS, NEXUS_FEATURED_REQUEST, NEXUS_PLATFORMS, type NexusApp, type NexusConnector } from '../model/nexusCatalog';
 import { NexusRequestPanel } from './nexus/NexusRequestPanel';
 import { useNexusRequests } from './nexus/nexusRequests';
 import '../styles/connection-center.css';
 import '../styles/nexus-request.css';
 
 const markOf = (connector: NexusConnector) => NEXUS_PLATFORMS.find(platform => platform.id === connector.platform)?.mark ?? '+';
+
+/** Logotipo del conector (como los de Google Cloud o Drive); sin icono, la marca de su plataforma. */
+function ConnectorLogo({ connector }: { connector: NexusConnector }) {
+  const icon = NEXUS_CONNECTOR_ICONS[connector.id];
+  return icon
+    ? <span className={`nxs-logo nxs-logo-${connector.id}`}><img src={`/assets/brands/${icon}`} alt="" /></span>
+    : <span className="nxs-logo nxs-mark" aria-hidden="true">{markOf(connector)}</span>;
+}
 
 /** Catálogo de conexiones: flujos reales donde existen y solicitud de activación en el resto. */
 export function LiveNexus() {
@@ -84,14 +92,14 @@ export function LiveNexus() {
     const label = requests.isRequested(item.id) ? 'Ver solicitud de' : 'Activar';
     return <li key={item.id} className="nxs-app">
       <button className="nxs-app-main" onClick={() => setConnector(item)} aria-label={`Ver ${item.name}`}>
-        <span className="nxs-logo nxs-mark" aria-hidden="true">{markOf(item)}</span>
+        <ConnectorLogo connector={item} />
         <span className="nxs-app-copy"><strong>{item.name}</strong><span>{item.description}</span>{requestedNote(item.id)}</span>
       </button>
       <button className="nxs-app-action" onClick={() => setConnector(item)} aria-label={`${label} ${item.name}`} title={`${label} ${item.name}`}><Plus size={19} /></button>
     </li>;
   };
   const dialogTitle = connector
-    ? <span className="nxs-dialog-title"><span className="nxs-logo nxs-mark" aria-hidden="true">{markOf(connector)}</span>{connector.name}</span>
+    ? <span className="nxs-dialog-title"><ConnectorLogo connector={connector} />{connector.name}</span>
     : selected && <span className="nxs-dialog-title"><span className={`nxs-logo nxs-logo-${selected.id}`}><img src={`/assets/brands/${selected.icon}`} alt="" /></span>{selected.name}</span>;
   const selectedRequest = selected && byRequest(selected) ? NEXUS_FEATURED_REQUEST[selected.id as 'amazon' | 'chatgpt'] : null;
   const fetching = state.isFetching || amazon.isFetching || blender.isFetching;
