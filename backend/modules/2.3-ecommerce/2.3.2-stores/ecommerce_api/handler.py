@@ -22,9 +22,10 @@ def _validate_payment_configuration(changes):
     details = configuration.get("paymentDetails", {})
     if not isinstance(payments, dict) or not isinstance(details, dict):
         raise HttpError(400, "Invalid payment configuration", code="invalid_request")
-    for key in ("efectivo", "al-recibir", "pago-movil", "transferencia"):
+    for key in ("efectivo", "al-recibir", "pago-movil", "transferencia", "punto-venta-entrega", "punto-venta-retiro"):
         if key in payments and not isinstance(payments[key], bool):
             raise HttpError(400, "Payment flags must be boolean", code="invalid_request")
+    _validate_custom_methods(details.get("customMethods", []))
     mobile = details.get("mobilePayment")
     transfer = details.get("bankTransfer")
     if payments.get("pago-movil") is True and (not isinstance(mobile, dict)
@@ -37,6 +38,20 @@ def _validate_payment_configuration(changes):
             or not re.fullmatch(r"\d{4}", str(transfer.get("bankCode", "")))
             or not re.fullmatch(r"\d{10,30}", str(transfer.get("accountNumber", "")))):
         raise HttpError(400, "Invalid bank transfer recipient", code="invalid_request")
+
+
+def _validate_custom_methods(methods):
+    if not isinstance(methods, list) or len(methods) > 10:
+        raise HttpError(400, "Invalid custom payment methods", code="invalid_request")
+    ids = set()
+    for item in methods:
+        if (not isinstance(item, dict) or set(item) - {"id", "name", "instructions", "enabled"}
+                or not re.fullmatch(r"[a-z0-9-]{1,40}", str(item.get("id", ""))) or item["id"] in ids
+                or not isinstance(item.get("name"), str) or not 2 <= len(item["name"].strip()) <= 60
+                or not isinstance(item.get("instructions"), str) or not 1 <= len(item["instructions"].strip()) <= 500
+                or not isinstance(item.get("enabled"), bool)):
+            raise HttpError(400, "Invalid custom payment method", code="invalid_request")
+        ids.add(item["id"])
 
 
 def _header(event, name):
@@ -129,9 +144,11 @@ def _checkout(event, repository, claims):
         raise HttpError(400, "Checkout fields and Idempotency-Key are required", code="invalid_request")
     method = payload.get("payment_method")
     reference = payload.get("payment_reference")
-    if method not in ("cash", "mobile", "transfer") or (method != "cash" and (
+    if method not in ("cash", "pos", "mobile", "transfer", "custom") or (method not in ("cash", "pos") and (
             not isinstance(reference, str) or not reference.isdigit() or not 4 <= len(reference) <= 40)):
         raise HttpError(400, "Valid payment method and reference are required", code="invalid_request")
+    if method == "custom" and not re.fullmatch(r"[a-z0-9-]{1,40}", str(payload.get("payment_method_id", ""))):
+        raise HttpError(400, "Valid payment method is required", code="invalid_request")
     payer = _payer(method, payload.get("payer"))
     profile = _verified_profile(claims)
     order = repository.checkout(profile, payload, key)
@@ -141,7 +158,7 @@ def _checkout(event, repository, claims):
 
 
 def _payer(method, payer):
-    if payer is None or method == "cash":
+    if payer is None or method not in ("mobile", "transfer"):
         return None
     phone = payer.get("phone") if isinstance(payer, dict) else None
     holder = payer.get("holder") if isinstance(payer, dict) else None

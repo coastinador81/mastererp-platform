@@ -1,6 +1,13 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { cleanPayer, payerError } from './payer.mjs';
+import { cleanPayer, needsPayer, needsReference, payerError } from './payer.mjs';
+
+test('only bank methods ask for payer details; manual methods ask for a reference', () => {
+  assert.deepEqual(['cash', 'pos', 'mobile', 'transfer', 'custom:zelle'].map(needsPayer), [false, false, true, true, false]);
+  assert.deepEqual(['cash', 'pos', 'mobile', 'transfer', 'custom:zelle'].map(needsReference), [false, false, true, true, true]);
+  assert.equal(payerError('pos', {}), '');
+  assert.equal(payerError('custom:zelle', {}), '');
+});
 
 test('normalizes payer details before checkout', () => {
   assert.deepEqual(cleanPayer('mobile', { bankCode: ' 0102 ', document: 'v 1234 5678', phone: '0412-123-4567', holder: 'Ana' }),

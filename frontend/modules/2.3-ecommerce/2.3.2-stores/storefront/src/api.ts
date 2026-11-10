@@ -38,14 +38,15 @@ export async function submitCheckout(lines: CartLine[], address: string | Custom
       reference: address.reference, latitude: address.latitude, longitude: address.longitude,
     },
     delivery_method: 'realtime',
-    payment_method: paymentMethod,
+    payment_method: paymentMethod.startsWith('custom:') ? 'custom' : paymentMethod,
+    payment_method_id: paymentMethod.startsWith('custom:') ? paymentMethod.slice(7) : undefined,
     payment_reference: paymentReference || undefined,
   };
   window.dispatchEvent(new CustomEvent('mastererp:checkout', { detail }));
   const result = await authorizedIdentityFetch(`${storefrontConfig.api}/v1/storefront/checkout`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Idempotency-Key': key, 'X-Tenant-Id': storefrontConfig.tenant },
-    body: JSON.stringify({ domain: storefrontConfig.domain, ...detail, payer: paymentMethod === 'cash' ? undefined : payer }),
+    body: JSON.stringify({ domain: storefrontConfig.domain, ...detail, payer: paymentMethod === 'mobile' || paymentMethod === 'transfer' ? payer : undefined }),
   });
   sessionStorage.removeItem(storageKey);
   return result as { number: string };

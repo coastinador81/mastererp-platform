@@ -23,7 +23,8 @@ export type StorefrontCatalog = {
   products: Product[];
 };
 
-export type PaymentMethod = 'cash' | 'mobile' | 'transfer';
+export type PaymentMethod = 'cash' | 'pos' | 'mobile' | 'transfer' | `custom:${string}`;
+export type CustomPaymentMethod = { id: string; name: string; instructions: string; enabled: boolean };
 export type PaymentRecipient = {
   document: string;
   phone?: string;
@@ -39,11 +40,12 @@ export type StoreConfiguration = {
   paymentDetails?: {
     mobilePayment?: PaymentRecipient | null;
     bankTransfer?: PaymentRecipient | null;
+    customMethods?: CustomPaymentMethod[];
   };
 };
 
 export type PayerDetails = { bankCode: string; document: string; phone?: string; holder?: string };
-export type CustomerPaymentMethod = PayerDetails & { method: Exclude<PaymentMethod, 'cash'>; updatedAt: string };
+export type CustomerPaymentMethod = PayerDetails & { method: 'mobile' | 'transfer'; updatedAt: string };
 
 export type CartLine = { product: Product; quantity: number };
 export type CustomerProfile = { id: string; name: string; code: string; phone: string; birthDate: string; photoUrl?: string };

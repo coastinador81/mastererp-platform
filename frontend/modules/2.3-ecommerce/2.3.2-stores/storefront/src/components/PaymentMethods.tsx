@@ -13,11 +13,20 @@ type Props = {
   onPayer: (payer: PayerDetails) => void;
 };
 
-const options: { id: PaymentMethod; title: string; hint: string; icon: keyof typeof Ionicons.glyphMap }[] = [
+type Option = { id: PaymentMethod; title: string; hint: string; icon: keyof typeof Ionicons.glyphMap };
+const BUILT_IN: Option[] = [
   { id: 'mobile', title: 'Pago móvil', hint: 'Paga con los datos de esta tienda.', icon: 'phone-portrait-outline' },
-  { id: 'cash', title: 'Pago al recibir', hint: 'Coordina el pago durante la entrega.', icon: 'cash-outline' },
+  { id: 'cash', title: 'Pago al recibir', hint: 'Paga en efectivo durante la entrega.', icon: 'cash-outline' },
+  { id: 'pos', title: 'Punto de venta', hint: 'Paga con tarjeta al entregar tu pedido.', icon: 'card-outline' },
   { id: 'transfer', title: 'Transferencia bancaria', hint: 'Transfiere a la cuenta de esta tienda.', icon: 'business-outline' },
 ];
+
+const customMethods = (configuration?: StoreConfiguration) => (configuration?.paymentDetails?.customMethods || []).filter(item => item.enabled && item.name?.trim() && item.instructions?.trim());
+const customFor = (method: PaymentMethod, configuration?: StoreConfiguration) => method.startsWith('custom:') ? customMethods(configuration).find(item => `custom:${item.id}` === method) : undefined;
+
+export function paymentLabel(method: PaymentMethod, configuration?: StoreConfiguration) {
+  return customFor(method, configuration)?.name || BUILT_IN.find(option => option.id === method)?.title || 'Otro método';
+}
 
 function recipientFor(method: PaymentMethod, configuration?: StoreConfiguration) {
   if (method === 'mobile') return configuration?.paymentDetails?.mobilePayment;
@@ -28,12 +37,15 @@ function recipientFor(method: PaymentMethod, configuration?: StoreConfiguration)
 function configured(method: PaymentMethod, configuration?: StoreConfiguration) {
   const flags = configuration?.payments;
   if (method === 'cash') return flags?.efectivo !== false && flags?.['al-recibir'] !== false;
+  if (method === 'pos') return flags?.['punto-venta-entrega'] === true;
   if (method === 'mobile') return flags?.['pago-movil'] === true && Boolean(recipientFor(method, configuration));
-  return flags?.transferencia === true && Boolean(recipientFor(method, configuration));
+  if (method === 'transfer') return flags?.transferencia === true && Boolean(recipientFor(method, configuration));
+  return Boolean(customFor(method, configuration));
 }
 
 export function PaymentMethods({ configuration, method, reference, payer, onMethod, onReference, onPayer }: Props) {
-  const recipient = recipientFor(method, configuration);
+  const recipient = recipientFor(method, configuration), custom = customFor(method, configuration);
+  const options = [...BUILT_IN, ...customMethods(configuration).map((item): Option => ({ id: `custom:${item.id}`, title: item.name.trim(), hint: 'Paga y luego indica la referencia.', icon: 'wallet-outline' }))];
   return <View style={styles.wrap}>
     {options.map(option => {
       const enabled = configured(option.id, configuration);
@@ -44,9 +56,19 @@ export function PaymentMethods({ configuration, method, reference, payer, onMeth
         <Ionicons name={selected ? 'radio-button-on' : 'radio-button-off'} size={22} color={selected ? colors.primary : colors.muted} />
       </Pressable>;
     })}
-    {method !== 'cash' && recipient ? <PaymentDetails method={method} recipient={recipient} reference={reference} onReference={onReference} /> : null}
-    {method !== 'cash' && recipient ? <PayerFields method={method} payer={payer} onPayer={onPayer} /> : null}
+    {recipient ? <PaymentDetails method={method} recipient={recipient} reference={reference} onReference={onReference} /> : null}
+    {recipient ? <PayerFields method={method} payer={payer} onPayer={onPayer} /> : null}
+    {custom ? <View style={styles.details}>
+      <Text style={styles.detailsTitle}>Cómo pagar con {custom.name.trim()}</Text>
+      <Text style={styles.data}>{custom.instructions.trim()}</Text>
+      <ReferenceInput reference={reference} onReference={onReference} />
+    </View> : null}
   </View>;
+}
+
+function ReferenceInput({ reference, onReference }: { reference: string; onReference: (value: string) => void }) {
+  return <><Text style={styles.referenceLabel}>Número de referencia</Text>
+    <TextInput value={reference} onChangeText={onReference} inputMode="numeric" maxLength={40} placeholder="Ej. 12345678" placeholderTextColor={colors.muted} style={styles.input} /></>;
 }
 
 function PayerFields({ method, payer, onPayer }: { method: PaymentMethod; payer: PayerDetails; onPayer: (payer: PayerDetails) => void }) {
@@ -71,8 +93,7 @@ function PaymentDetails({ method, recipient, reference, onReference }: { method:
     <Text style={styles.data}>Banco: {recipient.bankCode}{recipient.bankName ? ` · ${recipient.bankName}` : ''}</Text>
     {recipient.accountNumber ? <Text style={styles.data}>Cuenta: {recipient.accountNumber}</Text> : null}
     {recipient.accountHolder ? <Text style={styles.data}>Titular: {recipient.accountHolder}</Text> : null}
-    <Text style={styles.referenceLabel}>Número de referencia</Text>
-    <TextInput value={reference} onChangeText={onReference} inputMode="numeric" maxLength={40} placeholder="Ej. 12345678" placeholderTextColor={colors.muted} style={styles.input} />
+    <ReferenceInput reference={reference} onReference={onReference} />
   </View>;
 }
 

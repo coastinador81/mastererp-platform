@@ -35,6 +35,8 @@ class PaymentMethod(StringEnum):
     MOBILE_PAYMENT = "mobile_payment"
     BANK_TRANSFER = "bank_transfer"
     CASH = "cash"
+    POINT_OF_SALE = "pos"
+    CUSTOM = "custom"
 
 
 class PaymentStatus(StringEnum):
@@ -109,7 +111,7 @@ def payment_allows_operational_progress(
         parsed_status = PaymentStatus(str(status))
     except ValueError:
         return False
-    if parsed_method is PaymentMethod.CASH:
+    if parsed_method in (PaymentMethod.CASH, PaymentMethod.POINT_OF_SALE):
         return parsed_status is PaymentStatus.PENDING_COLLECTION
     return parsed_status is PaymentStatus.VALIDATED
 

@@ -9,8 +9,11 @@ export function cleanPayer(method, payer = {}) {
   };
 }
 
+export const needsPayer = method => method === 'mobile' || method === 'transfer';
+export const needsReference = method => needsPayer(method) || String(method).startsWith('custom:');
+
 export function payerError(method, payer) {
-  if (method === 'cash') return '';
+  if (!needsPayer(method)) return '';
   if (!/^\d{4}$/.test(payer.bankCode)) return 'Indica el código de 4 dígitos de tu banco.';
   if (!/^[VEJGP]-?\d{5,12}$/.test(payer.document)) return 'Indica tu cédula o RIF, por ejemplo V12345678.';
   if (method === 'mobile' && !/^0\d{10}$/.test(payer.phone || '')) return 'Indica el teléfono desde el que pagas, por ejemplo 04121234567.';

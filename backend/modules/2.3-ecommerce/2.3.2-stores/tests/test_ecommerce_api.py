@@ -140,6 +140,51 @@ class EcommerceApiTest(unittest.TestCase):
                          (200, {"items": []}))
         repository.payment_methods.assert_called_once_with(claims, "shop.example.invalid")
 
+    def test_payment_configuration_validates_pos_and_custom_methods(self):
+        valid = {"configuration": {"payments": {"punto-venta-entrega": True, "punto-venta-retiro": False},
+                 "paymentDetails": {"customMethods": [
+                     {"id": "zelle", "name": "Zelle", "instructions": "Envía a pagos@example.invalid", "enabled": True}]}}}
+        self.assertIsNone(_validate_payment_configuration(valid))
+        for methods in ([{"id": "Zelle!", "name": "Zelle", "instructions": "x", "enabled": True}],
+                        [{"id": "a", "name": "A", "instructions": "x", "enabled": True}],
+                        [{"id": "a", "name": "Aa", "instructions": "x", "enabled": True},
+                         {"id": "a", "name": "Bb", "instructions": "y", "enabled": True}],
+                        [{"id": "a", "name": "Aa", "instructions": "x", "enabled": "yes"}]):
+            with self.assertRaises(HttpError):
+                _validate_payment_configuration({"configuration": {"paymentDetails": {"customMethods": methods}}})
+        with self.assertRaises(HttpError):
+            _validate_payment_configuration({"configuration": {"payments": {"punto-venta-entrega": "true"}}})
+
+    @patch("ecommerce_api.handler._verified_profile")
+    def test_checkout_forwards_pos_and_custom_methods(self, verify):
+        claims = {"iss": "issuer", "sub": "subject"}
+        verify.return_value = claims
+        repository = Mock()
+        repository.checkout.return_value = {"id": "order-1"}
+        base = ('{"domain":"shop.example.invalid","items":[{"product_id":"p","quantity":1}],'
+                '"delivery":{"address":"QA"},"delivery_method":"realtime",')
+        pos = {"headers": {"Idempotency-Key": "checkout-pos"}, "body": base + '"payment_method":"pos"}'}
+        self.assertEqual(_checkout(pos, repository, claims)[0], 201)
+        custom = {"headers": {"Idempotency-Key": "checkout-custom"}, "body": base + (
+            '"payment_method":"custom","payment_method_id":"zelle","payment_reference":"778899",'
+            '"payer":{"bankCode":"0102","document":"V12345678"}}')}
+        self.assertEqual(_checkout(custom, repository, claims)[0], 201)
+        repository.save_payment_method.assert_not_called()
+        for body in ('"payment_method":"custom","payment_reference":"778899"}',
+                     '"payment_method":"custom","payment_method_id":"zelle"}'):
+            with self.assertRaises(HttpError):
+                _checkout({"headers": {"Idempotency-Key": "bad"}, "body": base + body}, repository, claims)
+
+    def test_custom_checkout_sends_method_id_to_database(self):
+        from ecommerce_api.repository import EcommerceRepository
+        connection = Mock()
+        connection.execute.return_value.fetchone.return_value = {"value": {"id": "order-1"}}
+        EcommerceRepository(connection).checkout({"iss": "issuer", "sub": "subject"}, {
+            "domain": "shop", "items": [], "delivery": {}, "delivery_method": "realtime",
+            "payment_method": "custom", "payment_method_id": "zelle", "payment_reference": "778899"}, "key")
+        self.assertEqual(connection.execute.call_args.args[1][6],
+                         {"method": "custom", "reference": "778899", "methodId": "zelle"})
+
     def test_checkout_rejects_bank_payment_without_reference(self):
         event = {"headers": {"Idempotency-Key": "checkout-mobile"}, "body": (
             '{"domain":"shop.example.invalid","items":[{}],"delivery":{"address":"QA"},'

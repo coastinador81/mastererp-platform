@@ -36,6 +36,11 @@ class OrdersDomainTests(unittest.TestCase):
             payment_status="PENDING_COLLECTION",
         )
 
+    def test_point_of_sale_collects_like_cash_and_custom_requires_validation(self):
+        self.assertTrue(payment_allows_operational_progress("pos", "PENDING_COLLECTION"))
+        self.assertFalse(payment_allows_operational_progress("custom", "PENDING_VERIFICATION"))
+        self.assertTrue(payment_allows_operational_progress("custom", "VALIDATED"))
+
     def test_electronic_payment_requires_validation(self):
         self.assertFalse(payment_allows_operational_progress("mobile_payment", "PENDING_VERIFICATION"))
         with self.assertRaisesRegex(InvalidOrderTransition, "Payment is not ready"):

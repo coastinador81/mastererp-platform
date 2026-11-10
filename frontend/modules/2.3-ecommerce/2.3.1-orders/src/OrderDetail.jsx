@@ -68,7 +68,7 @@ export default function OrderDetail({ order, writable, transition, close, nodeNa
       <div className="od-side">
         <SideCard title="Cliente"><div className="od-customer"><span>{initials}</span><div><strong>{customer.name||'Cliente del pedido'}</strong><small>{customerHistory(order,customerOrders)}</small></div></div><dl className="snapshot-fields"><div><dt>Correo</dt><dd>{customer.email||'Sin registrar'}</dd></div><div><dt>Teléfono</dt><dd>{customer.phone||'Sin registrar'}</dd></div></dl><SnapshotFields value={customer} exclude={['name','email','phone']}/>{customerUrl?<a className="od-button secondary full" href={customerUrl}>Ver ficha del cliente</a>:null}</SideCard>
         <SideCard title="Entrega"><dl className="snapshot-fields"><div><dt>Dirección</dt><dd>{address||'Dirección por confirmar'}</dd></div><div><dt>Método</dt><dd>{order.delivery_method==='scheduled'?'Entrega programada':'Entrega en tiempo real'}</dd></div>{nodeName?<div><dt>Nodo asignado</dt><dd>{nodeName}</dd></div>:null}</dl><DeliveryDetails delivery={delivery}/><CopyAddress address={address}/></SideCard>
-        <SideCard title="Pago"><dl className="snapshot-fields"><div><dt>Método</dt><dd>{paymentMethodLabel(payment.method)}</dd></div><div><dt>Estado</dt><dd>{paymentStatusLabel(payment.status)}</dd></div></dl><PaymentDetails payment={payment}/></SideCard>
+        <SideCard title="Pago"><dl className="snapshot-fields"><div><dt>Método</dt><dd>{paymentMethodLabel(payment.method,payment)}</dd></div><div><dt>Estado</dt><dd>{paymentStatusLabel(payment.status)}</dd></div></dl><PaymentDetails payment={payment}/></SideCard>
       </div>
     </div>
   </div>;
