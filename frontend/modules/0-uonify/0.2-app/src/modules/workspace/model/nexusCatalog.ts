@@ -74,6 +74,24 @@ export const NEXUS_CONNECTORS: readonly NexusConnector[] = [
   { id: 'custom-webhook', platform: 'custom', name: 'Webhooks', category: CUSTOM, description: 'Eventos HTTP de tus sistemas.', does: 'Recibe en Uonify los eventos que envían tus sistemas.', uony: ['Reaccionar a pedidos, altas y cambios', 'Avisarte de lo que necesita tu atención'], permissions: ['Recibir eventos firmados con HMAC', 'Reintentar entregas fallidas'] },
 ];
 
+/**
+ * Icono de cada conector (public/assets/brands/…): logotipos de Simple Icons (CC0) con su color
+ * oficial, los de Google Drive, Google Cloud y OpenAI que ya usa Nexus, el de Microsoft 365, y
+ * losetas con el color de la marca y un pictograma de lucide (ISC); cada SVG de brands/nexus lo indica.
+ * Simple Icons no trae Microsoft, AWS ni OpenAI. Las marcas solo identifican cada servicio.
+ */
+export const NEXUS_CONNECTOR_ICONS: Readonly<Record<string, string>> = {
+  'meta-whatsapp': 'nexus/meta-whatsapp.svg', 'meta-instagram': 'nexus/meta-instagram.svg',
+  'meta-facebook': 'nexus/meta-facebook.svg', 'meta-messenger': 'nexus/meta-messenger.svg',
+  'ms-365': 'nexus/ms-365.svg', 'ms-outlook': 'nexus/ms-outlook.svg', 'ms-teams': 'nexus/ms-teams.svg',
+  'ms-sharepoint': 'nexus/ms-sharepoint.svg', 'ms-onedrive': 'nexus/ms-onedrive.svg', 'ms-azure-ai': 'nexus/ms-azure-ai.svg',
+  'g-workspace': 'nexus/g-workspace.svg', 'g-gmail': 'nexus/g-gmail.svg', 'g-drive': 'google-drive.png',
+  'g-calendar': 'nexus/g-calendar.svg', 'g-gemini': 'nexus/g-gemini.svg', 'g-vertex': 'google-cloud.png',
+  'openai-api': 'openai-blossom.svg',
+  'aws-bedrock': 'nexus/aws-bedrock.svg', 'aws-ses': 'nexus/aws-ses.svg', 'aws-s3': 'nexus/aws-s3.svg',
+  'custom-api': 'nexus/custom-api.svg', 'custom-webhook': 'nexus/custom-webhook.svg',
+};
+
 /** Ficha de solicitud de las conexiones destacadas sin flujo propio activo. */
 export const NEXUS_FEATURED_REQUEST: Record<'amazon' | 'chatgpt', NexusRequestDetails> = {
   amazon: { does: 'Conecta tu cuenta de Amazon Seller Central para gestionar tu catálogo desde Uonify.', uony: ['Preparar y mejorar tus fichas de producto', 'Revisar el estado de tus publicaciones', 'Detectar fichas incompletas'], permissions: ['Leer tu catálogo y tus publicaciones', 'Actualizar fichas tras tu confirmación'] },
