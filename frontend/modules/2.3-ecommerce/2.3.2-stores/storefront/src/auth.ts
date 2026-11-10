@@ -32,6 +32,14 @@ async function postStorefrontIdentity(path: string, body: Record<string, unknown
 }
 
 export const isAuthenticated = () => sessionExpiresAt() > Date.now();
+export function sessionEmail() {
+  try {
+    const payload = identityToken()?.split('.')[1];
+    if (!payload) return '';
+    const claims = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')));
+    return typeof claims.email === 'string' ? claims.email : '';
+  } catch { return ''; }
+}
 export const startLogin = (provider?: 'Google') => login(authConfig, provider ? { identityProvider: provider } : {});
 export const startRegistration = () => login(authConfig, { screen: 'signup' });
 export const signOut = () => logout(authConfig);
