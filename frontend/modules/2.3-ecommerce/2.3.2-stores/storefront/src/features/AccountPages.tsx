@@ -36,7 +36,7 @@ export function PaymentMethodsPage() {
       : status === 'error' ? <InfoCard icon="alert-circle-outline" title="No pudimos cargar tus métodos de pago" body="Inténtalo nuevamente en unos minutos." />
       : methods.length ? methods.map(item => <View key={item.method} style={styles.card}><View style={styles.icon}><Ionicons name={item.method === 'mobile' ? 'phone-portrait-outline' : 'business-outline'} size={22} color={colors.primaryDark} /></View><View style={styles.copy}><Text style={styles.cardTitle}>{item.method === 'mobile' ? 'Pago móvil' : 'Transferencia bancaria'}</Text><View style={styles.details}><Text style={styles.detail}>Banco: {item.bankCode}</Text><Text style={styles.detail}>Documento: {item.document}</Text>{item.phone ? <Text style={styles.detail}>Teléfono: {item.phone}</Text> : null}{item.holder ? <Text style={styles.detail}>Titular: {item.holder}</Text> : null}</View></View></View>)
       : <InfoCard icon="card-outline" title="Aún no tienes métodos guardados" body="Cuando pagues con Pago móvil o Transferencia, guardaremos tus datos para tu próxima compra." />}
-    <Text style={styles.note}>Se actualizan cada vez que confirmas una compra con Pago móvil o Transferencia.</Text>
+    {authenticated && status === 'ready' && methods.length ? <Text style={styles.note}>Los usamos para completar tu próxima compra más rápido.</Text> : null}
   </Page>;
 }
 
