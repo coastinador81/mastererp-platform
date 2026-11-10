@@ -23,6 +23,7 @@ from .uony_drive_scope import attach_to_job, settle_turn
 from .uony_read_intent import ReadIntentCheck, counted
 from .uony_written_failure import written_failure
 from .uony_drive_focus import focus_instruction
+from .uony_erp_focus import attach_erp, erp_instruction, validate_erp_result
 from .uony_live_text import ProvisionalText
 
 logger = logging.getLogger(__name__)
@@ -58,6 +59,7 @@ ADK_ALLOWED_TOOLS = frozenset({
     'get_creative_preparation',
     'request_drive_scope', 'list_drive_folders', 'list_drive_files', 'get_drive_item',
     'count_drive_folders', 'read_drive_document',
+    'get_finance_context', 'list_finance_documents', 'get_finance_document',  # ERP: GET, nunca en voz (C5).
 })
 # A Live function call is intent classification, never authorization. These
 # tools can read saved state, prepare a question/selection card, or persist the
@@ -225,6 +227,8 @@ class ConversationWorker:
                                 'message':'La conexión del encargo hablado cambió.'})
                         context['liveHandoffIntent']=handoff['intent']
                         context.spoken_forms(body.text)  # Voice keeps its form opt-in until F1.
+                    else:  # C5: la credencial del ERP, solo en encargos escritos de este worker.
+                        attach_erp(self,user,job,body,context)
                     # A written Drive order reaches the agent, which asks the server
                     # for its scope (request_drive_scope); no regex answers it and
                     # no second click is required («Consultor google», F0).
@@ -310,7 +314,8 @@ class ConversationWorker:
                     reply,usage=provider.generate(token,cloud['project_id'],history,context,
                         model=agent_model_for(handoff),effort=AGENT_EFFORT,
                         on_attempt=reserve,on_complete=accounting.complete,
-                        policy=policy,ledger=ledger,instruction=focus_instruction(context.get('driveFocus')),
+                        policy=policy,ledger=ledger,
+                        instruction=erp_instruction(context,focus_instruction(context.get('driveFocus'))),
                         **({'on_text':live.text,'on_clear':live.clear} if live else {}))
                     usage=accounting.total(usage)
                 elif supports_streaming(job['engine'],provider,self.streaming_enabled):
@@ -383,6 +388,7 @@ class ConversationWorker:
                 c.execute('''UPDATE uony_requests SET model=%s,effort=%s,selection_reason=%s
                     WHERE user_id=%s AND request_id=%s''',(agent_model,agent_effort,reason,user['id'],job['request_id']))
             validate_drive_result(self,c,user,job,context)
+            validate_erp_result(c,user,context)  # C4: la huella del ERP del turno, como la de Drive.
             if context.assignment_action_conflict:
                 raise HTTPException(409,detail={'error':'assignment_action_conflict',
                     'message':'Uony ha mezclado un encargo nuevo con otra acción. No se ha aplicado ningún cambio; vuelve a indicar cuál quieres iniciar.'})

@@ -31,6 +31,8 @@ from .google_drive_provider import GoogleDriveProvider
 from .google_drive_oauth import routes as drive_oauth_routes
 from .google_drive_routes import routes as drive_routes
 from .google_cloud_routes import routes as cloud_routes
+from .mastererp_oauth import routes as erp_connection_routes
+from .erp_routes import routes as erp_routes
 from .amazon_provider import AmazonProvider
 from .amazon_routes import routes as amazon_routes
 from .amazon_incidents_service import AmazonIncidents
@@ -123,6 +125,9 @@ def create_app(settings, provider=None, stripe=None, cloud=None, drive=None, uon
     app.include_router(drive_router)
     app.include_router(drive_routes(settings, database, drive))
     app.include_router(cloud_router)
+    # ERP · Finanzas: conexión como Drive (incluye /api/auth/mastererp/callback) y sus pantallas.
+    app.include_router(erp_connection_routes(settings, database))
+    app.include_router(erp_routes(settings, database))
     app.include_router(google_setup_routes(settings, database, cloud))
     app.include_router(amazon_routes(settings, database, amazon))
     app.include_router(incident_routes(settings, database, amazon, incidents=incidents))

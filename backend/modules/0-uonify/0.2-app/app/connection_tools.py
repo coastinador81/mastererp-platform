@@ -1,6 +1,10 @@
 """Controles conocidos de conexión; mostrarlos nunca concede ni revoca permisos."""
 
-PROVIDERS = {'amazon': 'Amazon', 'cloud': 'Google Cloud', 'drive': 'Google Drive', 'blender': 'Blender local'}
+PROVIDERS = {'amazon': 'Amazon', 'cloud': 'Google Cloud', 'drive': 'Google Drive', 'blender': 'Blender local',
+             'erp': 'ERP · Finanzas'}
+# Clave de cada proveedor en el estado de la cuenta; la del ERP la pone el worker (observe).
+STATUS_KEYS = {'amazon': 'amazonConnection', 'cloud': 'googleCloud', 'drive': 'drive', 'blender': 'blenderLocal',
+               'erp': 'erp'}
 AMAZON_ACTION = {'provider': 'amazon', 'action': 'manage'}
 DECLARATIONS = [{
     'name': 'show_amazon_connection',
@@ -12,7 +16,7 @@ DECLARATIONS = [{
     'parameters': {'type': 'OBJECT', 'properties': {}},
 }, {
     'name': 'show_connection',
-    'description': 'Muestra controles reales de conexión en esta conversación para Amazon, Google Cloud, Google Drive o Blender local. No conecta, desconecta ni concede permisos.',
+    'description': 'Muestra controles reales de conexión en esta conversación para Amazon, Google Cloud, Google Drive, Blender local o ERP · Finanzas. No conecta, desconecta ni concede permisos.',
     'parameters': {'type': 'OBJECT', 'properties': {'provider': {'type': 'STRING', 'enum': list(PROVIDERS)}}, 'required': ['provider']},
 }]
 
@@ -22,6 +26,11 @@ class ConnectionActions:
         self._providers = []
         self._account_deletion = False
         self._statuses = status if isinstance(status, dict) else {'amazonConnection': status}
+
+    def observe(self, key, status):
+        """Estado que el de la cuenta no trae (el del ERP, en el worker): un valor o una función
+        que solo se consulta al mostrar la tarjeta."""
+        self._statuses = {**self._statuses, key: status}
 
     def show_amazon(self, args):
         if not isinstance(args, dict) or args:
@@ -41,7 +50,9 @@ class ConnectionActions:
         provider = args['provider']
         if provider not in self._providers:
             self._providers.append(provider)
-        raw = self._statuses.get({'amazon': 'amazonConnection', 'cloud': 'googleCloud', 'drive': 'drive', 'blender': 'blenderLocal'}[provider])
+        raw = self._statuses.get(STATUS_KEYS[provider])
+        if callable(raw):
+            raw = raw()
         if isinstance(raw, dict):
             raw = raw.get('status')
         status = raw if raw in ('connected', 'disconnected', 'reauthorize', 'offline', 'online') else 'unknown'

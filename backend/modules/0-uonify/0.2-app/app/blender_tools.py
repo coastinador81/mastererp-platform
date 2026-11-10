@@ -18,6 +18,7 @@ from .product_intake import IntakeTools, DECLARATION as INTAKE_DECLARATION
 from .product_memory import ProductLinkTools, LINK_DECLARATION
 from .uony_assignment_tool import AssignmentTools, DECLARATION as ASSIGNMENT_DECLARATION
 from .drive_read_tools import DriveReadTools, DRIVE_READ_DECLARATIONS, DRIVE_READ_NAMES
+from .finance_read_tools import FinanceReadTools, FINANCE_READ_DECLARATIONS, FINANCE_READ_NAMES
 from .blender_metrics import record
 from . import blender_store as store
 
@@ -52,7 +53,7 @@ def form_requested(user_text):
 
 
 class BusinessTools(ProductTools):
-    declarations=PRODUCT_DECLARATIONS+DECLARATIONS+CONNECTION_DECLARATIONS+FORM_DECLARATIONS+CREATIVE_DECLARATIONS+PREPARATION_DECLARATIONS+[GUIDE_DECLARATION,INTAKE_DECLARATION,LINK_DECLARATION,ASSIGNMENT_DECLARATION]+INCIDENT_DECLARATIONS+MATERIAL_DECLARATIONS+DRIVE_READ_DECLARATIONS
+    declarations=PRODUCT_DECLARATIONS+DECLARATIONS+CONNECTION_DECLARATIONS+FORM_DECLARATIONS+CREATIVE_DECLARATIONS+PREPARATION_DECLARATIONS+[GUIDE_DECLARATION,INTAKE_DECLARATION,LINK_DECLARATION,ASSIGNMENT_DECLARATION]+INCIDENT_DECLARATIONS+MATERIAL_DECLARATIONS+DRIVE_READ_DECLARATIONS+FINANCE_READ_DECLARATIONS
 
     def __init__(self,status,database,user,active,request_id,incidents=None,materials=None,thread_id=None,user_text=''):
         super().__init__(status,database,user,active)
@@ -77,6 +78,7 @@ class BusinessTools(ProductTools):
         self.incidents=IncidentTools(incidents,user['id'],request_id)
         self.materials=MaterialTools(materials,database,user)
         self.drive_read=DriveReadTools(materials)
+        self.finance_read=FinanceReadTools(database,user['id'],thread_id)  # Sin credencial hasta attach_erp (worker).
 
     def spoken_forms(self,user_text):
         """A spoken job keeps the transcript's explicit form opt-in until F1."""
@@ -95,6 +97,8 @@ class BusinessTools(ProductTools):
     def call(self,name,args):
         if name in DRIVE_READ_NAMES:
             return self.drive_read.call(name,args)
+        if name in FINANCE_READ_NAMES:  # Solo lectura, como Drive: no prepara ninguna acción.
+            return self.finance_read.call(name,args)
         if name=='get_creative_preparation':
             if args != {}:
                 return {'error':'invalid_tool','message':'Esta consulta no recibe argumentos.'}

@@ -19,6 +19,7 @@ from google.genai import types
 from pydantic import PrivateAttr
 
 from .drive_read_tools import DRIVE_READ_NAMES
+from .finance_read_tools import FINANCE_READ_NAMES, TURN_ENDING as FINANCE_TURN_ENDING
 from .google_cloud_provider import CloudError
 from .google_setup_diagnostics import REASONS, api_error_reason
 from .uony_adk_provider import _model_for_request, _provider_error
@@ -47,6 +48,9 @@ PARALLEL_READ_TOOLS = frozenset({
     # and surfaced to the client as "La petición no terminó" (invalid_response).
     'list_drive_folders', 'list_drive_files',
     'get_drive_item', 'count_drive_folders', 'read_drive_document',
+    # ERP · Finanzas: GET sin efectos (Consultor C5: con ello entran en LIVE_TEXT_TOOLS, el texto
+    # progresivo escrito, nunca en la voz).
+    'get_finance_context', 'list_finance_documents', 'get_finance_document',
 })
 # The four audited read kinds can be combined in one model response. The
 # per-turn budget below still bounds repeated database work across responses.
@@ -91,6 +95,10 @@ class _BusinessTool(BaseTool):
             if not hasattr(self.status, 'call'):
                 raise invalid('tool_unavailable')
             result = self.status.call(self.name, args)
+            if (self.name in FINANCE_READ_NAMES and isinstance(result, dict)
+                    and result.get('error') in FINANCE_TURN_ENDING):
+                # El ERP perdido o cambiado: su tarjeta y su texto, nunca los de Google Cloud.
+                raise CloudError(result['error'])
             if isinstance(result, dict) and result.get('error') in (
                     'reauthorize', 'permission_denied', 'account_mismatch',
                     'connection_required', 'google_required'):

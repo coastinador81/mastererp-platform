@@ -30,6 +30,8 @@ FAILURE_MESSAGES={'restore_reconciliation_required':'Esta petición procede de u
     'reauthorize':'Para seguir, vuelve a autorizar la conexión de tu proyecto desde la tarjeta de esta conversación.',
     'permission_denied':'Para seguir, revisa los permisos y la facturación de tu proyecto desde la tarjeta de esta conversación.',
     'drive_reconnect':'Para seguir, vuelve a conectar tu Drive desde la tarjeta de esta conversación.',
+    'erp_reconnect':'Para seguir, conecta tu ERP desde la tarjeta de esta conversación.',
+    'erp_changed':'La conexión de tu ERP cambió mientras respondía; esta petición no se completó con otra cuenta o empresa.',
     'google_required':'Conecta tu cuenta y proyecto de Google para hablar con Uony.',
     'quota_exceeded':RETRY_LATER,
     'google_unavailable':RETRY_LATER,
@@ -71,6 +73,8 @@ def failure_card(code, provider_code=None):
         return [{'provider':'cloud','action':'manage'}]
     if code=='drive_reconnect':  # A lost Drive connection: Drive's card, not Cloud's.
         return [{'provider':'drive','action':'manage'}]
+    if code=='erp_reconnect':  # ERP · Finanzas sin conexión válida: su tarjeta.
+        return [{'provider':'erp','action':'manage'}]
     return None
 
 
