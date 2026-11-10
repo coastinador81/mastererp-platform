@@ -692,16 +692,22 @@ async function phaseVerify() {
   const source = gateSource();
   const rootPublic = /var ROOT_PUBLIC = true;/.test(source);
   const nojs = /var LEGAL_NOJS = true;/.test(source);
+  const apiOpen = /var API_OPEN = true;/.test(localCode(FUNCTIONS.api));
   const wsKey = crypto.randomBytes(16).toString('base64');
   const checks = [
     ['/api/health → 200 (origen, TLS, Host y X-Origin-Verify)', () => request(base + '/api/health', { accept: 'application/json' }),
       (r) => (r.status === 200 && /"status"\s*:\s*"ok"/.test(r.body) ? ['OK'] : ['FALLO', apiDiagnosis(r)])],
-    ['/api/auth/session sin cookie → 401 gate_required, sin WWW-Authenticate', () => request(base + '/api/auth/session', { accept: 'application/json' }),
-      (r) => (r.status === 401 && r.body.trim() === GATE_JSON && !r.headers['www-authenticate'] ? ['OK'] : ['FALLO', r.error || `llega ${r.status} ${r.body.slice(0, 80)}`])],
-    ['voz: handshake WebSocket /api/uony/live sin cookie → 401 gate_required', () => request(base + '/api/uony/live', {
+    apiOpen
+      ? ['/api/auth/session sin cookie → la API responde (API_OPEN: puerta de /api abierta por decisión del dueño)', () => request(base + '/api/auth/session', { accept: 'application/json' }),
+        (r) => (r.status === 200 && /"authenticated"\s*:\s*false/.test(r.body) ? ['OK'] : ['FALLO', r.error || `llega ${r.status} ${String(r.body).slice(0, 80)}`])]
+      : ['/api/auth/session sin cookie → 401 gate_required, sin WWW-Authenticate', () => request(base + '/api/auth/session', { accept: 'application/json' }),
+        (r) => (r.status === 401 && r.body.trim() === GATE_JSON && !r.headers['www-authenticate'] ? ['OK'] : ['FALLO', r.error || `llega ${r.status} ${r.body.slice(0, 80)}`])],
+    [`voz: handshake WebSocket /api/uony/live sin cookie → ${apiOpen ? 'lo decide la API, no la puerta (API_OPEN)' : '401 gate_required'}`, () => request(base + '/api/uony/live', {
       connection: 'Upgrade', upgrade: 'websocket', 'sec-websocket-key': wsKey, 'sec-websocket-version': '13', origin: 'https://' + ALIAS,
       'sec-fetch-mode': 'websocket', 'sec-fetch-dest': 'websocket', 'sec-fetch-site': 'same-origin',
-    }), (r) => (r.status === 401 && r.body.trim() === GATE_JSON ? ['OK'] : ['FALLO', r.error || `llega ${r.status}${r.status === 101 ? ': ¡el WebSocket se abre sin puerta!' : ''}`])],
+    }), (r) => (apiOpen
+      ? (!r.error && String(r.body).trim() !== GATE_JSON ? ['OK', `llega ${r.status}`] : ['FALLO', r.error || 'la puerta sigue respondiendo gate_required'])
+      : (r.status === 401 && r.body.trim() === GATE_JSON ? ['OK'] : ['FALLO', r.error || `llega ${r.status}${r.status === 101 ? ': ¡el WebSocket se abre sin puerta!' : ''}`]))],
     ['/espacio (navegación) sin cookie → 401 con reto Basic', () => request(base + '/espacio', NAV),
       (r) => (r.status === 401 && /^Basic realm="Uonify DEV"/.test(r.headers['www-authenticate'] || '') ? ['OK'] : ['FALLO', r.error || `llega ${r.status}`])],
     ['/espacio (subrecurso) sin cookie → 403 de la puerta, sin WWW-Authenticate', () => request(base + '/espacio', { 'sec-fetch-mode': 'cors', 'sec-fetch-dest': 'empty' }),

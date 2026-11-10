@@ -372,7 +372,10 @@ export async function deployTests({ test, assert, eq, deepEq, HERE, FAKE_BIN, TM
         } else {
           eq(r.status, 1, 'verify con nginx que rechaza');
           assert(/FALLO\s+\/api\/health.*X-Origin-Verify falta o no coincide/.test(r.stdout), r.stdout);
-          assert(/OK\s+\/api\/auth\/session/.test(r.stdout), 'la puerta de /api sigue respondiendo antes que el origen');
+          // Cerrada, la puerta de /api responde antes que el origen; con API_OPEN la petición llega al origen que rechaza.
+          if (/var API_OPEN = true;/.test(fs.readFileSync(path.join(HERE, 'gate-api.js'), 'utf8'))) {
+            assert(/FALLO\s+\/api\/auth\/session/.test(r.stdout), 'con API_OPEN, /api/auth/session tiene que llegar al origen (y aquí fallar)');
+          } else assert(/OK\s+\/api\/auth\/session/.test(r.stdout), 'la puerta de /api sigue respondiendo antes que el origen');
         }
       } finally {
         child.kill();
