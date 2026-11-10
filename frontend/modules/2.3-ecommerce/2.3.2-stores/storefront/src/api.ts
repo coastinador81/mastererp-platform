@@ -1,5 +1,6 @@
 import { authorizedIdentityFetch } from '../../../../../shared/auth/cognito.mjs';
 import { assertStorefrontContext, storefrontConfig } from './config';
+import { fetchWithTimeout } from './request-timeout.mjs';
 import type { CartLine, CustomerAddress, CustomerOrder, CustomerPaymentMethod, CustomerProfile, PayerDetails, PaymentMethod, StorefrontCatalog } from './types';
 
 const portalUrl = (path: string) => `${storefrontConfig.api}${path}?domain=${encodeURIComponent(storefrontConfig.domain)}`;
@@ -8,7 +9,7 @@ const portalOptions = (options: RequestInit = {}) => ({ ...options, headers: { '
 export async function loadCatalog(): Promise<StorefrontCatalog> {
   assertStorefrontContext();
   const url = `${storefrontConfig.api}/v1/storefront/catalog?domain=${encodeURIComponent(storefrontConfig.domain)}`;
-  const response = await fetch(url, { headers: { 'X-Tenant-Id': storefrontConfig.tenant } });
+  const response = await fetchWithTimeout(fetch, url, { headers: { 'X-Tenant-Id': storefrontConfig.tenant } });
   const body = await response.json();
   if (!response.ok) throw new Error(body.error?.message || 'No se pudo abrir la tienda.');
   return body as StorefrontCatalog;

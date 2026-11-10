@@ -9,13 +9,14 @@ import {
   sessionExpiresAt,
 } from '../../../../../shared/auth/cognito.mjs';
 import { assertStorefrontContext, storefrontConfig, storefrontScope } from './config';
+import { fetchWithTimeout } from './request-timeout.mjs';
 
 const invitationKey = () => `mastererp.storefront.invitation:${storefrontScope()}`;
 
 async function postStorefrontIdentity(path: string, body: Record<string, unknown>) {
   const token = identityToken();
   if (!token) return { ok: false, status: 401, code: 'session_expired' as const };
-  const response = await fetch(`${storefrontConfig.api}${path}`, {
+  const response = await fetchWithTimeout(fetch, `${storefrontConfig.api}${path}`, {
     method: 'POST',
     cache: 'no-store',
     credentials: 'omit',

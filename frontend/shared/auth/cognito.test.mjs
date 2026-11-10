@@ -106,6 +106,17 @@ test('refresh accepts an OAuth response without id token and persists token rota
   clearSession();
 });
 
+test('configured auth timeout aborts a stalled Cognito refresh', async () => {
+  const timedConfig={...config,requestTimeoutMs:5};
+  const store=new Map([['mastererp.dev.refresh',JSON.stringify({refreshToken:'saved-refresh',clientId:config.clientId,callbackUrl:config.callbackUrl,createdAt:Date.now()})]]);
+  globalThis.sessionStorage={getItem:key=>store.get(key)??null,setItem:(key,value)=>store.set(key,value),removeItem:key=>store.delete(key)};
+  globalThis.fetch=async(_url,{signal})=>new Promise((_resolve,reject)=>{
+    signal.addEventListener('abort',()=>reject(new DOMException('Aborted','AbortError')));
+  });
+  await assert.rejects(restoreSession(timedConfig),/La conexión está tardando demasiado/);
+  clearSession();
+});
+
 test('transition alias app-dev still completes login with its own callback', async () => {
   const store=new Map();
   globalThis.sessionStorage={getItem:k=>store.get(k)??null,setItem:(k,v)=>store.set(k,v),removeItem:k=>store.delete(k)};

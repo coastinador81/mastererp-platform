@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState, type PropsWithChildren } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type PropsWithChildren } from 'react';
 import { completeLoginIfNeeded, isAuthenticated } from '../auth';
 import { loadCatalog } from '../api';
 import { storefrontScope } from '../config';
@@ -15,6 +15,7 @@ type StoreState = {
   add: (product: Product, quantity?: number) => void;
   setQuantity: (id: string, quantity: number) => void;
   clearCart: () => void;
+  refreshCatalog: () => Promise<void>;
   refreshSession: () => Promise<void>;
 };
 
@@ -34,6 +35,16 @@ export function StoreProvider({ children }: PropsWithChildren) {
   const [sessionLoading, setSessionLoading] = useState(true);
   const [sessionError, setSessionError] = useState('');
   const [error, setError] = useState('');
+
+  const refreshCatalog = useCallback(async () => {
+    setLoading(true);
+    setError('');
+    try { setCatalog(await loadCatalog()); }
+    catch (reason) {
+      setCatalog(null);
+      setError(reason instanceof Error ? reason.message : 'No se pudo abrir la tienda.');
+    } finally { setLoading(false); }
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -74,12 +85,13 @@ export function StoreProvider({ children }: PropsWithChildren) {
       ? lines.filter(line => line.product.id !== id)
       : lines.map(line => line.product.id === id ? { ...line, quantity } : line)),
     clearCart: () => setCart([]),
+    refreshCatalog,
     refreshSession: async () => {
       setSessionLoading(true); setSessionError('');
       try { setAuthenticated(await completeLoginIfNeeded()); }
       finally { setSessionLoading(false); }
     },
-  }), [authenticated, cart, catalog, error, loading, sessionError, sessionLoading]);
+  }), [authenticated, cart, catalog, error, loading, refreshCatalog, sessionError, sessionLoading]);
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;
 }

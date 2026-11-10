@@ -17,7 +17,7 @@ const greeting = (hour = new Date().getHours()) => hour < 12 ? 'Buenos días' : 
 export default function HomePage() {
   const router = useRouter();
   const width = useLayoutWidth();
-  const { catalog, loading, error, authenticated } = useStore();
+  const { catalog, loading, error, authenticated, refreshCatalog } = useStore();
   const [profileName, setFirstName] = useState('');
   const firstName = authenticated ? profileName : '';
   useEffect(() => {
@@ -29,8 +29,8 @@ export default function HomePage() {
     return () => { active = false; };
   }, [authenticated]);
   const cardWidth = width < 520 ? '47%' : '31%';
-  if (loading) return <Screen><AppLoading title="Preparando tu tienda…" detail="Estamos cargando productos, precios y disponibilidad." /></Screen>;
-  if (!catalog) return <Screen><Text style={styles.error}>{error || 'No se pudo abrir la tienda.'}</Text></Screen>;
+  if (loading) return <Screen><AppLoading title="Cargando productos…" detail="Consultando precios y disponibilidad." /></Screen>;
+  if (!catalog) return <Screen><View style={styles.loadError}><Ionicons name="cloud-offline-outline" size={34} color={colors.danger} /><Text style={styles.error}>{error || 'No se pudo abrir la tienda.'}</Text><Pressable style={styles.retry} onPress={() => void refreshCatalog()}><Text style={styles.retryText}>Reintentar</Text></Pressable></View></Screen>;
   return <Screen>
     <View style={styles.intro}><Text style={styles.eyebrow}>{firstName ? `${greeting()}, ${firstName}` : greeting()}</Text><Text style={styles.title}>¿Qué necesitas hoy?</Text></View>
     <ShoppingAssistant />
@@ -46,7 +46,7 @@ export default function HomePage() {
 }
 
 const styles = StyleSheet.create({
-  error: { marginTop: 80, color: colors.danger, textAlign: 'center' }, intro: { paddingTop: 30 }, eyebrow: { color: colors.primary, fontSize: 13, fontWeight: '800' }, title: { marginTop: 6, color: colors.ink, fontSize: 36, lineHeight: 40, fontWeight: '900', letterSpacing: -1.4 },
+  loadError: { minHeight: 320, alignItems: 'center', justifyContent: 'center', padding: spacing.xl }, error: { maxWidth: 300, marginTop: spacing.sm, color: colors.danger, textAlign: 'center' }, retry: { marginTop: spacing.md, paddingHorizontal: spacing.lg, paddingVertical: 12, borderRadius: radii.pill, backgroundColor: colors.primary }, retryText: { color: colors.surface, fontWeight: '900' }, intro: { paddingTop: 30 }, eyebrow: { color: colors.primary, fontSize: 13, fontWeight: '800' }, title: { marginTop: 6, color: colors.ink, fontSize: 36, lineHeight: 40, fontWeight: '900', letterSpacing: -1.4 },
   heading: { marginTop: 32, marginBottom: 14, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }, sectionTitle: { color: colors.ink, fontSize: 24, fontWeight: '900', letterSpacing: -0.7 }, seeAll: { color: colors.primaryDark, fontWeight: '800' },
   categories: { gap: 10, paddingRight: spacing.md }, category: { width: 138, height: 165, overflow: 'hidden', borderRadius: radii.md, backgroundColor: colors.surface }, categoryImage: { flex: 1, justifyContent: 'flex-end' }, categoryRadius: { borderRadius: radii.md }, categoryShade: { position: 'absolute', inset: 0, backgroundColor: '#0b1f331f' }, categoryFooter: { minHeight: 54, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 4, padding: 10, backgroundColor: '#fffffff2' }, categoryName: { flex: 1, color: colors.ink, fontSize: 13, fontWeight: '900' },
   promo: { minHeight: 230, marginTop: 18, overflow: 'hidden', justifyContent: 'center', borderRadius: radii.lg }, promoRadius: { borderRadius: radii.lg }, promoShade: { position: 'absolute', inset: 0, width: '78%', backgroundColor: '#157a3aeb' }, promoCopy: { width: '78%', padding: spacing.lg }, promoEyebrow: { color: colors.surface, fontSize: 9, fontWeight: '900', letterSpacing: 1.1 }, promoTitle: { marginTop: 7, color: colors.surface, fontSize: 29, fontWeight: '900' }, promoText: { maxWidth: 400, marginTop: 6, color: '#ffffffdc', lineHeight: 21 }, promoButton: { alignSelf: 'flex-start', marginTop: 16, flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 16, paddingVertical: 11, borderRadius: radii.pill, backgroundColor: colors.surface }, promoButtonText: { color: colors.primaryDark, fontWeight: '900' },

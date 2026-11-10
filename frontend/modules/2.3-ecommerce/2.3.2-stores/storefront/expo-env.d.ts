@@ -8,6 +8,16 @@ declare module '../../../../../shared/auth/cognito.mjs' {
   export const sessionExpiresAt: () => number;
 }
 
+declare module './src/request-timeout.mjs' {
+  export const STOREFRONT_REQUEST_TIMEOUT_MS: number;
+  export function fetchWithTimeout(
+    fetcher: typeof fetch,
+    url: string,
+    options?: RequestInit,
+    timeoutMs?: number,
+  ): Promise<Response>;
+}
+
 declare module './src/storefront-context.mjs' {
   export function resolveStorefrontContext(input: {
     browserDomain: string;

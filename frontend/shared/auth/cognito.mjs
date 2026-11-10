@@ -4,6 +4,21 @@ const refreshKey = 'mastererp.dev.refresh';
 let session = null;
 let refreshing = null;
 
+async function authFetch(config, url, options) {
+  const timeoutMs = Number(config.requestTimeoutMs || 0);
+  if (!Number.isFinite(timeoutMs) || timeoutMs <= 0) return fetch(url, options);
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, {...options, signal: controller.signal});
+  } catch (error) {
+    if (controller.signal.aborted) throw new Error('La conexión está tardando demasiado. Intenta nuevamente.');
+    throw error;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 function base64url(bytes) {
   return btoa(String.fromCharCode(...bytes)).replaceAll('+', '-').replaceAll('/', '_').replace(/=+$/, '');
 }
@@ -51,7 +66,7 @@ export async function completeLogin(config, href = window.location.href) {
   }
   const code = callback.searchParams.get('code');
   if (!code || callback.searchParams.has('error')) throw new Error('El acceso no se completó.');
-  const result = await fetch(new URL('/oauth2/token', config.loginBaseUrl), {
+  const result = await authFetch(config, new URL('/oauth2/token', config.loginBaseUrl), {
     method: 'POST', credentials: 'omit', cache: 'no-store',
     headers: {'Content-Type': 'application/x-www-form-urlencoded'},
     body: new URLSearchParams({grant_type: 'authorization_code', client_id: config.clientId,
@@ -75,7 +90,7 @@ export async function restoreSession(config) {
   if(!saved || typeof saved.refreshToken!=='string' || saved.clientId!==config.clientId || saved.callbackUrl!==config.callbackUrl){clearSession();return false;}
   if(refreshing)return refreshing;
   refreshing=(async()=>{
-    const result=await fetch(new URL('/oauth2/token',config.loginBaseUrl),{method:'POST',credentials:'omit',cache:'no-store',
+    const result=await authFetch(config,new URL('/oauth2/token',config.loginBaseUrl),{method:'POST',credentials:'omit',cache:'no-store',
       headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({grant_type:'refresh_token',client_id:config.clientId,refresh_token:saved.refreshToken})});
     if(!result.ok){clearSession();return false;}
     const body=await result.json();
