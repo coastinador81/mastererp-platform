@@ -89,6 +89,9 @@ export function startNewThread(projectId: string | null = null): void {
   focusComposer();
 }
 
+/** Servicios con ficha que se conserva al volver a elegirlos (mesa de Producto). */
+const keepsSheet = (service: ServiceId | null): boolean => service === 'producto' || service === 'erp';
+
 export function selectThread(id: string): void {
   const store = useWorkspaceStore.getState();
   const thread = store.threads.find(item => item.id === id);
@@ -99,10 +102,10 @@ export function selectThread(id: string): void {
   useWorkspaceStore.setState({ activeProjectId: thread.projectId ?? null });
   store.setConversationExpanded(true);
   // Entrar en Producto desde otro sitio abre su catálogo (salvo «nuevo producto»);
-  // dentro de Producto, un hilo de la misma vista deja la ficha como está.
+  // dentro de Producto (o de ERP · Finanzas), un hilo de la misma vista deja la ficha como está.
   const service = isServiceId(thread.service) ? thread.service : null;
-  const keepProducto = service === 'producto' && current.service === 'producto' && thread.view === current.view;
-  if (!keepProducto) navigateTo(servicePath(service, thread.view));
+  const keepSheet = keepsSheet(service) && current.service === service && thread.view === current.view;
+  if (!keepSheet) navigateTo(servicePath(service, thread.view));
   focusComposer();
 }
 
@@ -113,8 +116,8 @@ export function selectService(service: ServiceId, view: string = DEFAULT_VIEW): 
   const thread = activeThreadOf(store);
   if (thread) store.updateThread(thread.id, { service, view });
   closeServices();
-  // Volver a Producto desde su propio menú conserva la ficha abierta.
-  const keep = service === 'producto' && current.service === 'producto' && view === DEFAULT_VIEW;
+  // Volver a Producto (o a ERP · Finanzas) desde su propio menú conserva la ficha abierta.
+  const keep = keepsSheet(service) && current.service === service && view === DEFAULT_VIEW;
   if (!keep) navigateTo(servicePath(service, view));
   if (workspaceRefs.workspace) workspaceRefs.workspace.scrollTop = 0;
 }

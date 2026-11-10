@@ -8,6 +8,7 @@
     "build:dev": "node scripts/build-dev.mjs",
     "dev": "expo start --web",
     "lint": "expo lint",
+    "test": "node --test src/*.test.mjs",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

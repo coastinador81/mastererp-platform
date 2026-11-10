@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Crear agente · Centro de Agentes</title>
+  <link rel="license" href="/shared/Inter-OFL.txt">
+  <link rel="stylesheet" href="/agents-web/agent-builder.css">
+  <script type="module" src="/shared/module-launcher.mjs"></script>
+  <style>
+    :root{--blue:#096bdc;--violet:#6849c7;--violet-soft:#f1edff;--ink:#374151;--text:#4b5563;--muted:#667085;--line:#e8edf3;--bg:#f6f8fc;--card:#fff;font-family:Inter,system-ui,sans-serif}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5}
+    .kicker{font-size:11px;letter-spacing:.08em;color:var(--violet);font-weight:600}
+    .skip{position:absolute;left:-999px}.skip:focus{position:fixed;left:10px;top:10px;z-index:70;background:#fff;padding:10px;color:var(--blue)}
+    @font-face{font-family:Inter;font-style:normal;font-weight:100 900;font-display:swap;src:url('/shared/Inter-latin-variable.woff2') format('woff2')}
+    :root{--header:80px;--service-width:72px;--nav-compact:64px;--nav-expanded:256px}
+    .app{display:block;min-height:100svh}.top{position:sticky;top:0;z-index:40;height:var(--header);background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 28px;gap:16px}.top-start,.top-actions{display:flex;align-items:center;gap:14px}.top-actions{margin-left:auto}.top .brand{margin:0;text-decoration:none;font-size:23px;font-weight:500;color:var(--ink);line-height:1.3}.top .brand span{display:block;margin-top:4px;font-size:12px;font-weight:400;color:var(--muted)}
+    .workspace{display:grid;grid-template-columns:var(--service-width) var(--nav-compact) minmax(0,1fr);min-height:calc(100svh - var(--header))}
+    .nav-icon{display:block;width:21px;height:21px;flex:none;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+    .service-rail{position:sticky;top:var(--header);height:calc(100svh - var(--header));overflow:auto;border-right:1px solid var(--line);background:var(--bg)}
+    .navigation-slot{position:sticky;top:var(--header);height:calc(100svh - var(--header));z-index:30;min-width:0}
+    .side{position:absolute;left:0;top:0;width:var(--nav-compact);height:100%;padding:20px 8px;background:#fff;overflow-x:hidden;overflow-y:auto;transition:width 180ms ease,box-shadow 180ms ease}
+    .side:is(:hover,:focus-within){width:var(--nav-expanded);box-shadow:12px 0 24px #23385214}
+    .nav{display:flex;flex-direction:column;gap:8px}.nav a{display:flex;align-items:center;gap:14px;min-height:44px;padding:11px 13px;border-radius:9px;color:var(--text);text-decoration:none;white-space:nowrap;font-size:14px;font-weight:400}.nav a:hover{background:#f4f7fb}.nav a[aria-current=page]{background:#eaf3ff;color:var(--blue)}
+    .nav-label,.side-foot{opacity:0;visibility:hidden;transition:opacity 120ms ease;white-space:nowrap}.side:is(:hover,:focus-within) .nav-label,.side:is(:hover,:focus-within) .side-foot{opacity:1;visibility:visible}
+    .side-foot{margin-top:auto;padding:18px 10px 0;font-size:12px;color:var(--muted)}.side-foot strong{font-weight:500}
+    .content-pane{min-width:0}.avatar{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:#eff6ff;color:var(--blue);font-weight:600}
+    .uony-toggle{display:grid;place-items:center;width:40px;height:40px;padding:8px;border:1px solid transparent;border-radius:50%;background:transparent;cursor:pointer}.uony-toggle:hover{background:#eff6ff;border-color:#d8e2f0}.uony-toggle img{width:24px;height:24px}
+    .mobile-menu,.nav-scrim{display:none}
+    @media(max-width:800px){.top{padding:0 16px}.mobile-menu{display:grid;place-items:center;width:36px;height:36px;border:1px solid var(--line);border-radius:8px;background:#fff;font:inherit}.workspace{grid-template-columns:minmax(0,1fr);grid-template-rows:84px auto}.service-rail{height:84px;border-bottom:1px solid var(--line)}.navigation-slot{display:none;position:fixed;left:0;top:calc(var(--header)+84px);width:var(--nav-expanded);height:calc(100svh - var(--header) - 84px);z-index:38}.app.menu-open .navigation-slot{display:block}.app.menu-open .nav-scrim{display:block;position:fixed;inset:calc(var(--header)+84px) 0 0;background:#17243b33;border:0;z-index:37}.side,.side:is(:hover,:focus-within){width:var(--nav-expanded)}.nav-label,.side-foot{opacity:1;visibility:visible}}
+    a:focus-visible,button:focus-visible{outline:2px solid #2563eb;outline-offset:3px}
+  </style>
+</head>
+<body>
+<a class="skip" href="#builder-panel">Saltar al asistente</a>
+<div class="app">
+  <header class="top">
+    <div class="top-start">
+      <button class="mobile-menu" type="button" aria-label="Abrir menú de Agentes" aria-controls="agents-navigation" aria-expanded="false">☰</button>
+      <a class="brand" href="./?vista=agentes">Centro de Agentes<span>Crear agente personalizado</span></a>
+    </div>
+    <div class="top-actions">
+      <button type="button" class="uony-toggle" aria-label="Uony en Centro de Agentes" title="Uony"><img src="/shared/uonify-isotipo.svg" alt="" aria-hidden="true"/></button>
+      <mastererp-module-launcher current-app="agents"></mastererp-module-launcher>
+      <span class="avatar" aria-label="Cuenta de empresa">E</span>
+    </div>
+  </header>
+  <div class="workspace">
+    <div class="service-rail"><mastererp-related-services current-app="agents" related-apps="uonify,finance,ecommerce,inventory,agents"></mastererp-related-services></div>
+    <div class="navigation-slot">
+      <aside class="side" id="agents-navigation">
+        <nav class="nav" aria-label="Centro de Agentes">
+          <a href="./?vista=inicio"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 11 9-8 9 8M5 10v11h5v-7h4v7h5V10"/></svg><span class="nav-label">Inicio</span></a>
+          <a href="./?vista=agentes" aria-current="page"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="7" width="16" height="14" rx="4"/><path d="M12 7V3M2 12v5m20-5v5M9 16h6"/></svg><span class="nav-label">Agentes</span></a>
+          <a href="./?vista=conocimiento"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5c-3-2-6-2-9-1v15c3-1 6-1 9 1m0-15c3-2 6-2 9-1v15c-3-1-6-1-9 1V5Z"/></svg><span class="nav-label">Conocimiento</span></a>
+        </nav>
+        <p class="side-foot">Origen: <strong>Personalizado</strong></p>
+      </aside>
+    </div>
+    <button class="nav-scrim" type="button" aria-label="Cerrar menú"></button>
+    <section class="content-pane" id="content">
+      <div class="builder-layout">
+        <nav class="builder-steps" id="builder-steps" aria-label="Pasos del asistente"></nav>
+        <section class="builder-form" id="builder-panel" tabindex="-1"></section>
+        <aside class="builder-preview" id="builder-preview" aria-label="Vista previa del agente">
+          <button type="button" class="preview-mobile-toggle" id="toggle-preview">Mostrar u ocultar vista previa</button>
+          <h2>Vista previa</h2>
+          <div id="preview-body"></div>
+        </aside>
+      </div>
+    </section>
+  </div>
+  <footer class="builder-footer">
+    <button type="button" class="btn-ghost" id="btn-cancel">Cancelar</button>
+    <span class="builder-progress" id="builder-progress">Paso 1 de 5</span>
+    <div class="builder-actions">
+      <button type="button" class="btn-secondary" id="btn-back">Atrás</button>
+      <button type="button" class="btn-primary" id="btn-next">Continuar</button>
+    </div>
+  </footer>
+  <div id="draft-toast" class="drafts-toast" hidden role="status"></div>
+</div>
+<script type="module" src="/agents-web/agent-builder.mjs"></script>
+<script>
+const app=document.querySelector('.app'),toggle=document.querySelector('.mobile-menu'),side=document.querySelector('.side');
+function mobileMenu(open){app.classList.toggle('menu-open',open);toggle.setAttribute('aria-expanded',String(open));}
+toggle?.addEventListener('click',()=>mobileMenu(!app.classList.contains('menu-open')));
+document.querySelector('.nav-scrim')?.addEventListener('click',()=>mobileMenu(false));
+</script>
+</body>
+</html>

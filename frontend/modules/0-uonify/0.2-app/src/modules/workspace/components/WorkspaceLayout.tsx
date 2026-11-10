@@ -39,6 +39,9 @@ import '../styles/index.css';
  * Las páginas que no son servicios (Configuración) ocupan todo el ancho bajo la
  * cabecera, sin conversación.
  */
+
+/** Servicios con mesa propia también en vivo: su módulo pinta la vista en el <Outlet/>. */
+const MODULE_WORKBENCHES: readonly string[] = ['producto', 'erp', 'agentes'];
 function WorkspaceShell() {
   useLiveHistory();
   useDurableRecovery();
@@ -103,7 +106,9 @@ function WorkspaceShell() {
   // Una página usa la cabecera en barra de los servicios, sin panel de conversación.
   const pageClasses = mode === 'page' ? ['is-module', 'is-chat-hidden', 'is-page'] : [];
   const columnClass = ['workspace-column', mode === 'chat' ? 'is-chat' : '', ...pageClasses, ...Object.entries(layout.columnClasses).filter(([, on]) => on).map(([name]) => name)].filter(Boolean).join(' ');
-  const workspaceClass = ['workspace', mode === 'home' ? 'is-home' : '', mode === 'page' ? 'is-page' : '', route.service === 'producto' ? 'is-product' : ''].filter(Boolean).join(' ');
+  // Producto, ERP · Finanzas y Agentes pintan su mesa a todo el ancho (lista lateral y centro).
+  const workbench = route.service !== null && MODULE_WORKBENCHES.includes(route.service);
+  const workspaceClass = ['workspace', mode === 'home' ? 'is-home' : '', mode === 'page' ? 'is-page' : '', workbench ? 'is-product' : ''].filter(Boolean).join(' ');
 
   return (
     <>
@@ -126,7 +131,7 @@ function WorkspaceShell() {
             inert={backgroundInert}
             onClick={onWorkspaceClick}
           >
-            {!USE_MOCKS && route.service && route.service !== 'producto' ? <LiveServiceView service={route.service} /> : !USE_MOCKS && !route.service && route.pathname !== '/espacio' ? <LiveServices /> : <Outlet />}
+            {!USE_MOCKS && route.service && !MODULE_WORKBENCHES.includes(route.service) ? <LiveServiceView service={route.service} /> : !USE_MOCKS && !route.service && route.pathname !== '/espacio' ? <LiveServices /> : <Outlet />}
           </main>
           {layout.centred ? null : <ConversationPanel hidden={place === 'hidden'} inert={navOpen} sidePanel={layout.sidePanel} withComposer={mode === 'chat' || mode === 'module'} />}
           <p className="sr-only" id="conversation-live" role="status" aria-live="polite">

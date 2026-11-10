@@ -1,0 +1,30 @@
+# dev.uonify.com usa el bucket uonify-dev-web-* (us-east-1), NO vars.UONIFY_DEV_BUCKET (app-dev, us-west-1).
+# Hasta que exista un rol OIDC con permiso en ese bucket, el job fallará y la publicación es manual (upload_dist / aws s3).
+name: Publish Uonify home-v22 DEV
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: mastererp-dev-uonify-home-v22
+  cancel-in-progress: false
+
+jobs:
+  verify-bundle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Comprobar parche del lanzador en home-v22
+        run: |
+          set -euo pipefail
+          FILE=frontend/modules/0-uonify/0.2-app/web/home-v22-propuesta/index.html
+          grep -q 'mastererp-module-launcher' "$FILE"
+          grep -q 'module-launcher.mjs' "$FILE"
+          ! grep -q 'class="tools-trigger"' "$FILE" || { echo 'portada aún tiene tools-trigger'; exit 1; }
+          ! grep -q 'services-menu' "$FILE" || { echo 'espacio aún tiene services-menu'; exit 1; }
+      - name: Recordatorio de publicación manual
+        run: |
+          echo 'Publicar en s3://uonify-dev-web-277352717693/web/home-v22-propuesta/ (us-east-1) e invalidar E4N1UCPZZ2F0'

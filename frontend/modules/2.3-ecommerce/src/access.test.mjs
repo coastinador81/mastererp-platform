@@ -17,3 +17,8 @@ test('does not grant a different Operations capability', () => {
   assert.equal(canOpenOperationsRoute(authorized, 'nodes'), false);
   assert.equal(canOpenOperationsRoute(authorized, 'unknown'), false);
 });
+
+test('requires the Ecommerce read permission for payment configuration', () => {
+  assert.equal(canOpenOperationsRoute({...authorized, permissions: ['digital_sales.ecommerce.read']}, 'payments'), true);
+  assert.equal(canOpenOperationsRoute({...authorized, permissions: []}, 'payments'), false);
+});

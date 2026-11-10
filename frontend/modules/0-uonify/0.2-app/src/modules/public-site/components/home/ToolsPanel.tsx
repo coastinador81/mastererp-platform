@@ -1,19 +1,15 @@
 import { forwardRef } from 'react';
 import { SiteLink } from '../common/SiteLink';
-import { SERVICE_CATALOG, type CatalogServiceId } from '@/modules/workspace/model/services';
+import { SERVICE_CATALOG, type CatalogServiceId } from '@/modules/workspace';
 
 /**
- * Destino comercial de cada servicio activo en la Home. Los «Próximamente» se
- * muestran deshabilitados, sin enlace. La lista, el orden, los nombres, los
- * iconos y los estados salen de SERVICE_CATALOG (fuente única que comparte con el
- * lanzador del espacio).
+ * Destino de cada servicio en la Home: abre su servicio en el espacio (el Estudio, que
+ * vive en la conversación, abre el chat). La lista, el orden, los nombres, los iconos
+ * y los estados salen de SERVICE_CATALOG, la fuente única que comparte con el lanzador
+ * del espacio. Si un servicio vuelve a ser «Próximamente», se pinta deshabilitado, sin
+ * enlace y con su etiqueta.
  */
-const HOME_LINKS: Partial<Record<CatalogServiceId, string>> = {
-  producto: '/productos#catalogo',
-  estudio: '/productos',
-  erp: '/espacio?service=erp',
-  nexus: '/espacio?service=nexus',
-};
+const homeLink = (id: CatalogServiceId) => (id === 'estudio' ? '/espacio' : `/espacio?service=${id}`);
 
 /** Panel de herramientas de la portada (#tools-panel). */
 export const ToolsPanel = forwardRef<HTMLElement, { open: boolean }>(function ToolsPanel({ open }, ref) {
@@ -31,9 +27,8 @@ export const ToolsPanel = forwardRef<HTMLElement, { open: boolean }>(function To
               <span>{entry.name}</span>
             </>
           );
-          const to = entry.status === 'active' ? HOME_LINKS[entry.id] : undefined;
-          return to
-            ? <SiteLink key={entry.id} className="tool-entry" to={to}>{content}</SiteLink>
+          return entry.status === 'active'
+            ? <SiteLink key={entry.id} className="tool-entry" to={homeLink(entry.id)}>{content}</SiteLink>
             : (
               <button key={entry.id} className="tool-entry is-coming" type="button" disabled aria-disabled="true" title="Próximamente">
                 {content}

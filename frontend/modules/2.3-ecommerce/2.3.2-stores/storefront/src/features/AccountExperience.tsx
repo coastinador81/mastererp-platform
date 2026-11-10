@@ -1,0 +1,54 @@
+import { Ionicons } from '@expo/vector-icons';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'expo-router';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { loadProfile, saveProfile } from '../api';
+import { signOut, startLogin, startRegistration } from '../auth';
+import { AppLoading } from '../components/AppLoading';
+import { AddressManager } from '../components/AddressManager';
+import { Screen } from '../components/Screen';
+import { useStore } from '../store/StoreProvider';
+import { colors, radii, spacing } from '../theme';
+import type { CustomerProfile } from '../types';
+
+const MENU = [
+  { label: 'Mis datos y direcciones', detail: 'Nombre, teléfono y lugares de entrega', icon: 'person-outline', route: '/profile' },
+  { label: 'Métodos de pago', detail: 'Opciones habilitadas por esta tienda', icon: 'card-outline', route: '/payment-methods' },
+  { label: 'Mis compras', detail: 'Consulta pedidos y entregas', icon: 'bag-handle-outline', route: '/orders' },
+  { label: 'Mi carrito', detail: 'Continúa tu compra actual', icon: 'cart-outline', route: '/cart' },
+  { label: 'Notificaciones', detail: 'Elige qué avisos quieres recibir', icon: 'notifications-outline', route: '/notifications' },
+  { label: 'Seguridad', detail: 'Acceso y protección de tu cuenta', icon: 'lock-closed-outline', route: '/security' },
+  { label: 'Privacidad', detail: 'Conoce cómo se usan tus datos', icon: 'shield-checkmark-outline', route: '/privacy' },
+  { label: 'Ayuda', detail: 'Respuestas para comprar y recibir pedidos', icon: 'help-circle-outline', route: '/help' },
+] as const;
+
+export function AccountExperience() {
+  const router = useRouter(), { authenticated, sessionLoading } = useStore();
+  const [profile, setProfile] = useState<CustomerProfile | null>(null);
+  useEffect(() => { if (authenticated) loadProfile().then(setProfile).catch(() => undefined); }, [authenticated]);
+  if (sessionLoading) return <Screen><AppLoading title="Preparando tu cuenta…" detail="Recuperando tu sesión." /></Screen>;
+  return <Screen><View style={styles.page}><Text style={styles.eyebrow}>TODO EN UN LUGAR</Text><Text style={styles.title}>Mi cuenta</Text>
+    {!authenticated ? <View style={styles.login}><View style={styles.loginAvatar}><Ionicons name="person-outline" size={30} color="#b9f2e8" /></View><Text style={styles.loginTitle}>Compra más rápido</Text><Text style={styles.loginBody}>Inicia sesión para guardar direcciones, ver tus compras y completar pedidos con seguridad.</Text><Pressable style={styles.loginButton} onPress={() => void startLogin()}><Text style={styles.whiteText}>Iniciar sesión</Text><Ionicons name="arrow-forward" size={18} color={colors.surface} /></Pressable><Pressable style={styles.google} onPress={() => void startLogin('Google')}><Ionicons name="logo-google" size={18} color={colors.ink} /><Text style={styles.googleText}>Continuar con Google</Text></Pressable><Pressable onPress={() => void startRegistration()}><Text style={styles.register}>Crear una cuenta</Text></Pressable></View> : <>
+      <View style={styles.userCard}><View style={styles.avatar}><Text style={styles.avatarLetter}>{(profile?.name || 'T').slice(0, 1).toUpperCase()}</Text></View><View style={styles.userCopy}><Text style={styles.userName}>{profile?.name || 'Tu cuenta'}</Text><Text style={styles.userMeta}>{profile?.phone || 'Completa tus datos personales'}</Text><Text style={styles.userCode}>{profile?.code || ''}</Text></View></View>
+      <View style={styles.options}>{MENU.map(item => <Pressable key={item.route} style={styles.option} onPress={() => router.push(item.route)}><View style={styles.optionIcon}><Ionicons name={item.icon} size={21} color={colors.primary} /></View><View style={styles.optionCopy}><Text style={styles.optionTitle}>{item.label}</Text><Text style={styles.optionDetail}>{item.detail}</Text></View><Ionicons name="chevron-forward" size={18} color={colors.muted} /></Pressable>)}</View>
+      <Pressable style={styles.logout} onPress={signOut}><Ionicons name="log-out-outline" size={21} color={colors.danger} /><Text style={styles.logoutText}>Cerrar sesión</Text></Pressable>
+    </>}
+  </View></Screen>;
+}
+
+export function ProfileExperience() {
+  const { authenticated, sessionLoading } = useStore();
+  const [name,setName]=useState(''),[phone,setPhone]=useState('+58'),[birthDate,setBirthDate]=useState(''),[loading,setLoading]=useState(true),[message,setMessage]=useState('');
+  useEffect(()=>{if(authenticated)loadProfile().then(profile=>{setName(profile.name);setPhone(profile.phone||'+58');setBirthDate(profile.birthDate||'');}).catch(()=>setMessage('No pudimos cargar tu perfil.')).finally(()=>setLoading(false));},[authenticated]);
+  const update=async()=>{try{await saveProfile({name,phone:phone.replace(/[\s()-]/g,''),birthDate,photoUrl:''});setMessage('Perfil actualizado.');}catch{setMessage('Revisa teléfono (+58) y fecha AAAA-MM-DD.');}};
+  if(sessionLoading||authenticated&&loading)return <Screen><AppLoading title="Cargando tu perfil…" detail="Consultando tus datos y direcciones." /></Screen>;
+  if(!authenticated)return <Screen><View style={styles.page}><Text style={styles.title}>Perfil y direcciones</Text><Text style={styles.message}>Inicia sesión para consultar los datos de esta tienda.</Text><Pressable style={styles.primary} onPress={()=>void startLogin()}><Text style={styles.whiteText}>Iniciar sesión</Text></Pressable></View></Screen>;
+  return <Screen><View style={styles.page}><Text style={styles.eyebrow}>TUS DATOS</Text><Text style={styles.title}>Perfil y direcciones</Text>
+    <View style={styles.formCard}><View style={styles.sectionHeading}><View style={styles.optionIcon}><Ionicons name="person-outline" size={21} color={colors.primary} /></View><View><Text style={styles.sectionTitle}>Información personal</Text><Text style={styles.optionDetail}>Datos utilizados en tus compras.</Text></View></View><Field label="Nombre completo" value={name} onChange={setName}/><Field label="Teléfono" value={phone} onChange={setPhone} placeholder="+584121234567"/><Field label="Fecha de nacimiento" value={birthDate} onChange={setBirthDate} placeholder="AAAA-MM-DD"/><Pressable style={styles.primary} onPress={()=>void update()}><Text style={styles.whiteText}>Guardar mis datos</Text></Pressable></View>
+    <AddressManager />{message?<Text style={styles.message}>{message}</Text>:null}
+  </View></Screen>;
+}
+
+function Field({label,value,onChange,placeholder}: {label:string;value:string;onChange:(value:string)=>void;placeholder?:string}) { return <View><Text style={styles.fieldLabel}>{label}</Text><TextInput value={value} onChangeText={onChange} placeholder={placeholder} placeholderTextColor={colors.muted} style={styles.input}/></View>; }
+
+const styles=StyleSheet.create({page:{width:'100%',maxWidth:720,alignSelf:'center',paddingTop:34,paddingBottom:40,gap:spacing.md},eyebrow:{color:colors.primary,fontSize:11,fontWeight:'900',letterSpacing:1.2},title:{color:colors.ink,fontSize:32,fontWeight:'900'},login:{padding:spacing.xl,borderRadius:radii.lg,backgroundColor:colors.navy},loginAvatar:{width:56,height:56,alignItems:'center',justifyContent:'center',borderRadius:16,backgroundColor:'#0d9b8a33'},loginTitle:{marginTop:spacing.lg,color:colors.surface,fontSize:23,fontWeight:'900'},loginBody:{marginTop:9,color:'#c0cfdb',fontSize:13,lineHeight:21},loginButton:{alignSelf:'flex-start',minHeight:48,marginTop:spacing.lg,flexDirection:'row',alignItems:'center',gap:9,paddingHorizontal:18,borderRadius:radii.md,backgroundColor:colors.primary},whiteText:{color:colors.surface,fontWeight:'900'},google:{minHeight:48,marginTop:spacing.sm,flexDirection:'row',alignItems:'center',justifyContent:'center',gap:8,borderWidth:1,borderColor:'#ffffff55',borderRadius:radii.md,backgroundColor:colors.surface},googleText:{color:colors.ink,fontWeight:'800'},register:{marginTop:spacing.md,color:'#b9f2e8',fontWeight:'800',textAlign:'center'},userCard:{flexDirection:'row',alignItems:'center',gap:spacing.md,padding:spacing.md,borderWidth:1,borderColor:colors.line,borderRadius:radii.lg,backgroundColor:colors.surface},avatar:{width:64,height:64,alignItems:'center',justifyContent:'center',borderRadius:18,backgroundColor:colors.primarySoft},avatarLetter:{color:colors.primary,fontSize:25,fontWeight:'900'},userCopy:{flex:1},userName:{color:colors.ink,fontSize:18,fontWeight:'900'},userMeta:{marginTop:3,color:colors.muted,fontSize:12},userCode:{marginTop:2,color:colors.muted,fontSize:10},options:{gap:spacing.sm},option:{minHeight:72,flexDirection:'row',alignItems:'center',gap:12,padding:spacing.md,borderWidth:1,borderColor:colors.line,borderRadius:radii.md,backgroundColor:colors.surface},optionIcon:{width:42,height:42,alignItems:'center',justifyContent:'center',borderRadius:12,backgroundColor:colors.primarySoft},optionCopy:{flex:1},optionTitle:{color:colors.ink,fontSize:14,fontWeight:'900'},optionDetail:{marginTop:3,color:colors.muted,fontSize:11,lineHeight:16},logout:{minHeight:52,flexDirection:'row',alignItems:'center',justifyContent:'center',gap:8},logoutText:{color:colors.danger,fontWeight:'900'},formCard:{gap:spacing.md,padding:spacing.lg,borderWidth:1,borderColor:colors.line,borderRadius:radii.lg,backgroundColor:colors.surface},sectionHeading:{flexDirection:'row',alignItems:'center',gap:12},sectionTitle:{color:colors.ink,fontSize:18,fontWeight:'900'},fieldLabel:{marginBottom:6,color:colors.text,fontSize:12,fontWeight:'800'},input:{minHeight:50,paddingHorizontal:14,borderWidth:1,borderColor:colors.line,borderRadius:radii.md,backgroundColor:colors.canvas,color:colors.ink},primary:{minHeight:52,alignItems:'center',justifyContent:'center',paddingHorizontal:spacing.lg,borderRadius:radii.md,backgroundColor:colors.primary},addressCard:{flexDirection:'row',alignItems:'flex-start',gap:12,padding:spacing.md,borderWidth:1,borderColor:colors.line,borderRadius:radii.md,backgroundColor:colors.surface},addressIcon:{width:40,height:40,alignItems:'center',justifyContent:'center',borderRadius:12,backgroundColor:colors.primarySoft},reference:{marginTop:4,color:colors.text,fontSize:10},coordinates:{flexDirection:'row',gap:spacing.sm},flex:{flex:1},message:{color:colors.primaryDark,fontWeight:'800',textAlign:'center'}});

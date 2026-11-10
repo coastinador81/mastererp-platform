@@ -100,7 +100,13 @@ function wrap(handler) {
   };
 }
 const gateDefault = wrap(loadSource(fs.readFileSync(DEFAULT_FILE, 'utf8')));
-const gateApi = wrap(loadSource(fs.readFileSync(API_FILE, 'utf8')));
+// gate-api.js tiene dos modos (API_OPEN). Los casos de la puerta se prueban SIEMPRE contra la variante
+// cerrada, derivada del mismo fichero, y el modo abierto (decisión del dueño 10-11-2026) con gateApiOpen.
+const apiSource = fs.readFileSync(API_FILE, 'utf8');
+if (!/var API_OPEN = (?:true|false);/.test(apiSource)) throw new Error('gate-api.js: falta var API_OPEN = true|false;');
+const apiMode = (open) => wrap(loadSource(apiSource.replace(/var API_OPEN = (?:true|false);/, `var API_OPEN = ${open};`)));
+const gateApi = apiMode(false);
+const gateApiOpen = apiMode(true);
 
 // ── constructor de eventos CloudFront ────────────────────────────────────────
 function headers(obj) {
@@ -587,6 +593,26 @@ async function run() {
   await test('cookie emitida por gate-default ↔ aceptada por gate-api (mismo formato)', async () => {
     assert(minted, 'no hay cookie emitida en el grupo 2');
     expectRequest(await gateApi(event({ url: '/api/auth/session', c: [[COOKIE, minted]] })), '/api/auth/session', 'api');
+  });
+  await test('API_OPEN (dueño, 10-11-2026): sin cookie, todo /api pasa con URI y query intactas', async () => {
+    const cases = [['GET', '/api/auth/session'], ['POST', '/api/uony/messages'], ['GET', '/api/admin/auth/session'],
+      ['GET', '/api/auth/google/callback?state=drive_abc123&code=4%2F0AbCdEf'], ['GET', '/api/auth/mastererp/callback?code=x&state=erp_y'], ['OPTIONS', '/api/uony/messages']];
+    for (const [method, url] of cases) {
+      const e = event({ method, url, h: NAV });
+      const o = await gateApiOpen(e);
+      expectRequest(o, url.split('?')[0], `${method} ${url}`);
+      deepEq(o.querystring, e.request.querystring, `${method} ${url} (query)`);
+    }
+  });
+  await test('API_OPEN: el WebSocket de voz pasa y la puerta sigue quitando Authorization y su cookie', async () => {
+    for (const c of [[SESSION], [[COOKIE, mint(now() - 5)], SESSION]]) {
+      const e = wsEvent(c);
+      const o = await gateApiOpen(e);
+      expectRequest(o, '/api/uony/live', `ws ${JSON.stringify(c).slice(0, 30)}`);
+      assert(!o.headers.authorization, 'Authorization debe salir');
+      deepEq(Object.keys(o.cookies), ['uonify_session'], 'solo la cookie de sesión');
+      assert(bridgeAccepts(o), 'el puente de voz rechazaría el handshake');
+    }
   });
 
   group = '6 · comprobaciones estáticas';

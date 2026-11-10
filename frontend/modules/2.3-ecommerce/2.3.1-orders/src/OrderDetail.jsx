@@ -1,8 +1,12 @@
-import React from 'react';
-import { FLOW, NEXT, STATUS, dateTime, money, paymentMethodLabel, paymentStatusLabel, statusLabel } from './orderView.js';
+import React, { useState } from 'react';
+import { MODULES } from '../../../../shared/module-launcher/module-launcher.mjs';
+import { FLOW, NEXT, dateTime, money, paymentMethodLabel, paymentStatusLabel, statusLabel } from './orderView.js';
+import FinanceIcon from '../../../2.2-finance/src/FinanceIcon.jsx';
+import StatusBadge from '../../../../shared/status-badge/StatusBadge.jsx';
+import './order-detail.css';
 
 const fieldLabels={name:'Nombre',email:'Correo',phone:'Teléfono',document:'Documento',company:'Empresa',recipient:'Recibe',address:'Dirección',address_line_1:'Dirección',address_line_2:'Complemento',city:'Ciudad',state:'Estado',postal_code:'Código postal',country:'País',reference:'Referencia',transaction_id:'Transacción',bank:'Banco'};
-function SnapshotFields({value,exclude=[]}){const fields=Object.entries(value||{}).filter(([key,item])=>!exclude.includes(key)&&!/(^id$|_id$|uuid|customer.?id)/i.test(key)&&item!=null&&item!==''&&typeof item!=='object'&&!/^[0-9a-f]{8}-[0-9a-f-]{27}$/i.test(String(item)));return fields.length?<dl className="snapshot-fields">{fields.map(([key,item])=><div key={key}><dt>{fieldLabels[key]||key.replaceAll('_',' ')}</dt><dd>{String(item)}</dd></div>)}</dl>:<p>Sin información adicional registrada.</p>}
+function SnapshotFields({value,exclude=[]}){const fields=Object.entries(value||{}).filter(([key,item])=>!exclude.includes(key)&&!/(^id$|_id$|uuid|customer.?id)/i.test(key)&&item!=null&&item!==''&&typeof item!=='object'&&!/^[0-9a-f]{8}-[0-9a-f-]{27}$/i.test(String(item)));return fields.length?<dl className="snapshot-fields">{fields.map(([key,item])=><div key={key}><dt>{fieldLabels[key]||key.replaceAll('_',' ')}</dt><dd>{String(item)}</dd></div>)}</dl>:null}
 
 const paymentKeys=['method','status','currency','amount','amountUSD','amountVES','reference','exchangeRate','exchangeRateSource','exchangeRateEffectiveDate'];
 const deliveryKeys=['address','address_line_1','zone','label','latitude','longitude'];
@@ -12,27 +16,58 @@ function DeliveryDetails({delivery}){return <><dl className="snapshot-fields">{d
 
 function Progress({ status }) {
   const current = FLOW.indexOf(status);
-  return <div className="order-progress" aria-label={`Progreso: ${statusLabel(status)}`}>
-    {FLOW.map((step, index) => <div className={index <= current ? 'done' : ''} key={step}><i>{index < current ? '✓' : index + 1}</i><span>{statusLabel(step)}</span></div>)}
+  return <div className="od-stepper" aria-label={`Progreso: ${statusLabel(status)}`}>
+    {FLOW.map((step, index) => <div className={index <= current ? 'complete' : ''} key={step}><span>{index < current ? <FinanceIcon name="check"/> : index + 1}</span><small>{statusLabel(step)}</small></div>)}
   </div>;
 }
 
-export default function OrderDetail({ order, writable, transition, close }) {
+function SideCard({ title, children }) {
+  return <section className="od-card od-side-card"><div className="od-card-title"><h2>{title}</h2></div><div className="od-side-content">{children}</div></section>;
+}
+
+function customerHistory(order, customerOrders) {
+  const orders = customerOrders.some(item => item.id === order.id) ? customerOrders : [...customerOrders, order];
+  const since = Math.min(...orders.map(item => new Date(item.created_at).getTime()).filter(Number.isFinite));
+  return `${Number.isFinite(since) ? `Cliente desde ${new Date(since).getFullYear()} · ` : ''}${orders.length} ${orders.length === 1 ? 'pedido' : 'pedidos'}`;
+}
+
+function CopyAddress({ address }) {
+  const [copied, setCopied] = useState('');
+  const copy = async () => {
+    let done = false;
+    try { await navigator.clipboard.writeText(address); done = true; }
+    catch { const field = document.createElement('textarea'); field.value = address; field.setAttribute('readonly', ''); field.style.position = 'fixed'; field.style.opacity = '0'; document.body.append(field); field.select(); done = document.execCommand('copy'); field.remove(); }
+    setCopied(done ? 'Dirección copiada' : 'No se pudo copiar. Selecciona la dirección y cópiala manualmente.');
+    window.setTimeout(() => setCopied(''), 2500);
+  };
+  return <><button type="button" className="od-button secondary full" disabled={!address} onClick={copy}>{copied === 'Dirección copiada' ? <><FinanceIcon name="check"/>Dirección copiada</> : 'Copiar dirección'}</button><span className="od-copy-feedback" role="status">{copied === 'Dirección copiada' ? '' : copied}</span></>;
+}
+
+export default function OrderDetail({ order, writable, transition, close, nodeName, customerOrders = [], canOpenCustomer }) {
   const delivery = order.delivery_snapshot || {}, customer = order.customer_snapshot || {}, payment = order.payment_snapshot || {};
-  return <aside className="order-detail">
-    <div className="detail-toolbar"><button className="quiet" onClick={close}>← Volver</button><span>Creado {dateTime(order.created_at)}</span></div>
-    <div className="detail-head"><div><small>GESTIÓN DE PEDIDO</small><h2>Pedido {order.number}</h2><p>Actualizado {dateTime(order.updated_at)}</p></div><b className={`status ${STATUS[order.status]?.tone || 'neutral'}`}>{statusLabel(order.status)}</b><strong>{money(order.total, order.currency)}</strong></div>
-    {order.status === 'CANCELLED' ? <p className="cancelled-note">Este pedido fue cancelado y su ciclo operativo terminó.</p> : <Progress status={order.status} />}
-    <div className="detail-grid">
-      <section><small>CLIENTE</small><h3>{customer.name || 'Cliente del pedido'}</h3><SnapshotFields value={customer} exclude={['name']}/></section>
-      <section><small>DIRECCIÓN DE ENTREGA</small><h3>{delivery.address || delivery.address_line_1 || 'Dirección por confirmar'}</h3><DeliveryDetails delivery={delivery}/><p>{order.delivery_method === 'scheduled' ? 'Entrega programada' : 'Entrega en tiempo real'}</p></section>
-      <section><small>PAGO</small><h3>{paymentMethodLabel(payment.method)}</h3><p>{paymentStatusLabel(payment.status)}</p><PaymentDetails payment={payment}/></section>
-      <section><small>COMPRA</small><h3>{order.items.length} {order.items.length === 1 ? 'producto' : 'productos'}</h3><p>{order.items.reduce((sum,item)=>sum+Number(item.quantity),0)} unidades en total</p></section>
+  const next=(NEXT[order.status]||[]).filter(value=>value!=='CANCELLED'),address=delivery.address||delivery.address_line_1||'';
+  const units=order.items.reduce((sum,item)=>sum+Number(item.quantity||0),0),initials=(customer.name||'C').split(/\s+/).slice(0,2).map(value=>value[0]).join('').toUpperCase();
+  const financeUrl=MODULES.find(module=>module.id==='finance')?.href,customerUrl=canOpenCustomer&&financeUrl&&order.customer_id?`${financeUrl}#/modulos/finanzas/administracion/clientes/${encodeURIComponent(order.customer_id)}`:'';
+  return <div className="figma-order-detail">
+    <button type="button" className="od-back" onClick={close}><FinanceIcon name="arrow"/>Volver a pedidos</button>
+    <div className="od-header"><div><div className="od-breadcrumb">E-commerce <span>/</span> Pedidos <span>/</span> {order.number}</div><h1>Pedido {order.number}</h1><p>Creado el {dateTime(order.created_at)} · Última actualización {dateTime(order.updated_at)}</p></div><div className="od-header-actions"><button type="button" className="od-button secondary" onClick={()=>window.print()}>Imprimir</button></div></div>
+    <div className="od-layout">
+      <div className="od-main">
+        <section className="od-card"><div className="od-status-heading"><div><span>ESTADO ACTUAL</span><StatusBadge status={order.status}>{statusLabel(order.status)}</StatusBadge></div><strong>{money(order.total,order.currency)}</strong></div>
+          {order.status==='CANCELLED'?<p className="cancelled-note od-cancelled">Este pedido fue cancelado y su ciclo operativo terminó.</p>:<Progress status={order.status}/>}
+          {next[0]&&writable?<div className="od-status-action"><div><strong>Siguiente etapa: {statusLabel(next[0])}</strong><small>La actualización quedará registrada en el historial del pedido.</small></div><button type="button" className="od-button primary" onClick={()=>transition(next[0])}>Marcar como {statusLabel(next[0])}</button></div>:null}
+        </section>
+        <section className="od-card od-products"><div className="od-card-title"><div><h2>Productos del pedido</h2><p>{units} {units===1?'unidad':'unidades'} en total</p></div></div>
+          {order.items.map((item,index)=><div className="od-product-line" key={item.id||item.position||index}><span className="od-product-image"><FinanceIcon name="package"/></span><div><strong>{item.product_name||'Producto sin nombre'}</strong><small>SKU: {item.product_code||'Sin referencia'} · Cantidad: {item.quantity}</small></div><span>{money(item.unit_price,order.currency)}</span><strong>{money(item.subtotal,order.currency)}</strong></div>)}
+          <div className="od-totals"><span>Subtotal <b>{money(order.subtotal,order.currency)}</b></span><span>Entrega <b>{money(order.delivery_fee,order.currency)}</b></span><span>Total <b>{money(order.total,order.currency)}</b></span></div>
+        </section>
+        {writable&&(NEXT[order.status]||[]).includes('CANCELLED')?<div className="od-cancel"><button type="button" className="od-button danger" onClick={()=>transition('CANCELLED')}>Cancelar pedido</button></div>:null}
+      </div>
+      <div className="od-side">
+        <SideCard title="Cliente"><div className="od-customer"><span>{initials}</span><div><strong>{customer.name||'Cliente del pedido'}</strong><small>{customerHistory(order,customerOrders)}</small></div></div><dl className="snapshot-fields"><div><dt>Correo</dt><dd>{customer.email||'Sin registrar'}</dd></div><div><dt>Teléfono</dt><dd>{customer.phone||'Sin registrar'}</dd></div></dl><SnapshotFields value={customer} exclude={['name','email','phone']}/>{customerUrl?<a className="od-button secondary full" href={customerUrl}>Ver ficha del cliente</a>:null}</SideCard>
+        <SideCard title="Entrega"><dl className="snapshot-fields"><div><dt>Dirección</dt><dd>{address||'Dirección por confirmar'}</dd></div><div><dt>Método</dt><dd>{order.delivery_method==='scheduled'?'Entrega programada':'Entrega en tiempo real'}</dd></div>{nodeName?<div><dt>Nodo asignado</dt><dd>{nodeName}</dd></div>:null}</dl><DeliveryDetails delivery={delivery}/><CopyAddress address={address}/></SideCard>
+        <SideCard title="Pago"><dl className="snapshot-fields"><div><dt>Método</dt><dd>{paymentMethodLabel(payment.method)}</dd></div><div><dt>Estado</dt><dd>{paymentStatusLabel(payment.status)}</dd></div></dl><PaymentDetails payment={payment}/></SideCard>
+      </div>
     </div>
-    <section className="products-detail"><div className="section-heading"><h3>Productos</h3><span>{order.items.reduce((sum, item) => sum + Number(item.quantity), 0)} unidades</span></div>
-      <div className="table-scroll"><table className="commerce-table detail-products"><thead><tr><th>Producto</th><th>Referencia</th><th>Precio unitario</th><th>Cantidad</th><th>Total</th></tr></thead><tbody>{order.items.map((item,index)=><tr key={item.id||item.position||index}><td><strong>{item.product_name||'Producto sin nombre'}</strong></td><td>{item.product_code||'—'}</td><td>{money(item.unit_price,order.currency)}</td><td>{item.quantity}</td><td><strong>{money(item.subtotal,order.currency)}</strong></td></tr>)}</tbody></table></div>
-      <dl className="totals"><div><dt>Subtotal</dt><dd>{money(order.subtotal, order.currency)}</dd></div><div><dt>Entrega</dt><dd>{money(order.delivery_fee, order.currency)}</dd></div><div className="grand-total"><dt>Total</dt><dd>{money(order.total, order.currency)}</dd></div></dl>
-    </section>
-    <div className="actions">{writable ? (NEXT[order.status] || []).map(value => <button key={value} className={value === 'CANCELLED' ? 'danger' : 'primary'} onClick={() => transition(value)}>{value === 'CANCELLED' ? 'Cancelar pedido' : `Marcar: ${statusLabel(value)}`}</button>) : <span>Acceso de solo lectura</span>}{writable && !(NEXT[order.status] || []).length ? <span>Ciclo finalizado</span> : null}</div>
-  </aside>;
+  </div>;
 }

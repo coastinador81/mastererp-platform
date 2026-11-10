@@ -1,4 +1,4 @@
-/** Servicios en desarrollo de «Cada necesidad, una herramienta con carácter» (#herramientas). */
+/** Servicios de «Cada necesidad, una herramienta con carácter» (#herramientas). */
 export interface ServiceCard {
   id: string;
   /** Tarjeta ancha (texto + imagen + palabras clave) o alta (en columna). */

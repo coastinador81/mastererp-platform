@@ -1,0 +1,47 @@
+name: Publish nexus-dev.uonify.com
+on:
+  workflow_dispatch:
+  push:
+    branches: [dev]
+    paths:
+      - 'frontend/modules/0-uonify/0.3-nexus/nexus-web/**'
+      - 'frontend/modules/2.2-finance/src/assets/fonts/Inter-latin-variable.woff2'
+      - 'frontend/modules/2.2-finance/public/fonts/Inter-OFL.txt'
+      - '.github/workflows/publish-nexus-uonify.yml'
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: mastererp-dev-nexus-frontend
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::277352717693:role/mastererp-dev-nexus-frontend-github-role
+          aws-region: us-west-1
+      - name: Package Nexus frontend
+        run: |
+          cp frontend/modules/0-uonify/0.3-nexus/nexus-web/index.html index.html
+          mkdir -p publish/shared
+          cp frontend/modules/2.2-finance/src/assets/fonts/Inter-latin-variable.woff2 publish/shared/Inter-latin-variable.woff2
+          cp frontend/modules/2.2-finance/public/fonts/Inter-OFL.txt publish/shared/Inter-OFL.txt
+      - name: Publish to S3 and invalidate CloudFront
+        env:
+          BUCKET: ${{ vars.NEXUS_UONIFY_BUCKET }}
+          DISTRIBUTION: ${{ vars.NEXUS_UONIFY_DISTRIBUTION_ID }}
+        run: |
+          set -euo pipefail
+          test -n "${BUCKET:-}" && test -n "${DISTRIBUTION:-}"
+          test "$(aws sts get-caller-identity --query Account --output text)" = 277352717693
+          aws s3 cp publish/shared/Inter-latin-variable.woff2 "s3://$BUCKET/shared/Inter-latin-variable.woff2" --content-type 'font/woff2' --cache-control 'public,max-age=86400'
+          aws s3 cp publish/shared/Inter-OFL.txt "s3://$BUCKET/shared/Inter-OFL.txt" --content-type 'text/plain; charset=utf-8' --cache-control 'no-cache,max-age=0,must-revalidate'
+          aws s3 cp index.html "s3://$BUCKET/index.html" --content-type 'text/html; charset=utf-8' --cache-control 'no-cache,max-age=0,must-revalidate'
+          invalidation=$(aws cloudfront create-invalidation --distribution-id "$DISTRIBUTION" --paths / /index.html "/shared/*" --query Invalidation.Id --output text)
+          aws cloudfront wait invalidation-completed --distribution-id "$DISTRIBUTION" --id "$invalidation"

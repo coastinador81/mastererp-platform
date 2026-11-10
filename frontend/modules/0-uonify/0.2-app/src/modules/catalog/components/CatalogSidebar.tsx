@@ -141,7 +141,7 @@ export function CatalogSidebar(props: CatalogSidebarProps) {
           </button>
         </header>
         <div className="product-drawer-actions">
-          <button type="button" className={USE_MOCKS ? "primary-action" : "secondary-action"} disabled={!USE_MOCKS} title={!USE_MOCKS ? "Importación de materiales en preparación" : undefined} onClick={props.onImport}>Importar</button>
+          <button type="button" className={USE_MOCKS ? "primary-action" : "secondary-action"} disabled={!USE_MOCKS} title={!USE_MOCKS ? "Pide a Uony que importe tus materiales desde la conversación" : undefined} onClick={props.onImport}>Importar</button>
           <button type="button" className={USE_MOCKS ? "secondary-action" : "primary-action"} onClick={props.onCreate}>Nuevo producto</button>
           {!USE_MOCKS && <button type="button" className="product-icon-button" aria-label="Actualizar catálogo" title="Actualizar catálogo" onClick={props.onRetry}><Icon name="refresh-cw" /></button>}
         </div>

@@ -14,6 +14,7 @@ export { prepareOnboardingEntry } from './model/onboardingEntry';
 export {
   SERVICES,
   SERVICE_ORDER,
+  SERVICE_CATALOG,
   servicePath,
   serviceIcon,
   parseWorkspacePath,
@@ -21,6 +22,8 @@ export {
   WORKSPACE_PATH,
   type ServiceId,
   type ServiceInfo,
+  type CatalogServiceId,
+  type ServiceCatalogEntry,
   type WorkspaceRoute,
 } from './model/services';
 

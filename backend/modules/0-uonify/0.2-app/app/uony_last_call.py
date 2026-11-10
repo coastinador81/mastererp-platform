@@ -12,7 +12,8 @@ write, so it never announces a card it can no longer show.
 The last call never runs a tool. When it gives no valid answer (empty,
 malformed, blocked, or calls it may not make) the reply is, in this order: the
 model's own text, the fixed text of a card this turn already showed in calls
-1-2 (QA-06 kept there, owner's list), or capa 2's text (agent_unanswered or
+1-2 (QA-06 kept there, owner's list), the turn's fixed notice (10-11-2026:
+ERP lists that all came back empty), or capa 2's text (agent_unanswered or
 the typed invalid). D1: the one exception is the form repair, ANY with
 ask_user only, logged as ANY_REPAIR. ADK 2.12.0 does not count an answer of
 before_model against max_llm_calls (_model_call.py:194-211, before :227).
@@ -43,6 +44,8 @@ LAST_CALL_TOOLS = frozenset({
 CARD_TOOLS = LAST_CALL_TOOLS - {'ask_user'}
 LAST_CALL_MODE = 'NONE'
 REPAIR_MODE = 'ANY_REPAIR'
+# What the log's card field shows when the turn's fixed notice closed it (no card, no own text).
+NOTICE_CARD = 'aviso_fijo'
 # D4: the mechanism is the Consultor's; the owner may adjust the wording.
 LAST_CALL_NOTE = (
     'Esta es tu última respuesta para este mensaje: escribe solo texto. No digas que '
@@ -147,21 +150,30 @@ def turn_card(contents):
 
 class LastCall:
     """The third call of a written turn: prepared in before_model, answered
-    in after_model (lote 7)."""
+    in after_model (lote 7).
 
-    def __init__(self, declared, used):
+    notice (10-11-2026): optional callable over the request contents that
+    returns a fixed server text for the turn (ERP · Finanzas: every list it
+    read came back empty, finance_read_tools.turn_empty_notice), used after
+    the model's own text and the card's text and before capa 2. It comes from
+    uony_adk_agent, so this module never imports the ERP (C5: voice)."""
+
+    def __init__(self, declared, used, notice=None):
         self.declared, self.used = declared, used  # used: the turn's tools, filled as it runs.
         self.card = (None, None)
+        self._notice, self.notice = notice, None
 
     def prepare(self, llm_request):
         """NONE and the note for this request only; the card calls 1-2 showed."""
         llm_request.config.tool_config = last_call_tool_config()
         llm_request.append_instructions([LAST_CALL_NOTE])
         self.card = turn_card(llm_request.contents)
+        self.notice = self._notice(llm_request.contents) if self._notice else None
 
     def reply(self, response, calls, elapsed_ms):
         """None: the response ends the turn as it is. Else the answer that
-        replaces it (own text, then the card's fixed text), or capa 2."""
+        replaces it (own text, then the card's fixed text, then the turn's
+        fixed notice), or capa 2."""
         error = getattr(response, 'error_code', None)
         if error:
             failure = invalid(typed_code('error_code:', error))
@@ -171,14 +183,15 @@ class LastCall:
             failure = reply_failure(response)
         name, card_text = self.card
         reason = failure and (getattr(failure, 'reason', None) or failure.code)
-        log_last_call(LAST_CALL_MODE, calls, self.declared, response.finish_reason, elapsed_ms,
-                      reason, self.used, name)
-        if failure is None:
-            return None
         finish = getattr(response.finish_reason, 'name', response.finish_reason)
         own = (visible_text(response)
-               if calls and not error and finish in ('STOP', 'MAX_TOKENS') else '')
-        answer = own or card_text
+               if failure is not None and calls and not error and finish in ('STOP', 'MAX_TOKENS') else '')
+        notice = self.notice if failure is not None and not own and not card_text else None
+        log_last_call(LAST_CALL_MODE, calls, self.declared, response.finish_reason, elapsed_ms,
+                      reason, self.used, name or (NOTICE_CARD if notice else None))
+        if failure is None:
+            return None
+        answer = own or card_text or notice
         if not answer:
             raise failure
         return LlmResponse(content=types.Content(role='model', parts=[types.Part(text=answer)]),

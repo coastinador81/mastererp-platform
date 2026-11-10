@@ -154,13 +154,15 @@ describe('portada', () => {
     renderPage(<HomePage />);
     const trigger = screen.getByRole('button', { name: 'Herramientas de Uonify' });
     await user.click(trigger);
-    // Enfoca la primera herramienta (Producto) y la fuente única pone su nombre y su destino.
+    // Enfoca la primera herramienta (Producto); la fuente única pone nombre, destino y estado.
     expect(screen.getByRole('link', { name: 'Producto' })).toHaveFocus();
-    expect(screen.getByRole('link', { name: 'Producto' })).toHaveAttribute('href', '/productos#catalogo');
+    expect(screen.getByRole('link', { name: 'Producto' })).toHaveAttribute('href', '/espacio?service=producto');
+    expect(screen.getByRole('link', { name: 'Estudio' })).toHaveAttribute('href', '/espacio');
+    expect(screen.getByRole('link', { name: 'Academy' })).toHaveAttribute('href', '/espacio?service=academy');
     expect(screen.getByRole('link', { name: /Conocer Uonify/ })).toHaveAttribute('href', '/productos');
-    // Los servicios «Próximamente» aparecen deshabilitados con su etiqueta.
-    expect(screen.getByRole('button', { name: /Academy/ })).toBeDisabled();
-    expect(screen.getByRole('button', { name: /Academy/ })).toHaveTextContent('Próximamente');
+    // Desde el demo del 10-11 todos los servicios están activos: ninguno dice «Próximamente».
+    expect(screen.getAllByRole('link').filter(link => link.closest('#tools-panel'))).toHaveLength(11);
+    expect(screen.queryByText('Próximamente')).toBeNull();
     await user.keyboard('{Escape}');
     expect(trigger).toHaveAttribute('aria-expanded', 'false');
   });

@@ -82,9 +82,9 @@ describe('marco del espacio', () => {
   });
 
   it('el logotipo empieza de nuevo: lienzo en blanco', () => {
-    useWorkspaceStore.getState().createThread({ title: 'Hola', service: 'erp', view: 'default' });
-    const { router } = renderWorkspace('/espacio/erp');
-    expect(screen.getByRole('heading', { level: 1, name: 'ERP' })).toBeInTheDocument();
+    useWorkspaceStore.getState().createThread({ title: 'Hola', service: 'analitica', view: 'default' });
+    const { router } = renderWorkspace('/espacio/analitica');
+    expect(screen.getByRole('heading', { level: 1, name: 'Analítica' })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('link', { name: 'Uonify: empezar de nuevo' }));
     expect(router.state.location.pathname).toBe('/espacio');
     expect(useWorkspaceStore.getState().activeThreadId).toBeNull();
@@ -126,10 +126,12 @@ describe('marco del espacio', () => {
     const trigger = screen.getByRole('button', { name: 'Abrir servicios de Uonify' });
     fireEvent.click(trigger);
     const menu = screen.getByRole('region', { name: 'Servicios de Uonify' });
-    // Menú compacto (dueño 23-10): Producto, Estudio, ERP y Nexus a la vista; el resto, al desplegar.
-    for (const name of ['Producto', 'Estudio', 'ERP', 'Nexus']) expect(within(menu).getByRole('button', { name })).toBeInTheDocument();
-    expect(within(menu).getByRole('button', { name: /Más servicios/ })).toBeInTheDocument();
-    expect(within(menu).queryByRole('button', { name: 'Analítica' })).not.toBeInTheDocument();
+    // Dueño (10-11-2026): todos los servicios activos a la vista, sin desplegable ni «Próximamente».
+    for (const name of ['Producto', 'Estudio', 'ERP', 'Nexus', 'Analítica', 'Captura y auditoría', 'Agentes', 'Academy', 'Logística', 'Fábrica y proveedores']) {
+      expect(within(menu).getByRole('button', { name })).toBeEnabled();
+    }
+    expect(within(menu).queryByRole('button', { name: /Más servicios/ })).not.toBeInTheDocument();
+    expect(within(menu).queryByText(/próximamente/i)).not.toBeInTheDocument();
     expect(within(menu).getByRole('link', { name: /Conocer Uonify/ })).toHaveAttribute('target', '_blank');
     fireEvent.keyDown(window, { key: 'Escape' });
     expect(menu).toHaveAttribute('hidden');
@@ -190,7 +192,8 @@ describe('panel «Hilos»', () => {
   it('ofrece proyectos y conserva los hilos recientes', () => {
     const store = useWorkspaceStore.getState();
     store.createThread({ title: 'Primero', service: null, view: 'default' });
-    store.createThread({ title: 'Segundo', service: 'erp', view: 'default' });
+    // Un servicio con la vista genérica de este módulo (ERP la pinta el módulo erp).
+    store.createThread({ title: 'Segundo', service: 'analitica', view: 'default' });
     store.setActiveThread(null);
     renderWorkspace();
     fireEvent.click(screen.getAllByRole('button', { name: 'Hilos' })[0]);
@@ -211,7 +214,8 @@ describe('conversación desde el inicio', () => {
     try {
       const { router, container } = renderWorkspace();
       const text = screen.getByLabelText('Escribe a Uony');
-      fireEvent.change(text, { target: { value: 'Revisa el inventario del ERP' } });
+      // Un servicio con la vista genérica de este módulo (ERP la pinta el módulo erp).
+      fireEvent.change(text, { target: { value: 'Prepara un informe de márgenes' } });
       fireEvent.keyDown(text, { key: 'Enter' });
       expect(container.querySelector('.workspace-column')).toHaveClass('is-chat');
       expect(screen.getByText('Revisando tu petición…')).toBeInTheDocument();
@@ -219,10 +223,10 @@ describe('conversación desde el inicio', () => {
       await act(async () => {
         vi.advanceTimersByTime(1000);
       });
-      expect(router.state.location.pathname).toBe('/espacio/erp');
-      expect(screen.getByText('He abierto ERP para trabajar con tu operación.', { selector: '.message' })).toBeInTheDocument();
+      expect(router.state.location.pathname).toBe('/espacio/analitica');
+      expect(screen.getByText('He abierto Analítica para revisar tus datos.', { selector: '.message' })).toBeInTheDocument();
       // En móvil, el botón flotante enseña la última respuesta.
-      expect(container.querySelector('#chat-panel-fab-text')).toHaveTextContent('He abierto ERP para trabajar con tu operación.');
+      expect(container.querySelector('#chat-panel-fab-text')).toHaveTextContent('He abierto Analítica para revisar tus datos.');
       expect(container.querySelector('.workspace-column')).toHaveClass('is-module');
       expect(screen.getByLabelText('Escribe a Uony')).toHaveValue('');
     } finally {

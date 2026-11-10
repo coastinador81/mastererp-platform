@@ -108,7 +108,7 @@ export const PUBLIC_VIEWS: Record<PublicViewKey, PublicViewMeta> = {
     key: 'novedades',
     path: '/novedades',
     title: 'Novedades — Nuevas piezas. Más posibilidades. — Uonify',
-    description: 'Descubre lo que estamos construyendo en Uonify: nuevas posibilidades para tus productos, herramientas en desarrollo y una forma más conectada de trabajar.',
+    description: 'Descubre las novedades de Uonify: nuevas posibilidades para tus productos, servicios conectados y una forma más conectada de trabajar.',
     bodyClass: 'news-page',
   },
   privacidad: {

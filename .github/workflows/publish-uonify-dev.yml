@@ -20,6 +20,7 @@ on:
       - 'frontend/modules/0-uonify/.env.dev'
       - 'frontend/modules/0-uonify/.gitattributes'
       - 'frontend/app-shell/src/**'
+      - 'frontend/shared/module-launcher/**'
       - 'frontend/modules/2.3-ecommerce/2.3.4-catalog/2.3.4.1-products/src/**'
       - 'frontend/modules/2.3-ecommerce/2.3.4-catalog/2.3.4.2-categories/src/**'
       - 'frontend/modules/2.3-ecommerce/2.3.4-catalog/2.3.4.3-attributes/src/**'

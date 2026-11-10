@@ -16,6 +16,11 @@ const paths={
   search:<><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></>,
   eye:<><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.5"/></>,
   plus:<path d="M12 4v16M4 12h16"/>,
+  route:<><circle cx="6" cy="18" r="2"/><circle cx="18" cy="6" r="2"/><path d="M8 18h2a3 3 0 0 0 3-3v-1a3 3 0 0 1 3-3h2M6 16V9a3 3 0 0 1 3-3h7"/></>,
+  location:<><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></>,
+  package:<><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Z"/><path d="m4.5 7.5 7.5 4 7.5-4M12 21v-9.5"/></>,
+  check:<path d="m5 12 4 4L19 6"/>,
+  arrow:<path d="m5 12 14 0m-5-5 5 5-5 5"/>,
 };
 export default function FinanceIcon({name,className=''}){
   return <svg className={'finance-line-icon '+className} viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">{paths[name]||paths.document}</svg>;

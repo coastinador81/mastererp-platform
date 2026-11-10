@@ -21,7 +21,7 @@ function Service({ service }: { service: ServiceCard }) {
     return (
       <article className={className} id={service.id}>
         <div className="service-copy">
-          <span className="development">En desarrollo</span><h3>{service.title}</h3>{promise}<p>{service.copy}</p><ServiceDetails service={service} />
+          <span className="development">Servicio Uonify</span><h3>{service.title}</h3>{promise}<p>{service.copy}</p><ServiceDetails service={service} />
         </div>
         {image}
         <div className="service-keywords">{service.keywords?.map(word => <span key={word}>{word}</span>)}</div>
@@ -30,20 +30,20 @@ function Service({ service }: { service: ServiceCard }) {
   }
   return (
     <article className={className} id={service.id}>
-      <span className="development">En desarrollo</span><h3>{service.title}</h3>{promise}{image}<p>{service.copy}</p><ServiceDetails service={service} />
+      <span className="development">Servicio Uonify</span><h3>{service.title}</h3>{promise}{image}<p>{service.copy}</p><ServiceDetails service={service} />
       {service.alias ? <span id={service.alias} className="anchor-alias"></span> : null}
     </article>
   );
 }
 
-/** «Un universo que crece contigo»: los servicios en desarrollo. */
+/** «Un universo que crece contigo»: los servicios de Uonify. */
 export function FamilySection() {
   return (
     <section className="family-section wrap" id="herramientas" aria-labelledby="family-title">
       <div className="section-heading">
         <p className="eyebrow">UN UNIVERSO QUE CRECE CONTIGO</p>
         <h2 id="family-title">Cada necesidad,{' '}<br />una herramienta con carácter.</h2>
-        <p>Estamos desarrollando estas herramientas y las iremos poniendo a tu disposición de forma progresiva.</p>
+        <p>Cada servicio se activa en tu espacio Uonify y trabaja junto a Uony, con la misma información de tus productos.</p>
       </div>
       <div className="family-editorial">
         {SERVICES.map(service => <Service key={service.id} service={service} />)}

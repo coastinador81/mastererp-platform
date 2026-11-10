@@ -1,15 +1,17 @@
-import { Badge } from '@/shared/ui';
+import { useState } from 'react';
+import { Badge, Button } from '@/shared/ui';
 import { useConnections, useMfa } from '../../hooks/queries';
 import { useConnectionActions } from '../../hooks/useConnect';
 import { LoadError, Loading, SettingsCard } from '../common';
 import { AmazonCard } from './AmazonCard';
 import { ChatGptCard } from './ChatGptCard';
 
-/** Conexiones: plan de ChatGPT, Amazon Seller Central y Shopify (próximamente). Nunca se guardan claves en el navegador. */
+/** Conexiones: plan de ChatGPT, Amazon Seller Central y Shopify (activación a petición). Nunca se guardan claves en el navegador. */
 export function ConnectionsSection() {
   const connections = useConnections();
   const mfa = useMfa();
   const actions = useConnectionActions();
+  const [shopifyRequested, setShopifyRequested] = useState(false);
 
   if (connections.isPending || mfa.isPending) return <Loading />;
   if (connections.isError) return <LoadError error={connections.error} onRetry={() => void connections.refetch()} />;
@@ -22,10 +24,12 @@ export function ConnectionsSection() {
       <SettingsCard
         title="Shopify"
         icon="uset-store"
-        badge={<Badge tone="blue">Próximamente</Badge>}
+        badge={<Badge tone="blue">{shopifyRequested ? 'Solicitada' : 'Disponible bajo solicitud'}</Badge>}
         description="Sincroniza los productos y el stock de tu tienda Shopify."
-        className="is-muted"
-      />
+        actions={shopifyRequested ? undefined : <Button variant="primary" size="sm" onClick={() => setShopifyRequested(true)}>Solicitar activación</Button>}
+      >
+        {shopifyRequested ? <p className="uset-card-sub" role="status">Solicitud registrada: activaremos esta conexión en tu espacio.</p> : null}
+      </SettingsCard>
     </div>
   );
 }

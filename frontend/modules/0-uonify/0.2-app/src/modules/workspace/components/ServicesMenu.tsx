@@ -9,21 +9,19 @@ import { servicesMenuRight } from '../model/placement';
 import { SERVICE_CATALOG, WORKSPACE_PATH, type ServiceId } from '../model/services';
 
 /**
- * Menú de servicios de Uonify (lanzador del espacio). Muestra los servicios
- * activos y el resto bajo «Más servicios próximamente» (decisión del dueño 23-10).
- * La lista, el orden y los estados salen de SERVICE_CATALOG (fuente única que
- * comparte con el panel de la Home). El Estudio es un acceso directo al chat
- * (vive en la conversación), no una vista de módulo.
+ * Menú de servicios de Uonify (lanzador del espacio). La lista, el orden y los
+ * estados salen de SERVICE_CATALOG, la fuente única que comparte con el panel de la
+ * Home: hoy todos activos (Producto, Estudio, ERP, Nexus y el resto). Si un servicio
+ * vuelve a ser «Próximamente», se pinta deshabilitado y con su etiqueta, como en la
+ * Home. El Estudio es un acceso directo al chat (vive en la conversación), no una
+ * vista de módulo.
  */
-const ACTIVE_ENTRIES = SERVICE_CATALOG.filter(entry => entry.status === 'active');
-const SOON_ENTRIES = SERVICE_CATALOG.filter(entry => entry.status === 'soon');
 
 export function ServicesMenu({ trigger, preparing = false }: { trigger: RefObject<HTMLButtonElement | null>; preparing?: boolean }) {
   const open = useUiStore(state => state.servicesOpen);
   const { service: active } = useWorkspaceRoute();
   const menu = useRef<HTMLElement>(null);
   const [right, setRight] = useState<number | undefined>(undefined);
-  const [more, setMore] = useState(false);
 
   useDismissOnPointerDown(open, [menu, trigger], () => closeServices());
 
@@ -33,7 +31,7 @@ export function ServicesMenu({ trigger, preparing = false }: { trigger: RefObjec
     if (!open || !element || !trigger.current) return;
     const bar = element.offsetParent?.getBoundingClientRect() ?? { right: window.innerWidth };
     setRight(servicesMenuRight(bar.right, trigger.current.getBoundingClientRect().right, element.offsetWidth));
-  }, [open, trigger, more]);
+  }, [open, trigger]);
 
   const goService = (service: ServiceId) => {
     if (preparing) { closeServices(); document.querySelector<HTMLElement>('#activation-progress')?.focus(); }
@@ -58,7 +56,14 @@ export function ServicesMenu({ trigger, preparing = false }: { trigger: RefObjec
       </div>
       {preparing && <p className="services-preparation-note">Termina de preparar tu cuenta para utilizar estas herramientas.</p>}
       <div className="services-grid">
-        {ACTIVE_ENTRIES.map(entry => {
+        {SERVICE_CATALOG.map(entry => {
+          if (entry.status === 'soon') return (
+            <button key={entry.id} type="button" className="is-coming" disabled aria-disabled="true" title="Próximamente">
+              <img src={entry.iconSrc} alt="" />
+              <span>{entry.name}</span>
+              <small className="coming-tag">Próximamente</small>
+            </button>
+          );
           if (entry.id === 'estudio') return (
             <button key="estudio" type="button" data-service="estudio" onClick={openEstudio}>
               <img src={entry.iconSrc} alt="" />
@@ -73,17 +78,7 @@ export function ServicesMenu({ trigger, preparing = false }: { trigger: RefObjec
             </button>
           );
         })}
-        {more && SOON_ENTRIES.map(entry => (
-          <button key={entry.id} type="button" className="is-coming" disabled aria-disabled="true" title="Próximamente">
-            <img src={entry.iconSrc} alt="" />
-            <span>{entry.name}</span>
-            <small className="coming-tag">Próximamente</small>
-          </button>
-        ))}
       </div>
-      <button type="button" className="services-more-toggle" aria-expanded={more} aria-controls="services-menu" onClick={() => setMore(value => !value)}>
-        {more ? 'Ocultar próximos' : 'Más servicios próximamente'} <span aria-hidden="true">{more ? '▴' : '▾'}</span>
-      </button>
       {!USE_MOCKS && !preparing && <button className="services-account-link" type="button" onClick={() => openWorkspacePage('/espacio/configuracion/cuenta')}>Mi cuenta →</button>}
     </section>
   );

@@ -16,10 +16,8 @@ seedSignedInSession();
 // Ruta del espacio y título principal (h1) de su vista.
 const WORKSPACE_ROUTES: Array<[path: string, heading: RegExp]> = [
   ['/espacio', /^Hazlo ?posible\.$/],
-  ['/espacio/erp', /^ERP$/],
   ['/espacio/analitica', /^Analítica$/],
   ['/espacio/auditoria', /^Captura y auditoría$/],
-  ['/espacio/agentes', /^Agentes$/],
   ['/espacio/academy', /^Academy$/],
   ['/espacio/logistica', /^Logística$/],
   ['/espacio/fabrica', /^Fábrica y proveedores$/],
@@ -40,10 +38,28 @@ describe('espacio de trabajo (sesión lista)', () => {
     expect(unhandledApiCalls).toEqual([]);
   });
 
+  // ERP · Finanzas tiene la mesa de Producto: menú o lista a la izquierda y conversación, o la ficha.
+  test.each([
+    ['/espacio/erp', () => screen.findByRole('complementary', { name: 'Menú de Finanzas' }, { timeout: 4000 })],
+    ['/espacio/erp/solicitudes-compra', () => screen.findByRole('complementary', { name: 'Compras' }, { timeout: 4000 })],
+    ['/espacio/erp/solicitudes-compra/DEMO-COM-001', () => screen.findByRole('heading', { level: 1, name: 'DEMO-COM-001' }, { timeout: 4000 })],
+    // Agentes tiene la misma mesa (10-11-2026): menú a la izquierda y conversación.
+    ['/espacio/agentes', () => screen.findByRole('complementary', { name: 'Menú de Agentes' }, { timeout: 4000 })],
+  ])('%s se pinta sin errores', async (path, find) => {
+    const { router } = renderApp(path);
+    expect(await find()).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Abrir servicios de Uonify' })).toBeInTheDocument();
+    expect(router.state.location.pathname).toBe(path);
+    await settle();
+    expectNoCrashScreen();
+    expect(consoleErrors).toEqual([]);
+    expect(unhandledApiCalls).toEqual([]);
+  });
+
   test('el enlace ?service= de la web pública abre ese servicio', async () => {
     const { router } = renderApp('/espacio?service=erp');
     await waitFor(() => expect(router.state.location.pathname).toBe('/espacio/erp'));
-    expect(await screen.findByRole('heading', { level: 1, name: /^ERP$/ })).toBeInTheDocument();
+    expect(await screen.findByRole('complementary', { name: 'Menú de Finanzas' })).toBeInTheDocument();
   });
 
   test('una dirección desconocida del espacio vuelve al lienzo', async () => {

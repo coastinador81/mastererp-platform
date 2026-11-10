@@ -1,5 +1,6 @@
 import hashlib
 import os
+import re
 import secrets
 from datetime import datetime, timedelta, timezone
 from typing import Any
@@ -9,6 +10,33 @@ from tenant_security.auth import resolve_auth
 from tenant_security.http import HttpError, api_response, parse_body
 
 from .repository import EcommerceRepository
+
+
+def _validate_payment_configuration(changes):
+    if not isinstance(changes, dict) or "configuration" not in changes:
+        return
+    configuration = changes["configuration"]
+    if not isinstance(configuration, dict):
+        raise HttpError(400, "Invalid store configuration", code="invalid_request")
+    payments = configuration.get("payments", {})
+    details = configuration.get("paymentDetails", {})
+    if not isinstance(payments, dict) or not isinstance(details, dict):
+        raise HttpError(400, "Invalid payment configuration", code="invalid_request")
+    for key in ("efectivo", "al-recibir", "pago-movil", "transferencia"):
+        if key in payments and not isinstance(payments[key], bool):
+            raise HttpError(400, "Payment flags must be boolean", code="invalid_request")
+    mobile = details.get("mobilePayment")
+    transfer = details.get("bankTransfer")
+    if payments.get("pago-movil") is True and (not isinstance(mobile, dict)
+            or not re.fullmatch(r"[VEJG]-?\d{6,12}", str(mobile.get("document", "")), re.I)
+            or not re.fullmatch(r"0\d{10}", str(mobile.get("phone", "")))
+            or not re.fullmatch(r"\d{4}", str(mobile.get("bankCode", "")))):
+        raise HttpError(400, "Invalid mobile payment recipient", code="invalid_request")
+    if payments.get("transferencia") is True and (not isinstance(transfer, dict)
+            or not re.fullmatch(r"[VEJG]-?\d{6,12}", str(transfer.get("document", "")), re.I)
+            or not re.fullmatch(r"\d{4}", str(transfer.get("bankCode", "")))
+            or not re.fullmatch(r"\d{10,30}", str(transfer.get("accountNumber", "")))):
+        raise HttpError(400, "Invalid bank transfer recipient", code="invalid_request")
 
 
 def _header(event, name):
@@ -70,6 +98,7 @@ def _request(event, repository, public=False):
     if method == "PATCH" and store_id:
         if "version" not in payload or "changes" not in payload:
             raise HttpError(400, "version and changes are required", code="invalid_request")
+        _validate_payment_configuration(payload["changes"])
         return 200, repository.configure(company_id, store_id, payload)
     raise HttpError(404, "Route not found", code="not_found")
 

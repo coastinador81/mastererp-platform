@@ -13,6 +13,10 @@ import { registerAmazonChannel } from './api/amazonChannel';
 registerAmazonChannel();
 
 export { productPath, parseProductRoute, PRODUCT_BASE_PATH, NEW_PRODUCT_SEGMENT, DEFAULT_TAB } from './model/paths';
+// Reglas del panel lateral, foco y entrada de la ficha, para que otros servicios con mesa (ERP · Finanzas) se comporten igual.
+export { WIDE_SCREEN_QUERY, applyDrawer, defaultLayout, isNarrowWidth, layoutForView, layoutOnNarrow, toggleFromHeader, toggleFromRail, type DrawerState } from './model/layout';
+export { hasEditingFocus } from './hooks/focus';
+export { useSheetEnter } from './hooks/usePlayEnter';
 export { useProducts, catalogKeys } from './api/queries';
 export { useCatalogProduct } from './hooks/useCatalogProduct';
 export { AMAZON_CHANNEL } from './api/amazonChannel';

@@ -1,9 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Link, usePathname, useRouter } from 'expo-router';
-import { Platform, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Image, Platform, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { isAuthenticated, signOut, startLogin } from '../auth';
 import { colors, contentWidth, radii, spacing } from '../theme';
 import { useStore } from '../store/StoreProvider';
+import { HeaderMenu } from './HeaderMenu';
 
 export function StoreHeader() {
   const router = useRouter();
@@ -12,6 +13,9 @@ export function StoreHeader() {
   const pathname = usePathname();
   const { catalog, cart, authenticated } = useStore();
   const count = cart.reduce((total, line) => total + line.quantity, 0);
+  const storeName = catalog?.store.name || '';
+  const configuredLogoUrl = catalog?.store.branding?.logoUrl;
+  const logoUrl = configuredLogoUrl?.startsWith('https://') ? configuredLogoUrl : '';
   const onSession = async () => {
     if (isAuthenticated()) signOut();
     else await startLogin();
@@ -19,9 +23,10 @@ export function StoreHeader() {
   return (
     <View style={styles.shell}>
       <View style={styles.header}>
+        {compact ? <HeaderMenu /> : null}
         <Pressable style={styles.brand} onPress={() => router.push('/')} accessibilityLabel="Ir al inicio">
-          <View style={styles.mark}><Text style={styles.markText}>M</Text></View>
-          <View style={styles.brandCopy}><Text style={styles.name} numberOfLines={1}>{catalog?.store.name || 'MasterERP'}</Text>{compact ? null : <Text style={styles.tag}>Tu tienda, a tu manera</Text>}</View>
+          <View style={[styles.mark, storeName && {backgroundColor:catalog?.store.branding?.primaryColor||colors.primary}, logoUrl && styles.logoMark, !storeName && styles.markLoading]}>{logoUrl ? <Image source={{uri:logoUrl}} style={styles.logo} resizeMode="contain" /> : storeName ? <Text style={styles.markText}>{storeName.slice(0,1).toUpperCase()}</Text> : null}</View>
+          <View style={styles.brandCopy}>{storeName ? <Text style={styles.name} numberOfLines={1}>{storeName}</Text> : <View style={styles.nameLoading} />}{compact || !storeName ? null : <Text style={styles.tag}>Tu tienda, a tu manera</Text>}</View>
         </Pressable>
         {compact ? null : <View style={styles.nav}>
           <Link href="/" asChild><Pressable><Text style={[styles.link, pathname === '/' && styles.active]}>Inicio</Text></Pressable></Link>
@@ -45,11 +50,15 @@ export function StoreHeader() {
 const styles = StyleSheet.create({
   shell: { backgroundColor: colors.surface, borderBottomWidth: 1, borderBottomColor: colors.line },
   header: { width: '100%', maxWidth: contentWidth, minHeight: 76, alignSelf: 'center', paddingHorizontal: spacing.md, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.md },
-  brand: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minWidth: 0 },
+  brand: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.sm, minWidth: 0 },
   brandCopy: { flexShrink: 1, minWidth: 0 },
   mark: { width: 39, height: 39, flexShrink: 0, borderRadius: 13, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.primary },
+  markLoading: { backgroundColor: colors.line },
+  logoMark: { backgroundColor: colors.surface },
+  logo: { width: 31, height: 31, borderRadius: 9 },
   markText: { color: colors.surface, fontSize: 21, fontWeight: '900' },
   name: { color: colors.ink, fontSize: 17, fontWeight: '900' },
+  nameLoading: { width: 145, height: 16, borderRadius: 8, backgroundColor: colors.line },
   tag: { color: colors.muted, fontSize: 10 },
   nav: { flexDirection: 'row', gap: spacing.lg },
   link: { color: colors.muted, fontSize: 14, fontWeight: '700', paddingVertical: 10 },

@@ -5,6 +5,7 @@ import { AmazonConversationConnection } from '@/modules/amazon';
 import { GoogleCloudConnection } from '@/modules/cloud';
 import { DriveConnectionSettings } from '@/modules/drive';
 import { BlenderConnectionSettings } from '@/modules/blender';
+import { ErpConversationConnection } from '@/modules/erp';
 import { api } from '@/shared/api/client';
 import { Icon } from '@/shared/ui';
 import { isConnectionProvider, type ConnectionProvider } from '../model/connectionActions';
@@ -13,7 +14,7 @@ import '../styles/connection-center.css';
 import '../styles/universal-conversation-connection.css';
 
 interface Props { provider: ConnectionProvider; account: string }
-type LocalProvider = Exclude<ConnectionProvider, 'amazon' | 'account'>;
+type LocalProvider = Exclude<ConnectionProvider, 'amazon' | 'account' | 'erp'>;
 interface Snapshot {
   status?: string;
   connection?: { status: string; projectId?: string | null; checks?: { ready: boolean } | null };
@@ -36,6 +37,7 @@ function AccountConnection({ provider, account }: Props) {
     return <p className="conversation-connection-session" role="status">Recupera tu sesión para gestionar esta conexión.</p>;
   }
   if (provider === 'account') return <AccountDeletionControl account={account} presentation="conversation" />;
+  if (provider === 'erp') return <ErpConversationConnection />;
   return provider === 'amazon' ? <AmazonConversationConnection account={account} /> : <ConnectionCard provider={provider} account={account} />;
 }
 

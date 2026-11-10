@@ -2,6 +2,7 @@ import React, {createContext, useContext, useEffect, useRef, useState} from 'rea
 import {login, logout, completeLogin, restoreSession, authorizedFetch, clearSession, sessionExpiresAt} from '../../shared/auth/cognito.mjs';
 import {flushSync} from 'react-dom';
 import {workspacePath,financeUrl} from './financeRoutes.mjs';
+import {savedSelection,selectedCompany,validContext,validSpaces} from './workspaceContext.mjs';
 import baseConfig from '../../modules/0-uonify/auth-config.json';
 const SessionContext = createContext(null);
 export const useWorkspace = () => useContext(SessionContext);
@@ -32,11 +33,20 @@ export function WorkspaceProvider({children}) {
     } finally {requests.current.delete(controller);}
   };
   const discover = async () => {
-    const result=await request(config.apiUrl+'/v1/uonify/spaces');
-    if(!Array.isArray(result.spaces)||result.spaces.some(s=>typeof s.id!=='string'||typeof s.name!=='string')) throw new Error('invalid_context');
+    const candidate=savedSelection(), base=config.apiUrl+'/v1/uonify/spaces';
+    let result;
+    try {result=await request(candidate.tenant?base+'?tenant_id='+encodeURIComponent(candidate.tenant):base);}
+    catch(error){
+      if(!candidate.tenant||error.status!==403)throw error;
+      sessionStorage.removeItem('mastererp.dev.selection');result=await request(base);
+    }
+    if(!validSpaces(result))throw new Error('invalid_context');
     sessionStorage.removeItem('mastererp.dev.returning');setSpaces(result.spaces);setSignedIn(true);setAuthenticating(false);
-    let candidate={};try{candidate=JSON.parse(sessionStorage.getItem('mastererp.dev.selection')||'{}');}catch{}
-    if(result.spaces.some(x=>x.id===candidate.tenant))setTenant(candidate.tenant);
+    if(candidate.tenant&&validContext(result.context,candidate.tenant)){
+      const nextCompany=selectedCompany(result.context,candidate.company);
+      setTenant(candidate.tenant);setContext(result.context);setCompany(nextCompany);
+      sessionStorage.setItem('mastererp.dev.selection',JSON.stringify({tenant:candidate.tenant,company:nextCompany}));
+    } else if(result.spaces.some(x=>x.id===candidate.tenant))setTenant(candidate.tenant);
     else if(result.spaces.length===1)setTenant(result.spaces[0].id);
   };
   useEffect(()=>{
@@ -64,12 +74,11 @@ export function WorkspaceProvider({children}) {
     try {
       const result=await request(config.apiUrl+'/v1/uonify/spaces?tenant_id='+encodeURIComponent(tenant));
       const c=result.context;
-      if(c?.tenant_id!==tenant || !Array.isArray(c.companies)||!Array.isArray(c.permissions)||!Array.isArray(c.modules)||c.companies.some(x=>typeof x.id!=='string'||typeof x.name!=='string')||c.permissions.some(x=>typeof x!=='string')||c.modules.some(x=>typeof x!=='string'))throw new Error('invalid_context');
+      if(!validSpaces(result)||!validContext(c,tenant))throw new Error('invalid_context');
       setSpaces(result.spaces);setContext(c);
       setCompany(previous=>{
-        let candidate={};try{candidate=JSON.parse(sessionStorage.getItem('mastererp.dev.selection')||'{}');}catch{}
-        const desired=previous||(candidate.tenant===tenant?candidate.company:'');
-        const selected=c.companies.some(x=>x.id===desired)?desired:(c.companies.length===1?c.companies[0].id:'');
+        const candidate=savedSelection(),desired=previous||(candidate.tenant===tenant?candidate.company:'');
+        const selected=selectedCompany(c,desired);
         sessionStorage.setItem('mastererp.dev.selection',JSON.stringify({tenant,company:selected}));return selected;
       });
     } catch(e) {
@@ -78,7 +87,7 @@ export function WorkspaceProvider({children}) {
       if(e.status===403)request(config.apiUrl+'/v1/uonify/spaces').then(r=>{setSpaces(r.spaces);if(!r.spaces.some(x=>x.id===tenant))setTenant('');}).catch(()=>{});
     } finally {if(epoch===generation.current)setLoading(false);}
   };
-  useEffect(()=>{refresh();},[tenant,signedIn]);
+  useEffect(()=>{if(context?.tenant_id!==tenant)refresh();},[tenant,signedIn,context?.tenant_id]);
   const beginLogin = () => {
     if(authenticating)return Promise.resolve();
     setAuthenticating(true);setError('');

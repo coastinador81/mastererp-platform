@@ -3,7 +3,7 @@ from types import SimpleNamespace
 from unittest.mock import Mock
 from unittest.mock import patch
 
-from ecommerce_api.handler import HttpError, _checkout, _claim, _customer_portal, _request, _verified_profile, lambda_handler
+from ecommerce_api.handler import HttpError, _checkout, _claim, _customer_portal, _request, _validate_payment_configuration, _verified_profile, lambda_handler
 
 
 class EcommerceApiTest(unittest.TestCase):
@@ -23,6 +23,16 @@ class EcommerceApiTest(unittest.TestCase):
         event = {"requestContext": {"http": {"method": "POST"}}, "pathParameters": {"company_id": "00000000-0000-0000-0000-000000000001"}, "body": "{}"}
         with self.assertRaises(HttpError):
             _request(event, Mock())
+
+    def test_payment_configuration_requires_valid_backend_recipients(self):
+        valid = {"configuration": {"payments": {"pago-movil": True}, "paymentDetails": {
+            "mobilePayment": {"document": "V12345678", "phone": "04121234567", "bankCode": "0102"},
+            "bankTransfer": None}}}
+        self.assertIsNone(_validate_payment_configuration(valid))
+        invalid = {"configuration": {"payments": {"pago-movil": True}, "paymentDetails": {
+            "mobilePayment": {"document": "invalid", "phone": "123", "bankCode": "1"}}}}
+        with self.assertRaises(HttpError):
+            _validate_payment_configuration(invalid)
 
     @patch("ecommerce_api.handler.secrets.token_urlsafe", return_value="x" * 43)
     def test_admin_invitation_returns_raw_token_once(self, _token):

@@ -1,0 +1,80 @@
+/* Servicio Agentes. La mesa, el raíl, el panel y la cabecera de la ficha son las clases
+   product-* del catálogo; la ficha usa las primitivas del kit (pim-*). Aquí solo lo propio,
+   con tokens del kit y la retícula de 8 px, siempre dentro de .agents-workbench. */
+
+.agents-workbench .agents-icon { width: 19px; height: 19px; flex: 0 0 auto; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.agents-workbench .agents-edge-item.is-active { color: var(--pim-blue-strong); }
+
+/* Panel: cabecera, menú y acción principal. */
+.agents-workbench .agents-drawer-back { margin-left: -8px; }
+.agents-workbench .agents-drawer-title { flex: 1 1 auto; min-width: 0; }
+.agents-workbench .agents-drawer-actions { padding: 8px 15px 0; }
+.agents-workbench .agents-menu-scroll { display: grid; align-content: start; gap: 8px; padding: 8px; }
+.agents-workbench .agents-menu-create { width: 100%; }
+.agents-workbench .agents-menu { display: grid; gap: 2px; }
+.agents-workbench .agents-menu-item { width: 100%; min-height: 40px; display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 0; border-radius: var(--pim-r-control); background: transparent; color: var(--pim-text); font: inherit; font-size: 13px; text-align: left; cursor: pointer; }
+.agents-workbench .agents-menu-item:hover { background: var(--pim-surface-muted); }
+.agents-workbench .agents-menu-item.is-active { background: var(--pim-blue-tint); color: var(--pim-blue-strong); font-weight: 600; }
+.agents-workbench .agents-menu-item .agents-icon { width: 16px; height: 16px; }
+.agents-workbench .agents-menu-item small { margin-left: auto; color: var(--pim-muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+
+/* Filas de agentes: inicial en el cuadro y estado a la derecha. */
+.agents-workbench .agents-item-mark { display: grid; place-items: center; background: var(--pim-blue-tint); color: var(--pim-blue-strong); font-weight: 600; }
+/* La fila de Producto reserva 8px al final (su punto de estado); aquí cabe la etiqueta entera. */
+.agents-workbench .product-catalog-item { grid-template-columns: 38px minmax(0, 1fr) auto; }
+.agents-workbench .agents-row-state { align-self: center; white-space: nowrap; }
+
+/* Ficha y apartados en el centro. */
+.agents-workbench .agents-heading-mark { color: var(--pim-blue-strong); }
+.agents-workbench .agents-heading-mark .agents-icon { width: 26px; height: 26px; }
+.agents-workbench .agents-heading-initial { font-size: 20px; font-weight: 600; }
+.agents-workbench .agents-status { color: var(--pim-success); }
+.agents-workbench .agents-body { display: grid; gap: 16px; min-width: 0; }
+.agents-workbench .agents-section .pim-section-sub { margin: 4px 0 0; }
+.agents-workbench .agents-stepper { margin: 0 0 16px; }
+
+.agents-workbench .agents-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
+.agents-workbench .agents-metric span, .agents-workbench .agents-metric small { display: block; color: var(--pim-muted); font-size: 12px; }
+.agents-workbench .agents-metric strong { display: block; margin: 8px 0; color: var(--pim-ink); font-size: 28px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.agents-workbench .agents-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+.agents-workbench .agents-panel h2, .agents-workbench .agents-empty h2 { margin: 4px 0 8px; color: var(--pim-ink); font-size: 16px; font-weight: 600; }
+.agents-workbench .agents-panel p, .agents-workbench .agents-empty p { margin: 0; color: var(--pim-muted); font-size: 13px; }
+.agents-workbench .agents-kicker { color: var(--pim-blue); font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
+.agents-workbench .agents-links { display: grid; gap: 8px; margin-top: 16px; }
+.agents-workbench .agents-links .pim-btn { justify-content: flex-start; }
+.agents-workbench .agents-ready { display: grid; margin: 8px 0 0; padding: 0; list-style: none; }
+.agents-workbench .agents-ready-item { width: 100%; display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 12px 0; border: 0; border-top: 1px solid var(--pim-line); background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.agents-workbench .agents-ready li:first-child .agents-ready-item { border-top: 0; }
+.agents-workbench .agents-ready-item strong, .agents-workbench .agents-integration strong { display: block; color: var(--pim-ink); font-size: 13px; font-weight: 600; }
+.agents-workbench .agents-ready-item small, .agents-workbench .agents-integration small { display: block; color: var(--pim-muted); font-size: 12px; }
+.agents-workbench .agents-mark { width: 40px; height: 40px; display: grid; place-items: center; border-radius: var(--pim-r-control); background: var(--pim-blue-tint); color: var(--pim-blue-strong); font-weight: 600; }
+.agents-workbench .agents-mark-lg { width: 48px; height: 48px; }
+
+.agents-workbench .agents-empty { display: grid; justify-items: start; gap: 8px; padding: 32px; }
+.agents-workbench .agents-empty .pim-btn { margin-top: 8px; }
+
+.agents-workbench .agents-integrations { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.agents-workbench .agents-integration { display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; align-items: center; gap: 12px; }
+.agents-workbench .agents-request-note { margin: 8px 0 0; color: var(--pim-success); font-size: 12px; }
+
+/* Formularios del asistente y de la ficha. */
+.agents-workbench .agents-choice { display: flex; flex-wrap: wrap; gap: 8px; }
+.agents-workbench .agents-option { display: flex; align-items: center; gap: 8px; min-height: 40px; padding: 8px 12px; border: 1px solid var(--pim-line); border-radius: var(--pim-r-control); background: var(--pim-surface); color: var(--pim-ink); font-size: 13px; cursor: pointer; }
+.agents-workbench .agents-option.is-selected { border-color: var(--pim-blue); background: var(--pim-blue-tint); }
+.agents-workbench .agents-option-card { flex: 1 1 200px; align-items: flex-start; }
+.agents-workbench .agents-option-card small { display: block; margin-top: 4px; color: var(--pim-muted); font-size: 12px; }
+.agents-workbench .agents-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+.agents-workbench .agents-field-wide { grid-column: 1 / -1; }
+.agents-workbench .agents-checks { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px; }
+.agents-workbench .agents-check { display: flex; align-items: center; gap: 8px; min-height: 32px; color: var(--pim-ink); font-size: 13px; cursor: pointer; }
+.agents-workbench .agents-tags { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.agents-workbench .agents-test { display: flex; gap: 8px; }
+.agents-workbench .agents-test .pim-input { flex: 1 1 auto; min-width: 0; }
+.agents-workbench .agents-wizard-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding-top: 8px; border-top: 1px solid var(--pim-line); }
+.agents-workbench .agents-spacer { flex: 1 1 auto; }
+
+@media (max-width: 560px) {
+  .agents-workbench .agents-integration { grid-template-columns: 40px minmax(0, 1fr); }
+  .agents-workbench .agents-integration > :last-child { grid-column: 2; justify-self: start; }
+  .agents-workbench .agents-test { flex-direction: column; }
+}

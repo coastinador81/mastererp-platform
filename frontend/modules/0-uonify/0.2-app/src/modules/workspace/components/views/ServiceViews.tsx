@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { selectService } from '../../hooks/actions';
+import { returnToChat, selectService } from '../../hooks/actions';
 import { SERVICES, serviceIcon, type NexusChannel, type ServiceId } from '../../model/services';
 
 /**
@@ -20,8 +20,11 @@ function ModuleHeader({ service }: { service: ServiceId }) {
   );
 }
 
-/** ERP, Analítica, Captura y auditoría, Agentes, Academy, Logística y Fábrica. */
-export function ServiceView({ service }: { service: ServiceId }) {
+/**
+ * Página de un servicio sin vista propia: icono oficial, descripción, capacidades
+ * y la entrada natural del servicio, que es pedírselo a Uony en la conversación.
+ */
+export function ServicePage({ service, onAsk }: { service: ServiceId; onAsk: () => void }) {
   const data = SERVICES[service];
   return (
     <>
@@ -29,12 +32,29 @@ export function ServiceView({ service }: { service: ServiceId }) {
       <div className="service-surface">
         <div className="module-empty">
           <img src={serviceIcon(service)} alt="" />
-          <h2>{data.title}</h2>
-          <p>{data.detail}</p>
+          <h2>{data.title ?? data.name}</h2>
+          <p>{data.detail ?? data.description}</p>
+          {data.capabilities?.length ? (
+            <div className="channel-grid" style={{ width: '100%', marginBottom: 24 }}>
+              {data.capabilities.map(capability => (
+                <div key={capability} className="channel-card" style={{ minHeight: 0 }}>
+                  <span><strong>{capability}</strong></span>
+                </div>
+              ))}
+            </div>
+          ) : null}
+          <div className="module-actions">
+            <button type="button" className="primary-action" onClick={onAsk}>Pedírselo a Uony</button>
+          </div>
         </div>
       </div>
     </>
   );
+}
+
+/** ERP, Analítica, Captura y auditoría, Agentes, Academy, Logística y Fábrica. */
+export function ServiceView({ service }: { service: ServiceId }) {
+  return <ServicePage service={service} onAsk={returnToChat} />;
 }
 
 const CHANNEL_NAMES: Record<NexusChannel, string> = { amazon: 'Amazon', shopify: 'Shopify' };

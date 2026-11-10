@@ -6,7 +6,11 @@ type Mode = 'authorization' | 'billing';
 interface Pending { mode: Mode; flowId?: string; started: number }
 const validFlow = (value: unknown): value is string => typeof value === 'string' && /^[a-f0-9]{64}$/.test(value);
 
-export function useCloudWindow(onComplete: (mode: Mode) => Promise<void>, connection: 'google-cloud' | 'google-drive' = 'google-cloud') {
+/** Ventana de autorización de otro proveedor (ERP · Finanzas): su origen, su canal de retorno y su nombre. */
+export interface WindowTarget { origin: string; channel: string; name: string }
+const GOOGLE: WindowTarget = { origin: 'https://accounts.google.com', channel: 'uonify-google-return', name: 'Google' };
+
+export function useCloudWindow(onComplete: (mode: Mode) => Promise<void>, connection: 'google-cloud' | 'google-drive' | 'erp' = 'google-cloud', target: WindowTarget = GOOGLE) {
   const account = currentAccountEmail();
   const [pending, setPending] = useState<Pending | null>(null);
   const [message, setMessage] = useState('');
@@ -70,7 +74,9 @@ export function useCloudWindow(onComplete: (mode: Mode) => Promise<void>, connec
           if (result.status === 'success') {
             await complete.current('authorization');
             if (!disposed && current() && generation.current === operation) setMessage('Cuenta conectada. Seguimos aquí, en Uonify.');
-          } else setMessage(result.error === 'account_mismatch' ? 'La cuenta elegida no coincide con tu sesión de Uonify. Vuelve a conectar usando la misma cuenta. La otra cuenta no se ha conectado.' : 'No se ha completado la autorización. Sigues en Uonify; puedes reintentarlo.');
+          } else setMessage(result.error === 'account_mismatch'
+            ? (connection === 'erp' ? 'La cuenta de MasterERP elegida no coincide con la que conectaste. Desconecta para cambiar de cuenta. La otra cuenta no se ha conectado.' : 'La cuenta elegida no coincide con tu sesión de Uonify. Vuelve a conectar usando la misma cuenta. La otra cuenta no se ha conectado.')
+            : 'No se ha completado la autorización. Sigues en Uonify; puedes reintentarlo.');
           if (!disposed && current() && generation.current === operation) setPending(null);
           return;
         }
@@ -85,7 +91,7 @@ export function useCloudWindow(onComplete: (mode: Mode) => Promise<void>, connec
       if (live() && !finished) timer = setTimeout(() => void poll(), 2000);
     };
     // El retorno solo despierta la consulta. Ningún mensaje de ventana concede acceso.
-    const channel = typeof BroadcastChannel === 'undefined' ? null : new BroadcastChannel('uonify-google-return');
+    const channel = typeof BroadcastChannel === 'undefined' ? null : new BroadcastChannel(target.channel);
     if (channel) channel.onmessage = event => { if (event.data?.flowId === flowId && live()) { window.focus(); void poll(); } };
     const wake = () => { void poll(); };
     window.addEventListener('focus', wake);
@@ -93,7 +99,7 @@ export function useCloudWindow(onComplete: (mode: Mode) => Promise<void>, connec
     return () => { disposed = true; controller.abort(); clearTimeout(timer); channel?.close(); window.removeEventListener('focus', wake); };
     // El resultado siempre comprueba la cuenta, el intento y la vigencia antes de aplicarse.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pending, connection, account]);
+  }, [pending, connection, account, target.channel]);
 
   const open = async (mode: Mode, email?: string, officialUrl?: string) => {
     if (active.current || !current()) return;
@@ -102,7 +108,7 @@ export function useCloudWindow(onComplete: (mode: Mode) => Promise<void>, connec
     const left = Math.max(0, window.screenX + (window.outerWidth - width) / 2);
     const top = Math.max(0, window.screenY + (window.outerHeight - height) / 2);
     const child = window.open('about:blank', '_blank', `popup=yes,width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`);
-    if (!child) { setMessage('Tu navegador ha bloqueado la ventana de Google. Permite ventanas emergentes para Uonify y vuelve a pulsar el botón.'); return; }
+    if (!child) { setMessage(`Tu navegador ha bloqueado la ventana de ${target.name}. Permite ventanas emergentes para Uonify y vuelve a pulsar el botón.`); return; }
     popup.current = child;
     const operation = ++generation.current;
     const controller = new AbortController(); request.current = controller;
@@ -110,8 +116,8 @@ export function useCloudWindow(onComplete: (mode: Mode) => Promise<void>, connec
     setPending(active.current); setMessage('');
     try {
       child.opener = null;
-      child.document.title = 'Conectando con Google · Uonify';
-      child.document.body.textContent = 'Abriendo Google… Tu progreso permanece en Uonify.';
+      child.document.title = `Conectando con ${target.name} · Uonify`;
+      child.document.body.textContent = `Abriendo ${target.name}… Tu progreso permanece en Uonify.`;
       child.focus();
       if (mode === 'billing') {
         const url = new URL(officialUrl ?? 'https://console.cloud.google.com/billing');
@@ -122,7 +128,7 @@ export function useCloudWindow(onComplete: (mode: Mode) => Promise<void>, connec
         const result = await api.post<{ authUrl: string; flowId: string }>(`/connections/${connection}/start`, { popup: true }, { signal: AbortSignal.any([controller.signal, AbortSignal.timeout(15_000)]) });
         if (!current() || operation !== generation.current) { cancelQuietly(result.flowId); return; }
         const url = new URL(result.authUrl);
-        if (url.origin !== 'https://accounts.google.com' || url.username || url.password || !validFlow(result.flowId)) throw new Error('No se ha podido abrir una conexión válida con Google.');
+        if (url.origin !== target.origin || url.username || url.password || !validFlow(result.flowId)) throw new Error(`No se ha podido abrir una conexión válida con ${target.name}.`);
         active.current = { mode, flowId: result.flowId, started: Date.now() };
         child.location.replace(url.href); setPending(active.current);
       }
@@ -145,7 +151,7 @@ export function useCloudWindow(onComplete: (mode: Mode) => Promise<void>, connec
       closePopup(); window.focus(); setPending(null);
       const completion = generation.current;
       await complete.current(attempt.mode);
-      if (current() && generation.current === completion) setMessage(attempt.mode === 'billing' ? 'Hemos vuelto a consultar tu cuenta. Revisa los proyectos disponibles.' : 'Puedes volver a conectar Google. Tu progreso sigue guardado.');
+      if (current() && generation.current === completion) setMessage(attempt.mode === 'billing' ? 'Hemos vuelto a consultar tu cuenta. Revisa los proyectos disponibles.' : `Puedes volver a conectar ${target.name}. Tu progreso sigue guardado.`);
     } catch (error) { if (current() && generation.current === operation) setMessage(errorMessage(error)); }
     finally {
       if (request.current === controller) request.current = null;

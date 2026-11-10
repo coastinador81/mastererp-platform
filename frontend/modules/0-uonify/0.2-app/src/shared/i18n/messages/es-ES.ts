@@ -16,7 +16,7 @@ export const esES = {
   language: {
     label: 'Idioma',
     pick: 'Elige el idioma de la aplicación',
-    comingSoon: 'próximamente',
+    comingSoon: 'no disponible',
     current: 'Idioma actual: {name}',
   },
 } as const;

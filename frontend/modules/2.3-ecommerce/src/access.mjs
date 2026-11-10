@@ -3,6 +3,7 @@ export const operationsModule = 'erp.operations';
 export const routePermissions = Object.freeze({
   summary: null,
   orders: 'operations.orders.read',
+  payments: 'digital_sales.ecommerce.read',
   preparation: 'operations.preparation.read',
   routes: 'operations.routes.read',
   nodes: 'operations.nodes.read',

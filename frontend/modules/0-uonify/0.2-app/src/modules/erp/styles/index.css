@@ -1,0 +1,97 @@
+/* Servicio ERP · Finanzas. La mesa, el raíl, el panel y la cabecera de la ficha son las
+   clases product-* del catálogo; la ficha, las primitivas del kit (pim-tab, pim-section,
+   pim-kv, pim-mono). Aquí solo lo que el catálogo no tiene, con tokens del kit y la
+   retícula de 8 px, siempre dentro de .erp-workbench para no tocar a Producto. */
+
+/* Raíl: un icono por grupo del menú del equipo (FinanceIcon, trazo 1,5 del manual). */
+.erp-workbench .erp-edge-group svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+
+/* Cabecera del panel: volver al menú, título y botón de hilos. */
+.erp-workbench .erp-drawer-back { margin-left: -8px; }
+.erp-workbench .erp-drawer-title { flex: 1 1 auto; min-width: 0; }
+
+/* Menú de Finanzas → Administración (grupos plegables y apartados, como el menú del equipo). */
+.erp-workbench .erp-menu-scroll { padding: 8px; }
+.erp-workbench .erp-menu { display: grid; gap: 4px; }
+.erp-workbench .erp-menu-summary { display: flex; align-items: center; gap: 8px; min-height: 40px; padding: 8px 12px; border-radius: var(--pim-r-control); color: var(--pim-ink); font-size: 12px; font-weight: 600; list-style: none; cursor: pointer; }
+.erp-workbench .erp-menu-summary::-webkit-details-marker { display: none; }
+.erp-workbench .erp-menu-summary:hover { background: var(--pim-surface-muted); }
+.erp-workbench .erp-menu-summary::after { content: ''; width: 6px; height: 6px; margin-left: auto; border-right: 1.5px solid var(--pim-muted); border-bottom: 1.5px solid var(--pim-muted); transform: rotate(-45deg); transition: transform var(--pim-fast) var(--pim-ease); }
+.erp-workbench .erp-menu-group[open] > .erp-menu-summary::after { transform: rotate(45deg); }
+.erp-workbench .erp-menu-list { display: grid; gap: 2px; margin: 0 0 8px; padding: 0 0 0 16px; list-style: none; }
+.erp-workbench .erp-menu-item { width: 100%; min-height: 36px; display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 0; border-radius: var(--pim-r-control); background: transparent; color: var(--pim-text); font: inherit; font-size: 13px; text-align: left; }
+.erp-workbench button.erp-menu-item { cursor: pointer; }
+.erp-workbench button.erp-menu-item:hover { background: var(--pim-surface-muted); }
+.erp-workbench .erp-menu-item.is-active { background: var(--pim-blue-tint); color: var(--pim-blue-strong); font-weight: 600; }
+.erp-workbench .erp-menu-item.is-disabled { color: var(--pim-muted); }
+.erp-workbench .erp-menu-item small { margin-left: auto; color: var(--pim-muted); font-size: 11px; white-space: nowrap; }
+.erp-workbench .erp-menu-summary svg, .erp-workbench .erp-menu-item svg { width: 16px; height: 16px; flex: 0 0 auto; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+
+/* Lista de Compras: la búsqueda con la misma separación que el catálogo (que tiene encima
+   sus botones .product-drawer-actions) y el texto de «Filtros» en AA con el panel abierto. */
+.erp-workbench .product-search { margin-top: 16px; }
+.erp-workbench .product-filter-trigger { color: var(--pim-text); }
+
+/* Sugerencias del buscador (PurchasesFilters de la demo), con la lista flotante del kit
+   (los mismos valores que el combobox de Atributos, pim-atributos-combo-list). */
+.erp-workbench .erp-search { position: relative; }
+.erp-workbench .erp-search-list { position: absolute; z-index: 40; top: calc(100% - 4px); left: 15px; right: 15px; max-height: 240px; margin: 0; padding: 4px; overflow-y: auto; list-style: none; border: 1px solid var(--pim-line); border-radius: var(--pim-r-control); background: var(--pim-surface); box-shadow: var(--pim-shadow-float); }
+.erp-workbench .erp-search-option { padding: 8px 12px; border-radius: var(--pim-r-tag); color: var(--pim-ink); font-size: 12px; overflow-wrap: anywhere; cursor: pointer; transition: background var(--pim-fast) var(--pim-ease); }
+.erp-workbench .erp-search-option:hover { background: var(--pim-surface-muted); }
+.erp-workbench .erp-search-option.is-active { background: var(--pim-blue-tint); color: var(--pim-blue-strong); }
+
+/* Filtros: desde y hasta en una fila, con la altura de los selectores del panel. */
+.erp-workbench .erp-filter-dates { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; }
+.erp-workbench .erp-filter-dates .pim-input { height: 32px; padding: 4px 12px; font-size: 12px; }
+
+/* Punto de estado con los tonos de la demo del equipo (statusTone), en tokens del kit. */
+.erp-workbench .erp-item-thumb svg { width: 18px; height: 18px; }
+.erp-workbench .erp-item-state[data-tone="neutral"] { background: var(--pim-muted); }
+.erp-workbench .erp-item-state[data-tone="success"] { background: var(--pim-success); }
+.erp-workbench .erp-item-state[data-tone="info"] { background: var(--pim-info); }
+.erp-workbench .erp-item-state[data-tone="warning"] { background: var(--pim-warning); }
+.erp-workbench .erp-item-state[data-tone="danger"] { background: var(--pim-error); }
+
+/* Ficha: el estado en Azul 600 para texto (regla del 600 del manual, AA) y la tabla de líneas. */
+.erp-workbench .erp-sheet .product-source-status { color: var(--pim-blue); }
+.erp-workbench .erp-note { margin: 0; }
+.erp-workbench .erp-table-scroll { min-width: 0; overflow-x: auto; }
+.erp-workbench .erp-table { width: 100%; min-width: 720px; border-collapse: collapse; font-size: 12px; }
+.erp-workbench .erp-table th, .erp-workbench .erp-table td { padding: 8px 12px; border-bottom: 1px solid var(--pim-line); text-align: left; vertical-align: top; }
+.erp-workbench .erp-table th { color: var(--pim-muted); font-weight: 550; white-space: nowrap; }
+.erp-workbench .erp-table td { color: var(--pim-ink); }
+.erp-workbench .erp-table td.pim-mono { white-space: nowrap; }
+.erp-workbench .erp-table .erp-num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+/* Sugerencias: la lista sin buscador abre con «Filtros» separado de la cabecera; la
+   comparación marca lo que cambia cada revisión; el editor va en una rejilla de campos. */
+.erp-workbench .erp-filter-first { margin-top: 16px; }
+.erp-workbench .erp-suggestion-thumb svg { fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.erp-workbench .erp-table th[scope="row"] { color: var(--pim-muted); font-weight: 550; white-space: nowrap; }
+.erp-workbench .erp-review-changed { background: var(--pim-warning-tint); }
+.erp-workbench .erp-review-time { display: block; margin-top: 4px; color: var(--pim-warning); font-size: 11px; }
+.erp-workbench .erp-review-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
+.erp-workbench .erp-review-total { margin: 0; padding: 8px 0; color: var(--pim-ink); font-size: 13px; }
+.erp-workbench .erp-review-confirm { display: grid; gap: 16px; }
+.erp-workbench .erp-notice { margin: 0; padding: 8px 12px; border: 1px solid var(--pim-warning-line); border-radius: var(--pim-r-control); background: var(--pim-warning-tint); color: var(--pim-warning); font-size: 12px; }
+.erp-workbench .erp-sheet p.erp-note { color: var(--pim-muted); font-size: 12px; }
+
+/* Panel: la frase del equipo bajo el título, la línea de ámbito de Órdenes, el aviso del
+   rango de fechas fuera del panel plegado y el pie de la demo al final de la lista. */
+.erp-workbench .erp-drawer-description { margin: 8px 15px 0; color: var(--pim-muted); font-size: 12px; line-height: 1.5; }
+.erp-workbench .erp-drawer-description .product-source-status { margin-top: 4px; }
+.erp-workbench .erp-drawer-scope { margin: 0 15px 8px; color: var(--pim-muted); font-size: 11px; line-height: 1.5; }
+.erp-workbench .erp-filter-error { margin: 0 15px 8px; }
+.erp-workbench .erp-drawer-footnote { margin: 8px; }
+
+/* Conexión con MasterERP en el panel (como la de Drive): estado, aviso y selección. */
+.erp-callback { display: grid; place-items: center; gap: 16px; min-height: 60vh; padding: 24px; text-align: center; }
+.erp-callback h1 { margin: 0; font-size: 18px; }
+
+/* Listas con datos reales: búsqueda de Ventas y paginación por cursor de la API. */
+.erp-workbench .erp-real-search { margin: 12px 15px 0; }
+.erp-workbench .erp-real-pagination { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 15px; border-top: 1px solid var(--pim-line); color: var(--pim-muted); font-size: 12px; }
+.erp-workbench .erp-real-pagination > div { display: flex; gap: 8px; }
+/* Iconos de línea del equipo (FinanceIcon) en las filas y fichas de terceros. */
+.erp-workbench .erp-item-thumb svg, .erp-workbench .erp-heading-icon svg { fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.erp-workbench .erp-heading-icon svg { width: 26px; height: 26px; }
