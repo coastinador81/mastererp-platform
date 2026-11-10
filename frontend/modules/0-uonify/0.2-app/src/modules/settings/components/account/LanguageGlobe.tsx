@@ -7,8 +7,8 @@ import type { LanguageCode } from '../../model/types';
 
 /**
  * Selector de idioma «mundito»: un globo con el idioma actual que despliega la
- * lista (Configuración → Cuenta). Español por defecto; el inglés aparece como
- * «próximamente» y no se puede elegir hasta que exista la traducción de la app
+ * lista (Configuración → Cuenta). Español por defecto; el inglés aparece sin
+ * poder elegirse hasta que exista la traducción de la app
  * (ver `LANGUAGE_OPTIONS`). El selector nunca va en la cabecera del chat.
  */
 export function LanguageGlobe({ value, onChange }: { value: LanguageCode; onChange: (value: LanguageCode) => void }) {

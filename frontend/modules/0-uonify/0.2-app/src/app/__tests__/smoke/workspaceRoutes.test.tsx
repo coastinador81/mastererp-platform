@@ -18,7 +18,6 @@ const WORKSPACE_ROUTES: Array<[path: string, heading: RegExp]> = [
   ['/espacio', /^Hazlo ?posible\.$/],
   ['/espacio/analitica', /^Analítica$/],
   ['/espacio/auditoria', /^Captura y auditoría$/],
-  ['/espacio/agentes', /^Agentes$/],
   ['/espacio/academy', /^Academy$/],
   ['/espacio/logistica', /^Logística$/],
   ['/espacio/fabrica', /^Fábrica y proveedores$/],
@@ -44,6 +43,8 @@ describe('espacio de trabajo (sesión lista)', () => {
     ['/espacio/erp', () => screen.findByRole('complementary', { name: 'Menú de Finanzas' }, { timeout: 4000 })],
     ['/espacio/erp/solicitudes-compra', () => screen.findByRole('complementary', { name: 'Compras' }, { timeout: 4000 })],
     ['/espacio/erp/solicitudes-compra/DEMO-COM-001', () => screen.findByRole('heading', { level: 1, name: 'DEMO-COM-001' }, { timeout: 4000 })],
+    // Agentes tiene la misma mesa (10-11-2026): menú a la izquierda y conversación.
+    ['/espacio/agentes', () => screen.findByRole('complementary', { name: 'Menú de Agentes' }, { timeout: 4000 })],
   ])('%s se pinta sin errores', async (path, find) => {
     const { router } = renderApp(path);
     expect(await find()).toBeInTheDocument();

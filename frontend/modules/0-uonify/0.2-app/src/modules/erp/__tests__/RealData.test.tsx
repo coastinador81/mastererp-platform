@@ -57,7 +57,7 @@ test('sin conexión: menú de ejemplo y tarjeta para conectar; al conectar, dato
   renderAt('/espacio/erp');
   const panel = await menu();
   expect(await within(panel).findByText(/la conexión se simula con datos de ejemplo/)).toBeInTheDocument();
-  expect(within(panel).getByText('Clientes').closest('[aria-disabled]')).toHaveTextContent('Próximamente');
+  expect(within(panel).getByRole('button', { name: 'Clientes' })).toBeEnabled();
   await connect(user);
   expect(within(panel).getByText('Simulación')).toBeInTheDocument();
   expect(screen.getByTestId('topbar-center')).toHaveTextContent('Vista local · ERP simulado');

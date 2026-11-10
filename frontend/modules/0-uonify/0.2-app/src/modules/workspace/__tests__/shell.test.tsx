@@ -126,10 +126,12 @@ describe('marco del espacio', () => {
     const trigger = screen.getByRole('button', { name: 'Abrir servicios de Uonify' });
     fireEvent.click(trigger);
     const menu = screen.getByRole('region', { name: 'Servicios de Uonify' });
-    // Menú compacto (dueño 23-10): Producto, Estudio, ERP y Nexus a la vista; el resto, al desplegar.
-    for (const name of ['Producto', 'Estudio', 'ERP', 'Nexus']) expect(within(menu).getByRole('button', { name })).toBeInTheDocument();
-    expect(within(menu).getByRole('button', { name: /Más servicios/ })).toBeInTheDocument();
-    expect(within(menu).queryByRole('button', { name: 'Analítica' })).not.toBeInTheDocument();
+    // Dueño (10-11-2026): todos los servicios activos a la vista, sin desplegable ni «Próximamente».
+    for (const name of ['Producto', 'Estudio', 'ERP', 'Nexus', 'Analítica', 'Captura y auditoría', 'Agentes', 'Academy', 'Logística', 'Fábrica y proveedores']) {
+      expect(within(menu).getByRole('button', { name })).toBeEnabled();
+    }
+    expect(within(menu).queryByRole('button', { name: /Más servicios/ })).not.toBeInTheDocument();
+    expect(within(menu).queryByText(/próximamente/i)).not.toBeInTheDocument();
     expect(within(menu).getByRole('link', { name: /Conocer Uonify/ })).toHaveAttribute('target', '_blank');
     fireEvent.keyDown(window, { key: 'Escape' });
     expect(menu).toHaveAttribute('hidden');

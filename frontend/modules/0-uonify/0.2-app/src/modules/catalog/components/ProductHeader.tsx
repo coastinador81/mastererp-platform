@@ -66,7 +66,7 @@ export function ProductHeader({ product, pimKey, onDelete, onClose, onPublish, i
             type="button"
             className="primary-action product-publish-button"
             disabled={!USE_MOCKS}
-            title={!USE_MOCKS ? 'Publicación en Amazon en preparación' : undefined}
+            title={!USE_MOCKS ? 'Conecta tu cuenta de Amazon en Nexus para publicar' : undefined}
             aria-disabled={isNew || !USE_MOCKS || undefined}
             data-tooltip={isNew ? 'Guarda el producto para publicarlo' : undefined}
             data-tooltip-pos={isNew ? 'below' : undefined}

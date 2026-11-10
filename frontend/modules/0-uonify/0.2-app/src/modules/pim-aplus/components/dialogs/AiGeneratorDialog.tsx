@@ -83,7 +83,7 @@ function OptionsSection() {
           </h4>
           <p>Sugiere contenido basado en las imágenes subidas del producto</p>
         </div>
-        <Badge tone="outline">Próximamente</Badge>
+        <Badge tone="outline">Bajo solicitud</Badge>
       </div>
       <div className="pim-aplus-ai-option pim-aplus-ai-option-soon">
         <div>
@@ -93,7 +93,7 @@ function OptionsSection() {
           </h4>
           <p>Analiza y optimiza el contenido para cumplir normas Amazon A+</p>
         </div>
-        <Badge tone="outline">Próximamente</Badge>
+        <Badge tone="outline">Bajo solicitud</Badge>
       </div>
       <div className="pim-aplus-ai-algo">
         <h4>Algoritmo de generación activo</h4>

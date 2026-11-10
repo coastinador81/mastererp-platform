@@ -6,14 +6,14 @@
  * Estado de cada apartado en la app de Uonify:
  *   'uonify'     ya está aquí, con los datos de ejemplo del equipo
  *   'equipo'     el equipo lo tiene desarrollado y llegará aquí en los próximos pasos
- *   'pendiente'  el equipo aún no lo ha desarrollado (su menú dice «Pendiente»)
+ *   'pendiente'  sin vista del equipo todavía: se abre con su estado vacío (EmptyApartado)
  */
 export type FinanceIconName = 'summary' | 'clients' | 'quote' | 'sales' | 'document' | 'supplier' | 'order' | 'invoice';
 export type ApartadoStatus = 'uonify' | 'equipo' | 'pendiente';
 
 export interface Apartado {
   label: string;
-  /** Ruta del equipo (vista=…); los pendientes no tienen. */
+  /** Ruta del equipo (vista=…); la de los pendientes es propia de Uonify. */
   route?: string;
   icon: FinanceIconName;
   status: ApartadoStatus;
@@ -26,6 +26,12 @@ export interface FinanceGroup {
   items: Apartado[];
 }
 
+/** Ruta de un apartado sin vista del equipo: «Caja chica» → caja-chica. */
+export const slugOf = (label: string): string =>
+  label.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+const pendingItem = (label: string): Apartado => ({ label, route: slugOf(label), icon: 'document', status: 'pendiente' });
+
 export const FINANCE_MENU: readonly FinanceGroup[] = [
   {
     number: '2.2.1.1',
@@ -33,9 +39,9 @@ export const FINANCE_MENU: readonly FinanceGroup[] = [
     icon: 'sales',
     items: [
       { label: 'Clientes', route: 'clientes', icon: 'clients', status: 'equipo' },
-      { label: 'Cotizaciones', icon: 'quote', status: 'pendiente' },
+      { label: 'Cotizaciones', route: 'cotizaciones', icon: 'quote', status: 'pendiente' },
       { label: 'Ventas', route: 'ventas', icon: 'sales', status: 'equipo' },
-      { label: 'Facturación', icon: 'document', status: 'pendiente' },
+      { label: 'Facturación', route: 'facturacion', icon: 'document', status: 'pendiente' },
     ],
   },
   {
@@ -56,21 +62,21 @@ export const FINANCE_MENU: readonly FinanceGroup[] = [
     name: 'Cartera y obligaciones',
     icon: 'invoice',
     items: [
-      { label: 'Cuentas por cobrar', icon: 'document', status: 'pendiente' },
-      { label: 'Cuentas por pagar', icon: 'document', status: 'pendiente' },
+      { label: 'Cuentas por cobrar', route: 'cuentas-por-cobrar', icon: 'document', status: 'pendiente' },
+      { label: 'Cuentas por pagar', route: 'cuentas-por-pagar', icon: 'document', status: 'pendiente' },
     ],
   },
   {
     number: '2.2.1.4',
     name: 'Tesorería',
     icon: 'summary',
-    items: ['Cobros', 'Pagos', 'Caja', 'Bancos', 'Transferencias', 'Conciliación'].map(label => ({ label, icon: 'document' as const, status: 'pendiente' as const })),
+    items: ['Cobros', 'Pagos', 'Caja', 'Bancos', 'Transferencias', 'Conciliación'].map(pendingItem),
   },
   {
     number: '2.2.1.5',
     name: 'Gastos y fondos menores',
     icon: 'document',
-    items: ['Gastos operativos', 'Caja chica', 'Anticipos y rendiciones'].map(label => ({ label, icon: 'document' as const, status: 'pendiente' as const })),
+    items: ['Gastos operativos', 'Caja chica', 'Anticipos y rendiciones'].map(pendingItem),
   },
 ];
 

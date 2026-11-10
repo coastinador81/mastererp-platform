@@ -1,16 +1,16 @@
 import { forwardRef } from 'react';
 import { SiteLink } from '../common/SiteLink';
 
-/** Herramientas del panel «Tu espacio Uonify» (sin `to`: aún no disponibles). */
-export const TOOL_ENTRIES: ReadonlyArray<{ label: string; icon: string; to?: string }> = [
+/** Herramientas del panel «Tu espacio Uonify»: cada una abre su servicio en el espacio. */
+export const TOOL_ENTRIES: ReadonlyArray<{ label: string; icon: string; to: string }> = [
   { label: 'ERP', icon: 'erp', to: '/espacio?service=erp' },
-  { label: 'Catálogo', icon: 'catalogo', to: '/productos#catalogo' },
-  { label: 'Analítica', icon: 'analitica', to: '/productos#ventas' },
+  { label: 'Catálogo', icon: 'catalogo', to: '/espacio?service=producto' },
+  { label: 'Analítica', icon: 'analitica', to: '/espacio?service=analitica' },
   { label: 'Captura y auditoría', icon: 'auditoria', to: '/espacio?service=auditoria' },
   { label: 'Agentes', icon: 'hive', to: '/espacio?service=agentes' },
-  { label: 'Academy', icon: 'academy' },
-  { label: 'Logística', icon: 'logistica' },
-  { label: 'Fábrica y proveedores', icon: 'fabrica', to: '/productos#proveedores' },
+  { label: 'Academy', icon: 'academy', to: '/espacio?service=academy' },
+  { label: 'Logística', icon: 'logistica', to: '/espacio?service=logistica' },
+  { label: 'Fábrica y proveedores', icon: 'fabrica', to: '/espacio?service=fabrica' },
   { label: 'Nexus', icon: 'nexus', to: '/espacio?service=nexus' },
 ];
 
@@ -27,9 +27,7 @@ export const ToolsPanel = forwardRef<HTMLElement, { open: boolean }>(function To
               <span>{tool.label}</span>
             </>
           );
-          return tool.to
-            ? <SiteLink key={tool.label} className="tool-entry" to={tool.to}>{content}</SiteLink>
-            : <button key={tool.label} className="tool-entry" type="button" aria-disabled="true">{content}</button>;
+          return <SiteLink key={tool.label} className="tool-entry" to={tool.to}>{content}</SiteLink>;
         })}
       </nav>
     </section>

@@ -1,14 +1,13 @@
 import clsx from 'clsx';
-import { FINANCE_MENU, FINANCE_ICON_PATHS, type Apartado, type FinanceIconName } from '../model/menu';
+import { FINANCE_MENU, FINANCE_ICON_PATHS, type FinanceIconName } from '../model/menu';
 import type { ApartadoMode } from '../model/mode';
 
 export function FinanceIcon({ name }: { name: FinanceIconName }) {
   return <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" dangerouslySetInnerHTML={{ __html: FINANCE_ICON_PATHS[name] }} />;
 }
 
-/** Etiqueta de los apartados que no se abren: la del equipo («Pendiente», «Sin acceso») o «Próximamente». */
-const tagOf = (item: Apartado, mode: ApartadoMode) =>
-  item.status === 'pendiente' ? 'Pendiente' : mode === 'sin-acceso' ? 'Sin acceso' : 'Próximamente';
+/** Se abre todo apartado con datos, de ejemplo o vacío; «Sin acceso» solo sin el permiso del ERP. */
+const opens = (mode: ApartadoMode) => mode === 'real' || mode === 'demo' || mode === 'vacio';
 
 export interface FinanceMenuProps {
   openGroups: ReadonlySet<string>;
@@ -21,8 +20,8 @@ export interface FinanceMenuProps {
 
 /**
  * Menú de Finanzas → Administración dentro del panel lateral: los 5 grupos y sus
- * apartados del equipo, en su orden (model/menu.ts). Lo que ya está en Uonify se abre;
- * lo demás sale desactivado con su estado, como en el menú del equipo.
+ * apartados del equipo, en su orden (model/menu.ts). Todos se abren; solo un apartado
+ * real sin permiso en el ERP sale desactivado («Sin acceso»).
  */
 export function FinanceMenu({ openGroups, current, modeOf, onToggleGroup, onOpenApartado }: FinanceMenuProps) {
   return (
@@ -43,7 +42,7 @@ export function FinanceMenu({ openGroups, current, modeOf, onToggleGroup, onOpen
               const mode = modeOf(item.route);
               return (
               <li key={item.label}>
-                {(mode === 'real' || mode === 'demo') && item.route ? (
+                {opens(mode) && item.route ? (
                   <button
                     type="button"
                     className={clsx('erp-menu-item', item.route === current && 'is-active')}
@@ -57,7 +56,7 @@ export function FinanceMenu({ openGroups, current, modeOf, onToggleGroup, onOpen
                   <span className="erp-menu-item is-disabled" aria-disabled="true">
                     <FinanceIcon name={item.icon} />
                     <span>{item.label}</span>
-                    <small>{tagOf(item, mode)}</small>
+                    <small>Sin acceso</small>
                   </span>
                 )}
               </li>

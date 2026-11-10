@@ -10,10 +10,12 @@ import { readyScope, useMastererp } from '../hooks/useMastererp';
 import { useListRows } from '../hooks/useSuggestions';
 import { EMPTY_FILTERS, findDocument } from '../model/demoPurchases';
 import { listOf } from '../model/lists';
+import { findApartado } from '../model/menu';
 import { modeOf as modeFor } from '../model/mode';
 import { FINANCE_BASE_PATH, PURCHASES_ROUTE, SUGGESTIONS_ROUTE, SUMMARY_ROUTE, apartadoPath, documentPath, purchasePath } from '../model/paths';
 import { realApartado } from '../model/real';
 import { findSuggestion } from '../model/suggestions';
+import { EmptyApartado } from './EmptyApartado';
 import { FinanceSidebar } from './FinanceSidebar';
 import { PurchaseSheet } from './PurchaseSheet';
 import { PurchasesSummaryView } from './PurchasesSummaryView';
@@ -60,7 +62,8 @@ export function FinanceWorkspace() {
   const context = useMastererp(state => state.context);
   const modeOf = (route: string | null | undefined) => modeFor(route, { ready, context, local: USE_MOCKS });
   const mode = modeOf(apartado);
-  const usable = mode === 'real' || mode === 'demo';
+  const usable = mode === 'real' || mode === 'demo' || mode === 'vacio';
+  const empty = mode === 'vacio' ? findApartado(apartado)?.item.label : undefined;
   // Mientras se valida la conexión, un apartado real todavía no se puede decidir.
   const pending = Boolean(realApartado(apartado)) && (connectionStatus === 'idle' || connectionStatus === 'checking');
   const current = usable ? apartado ?? null : null;
@@ -71,7 +74,7 @@ export function FinanceWorkspace() {
   const suggesting = current === SUGGESTIONS_ROUTE;
   const doc = list ? findDocument(rows, referencia) : null;
   const suggestion = suggesting ? findSuggestion(referencia) : null;
-  const sheet = summary ? SUMMARY_ROUTE : current && referencia ? `${current}/${referencia}` : 'none';
+  const sheet = summary ? SUMMARY_ROUTE : mode === 'vacio' && current ? current : current && referencia ? `${current}/${referencia}` : 'none';
   const ui = useWorkspaceUi();
   const center = useRef<HTMLElement>(null);
   const { drawer, narrow, workbenchRef, toggleRef, railMainRef, onRailClick, onToggleClick, collapseUnpinned, foldUnpinned } =
@@ -118,7 +121,7 @@ export function FinanceWorkspace() {
 
   // Como Producto: con ratón o teclado el foco vuelve al compositor; con el dedo, al centro.
   const onClose = (detail: number) => {
-    void navigate(current && !summary ? apartadoPath(current) : FINANCE_BASE_PATH);
+    void navigate(current && !summary && !empty ? apartadoPath(current) : FINANCE_BASE_PATH);
     if (!finePointer() && detail !== 0) focusSoon(() => center.current);
     else ui.focusComposer();
   };
@@ -129,6 +132,7 @@ export function FinanceWorkspace() {
 
   const renderCenter = () => {
     if (summary) return <PurchasesSummaryView onClose={onClose} />;
+    if (empty) return <EmptyApartado label={empty} onClose={onClose} />;
     if (real && referencia) return <RealRecordSheet key={referencia} apartado={real} reference={referencia} onClose={onClose} />;
     if (list && doc) return <PurchaseSheet purchase={doc} kind={list.kind} onClose={onClose} />;
     if (list && referencia) return <Missing title="Documento no disponible" text="La referencia no corresponde a un documento DEMO." back={`Volver a ${list.title}`} onBack={onClose} />;
@@ -141,7 +145,7 @@ export function FinanceWorkspace() {
     );
   };
 
-  const centerLabel = summary ? 'Resumen de compras' : suggesting ? 'Sugerencia de compra' : real ? `Ficha · ${real.title}` : list?.kind === 'orders' ? 'Ficha de orden de compra' : 'Ficha de compra';
+  const centerLabel = empty ? empty : summary ? 'Resumen de compras' : suggesting ? 'Sugerencia de compra' : real ? `Ficha · ${real.title}` : list?.kind === 'orders' ? 'Ficha de orden de compra' : 'Ficha de compra';
 
   return (
     <>

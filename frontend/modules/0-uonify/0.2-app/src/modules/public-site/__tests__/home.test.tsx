@@ -139,8 +139,8 @@ describe('portada', () => {
     const trigger = screen.getByRole('button', { name: 'Herramientas de Uonify' });
     await user.click(trigger);
     expect(screen.getByRole('link', { name: 'ERP' })).toHaveFocus();
-    expect(screen.getByRole('link', { name: 'Catálogo' })).toHaveAttribute('href', '/productos#catalogo');
-    expect(screen.getByRole('button', { name: 'Academy' })).toHaveAttribute('aria-disabled', 'true');
+    expect(screen.getByRole('link', { name: 'Catálogo' })).toHaveAttribute('href', '/espacio?service=producto');
+    expect(screen.getByRole('link', { name: 'Academy' })).toHaveAttribute('href', '/espacio?service=academy');
     await user.keyboard('{Escape}');
     expect(trigger).toHaveAttribute('aria-expanded', 'false');
   });

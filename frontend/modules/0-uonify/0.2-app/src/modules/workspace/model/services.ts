@@ -23,17 +23,19 @@ export interface ServiceInfo {
   /** Vacío de la vista genérica (los servicios sin vista propia). */
   title?: string;
   detail?: string;
+  /** Capacidades que presenta la página del servicio. */
+  capabilities?: string[];
 }
 
 export const SERVICES: Record<ServiceId, ServiceInfo> = {
-  erp: { name: 'ERP', icon: 'erp.png', description: 'Inventario, compras, ventas y finanzas coordinados en un mismo lugar.', title: 'Conecta tu operación', detail: 'Empieza vinculando las fuentes con las que trabaja tu empresa.' },
+  erp: { name: 'ERP', icon: 'erp.png', description: 'Inventario, compras, ventas y finanzas coordinados en un mismo lugar.', title: 'Conecta tu operación', detail: 'Empieza vinculando las fuentes con las que trabaja tu empresa.', capabilities: ['Inventario y existencias por almacén', 'Compras, ventas y proveedores', 'Finanzas y tesorería', 'Informes de operación'] },
   producto: { name: 'Producto', icon: 'catalogo.png', description: 'Crea, importa y prepara tus fichas de producto para cada canal.' },
-  analitica: { name: 'Analítica', icon: 'analitica.png', description: 'Consulta el rendimiento de tus productos, canales y operaciones.', title: 'Reúne tus datos', detail: 'Conecta tus canales para ver sus resultados en una misma vista.' },
-  auditoria: { name: 'Captura y auditoría', icon: 'auditoria.png', description: 'Reúne información de origen y revisa la calidad de cada ficha.', title: 'Revisa tus productos', detail: 'Selecciona productos del catálogo para detectar vacíos y contrastar fuentes.' },
-  agentes: { name: 'Agentes', icon: 'hive.png', description: 'Coordina tareas con acceso controlado a los servicios de Uonify.', title: 'Organiza tus agentes', detail: 'Define sus herramientas, permisos y acciones que requieren aprobación.' },
-  academy: { name: 'Academy', icon: 'academy.png', description: 'Conocimiento y formación para los equipos que operan en Uonify.', title: 'Construye el aprendizaje de tu equipo', detail: 'Organiza recursos y recorridos por proyecto o función.' },
-  logistica: { name: 'Logística', icon: 'logistica.png', description: 'Coordina preparación, envíos y seguimiento.', title: 'Conecta tus operaciones logísticas', detail: 'Reúne tus flujos de entrega y consulta su estado en un solo lugar.' },
-  fabrica: { name: 'Fábrica y proveedores', icon: 'fabrica.png', description: 'Trabaja con proveedores y datos de fabricación.', title: 'Organiza tu red de proveedores', detail: 'Centraliza la información que necesitas para colaborar con ellos.' },
+  analitica: { name: 'Analítica', icon: 'analitica.png', description: 'Consulta el rendimiento de tus productos, canales y operaciones.', title: 'Reúne tus datos', detail: 'Conecta tus canales para ver sus resultados en una misma vista.', capabilities: ['Rendimiento por producto y canal', 'Ventas, márgenes y tendencias', 'Alertas cuando algo cambia', 'Informes listos para compartir'] },
+  auditoria: { name: 'Captura y auditoría', icon: 'auditoria.png', description: 'Reúne información de origen y revisa la calidad de cada ficha.', title: 'Revisa tus productos', detail: 'Selecciona productos del catálogo para detectar vacíos y contrastar fuentes.', capabilities: ['Captura de datos de origen', 'Detección de campos vacíos o incoherentes', 'Contraste de fuentes por ficha', 'Recomendaciones de mejora con Uony'] },
+  agentes: { name: 'Agentes', icon: 'hive.png', description: 'Coordina tareas con acceso controlado a los servicios de Uonify.', title: 'Organiza tus agentes', detail: 'Define sus herramientas, permisos y acciones que requieren aprobación.', capabilities: ['Agentes con herramientas y permisos definidos', 'Acciones que requieren tu aprobación', 'Historial de cada tarea', 'Coordinación con todos los servicios'] },
+  academy: { name: 'Academy', icon: 'academy.png', description: 'Conocimiento y formación para los equipos que operan en Uonify.', title: 'Construye el aprendizaje de tu equipo', detail: 'Organiza recursos y recorridos por proyecto o función.', capabilities: ['Recorridos de formación por función', 'Guías de cada servicio de Uonify', 'Recursos de tu equipo en un solo lugar', 'Seguimiento del aprendizaje'] },
+  logistica: { name: 'Logística', icon: 'logistica.png', description: 'Coordina preparación, envíos y seguimiento.', title: 'Conecta tus operaciones logísticas', detail: 'Reúne tus flujos de entrega y consulta su estado en un solo lugar.', capabilities: ['Preparación de pedidos', 'Envíos y transportistas', 'Seguimiento de entregas', 'Incidencias y devoluciones'] },
+  fabrica: { name: 'Fábrica y proveedores', icon: 'fabrica.png', description: 'Trabaja con proveedores y datos de fabricación.', title: 'Organiza tu red de proveedores', detail: 'Centraliza la información que necesitas para colaborar con ellos.', capabilities: ['Fichas de proveedores y fabricantes', 'Datos técnicos y de fabricación', 'Pedidos y plazos de producción', 'Documentación compartida'] },
   nexus: { name: 'Nexus', icon: 'nexus.png', description: 'Conecta canales y herramientas con tu espacio Uonify.' },
 };
 

@@ -189,7 +189,7 @@ export function ProductWorkspace() {
   return (
     <>
       <TopbarCenter>
-        {USE_MOCKS ? <ChannelBar product={product} hasSheet={hasSheet} onConnect={channel => ui.selectService('nexus', channel.toLowerCase())} /> : <span className="live-product-channel">Amazon · publicación en preparación</span>}
+        {USE_MOCKS ? <ChannelBar product={product} hasSheet={hasSheet} onConnect={channel => ui.selectService('nexus', channel.toLowerCase())} /> : <span className="live-product-channel">Canal · Amazon</span>}
       </TopbarCenter>
       <section
         ref={workbenchRef}
