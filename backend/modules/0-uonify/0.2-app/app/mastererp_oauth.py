@@ -196,7 +196,8 @@ def routes(settings, database):
     def finish(request, error=None):
         response = finish_popup(database, request, request.query_params.get('state', ''), error)
         if response is None:
-            response = RedirectResponse(settings.origin + '/?erp=' + (error or 'return'), status_code=303)
+            # Vuelve a la app, no a «/?…»: la puerta de DEV deja «/» en la portada salvo las vueltas de APPQ.
+            response = RedirectResponse(settings.origin + '/espacio?service=erp&erp=' + (error or 'return'), status_code=303)
         clear_cookie(response, COOKIE, '/api/auth')
         return response
 
