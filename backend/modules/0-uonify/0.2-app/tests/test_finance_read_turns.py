@@ -8,6 +8,7 @@ import httpx
 import pytest
 
 pytest.importorskip('google.adk.runners')
+from google.genai import types
 
 from app import mastererp_api, mastererp_store, uony_bounded_gemini
 from app.finance_read_tools import EMPTY_LIST, EMPTY_RULE, FINANCE_READ_NAMES, NOT_CONNECTED, _SOFT
@@ -111,9 +112,26 @@ def test_empty_erp_lists_close_the_turn_with_their_fixed_text_when_the_last_call
     assert state['status'] == 'success', state
     assert state['response']['reply'] == EMPTY_LIST['ordenes'] + ' ' + EMPTY_LIST['compras']
     _, system, answers = sent(turn.sdk.calls[1])
-    assert answers['list_finance_documents']['aviso'] == EMPTY_LIST['ordenes'] + ' ' + EMPTY_RULE
-    assert 'Si un listado llega vacío' in system
+    listed = answers['list_finance_documents']
+    assert listed['vacio'] == EMPTY_LIST['ordenes'] and listed['aviso'] == EMPTY_RULE
+    assert 'Si un listado llega vacío' in system and 'como mucho cuatro' in system
     assert len(turn.sdk.calls) == 3 and len(turn.fake.requests) == 2  # La lectura de la última llamada no se hace.
+
+
+def test_own_text_and_a_card_still_win_over_the_empty_text(turn):
+    turn.connect_erp()
+    own = model_response([types.Part(text='No tienes órdenes de compra todavía.'),
+                          tool('list_finance_documents', {'tipo': 'facturas'})])
+    turn.sdk.responses = [model_response([tool('list_finance_documents', {'tipo': 'ordenes'})]),
+                          model_response([tool('list_finance_documents', {'tipo': 'compras'})]), own]
+    state = turn.run('dame los datos de 1 orden de compra')
+    assert state['status'] == 'success' and state['response']['reply'] == 'No tienes órdenes de compra todavía.', state
+    turn.sdk.responses = [model_response([tool('show_connection', {'provider': 'erp'})]),
+                          model_response([tool('list_finance_documents', {'tipo': 'ordenes'})]),
+                          model_response([tool('list_finance_documents', {'tipo': 'compras'})])]
+    state = turn.run('¿Tengo órdenes de compra?')
+    assert state['status'] == 'success', state
+    assert state['response']['reply'] == 'Aquí tienes la conexión de ERP · Finanzas.'
 
 
 def test_a_turn_that_read_data_never_closes_with_the_empty_text(turn):

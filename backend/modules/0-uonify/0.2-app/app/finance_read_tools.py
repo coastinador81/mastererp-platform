@@ -62,7 +62,8 @@ EMPTY_LIST = {'compras': 'No hay solicitudes de compra en esta empresa.',
 EMPTY_SEARCH = 'No hay ventas que coincidan con esa búsqueda en esta empresa.'
 EMPTY_MORE = 'No hay más documentos en ese listado.'
 EMPTY_TEXTS = frozenset({*EMPTY_LIST.values(), EMPTY_SEARCH, EMPTY_MORE})
-EMPTY_RULE = 'Díselo así al cliente y no lo busques en otros apartados salvo que te lo pida.'
+EMPTY_RULE = ('Listado vacío: díselo al cliente con el texto de vacio y no lo busques en otros apartados '
+              'salvo que te lo pida.')
 NOT_CONNECTED = ('El cliente no tiene conectado su ERP. Si quiere consultar Finanzas, explícale que '
                  'primero debe conectarlo y muéstrale la tarjeta con show_connection y provider erp; '
                  'no inventes datos.')
@@ -207,8 +208,9 @@ def _following_key(thread_id, kind, query):
 def turn_empty_notice(contents):
     """Lo que el servidor ya sabe cuando todo lo que leyó del ERP en este turno vino vacío: los textos
     fijos «No hay …» de esos listados, en orden y sin repetir. None si una lectura trajo datos, abrió
-    una ficha o falló: entonces no hay un texto seguro que dar (capa 2). Solo devuelve constantes de
-    EMPTY_TEXTS, nunca datos del ERP. Mismo tramo del turno que uony_last_call.turn_card."""
+    una ficha o falló, o si el turno usó otra herramienta (Drive, productos…): entonces no hay un
+    texto seguro que dar (capa 2), y la tarjeta, si la hubo, ya va antes en LastCall.reply. Solo
+    devuelve constantes de EMPTY_TEXTS, nunca datos del ERP. Mismo tramo que uony_last_call.turn_card."""
     start = max((index for index, content in enumerate(contents) if content.role == 'user'
                  and any(isinstance(part.text, str) and part.text for part in content.parts or [])),
                 default=-1)
@@ -216,8 +218,10 @@ def turn_empty_notice(contents):
     for content in contents[start + 1:]:
         for part in content.parts or []:
             result = part.function_response
-            if not result or result.name not in FINANCE_READ_NAMES:
+            if not result:
                 continue
+            if result.name not in FINANCE_READ_NAMES:
+                return None
             answer = result.response if isinstance(result.response, dict) else {}
             if result.name == 'get_finance_context' and 'error' not in answer:
                 continue
@@ -350,8 +354,9 @@ class FinanceReadTools:
         if result['hayMas']:
             result['aviso'] = PARTIAL_LIST
         elif not rows:
+            # vacio: lo que lee el cliente; aviso: solo la instrucción para el modelo (que no se cite).
             result['vacio'] = EMPTY_MORE if more else EMPTY_SEARCH if query else EMPTY_LIST[kind]
-            result['aviso'] = result['vacio'] + ' ' + EMPTY_RULE
+            result['aviso'] = EMPTY_RULE
         return result
 
     def _document(self, kind, ref):
