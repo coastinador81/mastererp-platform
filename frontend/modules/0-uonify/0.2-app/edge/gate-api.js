@@ -1,8 +1,10 @@
 // gate-api.js · CloudFront Function cloudfront-js-2.0 · viewer-request del comportamiento /api/*
 // de E4N1UCPZZ2F0 (origen origin-dev.uonify.com). KVS: uonify-dev-gate.
-// Exige la cookie de puerta que emite gate-default.js, salvo GET/HEAD /api/health y
-// POST /api/billing/stripe/webhook (billing_checkout.py: lo firma Stripe). Sin cookie válida:
-// 401 JSON {"error":"gate_required"} SIN WWW-Authenticate (nunca sale el diálogo del navegador).
+// Con API_OPEN = false exige la cookie de puerta que emite gate-default.js, salvo GET/HEAD
+// /api/health y POST /api/billing/stripe/webhook (billing_checkout.py: lo firma Stripe). Sin cookie
+// válida: 401 JSON {"error":"gate_required"} SIN WWW-Authenticate (nunca sale el diálogo del navegador).
+// API_OPEN = true (decisión del dueño, 10-11-2026, para que cualquiera use dev.uonify.com como él):
+// la puerta deja pasar todo /api/*; cada ruta sigue exigiendo su sesión de Uonify en el backend.
 // Siempre borra Authorization y la cookie de puerta. NO toca la URI ni la query: el puente de
 // voz (/api/uony/live, WebSocket) rechaza cualquier handshake con Authorization o con query.
 import cf from 'cloudfront';
@@ -13,6 +15,7 @@ var TTL = 691200;
 var SKEW = 300;
 var K_HMAC = 'gate_hmac_key';
 var OPEN = '|GET /api/health|HEAD /api/health|POST /api/billing/stripe/webhook|';
+var API_OPEN = true;
 var kvs = cf.kvs();
 
 function same(a, b) {
@@ -46,7 +49,7 @@ async function cookieOk(c, now) {
 async function handler(event) {
   var req = event.request, c = req.cookies || {};
   delete req.headers.authorization;
-  var ok = req.uri.indexOf('|') < 0 && OPEN.indexOf('|' + req.method + ' ' + req.uri + '|') >= 0;
+  var ok = API_OPEN || (req.uri.indexOf('|') < 0 && OPEN.indexOf('|' + req.method + ' ' + req.uri + '|') >= 0);
   if (!ok) ok = await cookieOk(c, Math.floor(Date.now() / 1000));
   if (!ok) {
     return {

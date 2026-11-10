@@ -42,6 +42,9 @@ const source = fs.readFileSync(LOCAL.d, 'utf8');
 const rootPublic = /var ROOT_PUBLIC = true;/.test(source);
 const nojs = /var LEGAL_NOJS = true;/.test(source);
 const publicAsset = /var PUBLIC_ASSETS = '\|([^|]+)\|/.exec(source)[1];
+// gate-api.js: con API_OPEN = true (decisión del dueño, 10-11-2026) /api/* pasa sin la cookie de puerta.
+const apiOpen = /var API_OPEN = true;/.test(fs.readFileSync(LOCAL.a, 'utf8'));
+const GATE_REQUIRED = { status: 401, www: false, body: '{"error":"gate_required"}' };
 const NAV = { 'sec-fetch-mode': 'navigate', 'sec-fetch-dest': 'document' };
 const now = Math.floor(Date.now() / 1000);
 const fakeCookie = 'v1.' + (now + 3600) + '.' + '0'.repeat(64);
@@ -75,9 +78,10 @@ const cases = [
   ['d', '?auth=return sin cookie', ev('GET', '/?auth=return', NAV), { status: 401, www: true }],
   ['a', 'GET /api/health', ev('GET', '/api/health', { authorization: wrongBasic }), { uri: '/api/health' }],
   ['a', 'POST webhook de Stripe', ev('POST', '/api/billing/stripe/webhook', { 'stripe-signature': 't=1,v1=x' }), { uri: '/api/billing/stripe/webhook' }],
-  ['a', '/api/auth/session sin cookie', ev('GET', '/api/auth/session'), { status: 401, www: false, body: '{"error":"gate_required"}' }],
-  ['a', 'WebSocket /api/uony/live sin cookie', ev('GET', '/api/uony/live', { origin: 'https://dev.uonify.com', 'sec-websocket-key': 'dGhlIHNhbXBsZSBub25jZQ==', 'sec-websocket-version': '13', authorization: wrongBasic }), { status: 401, www: false, body: '{"error":"gate_required"}' }],
-  ['a', 'cookie falsa en /api (KVS + HMAC)', ev('GET', '/api/auth/session', {}, { '__Host-uonify_gate': fakeCookie }), { status: 401, www: false, body: '{"error":"gate_required"}' }],
+  ['a', '/api/auth/session sin cookie', ev('GET', '/api/auth/session'), apiOpen ? { uri: '/api/auth/session' } : GATE_REQUIRED],
+  ['a', 'WebSocket /api/uony/live sin cookie', ev('GET', '/api/uony/live', { origin: 'https://dev.uonify.com', 'sec-websocket-key': 'dGhlIHNhbXBsZSBub25jZQ==', 'sec-websocket-version': '13', authorization: wrongBasic }), apiOpen ? { uri: '/api/uony/live' } : GATE_REQUIRED],
+  // Con API_OPEN la puerta no mira la cookie: este caso ya no ejercita KVS + HMAC en /api.
+  ['a', 'cookie falsa en /api (KVS + HMAC)', ev('GET', '/api/auth/session', {}, { '__Host-uonify_gate': fakeCookie }), apiOpen ? { uri: '/api/auth/session' } : GATE_REQUIRED],
 ];
 
 class Precheck extends Error {}
