@@ -54,10 +54,10 @@ export function ProfileExperience() {
 }
 
 export function AddressesExperience() {
-  const { authenticated, sessionLoading } = useStore();
+  const router = useRouter(), { authenticated, sessionLoading } = useStore();
   if(sessionLoading)return <Screen><AppLoading title="Cargando tus direcciones…" detail="Recuperando tu sesión." /></Screen>;
   if(!authenticated)return <SignedOut title="Direcciones"/>;
-  return <Screen><View style={styles.page}><Back/><AddressManager /></View></Screen>;
+  return <Screen><View style={styles.page}><AddressManager onBack={()=>router.back()} /></View></Screen>;
 }
 
 function Back(){const router=useRouter();return <Pressable style={styles.back} onPress={()=>router.back()}><Ionicons name="arrow-back" size={19} color={colors.ink}/><Text style={styles.backText}>Mi cuenta</Text></Pressable>;}
