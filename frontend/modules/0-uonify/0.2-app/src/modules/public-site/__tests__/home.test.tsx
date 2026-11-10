@@ -154,17 +154,40 @@ describe('portada', () => {
     renderPage(<HomePage />);
     const trigger = screen.getByRole('button', { name: 'Herramientas de Uonify' });
     await user.click(trigger);
-    // Enfoca la primera herramienta (Producto); la fuente única pone nombre, destino y estado.
-    expect(screen.getByRole('link', { name: 'Producto' })).toHaveFocus();
-    expect(screen.getByRole('link', { name: 'Producto' })).toHaveAttribute('href', '/espacio?service=producto');
-    expect(screen.getByRole('link', { name: 'Estudio' })).toHaveAttribute('href', '/espacio');
-    expect(screen.getByRole('link', { name: 'Academy' })).toHaveAttribute('href', '/espacio?service=academy');
-    expect(screen.getByRole('link', { name: /Conocer Uonify/ })).toHaveAttribute('href', '/productos');
+    const panel = document.getElementById('tools-panel')!;
+    // Enfoca la primera herramienta (Producto); la fuente única pone nombre, orden y estado. Sin
+    // sesión, los 10 servicios son botones que abren «Iniciar sesión» (orden del dueño, 10-11-2026).
+    expect(within(panel).getByRole('button', { name: 'Producto' })).toHaveFocus();
+    expect(within(panel).getAllByRole('button')).toHaveLength(10);
+    expect(within(panel).getByRole('link', { name: /Conocer Uonify/ })).toHaveAttribute('href', '/productos');
     // Desde el demo del 10-11 todos los servicios están activos: ninguno dice «Próximamente».
-    expect(screen.getAllByRole('link').filter(link => link.closest('#tools-panel'))).toHaveLength(11);
     expect(screen.queryByText('Próximamente')).toBeNull();
     await user.keyboard('{Escape}');
     expect(trigger).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  test('sin sesión, un servicio del panel abre «Iniciar sesión» con ese servicio pendiente', async () => {
+    const user = userEvent.setup();
+    renderPage(<HomePage />);
+    const trigger = screen.getByRole('button', { name: 'Herramientas de Uonify' });
+    await user.click(trigger);
+    await user.click(within(document.getElementById('tools-panel')!).getByRole('button', { name: 'Academy' }));
+    expect(openSignIn).toHaveBeenCalledWith({ service: 'academy' });
+    expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    expect(trigger).toHaveFocus();
+  });
+
+  test('con sesión, los servicios del panel enlazan a su vista del espacio', async () => {
+    authState.status = 'ready';
+    const user = userEvent.setup();
+    renderPage(<HomePage />, '/?auth=return');
+    await user.click(screen.getByRole('button', { name: 'Herramientas de Uonify' }));
+    const panel = document.getElementById('tools-panel')!;
+    expect(within(panel).getByRole('link', { name: 'Producto' })).toHaveAttribute('href', '/espacio?service=producto');
+    expect(within(panel).getByRole('link', { name: 'Estudio' })).toHaveAttribute('href', '/espacio');
+    expect(within(panel).getByRole('link', { name: 'Academy' })).toHaveAttribute('href', '/espacio?service=academy');
+    expect(within(panel).getAllByRole('link')).toHaveLength(11);
+    expect(within(panel).queryByRole('button')).toBeNull();
   });
 
   test('lleva el pie global: Partners y Clientes; Términos y condiciones, Idioma y Ayuda', async () => {

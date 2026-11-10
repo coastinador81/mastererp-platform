@@ -1,0 +1,74 @@
+/* Cabecera de las páginas públicas (components/common/PageHeader): la MISMA en las 10 interiores,
+   en Ayuda y sus artículos y en el centro legal (/terminos y /privacidad); la portada tiene la suya.
+   Una sola fuente: son las reglas que tenía productos.css (las que de verdad se aplicaban), más el
+   sticky que llevaban sueltos como-funciona.css y para-empresas.css. Hoja propia: la inyecta
+   PageHeader (useViewStyles) y el prerender la enlaza, así se ve igual en Ayuda y en las legales,
+   que no cargan productos.css. Todas las reglas llevan dos clases como mínimo, para no ceder ante
+   los a, img, button o :focus-visible de las hojas de las vistas, se inyecten antes o después. */
+
+/* Dos filas, todo visible (D-HOME-REORG-20261109): el logo y los accesos arriba y, debajo, el menú
+   comercial en dos filas, con la página actual marcada. Tinta y gris del menú: los valores que
+   productos.css fija en :root para las interiores, declarados aquí para no depender de esa hoja. */
+.header.header--rows { --header-ink: #17212d; --header-muted: #5d6977; position: relative; display: grid; grid-template-columns: auto 1fr auto; grid-template-areas: "brand . actions" "nav nav nav"; align-items: center; column-gap: 24px; row-gap: 16px; padding: 16px 40px; border-bottom: 1px solid #f3f5f7; background: rgba(255, 255, 255, .96); line-height: normal; }
+.header--rows .brand { grid-area: brand; text-decoration: none; }
+.header--rows .brand img { display: block; width: 126px; max-width: 100%; height: auto; object-fit: contain; }
+.header--rows .header-actions { grid-area: actions; display: flex; align-items: center; gap: 16px; }
+/* Sin JS (las legales que la puerta sirve sin scripts) no se pinta el botón de servicios: su fila
+   guarda el alto del botón (42, 38 o 36 px, como en tools-panel.css) y la cabecera mide lo mismo. */
+.header--rows .header-actions--no-js { min-height: 42px; }
+.header--rows .login-link { display: flex; align-items: center; gap: 12px; font-size: .9rem; color: var(--blue-dark); text-decoration: none; }
+.header--rows .main-nav--rows { grid-area: nav; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; font-size: .9rem; color: var(--header-muted); }
+.header--rows .nav-row { display: flex; flex-wrap: nowrap; align-items: center; gap: 28px; }
+.header--rows .nav-row a { position: relative; display: flex; align-items: center; padding-bottom: 5px; color: inherit; text-decoration: none; white-space: nowrap; }
+.header--rows .nav-row a[aria-current] { color: var(--header-ink); }
+.header--rows .nav-row a:hover { color: var(--blue-dark); }
+.header--rows .nav-row a[aria-current]::after { content: ""; position: absolute; right: 0; bottom: -5px; left: 0; height: 3px; background: var(--blue); }
+.header.header--rows a, .header.header--rows button { -webkit-tap-highlight-color: transparent; }
+/* Foco: los enlaces del menú con su contorno de 2 px y radio 4; el logo, el acceso y el botón de
+   servicios, con el contorno de 3 px del resto de enlaces y botones de las interiores. */
+.header--rows .nav-row a:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; border-radius: 4px; }
+.header--rows .brand:focus-visible, .header--rows .login-link:focus-visible, .header--rows .tools-trigger:focus-visible { outline: 3px solid var(--blue); outline-offset: 5px; }
+
+/* Escritorio (más de 900 px): fija arriba con fondo blanco y su línea inferior. z-index 50: por
+   encima del contenido y por debajo del menú del pie (56), de los avisos (80 y 90), de «Saltar al
+   contenido» (100) y de los diálogos (capa superior); el panel de servicios va dentro de ella.
+   Mide unos 144 px: las anclas y lo que se enfoca en el contenido se paran 16 px por debajo. En
+   Productos, su índice de secciones (también fijo, unos 56 px) se fija 16 px por debajo y la
+   parada baja a 104 px por debajo de la cabecera.
+   La distancia la lleva cada destino (scroll-margin-top), no html (scroll-padding-top, que se
+   anula también frente a los 105 px de productos.css): con scroll-padding, el navegador daba por
+   tapado lo que hay dentro de la propia cabecera fija y desplazaba la página al enfocarlo (abrir
+   el panel de servicios, Escape, el tabulador). Los enlaces del índice, también fijo, se
+   enfocan sin desplazar la página. */
+@media (min-width: 901px) {
+  .header.header--rows { position: sticky; top: 0; z-index: 50; backdrop-filter: blur(18px); }
+  html:has(.header.header--rows) { --page-header-height: 144px; --page-scroll-stop: calc(var(--page-header-height) + 16px); scroll-padding-top: 0; }
+  html:has(.header.header--rows ~ main .section-nav) { --page-scroll-stop: calc(var(--page-header-height) + 104px); }
+  .header.header--rows ~ main .section-nav { top: calc(var(--page-header-height) + 16px); }
+  .header.header--rows ~ main,
+  .header.header--rows ~ main :is([id], a[href], button, input, select, textarea, summary, [tabindex]) { scroll-margin-top: var(--page-scroll-stop); }
+  .header.header--rows ~ main .section-nav a { scroll-margin-top: 0; }
+}
+/* Hasta 900 px es estática: fija ocuparía demasiado. Más estrecha, el logo y el texto se reducen y
+   el menú se refluye sin cortarse. La primera fila del menú mide unos 614 px y, con los 40 px de
+   margen a cada lado, no cabe por debajo de unos 700 px: desde ahí, márgenes de 16 px y filas que
+   saltan de línea (sin scroll lateral). */
+@media (max-width: 800px) {
+  .header--rows .brand img { width: 105px; }
+  .header--rows .login-link, .header--rows .main-nav--rows { font-size: .875rem; }
+}
+@media (max-width: 700px) {
+  .header.header--rows { grid-template-columns: 1fr auto; grid-template-areas: "brand actions" "nav nav"; column-gap: 12px; row-gap: 12px; padding: 12px 16px; }
+  .header--rows .main-nav--rows { gap: 10px; }
+  .header--rows .nav-row { flex-wrap: wrap; gap: 9px 18px; }
+  .header--rows .nav-row a { padding-bottom: 3px; }
+}
+@media (max-width: 560px) {
+  .header--rows .nav-row a { min-height: 36px; }
+}
+@media (max-width: 480px) {
+  .header--rows .header-actions--no-js { min-height: 38px; }
+}
+@media (max-width: 360px) {
+  .header--rows .header-actions--no-js { min-height: 36px; }
+}

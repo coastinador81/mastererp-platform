@@ -23,6 +23,6 @@ export const sessionHomePath = (status: SessionStatus, publicTarget: string) => 
  * conserva y el espacio la retoma (continueWithPrompt del PROTO); con el alta a
  * medias abre el alta y, con todo listo, la bienvenida al espacio.
  */
-export function startAccess(prompt?: string): void {
-  void openSignIn(prompt === undefined ? {} : { prompt: prompt.trim() });
+export function startAccess(prompt?: string, { service }: { service?: string } = {}): void {
+  void openSignIn({ ...(prompt === undefined ? {} : { prompt: prompt.trim() }), ...(service ? { service } : {}) });
 }

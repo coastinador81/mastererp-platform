@@ -71,8 +71,10 @@ export function openSignInDialog({ prompt = '' }: { prompt?: string } = {}): voi
   requestFocus('[data-auth-provider]');
 }
 
+/** X o Escape de «Entra en Uonify»: la persona desiste, así que el servicio pendiente se descarta. */
 export function closeSignIn(): void {
   cancelAccessAttempt();
+  removeKey(STORAGE_KEYS.pendingService);
   patchSignIn({ busy: false });
   patchUi({ dialog: null });
   restoreFocus();
@@ -135,9 +137,10 @@ export function backToSignIn(): void {
   openSignInDialog();
 }
 
-/** Escape en el modo demostración: se cierra todo (prototipo: cancel). */
+/** Escape en el modo demostración: se cierra todo (prototipo: cancel) y se descarta el servicio pendiente. */
 export function cancelConnect(): void {
   cancelAccessAttempt();
+  removeKey(STORAGE_KEYS.pendingService);
   patchUi({ dialog: null });
   restoreFocus();
 }

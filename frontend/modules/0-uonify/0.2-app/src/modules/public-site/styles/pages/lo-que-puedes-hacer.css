@@ -31,14 +31,16 @@
 .can-do-page .ai.mark{padding:0 6px}
 
 /* Hero */
-.can-do-page .cd-hero{padding:72px 0 0;text-align:center}
+/* Ritmo común de las secciones: --section-space (productos.css). */
+.can-do-page .cd-hero{padding:72px 0 var(--section-space);text-align:center}
 .can-do-page .cd-hero .lead{max-width:760px;margin-left:auto;margin-right:auto}
 .can-do-page .cd-hero .actions{display:flex;justify-content:center;align-items:center;gap:22px;margin-top:36px;flex-wrap:wrap}
 .can-do-page .cd-hero .reel{margin-top:56px}
 .can-do-page .note{margin:16px 0 0;font-size:14px;color:var(--n600);display:flex;justify-content:center;gap:8px;align-items:center}
 
 /* Recorridos */
-.can-do-page .routes{padding:88px 0 0}
+/* Empieza y termina en tarjetas, que ya dejan aire dentro: 16 px menos arriba y abajo. */
+.can-do-page .routes{padding:calc(var(--section-space) - 16px) 0}
 .can-do-page .routes .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
 .can-do-page .route{border:1px solid var(--n200);border-radius:12px;padding:30px;display:grid;grid-template-columns:72px minmax(0,1fr);gap:22px;align-items:start;background:#fff}
 .can-do-page .route:hover{border-color:var(--blue)}
@@ -48,7 +50,7 @@
 .can-do-page .route p{margin:0 0 16px;color:var(--n700)}
 
 /* Recorridos (detalle) */
-.can-do-page .journey{padding:110px 0}
+.can-do-page .journey{padding:var(--section-space) 0}
 .can-do-page .journey.soft{background:var(--n50);border-top:1px solid var(--n200);border-bottom:1px solid var(--n200)}
 .can-do-page .journey .intro{max-width:760px}
 .can-do-page .journey .cols{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:56px;margin-top:56px;align-items:start}
@@ -79,7 +81,7 @@
 .can-do-page .tile-label small{display:block;color:var(--n600);font-size:12px;font-family:var(--mono)}
 
 /* Galería en tinta */
-.can-do-page .gallery{padding:110px 0;background:var(--ink);color:#fff}
+.can-do-page .gallery{padding:var(--section-space) 0;background:var(--ink);color:#fff}
 .can-do-page .gallery .eyebrow{color:#52a5ff}
 .can-do-page .gallery h2 span{color:#52a5ff}
 .can-do-page .gallery .lead{color:var(--n300)}
@@ -92,7 +94,7 @@
 .can-do-page .piece .ask:before{content:"Pídeselo así: ";color:var(--n400)}
 
 /* Confianza */
-.can-do-page .trust{padding:110px 0}
+.can-do-page .trust{padding:var(--section-space) 0}
 .can-do-page .trust .cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:56px;margin-top:56px;align-items:start}
 .can-do-page .card{border:1px solid var(--n200);border-radius:12px;padding:24px;background:#fff}
 .can-do-page .card .over{font-size:12px;font-weight:700;letter-spacing:.1em;color:var(--n600)}
@@ -118,7 +120,7 @@
 .can-do-page .points .ico{width:40px;height:40px;border-radius:8px;background:#eaf3ff;color:var(--blue-dark);display:grid;place-items:center}
 
 /* Cierre */
-.can-do-page .cd-close{padding:110px 0;text-align:center;border-top:1px solid var(--n200)}
+.can-do-page .cd-close{padding:var(--section-space) 0;text-align:center;border-top:1px solid var(--n200)}
 .can-do-page .cd-close .chars{display:flex;justify-content:center;gap:16px;margin-bottom:28px}
 .can-do-page .cd-close .chars img{width:84px;height:84px}
 .can-do-page .cd-close .lead{max-width:700px;margin-left:auto;margin-right:auto}
@@ -139,7 +141,6 @@
   .can-do-page .cd-hero .actions{align-items:stretch;flex-direction:column}
   .can-do-page .note{justify-content:flex-start;flex-wrap:wrap}
   .can-do-page .routes .grid{grid-template-columns:minmax(0,1fr);gap:16px}
-  .can-do-page .journey,.can-do-page .gallery,.can-do-page .trust,.can-do-page .cd-close{padding:64px 0}
   .can-do-page .media .row3 .cap .meta,.can-do-page .media .row3 .tag span,.can-do-page .media .row3 .play,.can-do-page .media .row3 .ai{display:none}
   .can-do-page .media .row2{grid-template-columns:minmax(0,1fr)}
   .can-do-page .social .case{grid-template-columns:minmax(0,1fr);gap:20px}

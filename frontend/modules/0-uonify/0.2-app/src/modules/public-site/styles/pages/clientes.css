@@ -9,6 +9,9 @@
 .clogo img { max-height: 72px; max-width: 100%; object-fit: contain; }
 .clogo-name { font-weight: 600; color: #152438; font-size: 18px; letter-spacing: -.01em; }
 
-.cli-cta { text-align: center; padding: 20px 0 60px; }
+/* Ritmo común de las secciones: --section-space (productos.css). Tras el marco del Estudio,
+   cuya parte de abajo ya deja aire dentro, la llamada final pone 40 px y el marco, ninguno. */
+.clientes-page .alt-section.reverse { padding-bottom: 0; }
+.cli-cta { text-align: center; padding: 40px 0 var(--section-space); }
 .cli-cta h2 { font-size: 26px; color: #152438; }
 .cli-cta p { margin: 8px 0 20px; color: #5e7186; }

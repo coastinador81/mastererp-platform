@@ -13,6 +13,8 @@ import { transitionToWorkspace } from './workspace';
 export interface OpenSignInOptions {
   /** Petición actual: vacía descarta la anterior; omitirla conserva la pendiente. */
   prompt?: string;
+  /** Servicio pulsado sin sesión (panel «Tu espacio Uonify»): al entrar se abre ese servicio. */
+  service?: string;
 }
 
 /**
@@ -27,6 +29,9 @@ export async function openSignIn(options: OpenSignInOptions = {}): Promise<void>
     if (text) writeKey(STORAGE_KEYS.pendingPrompt, text);
     else removeKey(STORAGE_KEYS.pendingPrompt);
   }
+  // Manda la última intención: un acceso sin servicio (o con uno no válido) descarta el pendiente.
+  if (options.service && /^[a-z-]+$/.test(options.service)) writeKey(STORAGE_KEYS.pendingService, options.service);
+  else removeKey(STORAGE_KEYS.pendingService);
   const session = await ensureSession();
   if (!session.authenticated) openSignInDialog({ prompt: text });
   else if (!session.profileReady) showProfile();

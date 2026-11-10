@@ -26,3 +26,11 @@ export { useViewStyles } from './hooks/useViewStyles';
  */
 export { SiteFooter } from './components/footer/SiteFooter';
 export { SiteFooterFrame } from './components/footer/SiteFooterFrame';
+
+/**
+ * Cabecera de las páginas públicas (todas menos la portada): logo, menú comercial en dos filas,
+ * acceso y botón de servicios; trae su propia hoja. La usan las interiores, el centro legal y el
+ * centro de ayuda: `<PageHeader loginLabel="Tu espacio Uonify" />` (sin `current` si la página no
+ * está en el menú). La página monta también `<AuthDialogs/>` (módulo auth): el acceso los abre.
+ */
+export { PageHeader } from './components/common/PageHeader';

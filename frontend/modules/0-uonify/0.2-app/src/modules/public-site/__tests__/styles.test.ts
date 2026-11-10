@@ -57,6 +57,27 @@ describe('hojas de la web pública', () => {
       expect(css, path).not.toMatch(/\.site-footer[^{]*\{[^}]*(color|background|font|border)/);
     }
   });
+
+  test('la cabecera común trae su propia hoja y ninguna otra hoja (salvo las de la portada) copia estilos de cabecera', () => {
+    expect(styles('common/page-header.css')).toMatch(/\.header\.header--rows \{/);
+    // Todas las hojas de la web pública (también las que se añadan) y la de Ayuda; la portada tiene su cabecera.
+    const sheets: Array<[string, string]> = [
+      ...fs.readdirSync(stylesDir, { recursive: true })
+        .filter(path => path.endsWith('.css') && path !== 'common/page-header.css' && !path.startsWith('home/'))
+        .map((path): [string, string] => [path, styles(path)]),
+      ['help.css', fs.readFileSync(helpSheet, 'utf8')],
+    ];
+    expect(sheets.map(([path]) => path)).toEqual(expect.arrayContaining(['common/tools-panel.css', 'legal/legal.css', 'pages/productos.css', 'help.css']));
+    for (const [path, text] of sheets) {
+      const css = text.replace(/\/\*[\s\S]*?\*\//g, '');
+      // Ni la estructura de la cabecera ni sus enlaces (el panel de servicios solo usa .tools-*).
+      expect(css, path).not.toMatch(/\.(header--rows|main-nav|nav-row|login-link|header-actions|skip-link)(?![\w-])/);
+      if (path === 'common/tools-panel.css') continue;
+      // Las vistas, el centro legal y Ayuda: ni .header ni .brand, ni el elemento header al principio de un selector.
+      expect(css, path).not.toMatch(/\.(header|brand)(?![\w-])/);
+      expect(css, path).not.toMatch(/(^|[{},])\s*header(?![\w-])/);
+    }
+  });
 });
 
 // Módulo propio: sus constantes no chocan con las de otras pruebas.
