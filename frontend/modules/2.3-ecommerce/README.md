@@ -7,7 +7,7 @@ El selector presenta Operaciones o Catálogo y solo sus rutas autorizadas;
 conserva Métodos de pago dentro de Operaciones. Header identificado como
 Uonify Commerce, con cuenta/contexto real y cierre de sesión existente.
 El centro de notificaciones es una vista previa explícita sin avisos ficticios
-ni conexión backend. Inter y estilos acotados; no cambia hosting ni permisos.
+ni conexión backend. Arimo y estilos acotados; no cambia hosting ni permisos.
 
 > Organización vigente: Ecommerce integra Pedidos, Tiendas, Website, Catálogo, Contenido y Marketplaces. Nodos y Preparación pertenecen a Inventario; Rutas de reparto a Transporte. Se conserva el frontend administrativo existente y sus contratos. Los apartados históricos conservados describen el contrato/estado previo cuando difieran; no modifican el mapa nuevo.
 
@@ -47,7 +47,7 @@ publicación DEV autorizada. No realizar DNS ni despliegue como efecto implícit
 
 Aplicar el [estándar UX/UI de MasterERP](../../../docs/UX_UI_STANDARD.md) antes de crear o modificar esta interfaz; el README conserva el alcance y estado funcional descritos arriba.
 
-- Inter local con fallback sans-serif; fondo #F6F8FC, superficies y menú blancos, texto #4B5563, secundario #667085 y acentos azules.
+- Arimo local con fallback sans-serif; fondo #F6F8FC, superficies y menú blancos, texto #4B5563, secundario #667085 y acentos azules.
 - Cuando haya tabla: 14 px, peso 400 y #667085 en todas las celdas; encabezados #F4F7FB y separadores #E8EDF3. Códigos y nombres sin negrita ni subrayado permanente.
 - Reutilizar tokens y componentes. Títulos grises de peso 500, iconos de línea, espaciado consistente y adaptación a móvil.
 - En listados con ficha, preservar enlace accesible en el nombre, teclado/nueva pestaña y selección de texto; hover/foco visibles y controles internos independientes.

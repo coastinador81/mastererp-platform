@@ -29,12 +29,21 @@ Validaciones: estructura local mediante scripts/validate_structure.py. Pendiente
 - **Build:** `cd storefront && npm ci && npm run build` (ver `.env.dev`).
 - **CI:** `.github/workflows/publish-storefront-dev.yml`
 
+## Métodos de pago del Admin
+
+- Consulta las tiendas reales de la empresa mediante `GET /v1/companies/{company}/stores` y guarda únicamente la tienda seleccionada mediante `PATCH /v1/companies/{company}/stores/{store}`.
+- La edición exige el permiso `digital_sales.ecommerce.write`; ocultar o deshabilitar controles en la interfaz no sustituye la autorización del backend.
+- Cada `PATCH` envía la `version` recibida para control de concurrencia. La respuesta guardada reemplaza la versión local antes de permitir otra edición.
+- Al guardar se conserva la configuración completa de la tienda y se actualizan solo `configuration.payments` y `configuration.paymentDetails`; también se preservan claves de pago no administradas por el formulario.
+- La pantalla diferencia carga, error, ausencia de tiendas y selección activa. Cambiar de tienda actualiza el panel sin recargar la página y solicita confirmación si hay cambios sin guardar.
+- Admite efectivo al recibir, punto de venta al entregar o retirar, pago móvil, transferencia y métodos propios. Las referencias del comprador quedan pendientes de verificación; la interfaz no acredita el pago.
+
 <!-- ux-ui-standard:start -->
 ## UX/UI común
 
 Aplicar el [estándar UX/UI de MasterERP](../../../../docs/UX_UI_STANDARD.md) antes de crear o modificar esta interfaz; el README conserva el alcance y estado funcional descritos arriba.
 
-- Inter local con fallback sans-serif; fondo #F6F8FC, superficies y menú blancos, texto #4B5563, secundario #667085 y acentos azules.
+- Arimo local, centralizada en `../../src/typography.css`, con fallback sans-serif; fondo #F6F8FC, superficies y menú blancos, texto #4B5563, secundario #667085 y acentos azules.
 - Cuando haya tabla: 14 px, peso 400 y #667085 en todas las celdas; encabezados #F4F7FB y separadores #E8EDF3. Códigos y nombres sin negrita ni subrayado permanente.
 - Reutilizar tokens y componentes. Títulos grises de peso 500, iconos de línea, espaciado consistente y adaptación a móvil.
 - En listados con ficha, preservar enlace accesible en el nombre, teclado/nueva pestaña y selección de texto; hover/foco visibles y controles internos independientes.

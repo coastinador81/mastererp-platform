@@ -1,7 +1,4 @@
-@font-face{font-family:Arimo;src:url('../2.3.2-stores/storefront/public/Arimo-Regular.ttf') format('truetype');font-weight:400;font-display:swap}
-@font-face{font-family:Arimo;src:url('../2.3.2-stores/storefront/public/Arimo-Medium.ttf') format('truetype');font-weight:500;font-display:swap}
-@font-face{font-family:Arimo;src:url('../2.3.2-stores/storefront/public/Arimo-SemiBold.ttf') format('truetype');font-weight:600 800;font-display:swap}
-@font-face{font-family:Arimo;src:url('../2.3.2-stores/storefront/public/Arimo-Bold.ttf') format('truetype');font-weight:900;font-display:swap}
+@import './typography.css';
 .ecommerce-app .environment {margin:0 0 var(--finance-space-5);padding:var(--finance-space-4);border:1px solid var(--finance-border);border-radius:var(--finance-radius);background:var(--finance-selected);color:var(--finance-text);font-size:var(--finance-font-body)}
 .ecommerce-app .context-controls{width:auto;margin-left:auto;justify-content:flex-end}
 @media(max-width:600px){.ecommerce-app .integrated-header{flex-wrap:nowrap}.ecommerce-app .context-controls{gap:8px}}
@@ -59,7 +56,7 @@
 @media(max-width:380px){.ecommerce-app .integrated-header{padding:12px 8px;gap:6px}.ecommerce-app .context-controls{gap:2px}.ecommerce-app .brand{font-size:18px}.ecommerce-app .finance-chat-home{width:34px}}
 
 /* Figma Operations visual language, backed only by canonical APIs. */
-.ecommerce-app .integrated-content{background:#f5f7fb;font-family:Arimo,Arial,sans-serif}.ecommerce-app .environment{display:none}
+.ecommerce-app .integrated-content{background:#f5f7fb;font-family:var(--mastererp-font-family)}.ecommerce-app .environment{display:none}
 .ecommerce-app .ops-modern,.ecommerce-app .operation-directory,.ecommerce-app .orders-module{color:#14213a}
 .ecommerce-app .ops-page-heading,.ecommerce-app .operation-directory .page-heading,.ecommerce-app .orders-module .page-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;margin:0 0 32px}
 .ecommerce-app .ops-page-heading nav{margin-bottom:10px;color:#8390a5;font-size:11px}.ecommerce-app .ops-page-heading nav span{padding:0 7px;color:#bdc5d1}

@@ -1,4 +1,4 @@
-export const STOREFRONT_REQUEST_TIMEOUT_MS = 12_000;
+export const STOREFRONT_REQUEST_TIMEOUT_MS = 30_000;
 
 export async function fetchWithTimeout(fetcher, url, options = {}, timeoutMs = STOREFRONT_REQUEST_TIMEOUT_MS) {
   const controller = new AbortController();

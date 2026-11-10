@@ -1,4 +1,4 @@
-.catalog-ui.catalog-ui {font-family:Inter,system-ui,sans-serif;color:#4b5563;max-width:1200px;margin:0 auto;padding:24px 0 40px;min-width:0;line-height:1.5;font-size:14px}
+.catalog-ui.catalog-ui {font-family:var(--mastererp-font-family);color:#4b5563;max-width:1200px;margin:0 auto;padding:24px 0 40px;min-width:0;line-height:1.5;font-size:14px}
 .catalog-ui * {box-sizing:border-box}
 .catalog-ui.catalog-ui h1 {font-size:26px;line-height:1.25;font-weight:500;color:#374151;margin:8px 0}
 .catalog-ui.catalog-ui h2 {font-size:16px;font-weight:500;color:#374151;margin:0 0 8px}

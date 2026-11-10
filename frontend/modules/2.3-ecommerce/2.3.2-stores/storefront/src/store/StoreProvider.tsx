@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type PropsWithChildren } from 'react';
 import { completeLoginIfNeeded, isAuthenticated } from '../auth';
 import { loadCatalog } from '../api';
+import { readCatalogCache, writeCatalogCache } from '../catalog-cache.mjs';
 import { storefrontScope } from '../config';
 import type { CartLine, Product, StorefrontCatalog } from '../types';
 
@@ -21,6 +22,9 @@ type StoreState = {
 
 const StoreContext = createContext<StoreState | null>(null);
 const cartKey = () => `mastererp.storefront.cart:${storefrontScope()}`;
+const cachedCatalog = () => typeof localStorage === 'undefined'
+  ? null
+  : readCatalogCache(localStorage, storefrontScope()) as StorefrontCatalog | null;
 function initialCart(): CartLine[] {
   if (typeof sessionStorage === 'undefined') return [];
   try { return JSON.parse(sessionStorage.getItem(cartKey()) || '[]'); }
@@ -28,10 +32,11 @@ function initialCart(): CartLine[] {
 }
 
 export function StoreProvider({ children }: PropsWithChildren) {
-  const [catalog, setCatalog] = useState<StorefrontCatalog | null>(null);
+  const initialCatalog = useMemo(() => cachedCatalog(), []);
+  const [catalog, setCatalog] = useState<StorefrontCatalog | null>(initialCatalog);
   const [cart, setCart] = useState<CartLine[]>(initialCart);
   const [authenticated, setAuthenticated] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(initialCatalog === null);
   const [sessionLoading, setSessionLoading] = useState(true);
   const [sessionError, setSessionError] = useState('');
   const [error, setError] = useState('');
@@ -39,9 +44,12 @@ export function StoreProvider({ children }: PropsWithChildren) {
   const refreshCatalog = useCallback(async () => {
     setLoading(true);
     setError('');
-    try { setCatalog(await loadCatalog()); }
+    try {
+      const nextCatalog = await loadCatalog();
+      setCatalog(nextCatalog);
+      if (typeof localStorage !== 'undefined') writeCatalogCache(localStorage, storefrontScope(), nextCatalog);
+    }
     catch (reason) {
-      setCatalog(null);
       setError(reason instanceof Error ? reason.message : 'No se pudo abrir la tienda.');
     } finally { setLoading(false); }
   }, []);
@@ -49,7 +57,11 @@ export function StoreProvider({ children }: PropsWithChildren) {
   useEffect(() => {
     let cancelled = false;
     loadCatalog()
-      .then(nextCatalog => { if (!cancelled) setCatalog(nextCatalog); })
+      .then(nextCatalog => {
+        if (cancelled) return;
+        setCatalog(nextCatalog);
+        if (typeof localStorage !== 'undefined') writeCatalogCache(localStorage, storefrontScope(), nextCatalog);
+      })
       .catch(reason => { if (!cancelled) setError(reason instanceof Error ? reason.message : 'No se pudo abrir la tienda.'); })
       .finally(() => { if (!cancelled) setLoading(false); });
     completeLoginIfNeeded()

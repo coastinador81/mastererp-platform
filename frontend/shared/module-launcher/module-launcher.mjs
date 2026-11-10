@@ -31,7 +31,7 @@ const paths={
  pos:'<rect x="3" y="3" width="18" height="12" rx="2"/><path d="M9 15v5m6-5v5M6 21h12M7 7h5m-5 4h9"/>',
 };
 const styles=`
- :host{display:inline-flex;position:relative;flex:none;font-family:Inter,system-ui,sans-serif;font-size:14px;line-height:1.5;color:#374151;--border:#e8edf3;--muted:#667085}
+ :host{display:inline-flex;position:relative;flex:none;font-family:var(--mastererp-font-family,Arimo,Arial,sans-serif);font-size:14px;line-height:1.5;color:#374151;--border:#e8edf3;--muted:#667085}
  *{box-sizing:border-box}[hidden]{display:none!important}button{font:inherit;cursor:pointer;border:0;background:transparent;color:var(--muted)}
  .trigger,.close{display:grid;place-items:center;padding:0;border-radius:50%}.trigger{width:42px;height:42px}.trigger svg{width:23px;height:23px;fill:currentColor}
  .trigger:hover,.trigger[aria-expanded=true],.close:hover{background:#edf3fc;color:#2563b8}button:focus-visible,a:focus-visible{outline:2px solid #2563eb;outline-offset:3px}
@@ -87,7 +87,7 @@ if(typeof window!=='undefined'&&!window.customElements.get('mastererp-module-lau
 
 // Related navigation uses the same fixed catalogue/icons as the nine-dot launcher.
 const railStyles=`
- :host{display:block;font-family:Inter,system-ui,sans-serif;color:#4b5563}*{box-sizing:border-box}
+ :host{display:block;font-family:var(--mastererp-font-family,Arimo,Arial,sans-serif);color:#4b5563}*{box-sizing:border-box}
  nav{display:flex;flex-direction:column;align-items:center;gap:14px;padding:20px 4px;background:#f6f8fc}
  .service{display:flex;flex-direction:column;align-items:center;gap:6px;width:64px;padding:8px 2px;color:#667085;text-decoration:none;border-radius:12px;font-size:10px;line-height:1.4;text-align:center;font-weight:400}
  .icon{display:grid;place-items:center;width:44px;height:40px;border-radius:13px;color:#667085}.icon svg{width:23px;height:23px}

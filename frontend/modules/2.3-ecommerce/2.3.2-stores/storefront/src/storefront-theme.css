@@ -1,8 +1,9 @@
+@import '../../../src/typography.css';
 @font-face{font-family:Arimo;src:url('/Arimo-Regular.ttf') format('truetype');font-style:normal;font-weight:400;font-display:swap}
 @font-face{font-family:Arimo;src:url('/Arimo-Medium.ttf') format('truetype');font-style:normal;font-weight:500;font-display:swap}
 @font-face{font-family:Arimo;src:url('/Arimo-SemiBold.ttf') format('truetype');font-style:normal;font-weight:600 800;font-display:swap}
 @font-face{font-family:Arimo;src:url('/Arimo-Bold.ttf') format('truetype');font-style:normal;font-weight:900;font-display:swap}
-:root{--mastererp-primary:#1a9b4a;--mastererp-primary-dark:#157a3a;--mastererp-primary-soft:#e8f6ec;--mastererp-font:Arimo,Arial,sans-serif}
+:root{--mastererp-primary:#1a9b4a;--mastererp-primary-dark:#157a3a;--mastererp-primary-soft:#e8f6ec;--mastererp-font:var(--mastererp-font-family)}
 html,body,#root{font-family:var(--mastererp-font);height:100%}
 body{background:var(--mastererp-canvas,#f3f5f3)}
 body *:not([style*="font-family"]){font-family:var(--mastererp-font)!important}
