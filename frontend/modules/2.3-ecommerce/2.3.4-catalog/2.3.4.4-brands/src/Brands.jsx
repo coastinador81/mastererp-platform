@@ -1,1 +1,6 @@
-import React from'react';import'./style.css';import CanonicalList from'../../../../../app-shell/src/CanonicalList.jsx';const definition={route:'brands',path:'/v1/catalog/brands',className:'brands-module',title:'Marcas',description:'Identidad comercial del catálogo canónico.',key:x=>x.slug,name:x=>x.name,detail:x=>`${x.slug} · ${x.product_count} productos`,render:x=><div className="detail-cards"><section><small>MARCA</small><h3>{x.name}</h3><p>{x.description||'Sin descripción.'}</p></section><section><small>CATÁLOGO</small><h3>{x.product_count} productos</h3><p>Estado: {x.status}</p></section>{x.website_url&&<section><small>SITIO WEB</small><h3>Canal oficial</h3><a href={x.website_url} target="_blank" rel="noreferrer">Visitar sitio</a></section>}</div>};export default function Brands({runtime}){return <CanonicalList runtime={runtime} definition={definition}/>}
+import React from 'react';
+import CatalogPage from '../../src/CatalogPage.jsx';
+
+export default function Brands({runtime}) {
+  return <CatalogPage runtime={runtime} route="brands"/>;
+}

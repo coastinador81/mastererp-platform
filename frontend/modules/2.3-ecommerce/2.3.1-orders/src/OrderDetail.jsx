@@ -4,6 +4,7 @@ import { FLOW, NEXT, dateTime, money, paymentMethodLabel, paymentStatusLabel, st
 import FinanceIcon from '../../../2.2-finance/src/FinanceIcon.jsx';
 import StatusBadge from '../../../../shared/status-badge/StatusBadge.jsx';
 import './order-detail.css';
+import {OrderInvoicePreview, OrderNotesPreview} from './OrderDemoActions.jsx';
 
 const fieldLabels={name:'Nombre',email:'Correo',phone:'Teléfono',document:'Documento',company:'Empresa',recipient:'Recibe',address:'Dirección',address_line_1:'Dirección',address_line_2:'Complemento',city:'Ciudad',state:'Estado',postal_code:'Código postal',country:'País',reference:'Referencia',transaction_id:'Transacción',bank:'Banco'};
 function SnapshotFields({value,exclude=[]}){const fields=Object.entries(value||{}).filter(([key,item])=>!exclude.includes(key)&&!/(^id$|_id$|uuid|customer.?id)/i.test(key)&&item!=null&&item!==''&&typeof item!=='object'&&!/^[0-9a-f]{8}-[0-9a-f-]{27}$/i.test(String(item)));return fields.length?<dl className="snapshot-fields">{fields.map(([key,item])=><div key={key}><dt>{fieldLabels[key]||key.replaceAll('_',' ')}</dt><dd>{String(item)}</dd></div>)}</dl>:null}
@@ -50,7 +51,7 @@ export default function OrderDetail({ order, writable, transition, close, nodeNa
   const financeUrl=MODULES.find(module=>module.id==='finance')?.href,customerUrl=canOpenCustomer&&financeUrl&&order.customer_id?`${financeUrl}#/modulos/finanzas/administracion/clientes/${encodeURIComponent(order.customer_id)}`:'';
   return <div className="figma-order-detail">
     <button type="button" className="od-back" onClick={close}><FinanceIcon name="arrow"/>Volver a pedidos</button>
-    <div className="od-header"><div><div className="od-breadcrumb">E-commerce <span>/</span> Pedidos <span>/</span> {order.number}</div><h1>Pedido {order.number}</h1><p>Creado el {dateTime(order.created_at)} · Última actualización {dateTime(order.updated_at)}</p></div><div className="od-header-actions"><button type="button" className="od-button secondary" onClick={()=>window.print()}>Imprimir</button></div></div>
+    <div className="od-header"><div><div className="od-breadcrumb">E-commerce <span>/</span> Pedidos <span>/</span> {order.number}</div><h1>Pedido {order.number}</h1><p>Creado el {dateTime(order.created_at)} · Última actualización {dateTime(order.updated_at)}</p></div><div className="od-header-actions"><button type="button" className="od-button secondary" onClick={()=>window.print()}>Imprimir</button><OrderInvoicePreview key={order.id} order={order}/></div></div>
     <div className="od-layout">
       <div className="od-main">
         <section className="od-card"><div className="od-status-heading"><div><span>ESTADO ACTUAL</span><StatusBadge status={order.status}>{statusLabel(order.status)}</StatusBadge></div><strong>{money(order.total,order.currency)}</strong></div>
@@ -61,6 +62,7 @@ export default function OrderDetail({ order, writable, transition, close, nodeNa
           {order.items.map((item,index)=><div className="od-product-line" key={item.id||item.position||index}><span className="od-product-image"><FinanceIcon name="package"/></span><div><strong>{item.product_name||'Producto sin nombre'}</strong><small>SKU: {item.product_code||'Sin referencia'} · Cantidad: {item.quantity}</small></div><span>{money(item.unit_price,order.currency)}</span><strong>{money(item.subtotal,order.currency)}</strong></div>)}
           <div className="od-totals"><span>Subtotal <b>{money(order.subtotal,order.currency)}</b></span><span>Entrega <b>{money(order.delivery_fee,order.currency)}</b></span><span>Total <b>{money(order.total,order.currency)}</b></span></div>
         </section>
+        <OrderNotesPreview key={order.id} writable={writable}/>
         {writable&&(NEXT[order.status]||[]).includes('CANCELLED')?<div className="od-cancel"><button type="button" className="od-button danger" onClick={()=>transition('CANCELLED')}>Cancelar pedido</button></div>:null}
       </div>
       <div className="od-side">

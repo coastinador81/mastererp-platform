@@ -39,10 +39,10 @@ function Shell({independent=false}) {
   const drivers=w.context?.permissions.includes('transport.drivers.read');
   const ecommerce=w.context?.permissions.includes('digital_sales.ecommerce.read');
   const financeRoute=path.startsWith('/modulos/finanzas');
-  const productsRoute=path==='/modulos/catalogo/productos';
-  const categoriesRoute=path==='/modulos/catalogo/categorias';
+  const productsRoute=(path==='/modulos/catalogo/productos'||path.startsWith('/modulos/catalogo/productos/'));
+  const categoriesRoute=(path==='/modulos/catalogo/categorias'||path.startsWith('/modulos/catalogo/categorias/'));
   const inventoryRoute=path==='/modulos/catalogo/inventario';
-  const attributesRoute=path==='/modulos/catalogo/atributos',brandsRoute=path==='/modulos/catalogo/marcas',suppliersRoute=path==='/modulos/catalogo/proveedores';
+  const attributesRoute=(path==='/modulos/catalogo/atributos'||path.startsWith('/modulos/catalogo/atributos/')),brandsRoute=(path==='/modulos/catalogo/marcas'||path.startsWith('/modulos/catalogo/marcas/')),suppliersRoute=(path==='/modulos/catalogo/proveedores'||path.startsWith('/modulos/catalogo/proveedores/'));
   const ordersRoute=path==='/modulos/operaciones/pedidos';
   const nodesRoute=path==='/modulos/operaciones/nodos';
   const preparationRoute=path==='/modulos/operaciones/preparacion',routesRoute=path==='/modulos/operaciones/rutas',driversRoute=path==='/modulos/transporte/repartidores';

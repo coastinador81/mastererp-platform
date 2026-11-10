@@ -1,5 +1,9 @@
 # App Shell
 
+Compatibilidad de Catálogo: las rutas existentes `/modulos/catalogo/<entidad>`
+aceptan también `/new` y `/<id>/view` para mostrar los editores completos
+compartidos con Ecommerce. Se conservan los controles de acceso y contexto.
+
 Ubicación técnica del shell general Uonify, junto a `frontend/modules`. Estado: primer recorrido implementado en código; validación DEV documentada en la guía enlazada abajo.
 
 El [contrato vigente](../../docs/FRONTEND_ARCHITECTURE.md) define `app-dev.uonify.com` como entrada general DEV. Objetivo: dashboard con chat y menú de módulos habilitados para el tenant y autorizados para el usuario. Si solo dispone de Finanzas, verá ese módulo; otros se incorporan al mismo espacio conforme se habiliten y autoricen. Se puede navegar desde el menú sin conversar.

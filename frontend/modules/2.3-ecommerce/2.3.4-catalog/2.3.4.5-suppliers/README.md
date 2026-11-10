@@ -1,5 +1,10 @@
 # Proveedores
 
+La interfaz React integrada reutiliza el patrón administrativo de
+[Catálogo](../README.md#rediseño-administrativo-de-catálogo--noviembre-2026).
+Consultar allí contratos reales, simulaciones explícitas y validaciones.
+El entrypoint standalone histórico no cambia en esta entrega.
+
 Objetivo específico: Mantener proveedores vinculados al suministro del catálogo.
 
 Responsabilidad: Proveedores, dentro de Catálogo.

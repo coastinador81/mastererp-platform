@@ -1,5 +1,10 @@
 # Atributos
 
+La interfaz React integrada reutiliza el patrón administrativo de
+[Catálogo](../README.md#rediseño-administrativo-de-catálogo--noviembre-2026).
+Consultar allí contratos reales, simulaciones explícitas y validaciones.
+El entrypoint standalone histórico no cambia en esta entrega.
+
 Objetivo específico: Definir atributos y valores que describen productos.
 
 Responsabilidad: Atributos, dentro de Catálogo.

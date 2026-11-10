@@ -1,5 +1,11 @@
 # Pedidos
 
+El detalle sigue siendo una página completa. `OrderDemoActions.jsx` añade
+únicamente las simulaciones visuales autorizadas: notas en memoria descartadas
+al salir y descarga de texto rotulado «NO ES UNA FACTURA FISCAL», con importes
+del pedido real. No emite facturas ni guarda notas en el servidor; esas APIs
+siguen pendientes. Impresión y transiciones existentes permanecen reales.
+
 Objetivo específico: Gestionar pedidos y sus transiciones autorizadas.
 
 Responsabilidad: Pedidos, dentro de Ecommerce.
