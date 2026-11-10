@@ -132,7 +132,27 @@ def _checkout(event, repository, claims):
     if method not in ("cash", "mobile", "transfer") or (method != "cash" and (
             not isinstance(reference, str) or not reference.isdigit() or not 4 <= len(reference) <= 40)):
         raise HttpError(400, "Valid payment method and reference are required", code="invalid_request")
-    return 201, repository.checkout(_verified_profile(claims), payload, key)
+    payer = _payer(method, payload.get("payer"))
+    profile = _verified_profile(claims)
+    order = repository.checkout(profile, payload, key)
+    if payer:
+        repository.save_payment_method(profile, payload["domain"], method, payer)
+    return 201, order
+
+
+def _payer(method, payer):
+    if payer is None or method == "cash":
+        return None
+    phone = payer.get("phone") if isinstance(payer, dict) else None
+    holder = payer.get("holder") if isinstance(payer, dict) else None
+    if (not isinstance(payer, dict)
+            or not re.fullmatch(r"\d{4}", str(payer.get("bankCode", "")))
+            or not re.fullmatch(r"[VEJGP]-?\d{5,12}", str(payer.get("document", "")), re.I)
+            or (phone is not None and not re.fullmatch(r"0\d{10}", str(phone)))
+            or (method == "mobile" and phone is None)
+            or (holder is not None and (not isinstance(holder, str) or not 2 <= len(holder.strip()) <= 120))):
+        raise HttpError(400, "Valid payer details are required", code="invalid_request")
+    return {"bankCode": payer["bankCode"], "document": payer["document"], "phone": phone, "holder": holder}
 
 
 def _customer_portal(event, repository, claims, path):
@@ -167,6 +187,8 @@ def _customer_portal(event, repository, claims, path):
         if not isinstance(payload.get("version"), int):
             raise HttpError(400, "Address version is required", code="invalid_request")
         return 200, repository.save_address(profile, domain, payload, address_id)
+    if path == "/v1/storefront/me/payment-methods" and method == "GET":
+        return 200, {"items": repository.payment_methods(profile, domain)}
     if path == "/v1/storefront/orders" and method == "GET":
         return 200, {"items": repository.customer_read(profile, domain, "orders", limit=int(query.get("limit", 25)))}
     if path.startswith("/v1/storefront/orders/") and method == "GET":

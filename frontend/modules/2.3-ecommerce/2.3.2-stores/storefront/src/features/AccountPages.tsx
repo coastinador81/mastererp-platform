@@ -1,13 +1,14 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Switch, Text, View } from 'react-native';
+import { loadPaymentMethods } from '../api';
 import { signOut, startLogin } from '../auth';
 import { Screen } from '../components/Screen';
 import { storefrontScope } from '../config';
 import { useStore } from '../store/StoreProvider';
 import { colors, radii, spacing } from '../theme';
-import type { PaymentRecipient, StoreConfiguration } from '../types';
+import type { CustomerPaymentMethod } from '../types';
 
 type NoticePreferences = { orders: boolean; offers: boolean; account: boolean };
 const noticeKey = () => `mastererp.storefront.notifications:${storefrontScope()}`;
@@ -18,12 +19,24 @@ const initialNotices = (): NoticePreferences => {
 };
 
 export function PaymentMethodsPage() {
-  const { catalog } = useStore();
-  const configuration = catalog?.store.configuration;
-  const methods = availableMethods(configuration);
-  return <Page title="Métodos de pago" subtitle="Opciones disponibles en esta tienda">
-    {methods.length ? methods.map(method => <View key={method.title} style={styles.card}><View style={styles.icon}><Ionicons name={method.icon} size={22} color={colors.primaryDark} /></View><View style={styles.copy}><Text style={styles.cardTitle}>{method.title}</Text><Text style={styles.body}>{method.description}</Text>{method.recipient ? <Recipient recipient={method.recipient} /> : null}</View></View>) : <InfoCard icon="card-outline" title="Sin métodos configurados" body="La tienda todavía no ha publicado opciones de pago." />}
-    <Text style={styles.note}>Los datos mostrados son los configurados por la tienda y se validan nuevamente al confirmar la compra.</Text>
+  const { authenticated } = useStore();
+  const [methods, setMethods] = useState<CustomerPaymentMethod[]>([]);
+  const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
+  useEffect(() => {
+    if (!authenticated) return;
+    let active = true;
+    loadPaymentMethods()
+      .then(items => { if (active) { setMethods(items); setStatus('ready'); } })
+      .catch(() => { if (active) setStatus('error'); });
+    return () => { active = false; };
+  }, [authenticated]);
+  return <Page title="Métodos de pago" subtitle="Tus datos de pago guardados en esta tienda">
+    {!authenticated ? <><InfoCard icon="lock-closed-outline" title="Inicia sesión" body="Tus métodos de pago se guardan en tu cuenta." /><Pressable style={styles.primary} onPress={() => void startLogin()}><Text style={styles.primaryText}>Iniciar sesión</Text></Pressable></>
+      : status === 'loading' ? <InfoCard icon="time-outline" title="Cargando métodos de pago…" body="Consultando tus datos guardados." />
+      : status === 'error' ? <InfoCard icon="alert-circle-outline" title="No pudimos cargar tus métodos de pago" body="Inténtalo nuevamente en unos minutos." />
+      : methods.length ? methods.map(item => <View key={item.method} style={styles.card}><View style={styles.icon}><Ionicons name={item.method === 'mobile' ? 'phone-portrait-outline' : 'business-outline'} size={22} color={colors.primaryDark} /></View><View style={styles.copy}><Text style={styles.cardTitle}>{item.method === 'mobile' ? 'Pago móvil' : 'Transferencia bancaria'}</Text><View style={styles.details}><Text style={styles.detail}>Banco: {item.bankCode}</Text><Text style={styles.detail}>Documento: {item.document}</Text>{item.phone ? <Text style={styles.detail}>Teléfono: {item.phone}</Text> : null}{item.holder ? <Text style={styles.detail}>Titular: {item.holder}</Text> : null}</View></View></View>)
+      : <InfoCard icon="card-outline" title="Aún no tienes métodos guardados" body="Cuando pagues con Pago móvil o Transferencia, guardaremos tus datos para tu próxima compra." />}
+    <Text style={styles.note}>Se actualizan cada vez que confirmas una compra con Pago móvil o Transferencia.</Text>
   </Page>;
 }
 
@@ -54,6 +67,7 @@ export function PrivacyPage() {
     <InfoCard icon="person-outline" title="Cuenta" body="Tu identidad se vincula por el emisor y el identificador de Cognito, no por coincidencia de correo." />
     <InfoCard icon="location-outline" title="Direcciones" body="Tus lugares de entrega pertenecen a tu cuenta dentro de esta tienda. Al usar el mapa, OpenStreetMap y Nominatim procesan la ubicación seleccionada." />
     <InfoCard icon="bag-handle-outline" title="Compras" body="Los pedidos conservan los datos necesarios para cobrar, preparar y entregar la compra." />
+    <InfoCard icon="card-outline" title="Métodos de pago" body="Si pagas con Pago móvil o Transferencia, guardamos en tu cuenta de esta tienda el banco, la cédula o RIF, el teléfono y el titular que indicaste, para tu próxima compra. No guardamos claves ni números de tarjeta." />
     <Text style={styles.note}>Esta pantalla describe el comportamiento actual; no sustituye los términos legales que publique el responsable de la tienda.</Text>
   </Page>;
 }
@@ -73,16 +87,6 @@ function Page({ title, subtitle, children }: { title: string; subtitle: string; 
 }
 function Toggle({ label, detail, value, onChange }: { label: string; detail: string; value: boolean; onChange: (value: boolean) => void }) { return <View style={styles.card}><View style={styles.copy}><Text style={styles.cardTitle}>{label}</Text><Text style={styles.body}>{detail}</Text></View><Switch value={value} onValueChange={onChange} trackColor={{ false: colors.line, true: colors.primary }} /></View>; }
 function InfoCard({ icon, title, body }: { icon: keyof typeof Ionicons.glyphMap; title: string; body: string }) { return <View style={styles.card}><View style={styles.icon}><Ionicons name={icon} size={22} color={colors.primaryDark} /></View><View style={styles.copy}><Text style={styles.cardTitle}>{title}</Text><Text style={styles.body}>{body}</Text></View></View>; }
-function Recipient({ recipient }: { recipient: PaymentRecipient }) { return <View style={styles.details}><Text style={styles.detail}>Documento: {recipient.document}</Text>{recipient.phone ? <Text style={styles.detail}>Teléfono: {recipient.phone}</Text> : null}<Text style={styles.detail}>Banco: {recipient.bankCode}{recipient.bankName ? ` · ${recipient.bankName}` : ''}</Text>{recipient.accountNumber ? <Text style={styles.detail}>Cuenta: {recipient.accountNumber}</Text> : null}{recipient.accountHolder ? <Text style={styles.detail}>Titular: {recipient.accountHolder}</Text> : null}</View>; }
-function availableMethods(configuration?: StoreConfiguration) {
-  const flags = configuration?.payments, details = configuration?.paymentDetails;
-  const result: { title: string; description: string; icon: keyof typeof Ionicons.glyphMap; recipient?: PaymentRecipient }[] = [];
-  if (flags?.efectivo !== false && flags?.['al-recibir'] !== false) result.push({ title: 'Pago al recibir', description: 'Paga durante la entrega según las condiciones de la tienda.', icon: 'cash-outline' });
-  if (flags?.['pago-movil'] === true && details?.mobilePayment) result.push({ title: 'Pago móvil', description: 'Usa estos datos al completar tu compra.', icon: 'phone-portrait-outline', recipient: details.mobilePayment });
-  if (flags?.transferencia === true && details?.bankTransfer) result.push({ title: 'Transferencia bancaria', description: 'Transfiere a la cuenta publicada por la tienda.', icon: 'business-outline', recipient: details.bankTransfer });
-  return result;
-}
-
 const styles = StyleSheet.create({
   page: { width: '100%', maxWidth: 720, alignSelf: 'center', paddingTop: 28, paddingBottom: 40, gap: spacing.md }, back: { alignSelf: 'flex-start', minHeight: 42, flexDirection: 'row', alignItems: 'center', gap: 7 }, backText: { color: colors.ink, fontWeight: '800' }, eyebrow: { color: colors.primary, fontSize: 11, fontWeight: '900', letterSpacing: 1.2 }, title: { color: colors.ink, fontSize: 32, fontWeight: '900' }, subtitle: { marginTop: -8, color: colors.muted, fontSize: 13 },
   card: { minHeight: 76, flexDirection: 'row', alignItems: 'center', gap: spacing.md, padding: spacing.md, borderWidth: 1, borderColor: colors.line, borderRadius: radii.md, backgroundColor: colors.surface }, icon: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center', borderRadius: 13, backgroundColor: colors.primarySoft }, copy: { flex: 1 }, cardTitle: { color: colors.ink, fontSize: 14, fontWeight: '900' }, body: { marginTop: 4, color: colors.muted, fontSize: 11, lineHeight: 17 }, details: { gap: 3, marginTop: spacing.sm, padding: spacing.sm, borderRadius: radii.sm, backgroundColor: colors.primarySoft }, detail: { color: colors.text, fontSize: 11 }, note: { color: colors.muted, fontSize: 11, lineHeight: 17, textAlign: 'center' }, primary: { minHeight: 50, alignItems: 'center', justifyContent: 'center', borderRadius: radii.md, backgroundColor: colors.primary }, primaryText: { color: colors.surface, fontWeight: '900' }, dangerButton: { minHeight: 50, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, borderWidth: 1, borderColor: colors.line, borderRadius: radii.md, backgroundColor: colors.surface }, dangerText: { color: colors.danger, fontWeight: '900' },

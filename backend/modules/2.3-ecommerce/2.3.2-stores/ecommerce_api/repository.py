@@ -67,3 +67,16 @@ class EcommerceRepository:
              payload.get("address"), payload.get("zone"), payload.get("unit"), payload.get("reference"),
              payload.get("latitude"), payload.get("longitude"), payload.get("default", False), payload.get("version")),
         ).fetchone()["value"]
+
+    def save_payment_method(self, claims, domain, method, payer):
+        return self.connection.execute(
+            "SELECT ventas_digitales.cliente_metodo_pago_guardar(%s,%s,%s,%s,%s,%s,%s,%s) value",
+            (claims["iss"], claims["sub"], domain, method, payer["bankCode"], payer["document"],
+             payer.get("phone"), payer.get("holder")),
+        ).fetchone()["value"]
+
+    def payment_methods(self, claims, domain):
+        return self.connection.execute(
+            "SELECT ventas_digitales.cliente_metodos_pago_leer(%s,%s,%s) value",
+            (claims["iss"], claims["sub"], domain),
+        ).fetchone()["value"]

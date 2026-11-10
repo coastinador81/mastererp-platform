@@ -1,14 +1,16 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { colors, radii, spacing } from '../theme';
-import type { PaymentMethod, PaymentRecipient, StoreConfiguration } from '../types';
+import type { PayerDetails, PaymentMethod, PaymentRecipient, StoreConfiguration } from '../types';
 
 type Props = {
   configuration?: StoreConfiguration;
   method: PaymentMethod;
   reference: string;
+  payer: PayerDetails;
   onMethod: (method: PaymentMethod) => void;
   onReference: (value: string) => void;
+  onPayer: (payer: PayerDetails) => void;
 };
 
 const options: { id: PaymentMethod; title: string; hint: string; icon: keyof typeof Ionicons.glyphMap }[] = [
@@ -30,7 +32,7 @@ function configured(method: PaymentMethod, configuration?: StoreConfiguration) {
   return flags?.transferencia === true && Boolean(recipientFor(method, configuration));
 }
 
-export function PaymentMethods({ configuration, method, reference, onMethod, onReference }: Props) {
+export function PaymentMethods({ configuration, method, reference, payer, onMethod, onReference, onPayer }: Props) {
   const recipient = recipientFor(method, configuration);
   return <View style={styles.wrap}>
     {options.map(option => {
@@ -43,6 +45,21 @@ export function PaymentMethods({ configuration, method, reference, onMethod, onR
       </Pressable>;
     })}
     {method !== 'cash' && recipient ? <PaymentDetails method={method} recipient={recipient} reference={reference} onReference={onReference} /> : null}
+    {method !== 'cash' && recipient ? <PayerFields method={method} payer={payer} onPayer={onPayer} /> : null}
+  </View>;
+}
+
+function PayerFields({ method, payer, onPayer }: { method: PaymentMethod; payer: PayerDetails; onPayer: (payer: PayerDetails) => void }) {
+  const set = (key: keyof PayerDetails) => (value: string) => onPayer({ ...payer, [key]: value });
+  return <View style={styles.payer}>
+    <Text style={styles.detailsTitle}>Tus datos de pago</Text>
+    <Text style={styles.hint}>Los guardamos en tu cuenta para tu próxima compra.</Text>
+    <Text style={styles.referenceLabel}>Código de tu banco</Text>
+    <TextInput value={payer.bankCode} onChangeText={set('bankCode')} inputMode="numeric" maxLength={4} placeholder="Ej. 0102" placeholderTextColor={colors.muted} style={styles.input} />
+    <Text style={styles.referenceLabel}>Cédula o RIF</Text>
+    <TextInput value={payer.document} onChangeText={set('document')} autoCapitalize="characters" maxLength={14} placeholder="Ej. V12345678" placeholderTextColor={colors.muted} style={styles.input} />
+    {method === 'mobile' ? <><Text style={styles.referenceLabel}>Teléfono desde el que pagas</Text><TextInput value={payer.phone || ''} onChangeText={set('phone')} inputMode="tel" maxLength={14} placeholder="Ej. 04121234567" placeholderTextColor={colors.muted} style={styles.input} /></> : null}
+    {method === 'transfer' ? <><Text style={styles.referenceLabel}>Titular de la cuenta (opcional)</Text><TextInput value={payer.holder || ''} onChangeText={set('holder')} maxLength={120} placeholder="Nombre y apellido" placeholderTextColor={colors.muted} style={styles.input} /></> : null}
   </View>;
 }
 
@@ -60,5 +77,5 @@ function PaymentDetails({ method, recipient, reference, onReference }: { method:
 }
 
 const styles = StyleSheet.create({
-  wrap: { gap: spacing.sm }, option: { minHeight: 72, flexDirection: 'row', alignItems: 'center', gap: spacing.md, padding: spacing.md, borderWidth: 1, borderColor: colors.line, borderRadius: radii.md, backgroundColor: colors.surface }, selected: { borderWidth: 2, borderColor: colors.primary, backgroundColor: colors.primarySoft }, disabled: { opacity: 0.48 }, copy: { flex: 1 }, title: { color: colors.ink, fontWeight: '900' }, hint: { marginTop: 3, color: colors.muted, fontSize: 11 }, details: { gap: 7, padding: spacing.md, borderRadius: radii.md, backgroundColor: colors.primarySoft }, detailsTitle: { marginBottom: 3, color: colors.ink, fontSize: 15, fontWeight: '900' }, data: { color: colors.text, fontSize: 12 }, referenceLabel: { marginTop: 8, color: colors.ink, fontSize: 12, fontWeight: '800' }, input: { minHeight: 48, paddingHorizontal: spacing.md, borderWidth: 1, borderColor: colors.line, borderRadius: radii.md, color: colors.ink, backgroundColor: colors.surface, outlineStyle: 'none' } as never,
+  wrap: { gap: spacing.sm }, option: { minHeight: 72, flexDirection: 'row', alignItems: 'center', gap: spacing.md, padding: spacing.md, borderWidth: 1, borderColor: colors.line, borderRadius: radii.md, backgroundColor: colors.surface }, selected: { borderWidth: 2, borderColor: colors.primary, backgroundColor: colors.primarySoft }, disabled: { opacity: 0.48 }, copy: { flex: 1 }, title: { color: colors.ink, fontWeight: '900' }, hint: { marginTop: 3, color: colors.muted, fontSize: 11 }, details: { gap: 7, padding: spacing.md, borderRadius: radii.md, backgroundColor: colors.primarySoft }, payer: { gap: 7, padding: spacing.md, borderWidth: 1, borderColor: colors.line, borderRadius: radii.md, backgroundColor: colors.surface }, detailsTitle: { marginBottom: 3, color: colors.ink, fontSize: 15, fontWeight: '900' }, data: { color: colors.text, fontSize: 12 }, referenceLabel: { marginTop: 8, color: colors.ink, fontSize: 12, fontWeight: '800' }, input: { minHeight: 48, paddingHorizontal: spacing.md, borderWidth: 1, borderColor: colors.line, borderRadius: radii.md, color: colors.ink, backgroundColor: colors.surface, outlineStyle: 'none' } as never,
 });

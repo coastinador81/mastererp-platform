@@ -92,6 +92,54 @@ class EcommerceApiTest(unittest.TestCase):
             '"payment_method":"mobile","payment_reference":"12345678"}')}
         self.assertEqual(_checkout(event, repository, claims)[0], 201)
 
+    @patch("ecommerce_api.handler._verified_profile")
+    def test_checkout_remembers_validated_payer_after_order(self, verify):
+        claims = {"iss": "issuer", "sub": "subject"}
+        verify.return_value = claims
+        repository = Mock()
+        repository.checkout.return_value = {"id": "order-1"}
+        event = {"headers": {"Idempotency-Key": "checkout-payer"}, "body": (
+            '{"domain":"shop.example.invalid","items":[{"product_id":"p","quantity":1}],'
+            '"delivery":{"address":"QA"},"delivery_method":"realtime","payment_method":"mobile",'
+            '"payment_reference":"12345678","payer":{"bankCode":"0102","document":"V12345678","phone":"04121234567"}}')}
+        self.assertEqual(_checkout(event, repository, claims), (201, {"id": "order-1"}))
+        repository.save_payment_method.assert_called_once_with(
+            claims, "shop.example.invalid", "mobile",
+            {"bankCode": "0102", "document": "V12345678", "phone": "04121234567", "holder": None})
+
+    def test_checkout_rejects_invalid_payer_before_creating_order(self):
+        repository = Mock()
+        event = {"headers": {"Idempotency-Key": "checkout-payer"}, "body": (
+            '{"domain":"shop.example.invalid","items":[{}],"delivery":{"address":"QA"},'
+            '"delivery_method":"realtime","payment_method":"mobile","payment_reference":"12345678",'
+            '"payer":{"bankCode":"0102","document":"V12345678"}}')}
+        with self.assertRaises(HttpError):
+            _checkout(event, repository, {})
+        repository.checkout.assert_not_called()
+
+    @patch("ecommerce_api.handler._verified_profile")
+    def test_cash_checkout_ignores_payer(self, verify):
+        verify.return_value = {"iss": "issuer", "sub": "subject"}
+        repository = Mock()
+        repository.checkout.return_value = {"id": "order-1"}
+        event = {"headers": {"Idempotency-Key": "checkout-cash"}, "body": (
+            '{"domain":"shop.example.invalid","items":[{}],"delivery":{"address":"QA"},'
+            '"delivery_method":"realtime","payment_method":"cash","payer":{"bankCode":"x"}}')}
+        self.assertEqual(_checkout(event, repository, {})[0], 201)
+        repository.save_payment_method.assert_not_called()
+
+    @patch("ecommerce_api.handler._verified_profile")
+    def test_customer_payment_methods_are_scoped_to_identity_and_domain(self, verify):
+        claims = {"iss": "issuer", "sub": "subject"}
+        verify.return_value = claims
+        repository = Mock()
+        repository.payment_methods.return_value = []
+        event = {"requestContext": {"http": {"method": "GET"}},
+                 "queryStringParameters": {"domain": "shop.example.invalid"}}
+        self.assertEqual(_customer_portal(event, repository, claims, "/v1/storefront/me/payment-methods"),
+                         (200, {"items": []}))
+        repository.payment_methods.assert_called_once_with(claims, "shop.example.invalid")
+
     def test_checkout_rejects_bank_payment_without_reference(self):
         event = {"headers": {"Idempotency-Key": "checkout-mobile"}, "body": (
             '{"domain":"shop.example.invalid","items":[{}],"delivery":{"address":"QA"},'

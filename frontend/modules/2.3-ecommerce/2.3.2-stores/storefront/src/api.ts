@@ -1,6 +1,6 @@
 import { authorizedIdentityFetch } from '../../../../../shared/auth/cognito.mjs';
 import { assertStorefrontContext, storefrontConfig } from './config';
-import type { CartLine, CustomerAddress, CustomerOrder, CustomerProfile, PaymentMethod, StorefrontCatalog } from './types';
+import type { CartLine, CustomerAddress, CustomerOrder, CustomerPaymentMethod, CustomerProfile, PayerDetails, PaymentMethod, StorefrontCatalog } from './types';
 
 const portalUrl = (path: string) => `${storefrontConfig.api}${path}?domain=${encodeURIComponent(storefrontConfig.domain)}`;
 const portalOptions = (options: RequestInit = {}) => ({ ...options, headers: { 'X-Tenant-Id': storefrontConfig.tenant, ...options.headers } });
@@ -19,10 +19,11 @@ export const saveProfile = (profile: Pick<CustomerProfile, 'name' | 'phone' | 'b
 export const loadAddresses = async () => (await authorizedIdentityFetch(portalUrl('/v1/storefront/me/addresses'), portalOptions()) as { items: CustomerAddress[] }).items;
 export const saveAddress = (address: Omit<CustomerAddress, 'id' | 'version'>) => authorizedIdentityFetch(portalUrl('/v1/storefront/me/addresses'), portalOptions({ method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(address) }));
 export const updateAddress = (address: CustomerAddress) => authorizedIdentityFetch(portalUrl(`/v1/storefront/me/addresses/${encodeURIComponent(address.id)}`), portalOptions({ method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(address) }));
+export const loadPaymentMethods = async () => (await authorizedIdentityFetch(portalUrl('/v1/storefront/me/payment-methods'), portalOptions()) as { items: CustomerPaymentMethod[] }).items;
 export const loadOrders = async () => (await authorizedIdentityFetch(portalUrl('/v1/storefront/orders'), portalOptions()) as { items: CustomerOrder[] }).items;
 export const loadOrder = (id: string) => authorizedIdentityFetch(portalUrl(`/v1/storefront/orders/${encodeURIComponent(id)}`), portalOptions()) as Promise<CustomerOrder>;
 
-export async function submitCheckout(lines: CartLine[], address: string | CustomerAddress, paymentMethod: PaymentMethod, paymentReference?: string) {
+export async function submitCheckout(lines: CartLine[], address: string | CustomerAddress, paymentMethod: PaymentMethod, paymentReference?: string, payer?: PayerDetails) {
   assertStorefrontContext();
   const storageKey = `mastererp.storefront.checkout-key:${storefrontConfig.tenant}:${storefrontConfig.domain}`;
   let key = sessionStorage.getItem(storageKey);
@@ -44,7 +45,7 @@ export async function submitCheckout(lines: CartLine[], address: string | Custom
   const result = await authorizedIdentityFetch(`${storefrontConfig.api}/v1/storefront/checkout`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Idempotency-Key': key, 'X-Tenant-Id': storefrontConfig.tenant },
-    body: JSON.stringify({ domain: storefrontConfig.domain, ...detail }),
+    body: JSON.stringify({ domain: storefrontConfig.domain, ...detail, payer: paymentMethod === 'cash' ? undefined : payer }),
   });
   sessionStorage.removeItem(storageKey);
   return result as { number: string };

@@ -42,6 +42,9 @@ export type StoreConfiguration = {
   };
 };
 
+export type PayerDetails = { bankCode: string; document: string; phone?: string; holder?: string };
+export type CustomerPaymentMethod = PayerDetails & { method: Exclude<PaymentMethod, 'cash'>; updatedAt: string };
+
 export type CartLine = { product: Product; quantity: number };
 export type CustomerProfile = { id: string; name: string; code: string; phone: string; birthDate: string; photoUrl?: string };
 export type CustomerAddress = { id: string; label: string; address: string; zone: string; unit?: string; reference?: string; latitude: number; longitude: number; default: boolean; version: number };
