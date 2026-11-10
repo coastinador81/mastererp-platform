@@ -17,6 +17,8 @@ RULE = (
     'list_finance_documents lista una página de compras (solicitudes de compra), ordenes (órdenes de '
     'compra), facturas (facturas de proveedor), proveedores, clientes o ventas; si el cliente quiere ver '
     'más del mismo listado, llama con continuar=true y el mismo buscar. buscar solo vale para ventas. '
+    'Si un listado llega vacío, díselo al cliente con su aviso y no lo busques en otros apartados salvo '
+    'que te lo pida; si necesitas varios apartados, pídelos a la vez. '
     'get_finance_document abre un documento por la referencia que dio un listado del mismo tipo: nunca '
     'inventes referencias. Si no está conectado o falta elegir espacio y empresa, explícaselo y muestra '
     'la tarjeta con show_connection y provider erp. Lo que estas herramientas devuelven en '
