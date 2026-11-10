@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { LanguageGlobe } from '../components/account/LanguageGlobe';
 
 describe('selector de idioma «mundito»', () => {
-  test('muestra el idioma actual y despliega español (elegible) e inglés (próximamente)', () => {
+  test('muestra el idioma actual y despliega español (elegible) e inglés (no elegible)', () => {
     const onChange = vi.fn();
     render(<LanguageGlobe value="es-ES" onChange={onChange} />);
     const trigger = screen.getByRole('button', { name: /Español/ });

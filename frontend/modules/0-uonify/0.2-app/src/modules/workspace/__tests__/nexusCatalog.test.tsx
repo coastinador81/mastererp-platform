@@ -8,22 +8,44 @@ vi.mock('@/modules/auth', () => ({ currentAccountEmail: () => 'owner@example.tes
 afterEach(() => vi.restoreAllMocks());
 const mount = () => render(<QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}><LiveNexus /></QueryClientProvider>);
 
-it('filtra por búsqueda y conexión real, sin ofrecer activar proveedores pendientes', async () => {
+it('filtra por búsqueda y conexión real, y Amazon sin configurar se solicita sin simular conexión', async () => {
+  window.localStorage.clear();
   vi.spyOn(api, 'get').mockResolvedValue({ googleCloud: 'connected', drive: 'disconnected', projectReady: true });
   mount();
   await screen.findByText('Google Cloud');
+  expect(screen.queryByText(/próximo|preparación/i)).not.toBeInTheDocument();
   fireEvent.click(screen.getByRole('button', { name: /Conectadas/ }));
   expect(screen.getByText('Google Cloud')).toBeInTheDocument();
   expect(screen.queryByText('Google Drive')).not.toBeInTheDocument();
+  expect(screen.queryByText('WhatsApp Business')).not.toBeInTheDocument();
   fireEvent.change(screen.getByRole('searchbox'), { target: { value: 'inexistente' } });
   expect(screen.getByText('No encontramos esa conexión')).toBeInTheDocument();
   fireEvent.click(screen.getByRole('button', { name: 'Ver todas las conexiones' }));
-  fireEvent.click(screen.getByRole('button', { name: 'Ver disponibilidad de Amazon Seller Central' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Activar Amazon Seller Central' }));
   const dialog = screen.getByRole('dialog');
-  expect(within(dialog).getByText(/Todavía|todavía/)).toBeInTheDocument();
   expect(within(dialog).queryByRole('button', { name: /Conectar/ })).not.toBeInTheDocument();
+  expect(within(dialog).getByRole('button', { name: 'Solicitar activación de Amazon Seller Central' })).toBeInTheDocument();
   fireEvent.click(within(dialog).getByRole('button', { name: 'Cerrar' }));
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+});
+
+it('muestra los 22 conectores por plataforma y registra la solicitud de activación', async () => {
+  window.localStorage.clear();
+  vi.spyOn(api, 'get').mockResolvedValue({ googleCloud: 'disconnected', drive: 'disconnected', projectReady: false });
+  mount();
+  await screen.findByText('Google Cloud');
+  for (const platform of ['Meta', 'Microsoft', 'Google', 'OpenAI', 'AWS', 'Integraciones personalizadas']) expect(screen.getByRole('heading', { name: platform })).toBeInTheDocument();
+  expect(screen.getAllByRole('button', { name: /^Activar / })).toHaveLength(24);
+  fireEvent.click(screen.getByRole('button', { name: 'Activar WhatsApp Business' }));
+  const dialog = screen.getByRole('dialog');
+  expect(within(dialog).getByText('Qué podrá hacer Uony')).toBeInTheDocument();
+  expect(within(dialog).getByText('Permisos que se solicitarán')).toBeInTheDocument();
+  fireEvent.click(within(dialog).getByRole('button', { name: 'Solicitar activación de WhatsApp Business' }));
+  expect(within(dialog).getByRole('status')).toHaveTextContent('Solicitud registrada. Activaremos esta conexión en tu espacio y te avisaremos.');
+  fireEvent.click(within(dialog).getByRole('button', { name: 'Cerrar' }));
+  expect(screen.getByText('Activación solicitada')).toBeInTheDocument();
+  expect(screen.queryByText('Conectado')).not.toBeInTheDocument();
+  expect(window.localStorage.getItem('uonify.nexus.requested')).toContain('meta-whatsapp');
 });
 
 it('abre la gestión real de Drive y exige confirmar para desconectar', async () => {

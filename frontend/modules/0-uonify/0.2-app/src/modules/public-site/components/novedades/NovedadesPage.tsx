@@ -37,7 +37,7 @@ export function NovedadesPage() {
           <p className="kit-caption">Un juego imaginado a partir de los personajes de Uonify. Nos ayuda a mostrar las herramientas; no es un juguete a la venta.</p>
           <nav className="news-index" aria-label="En esta página">
             <a href="#productos">Productos en acción <span aria-hidden="true">↓</span></a>
-            <a href="#construyendo">Lo que estamos construyendo <span aria-hidden="true">↓</span></a>
+            <a href="#construyendo">Servicios de Uonify <span aria-hidden="true">↓</span></a>
             <a href="#todas">Todas las novedades <span aria-hidden="true">↓</span></a>
           </nav>
         </section>

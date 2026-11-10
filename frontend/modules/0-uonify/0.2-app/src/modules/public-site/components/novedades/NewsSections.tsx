@@ -76,19 +76,19 @@ const ROADMAP: ReadonlyArray<{ title: readonly [string, string]; copy: string; t
   },
 ];
 
-/** LO QUE ESTAMOS CONSTRUYENDO: la hoja de ruta de servicios en desarrollo. */
+/** SERVICIOS DE UONIFY: el universo de herramientas alrededor del catálogo. */
 export function NewsBuilding() {
   return (
     <section className="news-building" id="construyendo" aria-labelledby="building-title">
       <div className="wrap">
         <div className="news-building-heading">
-          <div><p className="eyebrow">LO QUE ESTAMOS CONSTRUYENDO</p><h2 id="building-title">La siguiente pieza{' '}<br /><span>también cuenta.</span></h2></div>
-          <p>El catálogo es el comienzo. Estamos desarrollando herramientas para dar continuidad a todo lo que ocurre alrededor de tus productos. Las iremos incorporando de forma progresiva.</p>
+          <div><p className="eyebrow">SERVICIOS DE UONIFY</p><h2 id="building-title">La siguiente pieza{' '}<br /><span>también cuenta.</span></h2></div>
+          <p>El catálogo es el comienzo. Uonify reúne herramientas que dan continuidad a todo lo que ocurre alrededor de tus productos, conectadas en un mismo espacio.</p>
         </div>
         <div className="news-roadmap">
           {ROADMAP.map(group => (
             <article key={group.title[0]} className="news-roadmap-group">
-              <span className="news-development">En desarrollo</span>
+              <span className="news-development">Servicio Uonify</span>
               <h3>{group.title[0]}<br />{group.title[1]}</h3>
               <p>{group.copy}</p>
               <ul>
@@ -132,11 +132,11 @@ export function NewsAll() {
           </div>
         </details>
         <details id="novedad-familia">
-          <summary><span className="news-article-category">EN DESARROLLO</span><span className="news-article-title">Un universo de herramientas que empieza a tomar forma.</span><span className="news-expand" aria-hidden="true">+</span></summary>
+          <summary><span className="news-article-category">SERVICIOS</span><span className="news-article-title">Un universo de herramientas que empieza a tomar forma.</span><span className="news-expand" aria-hidden="true">+</span></summary>
           <div className="news-article-body">
-            <p>Operación, información, inteligencia artificial, aprendizaje y conexiones. Estamos construyendo los siguientes servicios alrededor del mismo propósito: que las herramientas acompañen tu trabajo y se entiendan entre sí.</p>
-            <p>Se incorporarán progresivamente. Aquí compartiremos sus avances y su disponibilidad, sin adelantar fechas de lanzamiento.</p>
-            <a className="news-text-link" href="#construyendo">Explora lo que estamos construyendo <span aria-hidden="true">↑</span></a>
+            <p>Operación, información, inteligencia artificial, aprendizaje y conexiones. Los servicios de Uonify comparten el mismo propósito: que las herramientas acompañen tu trabajo y se entiendan entre sí.</p>
+            <p>Se activan desde tu espacio Uonify y Uony los coordina en la conversación. Aquí compartiremos sus novedades.</p>
+            <a className="news-text-link" href="#construyendo">Explora los servicios de Uonify <span aria-hidden="true">↑</span></a>
           </div>
         </details>
       </div>

@@ -57,8 +57,9 @@ test('al entrar: el menú de Finanzas del equipo y la conversación centrada', a
     expect(within(panel).getByText(group, { selector: 'summary span' })).toBeInTheDocument();
   }
   expect(within(panel).getByRole('button', { name: 'Compras' })).toBeEnabled();
-  expect(within(panel).getByText('Cotizaciones').closest('[aria-disabled]')).toHaveTextContent('Pendiente');
-  expect(within(panel).getByText('Clientes').closest('[aria-disabled]')).toHaveTextContent('Próximamente');
+  expect(within(panel).getByRole('button', { name: 'Cotizaciones' })).toBeEnabled();
+  expect(within(panel).getByRole('button', { name: 'Clientes' })).toBeEnabled();
+  expect(within(panel).queryByText(/Pendiente|Próximamente/)).not.toBeInTheDocument();
   expect(screen.getAllByRole('button', { name: 'Gestión de compras' })).toHaveLength(1);
 });
 
@@ -149,7 +150,7 @@ test('referencias y apartados que no están: «Documento no disponible» o vuelt
   expect(screen.getByText('La referencia no corresponde a un documento DEMO.')).toBeInTheDocument();
   await user.click(screen.getByRole('button', { name: 'Volver a Compras' }));
   expect(router.state.location.pathname).toBe('/espacio/erp/solicitudes-compra');
-  await router.navigate('/espacio/erp/clientes');
+  await router.navigate('/espacio/erp/no-existe');
   await waitFor(() => expect(router.state.location.pathname).toBe('/espacio/erp'));
   await router.navigate('/espacio/erp/DEMO-COM-001');
   await waitFor(() => expect(router.state.location.pathname).toBe('/espacio/erp'));
@@ -217,4 +218,9 @@ test('Resumen: indicadores sin cifras, tablas vacías y filtros con «Aplicar fi
   expect(scope).toHaveTextContent('Resumen general Todos los nodos');
   await user.click(screen.getByRole('button', { name: 'Cerrar resumen' }));
   expect(router.state.location.pathname).toBe('/espacio/erp');
+});
+
+test('un apartado sin registros se abre vacío, sin datos de ejemplo', async () => {
+  renderAt('/espacio/erp/caja-chica');
+  expect(await screen.findByText('Aún no hay caja chica en esta empresa.')).toBeInTheDocument();
 });

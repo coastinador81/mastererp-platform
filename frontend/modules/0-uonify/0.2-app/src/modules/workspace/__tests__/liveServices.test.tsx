@@ -13,18 +13,14 @@ vi.mock('@/modules/auth', async original => ({ ...await original<typeof import('
   useAccountSummary: () => ({ initial: 'O', name: 'Owner', email: 'owner@example.test', planLabel: 'Prueba' }),
 }));
 afterEach(() => vi.restoreAllMocks());
-it('el menú compacto muestra los servicios disponibles y abre su ruta; los demás están «Próximamente»', () => {
+it('el menú muestra todos los servicios activos y abre su ruta, sin «Próximamente»', () => {
   const navigate = vi.fn(); workspaceRefs.navigate = navigate;
   setUi({ servicesOpen: true });
   render(<MemoryRouter><ServicesMenu trigger={{ current: null }} /></MemoryRouter>);
-  // A la vista (dueño 23-10): Producto, Estudio, ERP y Nexus.
-  for (const name of ['Producto', 'Estudio', 'ERP', 'Nexus']) expect(screen.getByRole('button', { name })).toBeInTheDocument();
-  // El resto no se muestra hasta desplegar «Más servicios».
-  expect(screen.queryByRole('button', { name: 'Analítica' })).not.toBeInTheDocument();
-  fireEvent.click(screen.getByRole('button', { name: /Más servicios/ }));
-  const analitica = screen.getByRole('button', { name: /Analítica/ });
-  expect(analitica).toBeDisabled();
-  expect(analitica).toHaveTextContent('Próximamente');
+  for (const name of ['Producto', 'Estudio', 'ERP', 'Nexus', 'Analítica', 'Captura y auditoría', 'Agentes', 'Academy', 'Logística', 'Fábrica y proveedores']) {
+    expect(screen.getByRole('button', { name })).toBeEnabled();
+  }
+  expect(screen.queryByText(/próximamente/i)).not.toBeInTheDocument();
   // Un servicio disponible abre su ruta.
   fireEvent.click(screen.getByRole('button', { name: 'Producto' }));
   expect(navigate).toHaveBeenCalledWith('/espacio/producto', undefined);
@@ -40,8 +36,16 @@ it('Nexus consulta el estado real y ofrece configurar Google', async () => {
 it('Producto tiene su entrada sin presentar acciones simuladas como reales', () => {
   render(<LiveServiceView service="producto" />);
   expect(screen.getByRole('heading', { name: 'Producto' })).toBeInTheDocument();
-  expect(screen.getByText('Estamos preparando este servicio')).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Pedírselo a Uony' })).toBeInTheDocument();
   expect(screen.queryByRole('button', { name: /publicar/i })).not.toBeInTheDocument();
+});
+
+it('un servicio sin vista propia muestra su página con capacidades y vuelve al chat', () => {
+  render(<LiveServiceView service="logistica" />);
+  expect(screen.getByRole('heading', { name: 'Logística', level: 1 })).toBeInTheDocument();
+  expect(screen.getByText('Seguimiento de entregas')).toBeInTheDocument();
+  expect(screen.queryByText(/preparando/i)).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: 'Pedírselo a Uony' }));
 });
 
 it('Mi cuenta mantiene Eliminar cuenta aunque el estado de servicios falle o esté bloqueado', async () => {

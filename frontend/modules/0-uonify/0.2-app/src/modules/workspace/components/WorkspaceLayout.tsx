@@ -41,7 +41,7 @@ import '../styles/index.css';
  */
 
 /** Servicios con mesa propia también en vivo: su módulo pinta la vista en el <Outlet/>. */
-const MODULE_WORKBENCHES: readonly string[] = ['producto', 'erp'];
+const MODULE_WORKBENCHES: readonly string[] = ['producto', 'erp', 'agentes'];
 function WorkspaceShell() {
   useLiveHistory();
   useDurableRecovery();
@@ -106,8 +106,8 @@ function WorkspaceShell() {
   // Una página usa la cabecera en barra de los servicios, sin panel de conversación.
   const pageClasses = mode === 'page' ? ['is-module', 'is-chat-hidden', 'is-page'] : [];
   const columnClass = ['workspace-column', mode === 'chat' ? 'is-chat' : '', ...pageClasses, ...Object.entries(layout.columnClasses).filter(([, on]) => on).map(([name]) => name)].filter(Boolean).join(' ');
-  // Producto y ERP · Finanzas pintan su mesa a todo el ancho (lista lateral y centro).
-  const workbench = route.service === 'producto' || route.service === 'erp';
+  // Producto, ERP · Finanzas y Agentes pintan su mesa a todo el ancho (lista lateral y centro).
+  const workbench = route.service !== null && MODULE_WORKBENCHES.includes(route.service);
   const workspaceClass = ['workspace', mode === 'home' ? 'is-home' : '', mode === 'page' ? 'is-page' : '', workbench ? 'is-product' : ''].filter(Boolean).join(' ');
 
   return (

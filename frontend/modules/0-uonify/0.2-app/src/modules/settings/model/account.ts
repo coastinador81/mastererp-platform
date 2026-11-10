@@ -3,7 +3,7 @@ import type { Account, AccountPatch, LanguageCode } from './types';
 /** Idiomas de la interfaz. De momento solo hay español de España. */
 export const LANGUAGE_OPTIONS: ReadonlyArray<{ value: LanguageCode; label: string; disabled?: boolean }> = [
   { value: 'es-ES', label: 'Español (España)' },
-  { value: 'en', label: 'English (próximamente)', disabled: true },
+  { value: 'en', label: 'English', disabled: true },
 ];
 
 export const TIME_ZONES: ReadonlyArray<{ value: string; label: string }> = [
