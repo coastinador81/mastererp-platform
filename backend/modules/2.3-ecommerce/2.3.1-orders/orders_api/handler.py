@@ -1,4 +1,5 @@
 """API Gateway v2 adapter for the canonical Orders capability."""
+import json
 from typing import Any
 from uuid import UUID, uuid4
 
@@ -102,4 +103,9 @@ def lambda_handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
         return api_response(400, {"error": {"code": "invalid_request", "message": "Invalid request values"}, "correlation_id": correlation_id})
     except Exception as error:
         mapped = _sql_error(error)
+        if mapped.status in (403, 500):
+            print(json.dumps({"level": "error", "correlation_id": correlation_id,
+                              "path": event.get("requestContext", {}).get("http", {}).get("path"),
+                              "error_type": type(error).__name__, "sqlstate": getattr(error, "sqlstate", None),
+                              "message": getattr(getattr(error, "diag", None), "message_primary", None)}))
         return api_response(mapped.status, {"error": {"code": mapped.code, "message": mapped.message}, "correlation_id": correlation_id})
