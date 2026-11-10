@@ -20,7 +20,9 @@
 
 /* Filas de agentes: inicial en el cuadro y estado a la derecha. */
 .agents-workbench .agents-item-mark { display: grid; place-items: center; background: var(--pim-blue-tint); color: var(--pim-blue-strong); font-weight: 600; }
-.agents-workbench .agents-row-state { margin-left: auto; align-self: center; }
+/* La fila de Producto reserva 8px al final (su punto de estado); aquí cabe la etiqueta entera. */
+.agents-workbench .product-catalog-item { grid-template-columns: 38px minmax(0, 1fr) auto; }
+.agents-workbench .agents-row-state { align-self: center; white-space: nowrap; }
 
 /* Ficha y apartados en el centro. */
 .agents-workbench .agents-heading-mark { color: var(--pim-blue-strong); }
