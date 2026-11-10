@@ -59,7 +59,7 @@ describe('hojas de la web pública', () => {
   });
 
   test('la cabecera común trae su propia hoja y ninguna otra hoja (salvo las de la portada) copia estilos de cabecera', () => {
-    expect(styles('common/page-header.css')).toMatch(/\.header\.header--rows \{/);
+    expect(styles('common/page-header.css')).toMatch(/\.header\.header--row \{/);
     // Todas las hojas de la web pública (también las que se añadan) y la de Ayuda; la portada tiene su cabecera.
     const sheets: Array<[string, string]> = [
       ...fs.readdirSync(stylesDir, { recursive: true })

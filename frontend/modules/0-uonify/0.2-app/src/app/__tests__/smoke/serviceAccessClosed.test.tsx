@@ -16,7 +16,7 @@ describe('servicio pulsado sin sesión y acceso cerrado (de extremo a extremo)',
     await user.click(within(panel).getByRole('button', { name: 'ERP' }));
     await user.click(await screen.findByRole('button', { name: 'Cerrar acceso' }, { timeout: 5000 }));
     await waitFor(() => expect(screen.queryByRole('dialog', { name: 'Entra en Uonify' })).toBeNull());
-    const header = document.querySelector<HTMLElement>('header.header--rows');
+    const header = document.querySelector<HTMLElement>('header.header--row');
     expect(header).not.toBeNull();
     await user.click(within(header as HTMLElement).getByRole('link', { name: /Iniciar sesión/ }));
     await enterWithDemoAccount(user);
