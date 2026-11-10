@@ -1,8 +1,7 @@
 # Política de privacidad de Uonify
 
-Versión en vigor desde el {{FECHA_VIGOR}}.
-
-Este texto está en español y en inglés. Si las versiones no coinciden, prevalece la española (Condiciones de uso, apartado 26.8).
+Versión en vigor desde el {{FECHA_VIGOR}}  
+Este texto está en español (la versión en inglés estará disponible próximamente). Si las versiones no coinciden, prevalece la española (Condiciones de uso, apartado 26.8).
 
 ## Lo esencial
 
@@ -20,10 +19,10 @@ Este texto está en español y en inglés. Si las versiones no coinciden, preval
 1.1. **Responsable.** El responsable del tratamiento de tus datos es {{LLC_NOMBRE}} («Uonify», «nosotros»), con domicilio en {{LLC_DOMICILIO}}. Puedes escribirnos a {{EMAIL_PRIVACIDAD}}.
 
 1.2. **Representantes.**
-- **Representante en la Unión Europea (artículo 27 del RGPD):** {{REPRESENTANTE_UE}}.
-- **Representante en el Reino Unido (artículo 27 del UK GDPR):** {{REPRESENTANTE_UK}}.
+- Representante en la Unión Europea (artículo 27 del RGPD): {{REPRESENTANTE_UE}}.
+- Representante en el Reino Unido (artículo 27 del UK GDPR): {{REPRESENTANTE_UK}}.
 
-Puedes dirigirte a ellos, o directamente a nosotros en privacidad@uonify.com, para cualquier cuestión sobre tus datos.
+Puedes dirigirte a ellos, o directamente a nosotros en {{EMAIL_PRIVACIDAD}}, para cualquier cuestión sobre tus datos.
 
 1.3. **Contacto de privacidad.** {{CONTACTO_PRIVACIDAD}}, en {{EMAIL_PRIVACIDAD}}. Esta persona también es nuestro *encarregado* a efectos de la LGPD de Brasil y la persona responsable de la protección de la información personal a efectos de la ley de Quebec.
 
@@ -136,7 +135,7 @@ Debes tener una base legal para usar esos datos y, cuando proceda, el consentimi
 - No usamos las imágenes ni las voces para identificar a nadie, ni creamos huellas de voz. Por eso no las tratamos como datos biométricos.
 - Si en el futuro ofrecemos clonar voces, te informaremos antes y te pediremos permisos específicos.
 
-3.11. **Si solicitas ser Partner.** Cuando rellenas el formulario de solicitud de Partner, tratamos los datos que nos facilitas: tu nombre y tu correo electrónico y, si los indicas, el nombre de tu empresa, tu cargo, tu teléfono, tu web y el mensaje que nos escribes. Los usamos para gestionar tu solicitud y ponernos en contacto contigo.
+3.11. **Si solicitas ser Partner.** Cuando rellenas el formulario de solicitud de Partner, tratamos los datos que nos facilitas: el nombre de tu empresa, tu país o territorio, la persona de contacto y su correo electrónico corporativo (obligatorios) y, si los indicas, el sitio web, el cargo, el teléfono, el tipo de colaboración y el mensaje. Para acreditar tu solicitud guardamos además la fecha, tu dirección IP (o un valor equivalente) y la versión de este texto. Usamos estos datos para gestionar y evaluar tu solicitud y ponernos en contacto contigo; los enviamos a nuestro equipo de partners (partners@uonify.com) y no los cedemos a terceros.
 
 ## 4. Para qué usamos tus datos y con qué base legal
 
@@ -150,6 +149,7 @@ La «base legal» es lo que exige la normativa europea y británica. Las demás 
 | Cobrar, facturar y gestionar las bajas en los 14 días y los reembolsos | Pagos y cuenta | Ejecución del contrato y obligación legal (facturación, impuestos y derechos de los consumidores) |
 | Evitar abusos de la garantía de 14 días | Huella cifrada de identidad | Interés legítimo en prevenir abusos |
 | Atenderte en el soporte | Soporte, cuenta y contenido que nos muestres | Ejecución del contrato e interés legítimo |
+| Gestionar y evaluar tu solicitud de Partner y ponernos en contacto contigo | Datos del formulario de Partner (empresa, país, contacto, correo y lo que añadas), con la fecha, la IP y la versión del texto | Medidas precontractuales tomadas a petición tuya e interés legítimo en evaluar posibles colaboraciones |
 | Proteger los Servicios, prevenir el fraude, investigar incidentes y hacer cumplir nuestras condiciones | Datos técnicos y de seguridad, y cuenta | Interés legítimo y obligación legal |
 | Mejorar los Servicios con métricas de uso agregadas o sin datos identificativos (rendimiento y fallos) | Datos técnicos y de uso | Interés legítimo |
 | Personalizar tu Uony con tu uso (solo en tu cuenta) | Acciones y trabajo del motor sobre tu contenido, sin almacenarlo | Ejecución del contrato |
@@ -159,7 +159,6 @@ La «base legal» es lo que exige la normativa europea y británica. Las demás 
 | Cumplir la ley: impuestos, requerimientos de autoridades, sanciones y conservación de registros | Los necesarios en cada caso | Obligación legal |
 | Defender nuestros derechos ante reclamaciones | Los necesarios en cada caso | Interés legítimo |
 | Usar cookies que no sean técnicas, si alguna vez las usamos | Datos de navegación | Tu consentimiento |
-| Gestionar tu solicitud de Partner y ponernos en contacto contigo | Datos del formulario de Partner | Medidas precontractuales tomadas a petición tuya e interés legítimo en valorar y responder tu solicitud |
 
 Cuando usamos el interés legítimo, hemos comprobado que no prevalecen tus derechos. Puedes oponerte (apartado 11).
 
@@ -331,7 +330,7 @@ Más información en la política de privacidad de Stripe: stripe.com/privacy.
 | Huella cifrada de identidad (para evitar abusos de la garantía de 14 días) y recibo del cierre de la cuenta | Hasta 3 años desde el cierre de la cuenta. |
 | Soporte | 2 años desde que se resuelve la consulta. |
 | Comunicaciones comerciales | Hasta que te des de baja. |
-| Solicitudes de Partner (apartado 3.11) | Mientras gestionamos tu solicitud; si no llegamos a colaborar, un máximo de 1 año, salvo que debamos conservarla más por una obligación legal o para defender nuestros derechos. |
+| Solicitudes de Partner (apartado 3.11) | Durante la evaluación; si no hay colaboración, hasta 1 año para atender consultas relacionadas; si colaboramos, mientras dure la relación y los plazos legales. La fecha, la IP y la versión del texto se conservan para acreditar tu solicitud. |
 
 Al terminar el plazo, borramos los datos o los anonimizamos.
 

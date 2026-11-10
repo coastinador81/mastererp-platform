@@ -1,7 +1,7 @@
 # Política de propiedad intelectual y de denuncias
 
-Versión en vigor desde el {{FECHA_VIGOR}}
-Este texto está en español y en inglés. Si las versiones no coinciden, prevalece la española (Condiciones de uso, apartado 26.8).
+Versión en vigor desde el {{FECHA_VIGOR}}  
+Este texto está en español (la versión en inglés estará disponible próximamente). Si las versiones no coinciden, prevalece la española (Condiciones de uso, apartado 26.8).
 
 En Uonify respetamos los derechos de los demás y pedimos lo mismo a nuestros clientes. Esta política explica:
 - cómo denunciar un contenido creado o alojado en Uonify que infrinja derechos de autor u otros derechos;

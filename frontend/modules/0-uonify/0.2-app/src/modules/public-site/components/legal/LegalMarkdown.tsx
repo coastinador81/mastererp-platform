@@ -1,11 +1,12 @@
-import { Fragment, type ReactNode } from 'react';
+import { createElement, Fragment, type ReactNode } from 'react';
 
 /**
  * Renderizador markdown mínimo para los textos legales (política de privacidad y
- * condiciones). Soporta exactamente lo que usan esos textos: títulos de nivel 2 y 3,
- * párrafos con **negrita** y enlaces (correos y URLs https), listas con un nivel de
- * anidación, tablas, citas (>) y separadores (---). El texto es la copia fiel de Legal;
- * este componente no lo reescribe.
+ * condiciones). Soporta exactamente lo que usan esos textos: títulos (con su nivel
+ * desplazable para encajar bajo el título del panel), párrafos con **negrita**,
+ * *cursiva*, `código`, saltos <br> y enlaces (correos y URLs https), listas con y sin
+ * número y varios niveles de anidación, tablas, citas (>) y separadores (---). El texto
+ * es la copia fiel de Legal; este componente no lo reescribe.
  */
 
 /** Convierte un título en un id estable para el ancla del índice. Con `prefix`,
@@ -30,7 +31,8 @@ export function tocFromMarkdown(md: string, prefix?: string): TocItem[] {
   const items: TocItem[] = [];
   for (const line of md.split('\n')) {
     const m = /^(#{2,6})\s+(.+?)\s*$/.exec(line);
-    if (m && m[1].length === 2) items.push({ id: slugify(m[2], prefix), label: m[2] });
+    // La etiqueta se muestra limpia (sin marcas de `código` ni *énfasis*); el id no cambia.
+    if (m && m[1].length === 2) items.push({ id: slugify(m[2], prefix), label: m[2].replace(/[`*]/g, '') });
   }
   return items;
 }
@@ -67,45 +69,79 @@ function linkify(text: string, keyBase: string): ReactNode[] {
   return out;
 }
 
-/** Renderiza texto en línea: **negrita**, *cursiva* y enlaces. */
+/** Elementos «hoja» de una línea: `código`, saltos <br> y enlaces (sin negrita ni
+ *  cursiva), para poder anidarlos también dentro de **negrita** y *cursiva*. */
+function renderSpans(text: string, keyBase: string): ReactNode[] {
+  const nodes: ReactNode[] = [];
+  text.split(/(`[^`]+`|<br\s*\/?>)/gi).forEach((part, i) => {
+    if (!part) return;
+    if (/^`[^`]+`$/.test(part)) nodes.push(<code key={`${keyBase}c${i}`}>{part.slice(1, -1)}</code>);
+    else if (/^<br\s*\/?>$/i.test(part)) nodes.push(<br key={`${keyBase}br${i}`} />);
+    else nodes.push(<Fragment key={`${keyBase}t${i}`}>{linkify(part, `${keyBase}l${i}`)}</Fragment>);
+  });
+  return nodes;
+}
+
+/** Renderiza texto en línea: **negrita**, *cursiva*, `código`, saltos <br> y enlaces. */
 function renderInline(text: string): ReactNode[] {
   const nodes: ReactNode[] = [];
   text.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g).forEach((part, i) => {
     if (!part) return;
     if (/^\*\*[^*]+\*\*$/.test(part)) {
-      nodes.push(<strong key={`b${i}`}>{linkify(part.slice(2, -2), `b${i}`)}</strong>);
+      nodes.push(<strong key={`b${i}`}>{renderSpans(part.slice(2, -2), `b${i}`)}</strong>);
     } else if (/^\*[^*]+\*$/.test(part)) {
-      nodes.push(<em key={`i${i}`}>{linkify(part.slice(1, -1), `i${i}`)}</em>);
+      nodes.push(<em key={`i${i}`}>{renderSpans(part.slice(1, -1), `i${i}`)}</em>);
     } else {
-      nodes.push(<Fragment key={`t${i}`}>{linkify(part, `t${i}`)}</Fragment>);
+      nodes.push(...renderSpans(part, `t${i}`));
     }
   });
   return nodes;
 }
 
-function renderList(group: string[], key: number): ReactNode {
-  const items: Array<{ text: string; children: string[] }> = [];
-  for (const raw of group) {
+interface ListNode {
+  ordered: boolean;
+  items: Array<{ text: string; child?: ListNode }>;
+}
+
+/** Marca de lista: viñeta (-, *) o número (1., 2., …). */
+const LIST_ITEM = /^(\s*)(?:[-*]|\d+\.)\s+(.*)$/;
+
+/** Construye el árbol de una lista por indentación (ordenadas, sin orden y anidadas). */
+function parseList(group: string[]): ListNode {
+  const entries = group.map(raw => {
     const indent = raw.length - raw.trimStart().length;
-    const text = raw.trim().replace(/^[-*]\s+/, '');
-    if (indent <= 1 || items.length === 0) items.push({ text, children: [] });
-    else items[items.length - 1].children.push(text);
+    const trimmed = raw.trim();
+    const ordered = /^\d+\.\s+/.test(trimmed);
+    return { indent, ordered, text: trimmed.replace(/^(?:[-*]|\d+\.)\s+/, '') };
+  });
+  const root: ListNode = { ordered: entries[0].ordered, items: [] };
+  const stack: Array<{ list: ListNode; indent: number }> = [{ list: root, indent: entries[0].indent }];
+  for (const entry of entries) {
+    while (stack.length > 1 && entry.indent < stack[stack.length - 1].indent) stack.pop();
+    let top = stack[stack.length - 1];
+    if (entry.indent > top.indent) {
+      const parent = top.list.items[top.list.items.length - 1];
+      if (parent) {
+        parent.child = { ordered: entry.ordered, items: [] };
+        stack.push({ list: parent.child, indent: entry.indent });
+        top = stack[stack.length - 1];
+      }
+    }
+    top.list.items.push({ text: entry.text });
   }
-  return (
-    <ul key={key}>
-      {items.map((it, idx) => (
-        <li key={idx}>
-          {renderInline(it.text)}
-          {it.children.length > 0 && (
-            <ul>
-              {it.children.map((c, j) => (
-                <li key={j}>{renderInline(c)}</li>
-              ))}
-            </ul>
-          )}
-        </li>
-      ))}
-    </ul>
+  return root;
+}
+
+function renderList(node: ListNode, key: number): ReactNode {
+  return createElement(
+    node.ordered ? 'ol' : 'ul',
+    { key },
+    node.items.map((it, idx) => (
+      <li key={idx}>
+        {renderInline(it.text)}
+        {it.child && renderList(it.child, idx)}
+      </li>
+    )),
   );
 }
 
@@ -141,12 +177,15 @@ function renderTable(rows: string[], key: number): ReactNode {
   );
 }
 
-const SPECIAL = /^(#{2,6})\s|^>|^\||^\s*[-*]\s+|^---+\s*$/;
+const SPECIAL = /^(#{2,6})\s|^>|^\||^\s*(?:[-*]|\d+\.)\s+|^---+\s*$|^```/;
 
 /** Renderiza un documento legal en markdown (ya con sus datos rellenados).
  *  `idPrefix` namespacea las anclas de los títulos cuando varios documentos conviven
- *  en una misma página (centro legal con pestañas). */
-export function LegalMarkdown({ source, idPrefix }: { source: string; idPrefix?: string }): ReactNode {
+ *  en una misma página (centro legal con pestañas). `headingOffset` baja el nivel de los
+ *  títulos (p. ej. 1 para que `##` sea `<h3>` bajo el `<h2>` del panel). */
+export function LegalMarkdown(
+  { source, idPrefix, headingOffset = 0 }: { source: string; idPrefix?: string; headingOffset?: number },
+): ReactNode {
   const lines = source.split('\n').filter(l => !/^#\s/.test(l));
   const blocks: ReactNode[] = [];
   let i = 0;
@@ -157,20 +196,19 @@ export function LegalMarkdown({ source, idPrefix }: { source: string; idPrefix?:
       i++;
       continue;
     }
+    if (/^```/.test(line)) {
+      i++;
+      const buf: string[] = [];
+      while (i < lines.length && !/^```/.test(lines[i])) { buf.push(lines[i]); i++; }
+      if (i < lines.length) i++; // salta el cierre ```
+      blocks.push(<pre className="legal-pre" key={key++}><code>{buf.join('\n')}</code></pre>);
+      continue;
+    }
     const heading = /^(#{2,6})\s+(.+?)\s*$/.exec(line);
     if (heading) {
       const id = slugify(heading[2], idPrefix);
-      blocks.push(
-        heading[1].length === 2 ? (
-          <h2 id={id} key={key++}>
-            {renderInline(heading[2])}
-          </h2>
-        ) : (
-          <h3 id={id} key={key++}>
-            {renderInline(heading[2])}
-          </h3>
-        ),
-      );
+      const level = Math.min(6, heading[1].length + headingOffset);
+      blocks.push(createElement(`h${level}`, { id, key: key++ }, renderInline(heading[2])));
       i++;
       continue;
     }
@@ -197,13 +235,13 @@ export function LegalMarkdown({ source, idPrefix }: { source: string; idPrefix?:
       blocks.push(renderTable(rows, key++));
       continue;
     }
-    if (/^\s*[-*]\s+/.test(line)) {
+    if (LIST_ITEM.test(line)) {
       const group: string[] = [];
-      while (i < lines.length && /^\s*[-*]\s+/.test(lines[i])) {
+      while (i < lines.length && LIST_ITEM.test(lines[i])) {
         group.push(lines[i]);
         i++;
       }
-      blocks.push(renderList(group, key++));
+      blocks.push(renderList(parseList(group), key++));
       continue;
     }
     const buf: string[] = [];

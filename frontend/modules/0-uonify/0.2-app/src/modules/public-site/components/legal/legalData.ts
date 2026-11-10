@@ -21,13 +21,19 @@ const VALUES: Record<string, string> = {
   EMAIL_SEGURIDAD: 'security@uonify.com',
   CONTACTO_PRIVACIDAD: 'Edward Gonzalez, responsable de privacidad de ETHICS CLOUD & SECURITY SERVICES LLC',
   // Representante RGPD en la UE y en el Reino Unido: DataRep (ya contratado).
-  // Texto final de Legal (08-11-2026), con el domicilio social de DataRep y sus canales.
+  // Texto final de Legal (DATOS-EMPRESA, 09-11-2026), con el domicilio social de DataRep y sus canales.
   REPRESENTANTE_UE:
-    'DataRep (Data Protection Representative Limited), con domicilio en 77 Camden Street Lower, Dublín D02 XE80, Irlanda. Para ejercer tus derechos a través del representante, usa el formulario https://www.datarep.com/data-request/ o escribe a datarequest@datarep.com, indicando que tu solicitud es para ETHICS CLOUD & SECURITY SERVICES LLC (Uonify)',
+    'DataRep (Data Protection Representative Limited), con domicilio en 77 Camden Street Lower, Dublín D02 XE80, Irlanda; ejerce tus derechos con el formulario https://www.datarep.com/data-request/ o en datarequest@datarep.com, indicando que tu solicitud es para ETHICS CLOUD & SECURITY SERVICES LLC (Uonify)',
   REPRESENTANTE_UK:
-    'DataRep UK, la sociedad hermana de DataRep en el Reino Unido, por los mismos medios (el formulario https://www.datarep.com/data-request/ o datarequest@datarep.com), indicando que tu solicitud es para ETHICS CLOUD & SECURITY SERVICES LLC (Uonify)',
+    'DataRep UK, la sociedad hermana de DataRep en el Reino Unido; ejerce tus derechos por los mismos medios (el formulario https://www.datarep.com/data-request/ o datarequest@datarep.com), indicando que tu solicitud es para ETHICS CLOUD & SECURITY SERVICES LLC (Uonify)',
   LEY_APLICABLE: 'Florida (EE. UU.)',
   REGION_DATOS: 'Irlanda (Unión Europea)',
+  // Proveedor de correo transaccional (DATOS-EMPRESA): Amazon SES en Irlanda.
+  PROVEEDOR_CORREO: 'Amazon Web Services, Inc. (Amazon SES)',
+  PROVEEDOR_CORREO_PAIS: 'Datos tratados en Irlanda (Unión Europea). Asistencia técnica del proveedor desde EE. UU. y otros países',
+  PROVEEDOR_CORREO_GARANTIA: 'Marco de Privacidad de Datos UE-EE. UU. y cláusulas contractuales tipo',
+  // Caducidad del security.txt (RFC 9116), provisional ≤1 año de la publicación.
+  SECURITY_TXT_CADUCIDAD: '2027-11-09T00:00:00Z',
   // Tribunales y sede de arbitraje (DATOS-EMPRESA, confirmados por el dueño).
   TRIBUNALES: 'los tribunales estatales y federales con sede en el condado de Miami-Dade, Florida (EE. UU.)',
   SEDE_ARBITRAJE: 'Miami, Florida',

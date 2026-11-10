@@ -1,12 +1,13 @@
-Versión en vigor desde el {{FECHA_VIGOR}}. Este texto está en español y en inglés; si las versiones no coinciden, prevalece la española.
-
 # Aviso legal
+
+Versión en vigor desde el {{FECHA_VIGOR}}  
+Este texto está en español (la versión en inglés estará disponible próximamente). Si las versiones no coinciden, prevalece la española (Condiciones de uso, apartado 26.8).
 
 ## 1. Quién es el titular de esta web
 
 Esta web ({{DOMINIO}}) y el servicio Uonify pertenecen a:
 
-- **Titular:** {{LLC_NOMBRE}}, sociedad de responsabilidad limitada (limited liability company) constituida conforme a las leyes de {{LLC_ESTADO}} (Estados Unidos).
+- **Titular:** {{LLC_NOMBRE}}, sociedad de responsabilidad limitada (*limited liability company*) constituida conforme a las leyes de {{LLC_ESTADO}} (Estados Unidos).
 - **Registro:** {{LLC_REGISTRO}}.
 - **Domicilio:** {{LLC_DOMICILIO}}.
 - **Representación de la sociedad:** {{FIRMANTE}}.
@@ -18,20 +19,21 @@ Este aviso da cumplimiento al artículo 10 de la Ley 34/2002, de servicios de la
 
 ## 2. Representantes y puntos de contacto
 
-- **Representante en la Unión Europea (protección de datos, RGPD art. 27):** DataRep (Data Protection Representative Limited), 77 Camden Street Lower, Dublín D02 XE80, Irlanda. Para ejercer tus derechos, usa el formulario https://www.datarep.com/data-request/ o escribe a datarequest@datarep.com, indicando que tu solicitud es para ETHICS CLOUD & SECURITY SERVICES LLC (Uonify).
-- **Representante en el Reino Unido (UK GDPR art. 27):** DataRep UK, la sociedad hermana de DataRep en el Reino Unido, por los mismos medios.
-- **Punto de contacto para las autoridades, la Comisión Europea y la Junta Europea de Servicios Digitales (Reglamento de Servicios Digitales, art. 11):** {{EMAIL_LEGAL}}, en español o en inglés.
-- **Punto de contacto para los usuarios (Reglamento de Servicios Digitales, art. 12):** {{EMAIL_SOPORTE}} y la Ayuda de Uonify.
-- **Privacidad:** {{EMAIL_PRIVACIDAD}}.
-- **Derechos de autor y denuncias:** {{EMAIL_COPYRIGHT}} y {{EMAIL_LEGAL}}.
-- **Seguridad:** {{EMAIL_SEGURIDAD}}.
+| Para qué | Contacto |
+|---|---|
+| Representante en la Unión Europea a efectos de protección de datos (RGPD, art. 27) | {{REPRESENTANTE_UE}} |
+| Representante en el Reino Unido (UK GDPR, art. 27) | {{REPRESENTANTE_UK}} |
+| Punto de contacto para las autoridades de los Estados miembros, la Comisión Europea y la Junta Europea de Servicios Digitales (Reglamento de Servicios Digitales, art. 11) | {{EMAIL_LEGAL}}, en español o en inglés |
+| Punto de contacto para los usuarios (Reglamento de Servicios Digitales, art. 12) | {{EMAIL_SOPORTE}} y la Ayuda de Uonify, en español o en inglés |
+| Privacidad | {{EMAIL_PRIVACIDAD}} |
+| Derechos de autor y denuncias | {{EMAIL_COPYRIGHT}} y {{EMAIL_LEGAL}} |
+| Seguridad | {{EMAIL_SEGURIDAD}} |
 
 ## 3. Uso de esta web
 
 3.1. **Acceso.** El acceso a esta web es libre y gratuito. El uso de Uonify se rige por las Condiciones de uso.
 
 3.2. **Normas de uso.** Debes usar la web de forma lícita y no puedes:
-
 - dañarla ni sobrecargarla;
 - acceder a zonas restringidas sin autorización;
 - extraer sus contenidos de forma masiva o automatizada.
@@ -39,7 +41,6 @@ Este aviso da cumplimiento al artículo 10 de la Ley 34/2002, de servicios de la
 ## 4. Propiedad intelectual e industrial
 
 4.1. **Qué está protegido.** Son de {{LLC_NOMBRE}} o de sus licenciantes, y están protegidos por la ley:
-
 - los textos, diseños, imágenes, personajes y vídeos de esta web;
 - el código y la estructura de la web;
 - las marcas «Uonify» y «Uony» y sus logotipos.
@@ -60,7 +61,7 @@ Este aviso da cumplimiento al artículo 10 de la Ley 34/2002, de servicios de la
 
 ## 7. Privacidad y cookies
 
-Cómo tratamos los datos personales y qué cookies usamos se explica en la Política de privacidad, que incluye la Política de cookies.
+Cómo tratamos los datos personales y qué cookies usamos se explica en la Política de privacidad y en la Política de cookies.
 
 ## 8. Ley aplicable
 

@@ -59,43 +59,6 @@ h1 {
   max-width: 62ch;
 }
 
-/* Índice (los apartados) */
-.legal-toc {
-  margin: 28px 0 8px;
-  padding: 20px 24px;
-  background: #fff;
-  border: 1px solid #e1e8f1;
-  border-radius: 16px;
-  box-shadow: 0 10px 28px rgba(21, 36, 56, .06);
-}
-.legal-toc-title {
-  margin: 0 0 12px;
-  font-size: 12px;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: #536272;
-  font-weight: 700;
-}
-.legal-toc ol {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  counter-reset: toc;
-  columns: 2;
-  column-gap: 32px;
-}
-.legal-toc li {
-  break-inside: avoid;
-  margin: 0 0 7px;
-  padding-left: 4px;
-}
-.legal-toc a {
-  color: #006AE1;
-  text-decoration: none;
-  font-size: 14px;
-}
-.legal-toc a:hover { text-decoration: underline; }
-
 /* Cuerpo del documento */
 .legal-body { margin-top: 10px; }
 .legal-body h2 {
@@ -157,6 +120,9 @@ blockquote {
 
 /* Tablas (datos, bases legales, plazos) */
 .legal-table-wrap { overflow-x: auto; margin: 14px 0; }
+.legal-pre { overflow-x: auto; margin: 14px 0; padding: 14px 16px; background: #f4f7fb; border: 1px solid #e1e8f1; border-radius: 10px; }
+.legal-pre code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; line-height: 1.5; color: #152438; white-space: pre; }
+.legal-body :not(pre) > code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .9em; padding: 1px 5px; background: #eef2f8; border-radius: 5px; }
 .legal-table {
   width: 100%;
   border-collapse: collapse;
@@ -190,7 +156,6 @@ blockquote {
 :focus-visible { outline: 3px solid #0178F7; outline-offset: 4px; border-radius: 3px; }
 
 @media (max-width: 640px) {
-  .legal-toc ol { columns: 1; }
   main { margin-top: 18px; }
 }
 
@@ -210,33 +175,52 @@ blockquote {
 .legal-tabs a { display: inline-block; padding: 9px 14px; font-size: 14px; font-weight: 600; color: #536272; text-decoration: none; border-bottom: 2px solid transparent; white-space: nowrap; }
 .legal-tabs a:hover { color: #006AE1; }
 .legal-tabs a.is-active { color: #152438; border-bottom-color: #0178F7; }
+/* Foco por dentro: el desplazamiento horizontal de la barra no recorta el contorno. */
+.legal-tabs a:focus-visible { outline: 2px solid #0178F7; outline-offset: -2px; border-radius: 4px; }
 
 .tab-panel { display: none; }
-@supports not selector(:has(*)) { .tab-panel { display: block; } }
+
+/* Sin JS (la puerta sirve /terminos y /privacidad sin JS): la pestaña es un ancla :target
+   y el panel/la pestaña activa los decide el CSS. */
+@supports not selector(:has(*)) {
+  .legal-center:not(.is-hydrated) .tab-panel { display: block; } /* sin :has: apilados (degradación) */
+}
 @supports selector(:has(*)) {
-  .legal-panels:not(:has(:target)) > .tab-panel:first-child { display: block; }
-  .legal-panels:has(:target) > .tab-panel:target,
-  .legal-panels:has(:target) > .tab-panel:has(:target) { display: block; }
+  .legal-center:not(.is-hydrated) .legal-panels:not(:has(:target)) > .tab-panel:first-child,
+  .legal-center:not(.is-hydrated) .legal-panels:has(:target) > .tab-panel:target,
+  .legal-center:not(.is-hydrated) .legal-panels:has(:target) > .tab-panel:has(:target) { display: block; }
   :is(
-    .legal-center:not(:has(:target)) [data-tab="terminos"],
-    .legal-center:has(#panel-terminos:target) [data-tab="terminos"],
-    .legal-center:has(#panel-terminos :target) [data-tab="terminos"],
-    .legal-center:has(#panel-aviso-legal:target) [data-tab="aviso-legal"],
-    .legal-center:has(#panel-aviso-legal :target) [data-tab="aviso-legal"],
-    .legal-center:has(#panel-cookies:target) [data-tab="cookies"],
-    .legal-center:has(#panel-cookies :target) [data-tab="cookies"],
-    .legal-center:has(#panel-uso-aceptable:target) [data-tab="uso-aceptable"],
-    .legal-center:has(#panel-uso-aceptable :target) [data-tab="uso-aceptable"],
-    .legal-center:has(#panel-pago:target) [data-tab="pago"],
-    .legal-center:has(#panel-pago :target) [data-tab="pago"],
-    .legal-center:has(#panel-estudio:target) [data-tab="estudio"],
-    .legal-center:has(#panel-estudio :target) [data-tab="estudio"],
-    .legal-center:has(#panel-dpa:target) [data-tab="dpa"],
-    .legal-center:has(#panel-dpa :target) [data-tab="dpa"],
-    .legal-center:has(#panel-propiedad-intelectual:target) [data-tab="propiedad-intelectual"],
-    .legal-center:has(#panel-propiedad-intelectual :target) [data-tab="propiedad-intelectual"]
+    .legal-center--terminos:not(.is-hydrated):not(:has(:target)) [data-tab="terminos"],
+    .legal-center:not(.is-hydrated):has(#panel-terminos:target) [data-tab="terminos"],
+    .legal-center:not(.is-hydrated):has(#panel-terminos :target) [data-tab="terminos"],
+    .legal-center:not(.is-hydrated):has(#panel-aviso-legal:target) [data-tab="aviso-legal"],
+    .legal-center:not(.is-hydrated):has(#panel-aviso-legal :target) [data-tab="aviso-legal"],
+    .legal-center:not(.is-hydrated):has(#panel-cookies:target) [data-tab="cookies"],
+    .legal-center:not(.is-hydrated):has(#panel-cookies :target) [data-tab="cookies"],
+    .legal-center:not(.is-hydrated):has(#panel-uso-aceptable:target) [data-tab="uso-aceptable"],
+    .legal-center:not(.is-hydrated):has(#panel-uso-aceptable :target) [data-tab="uso-aceptable"],
+    .legal-center:not(.is-hydrated):has(#panel-pago:target) [data-tab="pago"],
+    .legal-center:not(.is-hydrated):has(#panel-pago :target) [data-tab="pago"],
+    .legal-center:not(.is-hydrated):has(#panel-estudio:target) [data-tab="estudio"],
+    .legal-center:not(.is-hydrated):has(#panel-estudio :target) [data-tab="estudio"],
+    .legal-center:not(.is-hydrated):has(#panel-dpa:target) [data-tab="dpa"],
+    .legal-center:not(.is-hydrated):has(#panel-dpa :target) [data-tab="dpa"],
+    .legal-center:not(.is-hydrated):has(#panel-propiedad-intelectual:target) [data-tab="propiedad-intelectual"],
+    .legal-center:not(.is-hydrated):has(#panel-propiedad-intelectual :target) [data-tab="propiedad-intelectual"],
+    .legal-center:not(.is-hydrated):has(#panel-tus-datos:target) [data-tab="tus-datos"],
+    .legal-center:not(.is-hydrated):has(#panel-tus-datos :target) [data-tab="tus-datos"],
+    .legal-center:not(.is-hydrated):has(#panel-transparencia-ia:target) [data-tab="transparencia-ia"],
+    .legal-center:not(.is-hydrated):has(#panel-transparencia-ia :target) [data-tab="transparencia-ia"],
+    .legal-center:not(.is-hydrated):has(#panel-seguridad:target) [data-tab="seguridad"],
+    .legal-center:not(.is-hydrated):has(#panel-seguridad :target) [data-tab="seguridad"]
   ) { color: #152438; border-bottom-color: #0178F7; }
 }
+/* Pestaña Privacidad activa sin JS en su propia página (no marca Términos a la vez). */
+.legal-center--privacidad:not(.is-hydrated) [data-tab="privacidad"] { color: #152438; border-bottom-color: #0178F7; }
+
+/* Con JS: React muestra solo el panel activo y marca su pestaña (respeta el ancla de la
+   URL al cargar y al navegar en la SPA; .is-active lo pinta .legal-tabs a.is-active). */
+.legal-center.is-hydrated .tab-panel.is-shown { display: block; }
 
 .panel-title { font-size: 24px; font-weight: 600; color: #152438; letter-spacing: -.02em; margin: 18px 0 6px; }
 .panel-toc { margin: 8px 0 20px; padding: 14px 18px; background: #fff; border: 1px solid #e1e8f1; border-radius: 12px; }

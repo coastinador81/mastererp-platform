@@ -1,7 +1,7 @@
 # Condiciones de uso de Uonify
 
-Versión en vigor desde el {{FECHA_VIGOR}}
-Este texto está en español y en inglés. Si las versiones no coinciden, prevalece la española (apartado 26.8).
+Versión en vigor desde el {{FECHA_VIGOR}}  
+Este texto está en español (la versión en inglés estará disponible próximamente). Si las versiones no coinciden, prevalece la española (apartado 26.8).
 
 ## Lo esencial
 
@@ -268,7 +268,7 @@ Comprueba siempre la información importante.
 - intentar que Uony revele sus instrucciones o su configuración internas, o eludir sus protecciones;
 - acceder a los Servicios por medios automatizados no autorizados, como robots o extracción masiva de datos (*scraping*), salvo por las interfaces que publiquemos para ello;
 - eludir límites, controles de acceso, filtros de seguridad u otras medidas técnicas;
-- probar la vulnerabilidad de los Servicios sin autorización (escríbenos antes a security@uonify.com);
+- probar la vulnerabilidad de los Servicios sin autorización (consulta nuestra Política de seguridad);
 - revender, sublicenciar o alquilar los Servicios, u ofrecerlos a terceros como propios;
 - usar los Servicios o sus resultados para desarrollar un producto o servicio competidor, o para entrenar modelos de inteligencia artificial que compitan con Uonify;
 - usar nuestras marcas sin nuestra autorización por escrito.
@@ -313,3 +313,20 @@ También puedes acudir a los tribunales.
 13.1. Algunas funciones de Uonify o algunos modelos de terceros pueden estar marcados como versión preliminar, beta o experimental. Las ofrecemos para que las pruebes. Pueden fallar, cambiar o retirarse sin aviso, y no tienen compromisos de disponibilidad ni de soporte.
 
 13.2. Sus proveedores pueden cobrar por ellas en tu proyecto, según sus propias condiciones.
+
+## 14. Cambios en los Servicios, disponibilidad y soporte
+
+14.1. Trabajamos para que los Servicios estén disponibles y funcionen bien, pero no garantizamos que funcionen sin interrupciones ni errores. Puede haber paradas de mantenimiento, que procuraremos anunciar con antelación.
+
+14.2. Podemos mejorar, cambiar o retirar funciones por razones técnicas, de seguridad, legales, de nuestros proveedores o de negocio. Si retiramos una función esencial de tu plan durante un periodo que ya has pagado:
+- te avisaremos con una antelación razonable;
+- podrás cancelar y recibir el reembolso de la parte del periodo no disfrutada.
+
+14.3. **Soporte.**
+- **La Ayuda,** con la documentación de Uonify, abierta a todos.
+- **Uony en la Ayuda,** para los clientes con cuenta.
+- **Atención personal por correo,** en {{EMAIL_SOPORTE}}, donde te responde una persona.
+- **Videollamada con un experto de Uonify,** que es un servicio de pago aparte (Condiciones de suscripción, pago y reembolsos, apartado 16).
+
+No damos plazos de respuesta garantizados, salvo los que exija la ley.
+

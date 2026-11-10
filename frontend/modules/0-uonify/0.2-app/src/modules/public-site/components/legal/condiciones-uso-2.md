@@ -1,19 +1,3 @@
-## 14. Cambios en los Servicios, disponibilidad y soporte
-
-14.1. Trabajamos para que los Servicios estén disponibles y funcionen bien, pero no garantizamos que funcionen sin interrupciones ni errores. Puede haber paradas de mantenimiento, que procuraremos anunciar con antelación.
-
-14.2. Podemos mejorar, cambiar o retirar funciones por razones técnicas, de seguridad, legales, de nuestros proveedores o de negocio. Si retiramos una función esencial de tu plan durante un periodo que ya has pagado:
-- te avisaremos con una antelación razonable;
-- podrás cancelar y recibir el reembolso de la parte del periodo no disfrutada.
-
-14.3. **Soporte.**
-- **La Ayuda,** con la documentación de Uonify, abierta a todos.
-- **Uony en la Ayuda,** para los clientes con cuenta.
-- **Atención personal por correo,** en {{EMAIL_SOPORTE}}, donde te responde una persona.
-- **Videollamada con un experto de Uonify,** que es un servicio de pago aparte (Condiciones de suscripción, pago y reembolsos, apartado 16).
-
-No damos plazos de respuesta garantizados, salvo los que exija la ley.
-
 ## 15. Datos personales, confidencialidad y seguridad
 
 15.1. La Política de privacidad explica cómo tratamos los datos personales cuando actuamos como responsables del tratamiento.
@@ -53,7 +37,7 @@ Por seguridad, no exportamos nuestro software, nuestras instrucciones y configur
 - Te ayudaremos con lo razonable para tu estrategia de salida.
 - El contrato termina cuando se completa el cambio. Si solo nos pides que borremos tus datos, termina al acabar el preaviso.
 
-En la Ayuda describimos los métodos, los formatos y las limitaciones técnicas de la exportación, y mantenemos al día la lista de estructuras y formatos de datos que usamos.
+Te explicamos los métodos, los formatos y las limitaciones técnicas de la exportación, y mantenemos al día la lista de estructuras y formatos de datos que usamos; puedes pedírnosla en {{EMAIL_SOPORTE}}.
 
 16.4. Si tu suscripción termina y no borras tu cuenta, conservamos tu contenido para que puedas reactivarla o exportarlo. Si la cuenta pasa 24 meses sin suscripción y sin actividad, podremos borrarla. Antes te avisaremos con al menos 30 días de antelación.
 
@@ -266,7 +250,7 @@ Si eres consumidor, conservas la protección de las normas imperativas de tu pa�
 
 26.7. **Comunicaciones electrónicas.** Aceptas recibir de forma electrónica este contrato, los avisos y los demás documentos. Tienen el mismo valor que los documentos en papel.
 
-26.8. **Idioma.** Este contrato y todos los textos legales de Uonify están en español y en inglés, y puedes elegir el idioma en la web. Cada versión es una traducción fiel de la otra, preparada de antemano. Si no coinciden, prevalece la versión en español, salvo que la ley de tu país disponga otra cosa. Si eres consumidor, en caso de duda se aplica la interpretación que más te favorezca.
+26.8. **Idioma.** Este contrato y todos los textos legales de Uonify se publican en español; la versión en inglés estará disponible próximamente y podrás elegir el idioma en la web. Cada versión es una traducción fiel de la otra, preparada de antemano. Si no coinciden, prevalece la versión en español, salvo que la ley de tu país disponga otra cosa. Si eres consumidor, en caso de duda se aplica la interpretación que más te favorezca.
 
 26.9. **Partes independientes.** Este contrato no crea ninguna sociedad, agencia, empleo ni relación de franquicia entre tú y Uonify.
 

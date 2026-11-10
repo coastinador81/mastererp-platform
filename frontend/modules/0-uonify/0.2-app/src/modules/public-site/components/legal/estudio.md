@@ -1,7 +1,7 @@
 # Condiciones del Estudio y del contenido creado con IA
 
-Versión en vigor desde el {{FECHA_VIGOR}}
-Este texto está en español y en inglés. Si las versiones no coinciden, prevalece la española (Condiciones de uso, apartado 26.8).
+Versión en vigor desde el {{FECHA_VIGOR}}  
+Este texto está en español (la versión en inglés estará disponible próximamente). Si las versiones no coinciden, prevalece la española (Condiciones de uso, apartado 26.8).
 
 Estas condiciones forman parte de las Condiciones de uso de Uonify y completan su apartado 8. Se aplican al Estudio y a todo lo que Uony crea con inteligencia artificial: imágenes, vídeos, voces, música y textos.
 
@@ -92,7 +92,7 @@ Estas condiciones forman parte de las Condiciones de uso de Uonify y completan s
 6.1. **Debe ser tuyo o estar autorizado.** Todo lo que subes, eliges o conectas (fotos, clips, documentos, voces, música, marcas y diseños) debe ser tuyo o contar con los permisos necesarios para usarlo así, también en publicidad.
 
 6.2. **Personas reales.**
-- **Permiso por escrito.** Para usar la imagen, la voz o los rasgos de una persona real, como referencia o como Elemento, necesitas su consentimiento expreso y por escrito. Debe cubrir la creación con inteligencia artificial y los usos y canales que vayas a darle. En la Ayuda tienes un modelo de autorización.
+- **Permiso por escrito.** Para usar la imagen, la voz o los rasgos de una persona real, como referencia o como Elemento, necesitas su consentimiento expreso y por escrito. Debe cubrir la creación con inteligencia artificial y los usos y canales que vayas a darle. Puedes pedirnos un modelo de autorización en {{EMAIL_SOPORTE}}.
 - **Conserva el permiso.** Guárdalo, porque podemos pedírtelo.
 - **Revocación.** La persona puede revocar su permiso. Si lo hace, deja de usar su imagen o su voz en piezas nuevas y retírala de donde la ley lo exija.
 - **Famosos y personajes públicos.** No se pueden usar. Los sistemas de Google, además, los bloquean.

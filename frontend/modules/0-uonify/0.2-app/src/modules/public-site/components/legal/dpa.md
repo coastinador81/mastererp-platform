@@ -1,7 +1,7 @@
 # Acuerdo de tratamiento de datos (DPA)
 
-Versión en vigor desde el {{FECHA_VIGOR}}
-Este texto está en español y en inglés. Si las versiones no coinciden, prevalece la española (Condiciones de uso, apartado 26.8).
+Versión en vigor desde el {{FECHA_VIGOR}}  
+Este texto está en español (la versión en inglés estará disponible próximamente). Si las versiones no coinciden, prevalece la española (Condiciones de uso, apartado 26.8).
 
 Este acuerdo forma parte de las Condiciones de uso de Uonify, entre:
 - el cliente («el Cliente»);
@@ -80,9 +80,9 @@ Uonify garantiza que las personas autorizadas a tratar los datos personales del 
 
 ## 7. Subencargados
 
-7.1. **Autorización general.** El Cliente autoriza a Uonify a recurrir a subencargados. La lista actualizada está en {{DOMINIO}}/proveedores (anexo III).
+7.1. **Autorización general.** El Cliente autoriza a Uonify a recurrir a subencargados. La lista actualizada es el anexo III de este acuerdo (el documento «Lista de proveedores que tratan datos»).
 
-7.2. **Aviso de cambios.** Uonify avisará con al menos 30 días de antelación de cualquier subencargado nuevo o de su sustitución. Lo hará mediante esa página y por correo a quien se haya suscrito a los avisos.
+7.2. **Aviso de cambios.** Uonify avisará con al menos 30 días de antelación de cualquier subencargado nuevo o de su sustitución. Lo hará actualizando el anexo III y por correo a quien se haya suscrito a los avisos.
 
 7.3. **Oposición.**
 - En ese plazo, el Cliente puede oponerse por motivos razonables relacionados con la protección de datos.
@@ -275,4 +275,4 @@ Las obligaciones de este acuerdo se aplican, con las adaptaciones necesarias, a 
 
 ## Anexo III · Subencargados
 
-La lista vigente, con la función, los datos, la ubicación y la garantía de transferencia de cada subencargado, está en {{DOMINIO}}/proveedores y se reproduce en el documento «Lista de proveedores que tratan datos».
+La lista vigente, con la función, los datos, la ubicación y la garantía de transferencia de cada subencargado, es la que figura en el documento «Lista de proveedores que tratan datos», que forma parte de este acuerdo como su anexo III.
