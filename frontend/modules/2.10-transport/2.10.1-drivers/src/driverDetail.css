@@ -1,2 +1,0 @@
-.ecommerce-app .driver-equipment{display:grid;grid-template-columns:1fr 1fr;margin:0;padding:0 20px 20px}.ecommerce-app .driver-equipment>div{display:flex;justify-content:space-between;gap:12px;padding:10px;border-top:1px solid var(--finance-border)}.ecommerce-app .driver-equipment dt{color:var(--finance-muted)}.ecommerce-app .driver-equipment dd{margin:0;text-align:right}
-@media(max-width:700px){.ecommerce-app .driver-equipment{grid-template-columns:1fr}}
