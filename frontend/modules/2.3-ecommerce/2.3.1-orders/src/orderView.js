@@ -8,9 +8,13 @@ export const STATUS = {
   CANCELLED: { label: 'Cancelado' },
 };
 
-export const NEXT = {
-  PENDING: ['CONFIRMED', 'CANCELLED'], CONFIRMED: ['PREPARING', 'CANCELLED'],
-  PREPARING: ['READY', 'CANCELLED'], READY: ['OUT_FOR_DELIVERY'], OUT_FOR_DELIVERY: ['DELIVERED'],
+// Manual order actions; Preparación and Rutas own the later stages.
+export const NEXT = { PENDING: ['CONFIRMED', 'CANCELLED'], CONFIRMED: ['CANCELLED'] };
+export const HANDOFF = {
+  CONFIRMED: { title: 'Siguiente paso: iniciar la preparación', note: 'La preparación se inicia desde el módulo Preparación.', route: 'preparation', label: 'Ir a preparación', detail: true },
+  PREPARING: { title: 'Pedido en preparación', note: 'Marca los productos y completa la preparación para dejarlo listo.', route: 'preparation', label: 'Continuar en preparación', detail: true },
+  READY: { title: 'Listo para despacho', note: 'Asígnalo a una ruta para enviarlo al cliente.', route: 'routes', label: 'Ir a rutas' },
+  OUT_FOR_DELIVERY: { title: 'Pedido en camino', note: 'La entrega se registra desde la ruta asignada.', route: 'routes', label: 'Ver rutas' },
 };
 export const FLOW = ['PENDING', 'CONFIRMED', 'PREPARING', 'READY', 'OUT_FOR_DELIVERY', 'DELIVERED'];
 export const statusLabel = value => STATUS[value]?.label || 'Pendiente';

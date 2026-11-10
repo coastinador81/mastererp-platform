@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { MODULES } from '../../../../shared/module-launcher/module-launcher.mjs';
-import { FLOW, NEXT, dateTime, money, paymentMethodLabel, paymentStatusLabel, statusLabel } from './orderView.js';
+import { detailHref, listHref } from '../../../../app-shell/src/detailRoutes.mjs';
+import { FLOW, HANDOFF, NEXT, dateTime, money, paymentMethodLabel, paymentStatusLabel, statusLabel } from './orderView.js';
 import FinanceIcon from '../../../2.2-finance/src/FinanceIcon.jsx';
 import StatusBadge from '../../../../shared/status-badge/StatusBadge.jsx';
 import './order-detail.css';
@@ -46,7 +47,7 @@ function CopyAddress({ address }) {
 
 export default function OrderDetail({ order, writable, transition, close, nodeName, customerOrders = [], canOpenCustomer }) {
   const delivery = order.delivery_snapshot || {}, customer = order.customer_snapshot || {}, payment = order.payment_snapshot || {};
-  const next=(NEXT[order.status]||[]).filter(value=>value!=='CANCELLED'),address=delivery.address||delivery.address_line_1||'';
+  const next=(NEXT[order.status]||[]).filter(value=>value!=='CANCELLED'),handoff=HANDOFF[order.status],address=delivery.address||delivery.address_line_1||'';
   const units=order.items.reduce((sum,item)=>sum+Number(item.quantity||0),0),initials=(customer.name||'C').split(/\s+/).slice(0,2).map(value=>value[0]).join('').toUpperCase();
   const financeUrl=MODULES.find(module=>module.id==='finance')?.href,customerUrl=canOpenCustomer&&financeUrl&&order.customer_id?`${financeUrl}#/modulos/finanzas/administracion/clientes/${encodeURIComponent(order.customer_id)}`:'';
   return <div className="figma-order-detail">
@@ -56,7 +57,7 @@ export default function OrderDetail({ order, writable, transition, close, nodeNa
       <div className="od-main">
         <section className="od-card"><div className="od-status-heading"><div><span>ESTADO ACTUAL</span><StatusBadge status={order.status}>{statusLabel(order.status)}</StatusBadge></div><strong>{money(order.total,order.currency)}</strong></div>
           {order.status==='CANCELLED'?<p className="cancelled-note od-cancelled">Este pedido fue cancelado y su ciclo operativo terminó.</p>:<Progress status={order.status}/>}
-          {next[0]&&writable?<div className="od-status-action"><div><strong>Siguiente etapa: {statusLabel(next[0])}</strong><small>La actualización quedará registrada en el historial del pedido.</small></div><button type="button" className="od-button primary" onClick={()=>transition(next[0])}>Marcar como {statusLabel(next[0])}</button></div>:null}
+          {next[0]&&writable?<div className="od-status-action"><div><strong>Siguiente etapa: {statusLabel(next[0])}</strong><small>La actualización quedará registrada en el historial del pedido.</small></div><button type="button" className="od-button primary" onClick={()=>transition(next[0])}>Marcar como {statusLabel(next[0])}</button></div>:handoff?<div className="od-status-action"><div><strong>{handoff.title}</strong><small>{handoff.note}</small></div><a className="od-button primary" href={handoff.detail?detailHref(handoff.route,order.id):listHref(handoff.route)}>{handoff.label}</a></div>:null}
         </section>
         <section className="od-card od-products"><div className="od-card-title"><div><h2>Productos del pedido</h2><p>{units} {units===1?'unidad':'unidades'} en total</p></div></div>
           {order.items.map((item,index)=><div className="od-product-line" key={item.id||item.position||index}><span className="od-product-image"><FinanceIcon name="package"/></span><div><strong>{item.product_name||'Producto sin nombre'}</strong><small>SKU: {item.product_code||'Sin referencia'} · Cantidad: {item.quantity}</small></div><span>{money(item.unit_price,order.currency)}</span><strong>{money(item.subtotal,order.currency)}</strong></div>)}
