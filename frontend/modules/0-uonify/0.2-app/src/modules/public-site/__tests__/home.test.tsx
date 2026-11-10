@@ -2,6 +2,7 @@ import { act, fireEvent, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { HomePage } from '../components/home/HomePage';
 import { COMPOSER_PREFERENCES_KEY, DISMISSED_SUGGESTIONS_KEY } from '../model/composerOptions';
+import { HOME_PREFERENCES_KEY } from '../model/storage';
 import { authState, openSignIn } from './authMock';
 import { renderPage } from './renderPage';
 
@@ -132,9 +133,27 @@ describe('portada', () => {
     expect(screen.queryByText('caja.png')).toBeNull();
   });
 
-  test('la portada incluye el lanzador de aplicaciones compartido', () => {
-    const { container } = renderPage(<HomePage />);
-    expect(container.querySelector('mastererp-module-launcher')).toBeTruthy();
+  test('el panel de herramientas se abre, enfoca la primera y se cierra con Escape', async () => {
+    const user = userEvent.setup();
+    renderPage(<HomePage />);
+    const trigger = screen.getByRole('button', { name: 'Herramientas de Uonify' });
+    await user.click(trigger);
+    expect(screen.getByRole('link', { name: 'ERP' })).toHaveFocus();
+    expect(screen.getByRole('link', { name: 'Catálogo' })).toHaveAttribute('href', '/productos#catalogo');
+    expect(screen.getByRole('button', { name: 'Academy' })).toHaveAttribute('aria-disabled', 'true');
+    await user.keyboard('{Escape}');
+    expect(trigger).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  test('las preferencias se aplican al documento y se guardan en la pestaña', async () => {
+    const user = userEvent.setup();
+    renderPage(<HomePage />);
+    await user.click(screen.getByRole('checkbox', { name: /Más contraste/, hidden: true }));
+    expect(document.documentElement.dataset.moreContrast).toBe('true');
+    expect(JSON.parse(sessionStorage.getItem(HOME_PREFERENCES_KEY) ?? '{}')).toEqual({ contrast: true, reduceMotion: false });
+    expect(document.getElementById('preferences-status')).toHaveTextContent('Preferencias guardadas para esta pestaña.');
+    await user.click(screen.getByRole('button', { name: 'Restablecer preferencias', hidden: true }));
+    expect(document.documentElement.dataset.moreContrast).toBe('false');
   });
 
   test('con sesión, el logotipo lleva al espacio', async () => {

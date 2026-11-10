@@ -57,11 +57,7 @@ describe('marco del espacio', () => {
     const { container } = renderWorkspace();
     const corner = container.querySelector('.topbar-right') as HTMLElement;
     const ids = [...corner.querySelectorAll('[id]')].map(element => element.id);
-    expect(corner.querySelector('mastererp-module-launcher')).toBeTruthy();
-    const launcher = corner.querySelector('mastererp-module-launcher')!;
-    const account = corner.querySelector('#account-button')!;
-    expect(launcher.compareDocumentPosition(account) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    const order = ['chat-panel-toggle', 'notifications-bell', 'help-button', 'account-button'].map(id => ids.indexOf(id));
+    const order = ['chat-panel-toggle', 'notifications-bell', 'help-button', 'services-trigger', 'account-button'].map(id => ids.indexOf(id));
     expect(order.every(index => index >= 0)).toBe(true);
     expect(order).toEqual([...order].sort((a, b) => a - b));
     expect(container.querySelector('#account-menu')).toHaveAttribute('hidden');

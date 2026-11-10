@@ -1,27 +1,38 @@
-import { useId } from 'react';
-import { useCloudWindow, type WindowTarget } from '@/modules/cloud';
+import { useEffect, useId, useState } from 'react';
 import { USE_MOCKS } from '@/shared/api/config';
 import { Button, LinkButton, Select } from '@/shared/ui';
-import { MASTERERP_LOGIN_ORIGIN } from '../api/live';
+import { liveStart } from '../api/live';
 import { useMastererp } from '../hooks/useMastererp';
+import { consumeLoginReturn, loginReturnNotice } from '../model/loginReturn';
 import '../styles/connection.css';
-
-/** La ventana de acceso la abre el servidor de Uonify, como la de Drive, y solo puede ir a MasterERP. */
-const TARGET: WindowTarget = { origin: MASTERERP_LOGIN_ORIGIN, channel: 'uonify-erp-return', name: 'MasterERP' };
 
 /**
  * Conexión con la cuenta de MasterERP dentro del panel de Finanzas y de la conversación,
  * como la de Drive: conectar, elegir espacio y empresa, o desconectar. Los avisos son los
- * textos de la app de Finanzas del equipo (session.jsx y Finance.jsx). En la vista local la
- * conexión se simula con datos de ejemplo (mocks/demo.ts).
+ * textos de la app de Finanzas del equipo (session.jsx y Finance.jsx). El acceso se abre en
+ * esta misma pestaña (sin ventana emergente) y el servidor devuelve a ERP · Finanzas. En la
+ * vista local la conexión se simula con datos de ejemplo (mocks/demo.ts).
  */
 export function ErpConnectionCard() {
   const { status, message, spaces, tenant, context, company, check, selectTenant, selectCompany, disconnect } = useMastererp();
   const uid = useId();
-  const popup = useCloudWindow(check, 'erp', TARGET);
+  const [leaving, setLeaving] = useState(false);
+  const [notice, setNotice] = useState(loginReturnNotice);
+  // Si la persona vuelve con «Atrás» desde MasterERP, el botón vuelve a estar disponible.
+  useEffect(() => {
+    consumeLoginReturn();
+    const reset = (event: PageTransitionEvent) => { if (event.persisted) setLeaving(false); };
+    window.addEventListener('pageshow', reset);
+    return () => window.removeEventListener('pageshow', reset);
+  }, []);
   const connect = () => {
+    setNotice(null);
     if (!USE_MOCKS) {
-      void popup.open('authorization');
+      setLeaving(true);
+      liveStart().then(
+        url => window.location.assign(url),
+        () => { setLeaving(false); setNotice('No se ha podido abrir el acceso a MasterERP. Vuelve a intentarlo.'); },
+      );
       return;
     }
     void import('../mocks/demo').then(({ connectDemo }) => {
@@ -39,22 +50,15 @@ export function ErpConnectionCard() {
         </span>
       </div>
       {message ? <p className="erp-connection-message" role="status">{message}</p> : null}
-      {popup.message ? <p className="erp-connection-message" role="status">{popup.message}</p> : null}
-      {popup.pending ? (
-        <div className="erp-connection-fields">
-          <p className="erp-connection-message" role="status">Completa el acceso en la ventana de MasterERP. Volverás aquí automáticamente.</p>
-          <Button type="button" variant="outline" size="sm" onClick={popup.focus}>Ver ventana de MasterERP</Button>
-          <LinkButton className="erp-connection-off" onClick={() => void popup.resume()}>Cancelar conexión</LinkButton>
-        </div>
-      ) : null}
+      {notice && !on ? <p className="erp-connection-message" role="status">{notice}</p> : null}
       {status === 'disconnected' || status === 'idle' ? (
         <>
           <p className="erp-connection-message">
             {USE_MOCKS
               ? 'Vista local: la conexión se simula con datos de ejemplo. En dev.uonify.com conectas tu cuenta real.'
-              : 'Conecta tu cuenta de MasterERP para trabajar con los datos reales de Finanzas.'}
+              : 'Conecta tu cuenta de MasterERP para trabajar con los datos reales de Finanzas. El acceso se abre en esta pestaña y vuelves aquí al terminar.'}
           </p>
-          <Button type="button" variant="primary" size="sm" disabled={Boolean(popup.pending)} onClick={connect}>Conectar MasterERP</Button>
+          <Button type="button" variant="primary" size="sm" disabled={leaving} onClick={connect}>{leaving ? 'Abriendo MasterERP…' : 'Conectar MasterERP'}</Button>
         </>
       ) : null}
       {on || status === 'no-access' ? (
