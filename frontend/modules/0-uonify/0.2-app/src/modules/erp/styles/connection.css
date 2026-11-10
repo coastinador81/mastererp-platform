@@ -1,0 +1,11 @@
+/* Conexión con la cuenta del ERP: en el menú de Finanzas y en la tarjeta de la conversación. */
+.erp-connection { display: grid; gap: 8px; margin: 0 0 8px; padding: 12px; border: 1px solid var(--pim-line); border-radius: var(--pim-r-control); background: var(--pim-surface-soft); }
+.erp-connection-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.erp-connection-head h3 { margin: 0; color: var(--pim-ink); font-size: 13px; font-weight: 600; }
+.erp-connection-state { color: var(--pim-muted); font-size: 11px; }
+.erp-connection-state.is-on { color: var(--pim-success); font-weight: 600; }
+.erp-connection-message { margin: 0; color: var(--pim-muted); font-size: 12px; line-height: 1.5; }
+.erp-connection-fields { display: grid; gap: 8px; }
+.erp-connection-off { justify-self: start; font-size: 12px; }
+.nxs-logo-erp { display: grid; place-items: center; color: var(--pim-blue); }
+.nxs-logo-erp svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }

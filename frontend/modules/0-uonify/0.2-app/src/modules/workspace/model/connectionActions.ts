@@ -1,4 +1,4 @@
-export const CONNECTION_PROVIDERS = ['amazon', 'cloud', 'drive', 'blender', 'account'] as const;
+export const CONNECTION_PROVIDERS = ['amazon', 'cloud', 'drive', 'blender', 'account', 'erp'] as const;
 export type ConnectionProvider = typeof CONNECTION_PROVIDERS[number];
 
 export const isConnectionProvider = (value: unknown): value is ConnectionProvider =>
