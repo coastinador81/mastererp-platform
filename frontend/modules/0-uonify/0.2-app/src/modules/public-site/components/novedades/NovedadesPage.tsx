@@ -3,14 +3,13 @@ import novedadesCss from '../../styles/pages/novedades.css?inline';
 import juegoCss from '../../styles/pages/juego-uonify.css?inline';
 import { viewSheets } from '../../styles/sheets';
 import { PUBLIC_VIEWS } from '../../model/views';
-import { FOOTER_LINKS, PageFooter } from '../common/PageFooter';
 import { PageHeader } from '../common/PageHeader';
 import { PublicView } from '../common/PublicView';
+import { SiteFooter } from '../footer/SiteFooter';
 import { KitAnimation } from './KitAnimation';
 import { NewsAll, NewsBuilding, NewsProductStory, NewsTwoStories } from './NewsSections';
 
 const SHEETS = viewSheets(productosCss, novedadesCss, juegoCss);
-const FOOTER = [FOOTER_LINKS.productos, FOOTER_LINKS.sobreUonify, FOOTER_LINKS.privacidad, FOOTER_LINKS.terminos];
 
 /** Novedades (`/novedades`): nuevas piezas, más posibilidades. */
 export function NovedadesPage() {
@@ -54,7 +53,7 @@ export function NovedadesPage() {
         <NewsBuilding />
         <NewsAll />
       </main>
-      <PageFooter links={FOOTER} note="Novedades de Uonify · Propuesta de experiencia" />
+      <SiteFooter />
     </PublicView>
   );
 }

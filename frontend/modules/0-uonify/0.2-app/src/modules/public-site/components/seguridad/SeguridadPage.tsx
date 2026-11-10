@@ -4,9 +4,9 @@ import productosCss from '../../styles/pages/productos.css?inline';
 import seguridadCss from '../../styles/pages/seguridad.css?inline';
 import { viewSheets } from '../../styles/sheets';
 import { PATHS, PUBLIC_VIEWS } from '../../model/views';
-import { PageFooter, SITE_FOOTER_LINKS } from '../common/PageFooter';
 import { PageHeader } from '../common/PageHeader';
 import { PublicView } from '../common/PublicView';
+import { SiteFooter } from '../footer/SiteFooter';
 
 const SHEETS = viewSheets(productosCss, seguridadCss);
 
@@ -59,7 +59,7 @@ export function SeguridadPage() {
           <p>Uonify es para mayores de edad. Las funciones de inteligencia artificial no están disponibles para menores.</p>
         </section>
       </main>
-      <PageFooter links={SITE_FOOTER_LINKS} note="Uonify · Seguridad y confianza." />
+      <SiteFooter />
     </PublicView>
   );
 }

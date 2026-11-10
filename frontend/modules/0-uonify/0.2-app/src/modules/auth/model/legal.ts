@@ -14,8 +14,8 @@ export interface ConsentDocument {
 }
 
 export const CONSENT_DOCUMENTS: Readonly<Record<ConsentId, ConsentDocument>> = {
-  terms: { id: 'terms', version: '2026-09-27', title: 'Condiciones del servicio', href: '/terminos' },
-  privacy: { id: 'privacy', version: '2026-09-27', title: 'Política de privacidad', href: '/privacidad' },
+  terms: { id: 'terms', version: '2026-11-09', title: 'Condiciones del servicio', href: '/terminos' },
+  privacy: { id: 'privacy', version: '2026-11-09', title: 'Política de privacidad', href: '/privacidad' },
   // Misma versión que la aprobó el abogado del dueño (26-09-2026).
   'ai-third-party': { id: 'ai-third-party', version: '2026-09-26', title: 'Modelos de IA de terceros' },
   'chatgpt-plan': { id: 'chatgpt-plan', version: '2026-09-27', title: 'Uso de tu plan de ChatGPT' },

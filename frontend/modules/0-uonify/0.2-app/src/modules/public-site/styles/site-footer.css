@@ -1,0 +1,149 @@
+/* Pie global de Uonify (components/footer/SiteFooter): el mismo en todas las páginas y en
+   el espacio. Hoja propia: la inyecta el componente (useViewStyles) y el prerender la enlaza
+   en el HTML estático, también en la variante sin JS. No depende de las hojas de las vistas:
+   - colores solo con los tokens de src/shared/styles/tokens.css; el pie lleva
+     .uon-token-scope, así no hereda los --ink, --muted o --line que redefinen en :root;
+   - reglas con dos clases como mínimo, para no ceder ante los a, button o :focus-visible de
+     esas hojas, se inyecten antes o después;
+   - sin márgenes exteriores: la separación con el contenido la pone cada página.
+   Manual de identidad: retícula de 8 (medio paso de 4), radios 4/8/12, Inter con pesos
+   600/650, iconos de trazo 1,5 sobre 24 y sombra solo en el menú flotante. */
+
+/* Texto del pie: entre el «muted» y el texto del manual (60/40), unos 5,9:1 sobre el fondo
+   Neutral 100. El pie aprobado el 08-11 daba 5,5:1; solo con --pim-muted quedaba en 4,54:1,
+   en el límite de AA. */
+.site-footer {
+  --site-footer-text: color-mix(in srgb, var(--pim-muted) 60%, var(--pim-text));
+  --site-footer-line: var(--pim-line);
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0 24px;
+  width: 100%;
+  max-width: none;
+  min-height: 56px;
+  padding: 12px max(32px, env(safe-area-inset-right, 0px)) 12px max(32px, env(safe-area-inset-left, 0px));
+  border-top: 1px solid var(--site-footer-line);
+  background: var(--pim-surface-muted);
+  color: var(--site-footer-text);
+  font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
+  letter-spacing: normal;
+  text-align: left;
+}
+.site-footer *, .site-footer *::before, .site-footer *::after { box-sizing: border-box; }
+
+/* «Más contraste» (menú del globo): texto y línea más definidos. */
+:root[data-more-contrast="true"] .site-footer { --site-footer-text: var(--pim-text); --site-footer-line: var(--pim-line-strong); }
+
+.site-footer .site-footer__nav { display: flex; flex-wrap: wrap; align-items: center; gap: 0 24px; margin: 0; padding: 0; }
+
+/* Enlaces y globo: texto del pie, azul 700 al pasar o con el menú abierto. */
+.site-footer .site-footer__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 32px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--pim-r-tag);
+  background: none;
+  color: var(--site-footer-text);
+  font: inherit;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.site-footer .site-footer__link:hover,
+.site-footer .site-footer__link[aria-expanded="true"] { color: var(--pim-blue-strong); }
+.site-footer .site-footer__link:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; box-shadow: none; }
+
+.site-footer .site-footer__icon { flex: 0 0 auto; width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.5; }
+
+.site-footer .site-footer__language { position: relative; display: inline-flex; align-items: center; }
+/* Sin JS: el idioma como etiqueta fija, sin aspecto de botón. */
+.site-footer .site-footer__language--fixed { gap: 8px; min-height: 32px; cursor: default; }
+
+/* Menú «Idioma y accesibilidad»: se abre hacia arriba, alineado con el globo. Su alto cabe
+   en la parte visible de la pantalla (100svh, con las barras del navegador del móvil
+   desplegadas) sobre el pie de dos filas, también en el espacio de trabajo, que no se
+   desplaza y recorta lo que sobresale; si no cabe entero, se desplaza por dentro.
+   z-index 56: por encima de las cabeceras fijas de las interiores (50, Cómo funciona y Para
+   equipos y marcas) y del botón «Conversación» (40); por debajo del velo (59) y la hoja (60)
+   de la conversación en móvil, del panel de hilos y de los avisos. */
+.site-footer .site-footer__menu {
+  position: absolute;
+  z-index: 56;
+  right: 0;
+  bottom: calc(100% + 8px);
+  width: 288px;
+  max-width: calc(100vw - 32px);
+  max-height: calc(100svh - 120px);
+  overflow-y: auto;
+  margin: 0;
+  padding: 8px;
+  border: 1px solid var(--pim-line);
+  border-radius: var(--pim-r-card);
+  background: var(--pim-surface);
+  box-shadow: var(--pim-shadow-float);
+  color: var(--pim-ink);
+  white-space: normal;
+}
+.site-footer .site-footer__menu:focus { outline: none; }
+
+.site-footer .site-footer__group { margin: 0; padding: 4px 0; }
+.site-footer .site-footer__group + .site-footer__group { margin-top: 4px; padding-top: 8px; border-top: 1px solid var(--pim-line); }
+.site-footer .site-footer__group-title { margin: 0; padding: 4px 8px; color: var(--site-footer-text); font-size: 12px; font-weight: 600; line-height: 16px; }
+
+.site-footer .site-footer__option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 40px;
+  margin: 0;
+  padding: 8px;
+  border-radius: var(--pim-r-control);
+  color: var(--pim-ink);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  cursor: pointer;
+}
+.site-footer .site-footer__option:hover { background: var(--pim-surface-muted); }
+.site-footer .site-footer__option.is-selected { color: var(--pim-blue-strong); font-weight: 650; }
+.site-footer .site-footer__option-text { display: grid; gap: 4px; min-width: 0; }
+.site-footer .site-footer__option-title { color: var(--pim-ink); font-weight: 600; }
+.site-footer .site-footer__option-hint { color: var(--site-footer-text); font-size: 12px; line-height: 16px; }
+.site-footer .site-footer__control { flex: 0 0 auto; width: 16px; height: 16px; margin: 0; accent-color: var(--pim-blue); cursor: pointer; }
+.site-footer .site-footer__control:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; border-radius: var(--pim-r-tag); }
+.site-footer .site-footer__control[type="radio"]:focus-visible { border-radius: 50%; }
+
+/* «Restablecer»: botón del kit (outline, pequeño); el radio se fija aquí porque alguna hoja
+   de vista cambia el de cualquier elemento con :focus-visible. Su foco es el del resto del
+   pie (contorno, no sombra): con colores forzados la sombra del kit desaparece. */
+.site-footer .site-footer__reset { width: calc(100% - 16px); margin: 8px 8px 4px; border-radius: var(--pim-r-control); }
+.site-footer .site-footer__reset:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; box-shadow: none; }
+.site-footer .site-footer__status { margin: 0; padding: 4px 8px 0; color: var(--site-footer-text); font-size: 12px; line-height: 16px; }
+.site-footer .site-footer__status:empty { padding: 0; }
+
+/* Pantalla completa con el pie como última franja (SiteFooterFrame): las pantallas de acceso
+   del espacio. Como la columna del espacio, mide 100svh; el contenido ocupa el resto y se
+   desplaza por dentro si no cabe, así el pie siempre queda a la vista. */
+.site-footer-frame { display: flex; flex-direction: column; height: 100svh; }
+.site-footer-frame > .site-footer-frame__content { display: flex; flex: 1 1 auto; flex-direction: column; min-height: 0; overflow: auto; }
+
+/* Móvil: todo centrado; el menú ocupa el ancho del pie (con 16 px a cada lado). */
+@media (max-width: 560px) {
+  .site-footer { justify-content: center; padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-left: max(16px, env(safe-area-inset-left, 0px)); }
+  .site-footer .site-footer__nav { justify-content: center; }
+  .site-footer .site-footer__language { position: static; }
+  .site-footer .site-footer__menu { right: 16px; left: 16px; width: auto; max-width: none; }
+}

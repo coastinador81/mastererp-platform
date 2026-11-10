@@ -4,9 +4,9 @@ import canDoCss from '../../styles/pages/lo-que-puedes-hacer.css?inline';
 import { viewSheets } from '../../styles/sheets';
 import { PATHS, PUBLIC_VIEWS } from '../../model/views';
 import { HomeLink } from '../common/HomeLink';
-import { PageFooter, SITE_FOOTER_LINKS } from '../common/PageFooter';
 import { PageHeader } from '../common/PageHeader';
 import { PublicView } from '../common/PublicView';
+import { SiteFooter } from '../footer/SiteFooter';
 
 const SHEETS = viewSheets(productosCss, canDoCss);
 
@@ -89,7 +89,7 @@ export function LoQuePuedesHacerPage() {
             <a className="text-link" href="#recorridos">Mira los dos recorridos <I id="arrow-down" /></a>
           </div>
           <div className="reel"><Slot pin={1} kind="Hueco de vídeo" ratio="16:9" title="Hecho con Uonify" meta="16:9 · 30-45 s · subtítulos" /></div>
-          <p className="note">Todas las imágenes y los vídeos de esta página se han creado con Uonify, con la tecnología de Google.</p>
+          <p className="note">Todas las imágenes y los vídeos de esta página se han creado con Uonify, con la tecnología de Google. Ninguna persona que aparezca es real ni es menor de edad. Uonify es para mayores de edad.</p>
         </section>
 
         <section className="routes" id="recorridos" aria-label="Dos recorridos">
@@ -243,7 +243,7 @@ export function LoQuePuedesHacerPage() {
           </div>
         </section>
       </main>
-      <PageFooter links={SITE_FOOTER_LINKS} note="Las piezas de esta página se crean con Uonify, con la tecnología de Google. Ninguna persona que aparezca es real ni es menor de edad. Uonify es para mayores de edad." />
+      <SiteFooter />
     </PublicView>
   );
 }

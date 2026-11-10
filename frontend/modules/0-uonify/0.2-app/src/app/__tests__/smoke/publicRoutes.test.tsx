@@ -19,7 +19,7 @@ const PUBLIC_ROUTES: Array<[path: string, heading: RegExp, title: RegExp]> = [
   ['/sobre-uonify', /^Detrás de cada producto/, /^Sobre Uonify/],
   ['/novedades', /^Nuevas piezas\./, /^Novedades/],
   ['/privacidad', /^Tu información, bajo tu control\.$/, /^Privacidad — Uonify$/],
-  ['/terminos', /^Información sobre el acceso\.$/, /^Condiciones — Uonify$/],
+  ['/terminos', /^Términos y condiciones$/, /^Términos y condiciones — Uonify$/],
 ];
 
 describe('web pública (sin sesión)', () => {

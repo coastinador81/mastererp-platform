@@ -1,7 +1,8 @@
-import { act, screen, within } from '@testing-library/react';
+import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ComoFuncionaPage } from '../components/como-funciona/ComoFuncionaPage';
 import { LegalPage } from '../components/legal/LegalPage';
+import { LegalMarkdown } from '../components/legal/LegalMarkdown';
 import { NovedadesPage } from '../components/novedades/NovedadesPage';
 import { ParaEmpresasPage } from '../components/para-empresas/ParaEmpresasPage';
 import { ProductosPage } from '../components/productos/ProductosPage';
@@ -28,10 +29,28 @@ describe('Productos', () => {
     const nav = screen.getByRole('navigation', { name: 'Navegación principal' });
     expect(within(nav).getByRole('link', { name: 'Servicios' })).toHaveAttribute('aria-current', 'page');
     expect(within(nav).getByRole('link', { name: 'Cómo funciona' })).toHaveAttribute('href', '/como-funciona');
-    // Regla del dueño (08-11-2026): un solo pie, el de la Home, en todas las páginas públicas.
-    expect(screen.getByRole('contentinfo')).toHaveTextContent('Para equipos y marcasCómo funciona UonifyPrivacidadCondicionesPreferencias');
+    // Pie global (09-11-2026): el mismo en todas las páginas, también en las interiores.
+    const footer = screen.getByRole('contentinfo');
+    expect(within(footer).getAllByRole('link').map(link => link.textContent)).toEqual(['Partners', 'Clientes', 'Términos y condiciones', 'Ayuda']);
+    expect(within(footer).getByRole('button', { name: 'Idioma' })).toHaveAttribute('aria-haspopup', 'dialog');
     // Marco + productos, juego, galería, Administración (ERP) y la hoja rica (con la vista previa del cliente).
     expect(document.head.querySelectorAll('style[data-uon-view-style="producto"]')).toHaveLength(6);
+  });
+
+  test('a la derecha, como en la portada: «Iniciar sesión» y el botón de servicios', async () => {
+    const user = userEvent.setup();
+    renderPage(<ProductosPage />, '/productos');
+    const actions = document.querySelector<HTMLElement>('.header .header-actions')!;
+    expect(within(actions).getByRole('link', { name: /Iniciar sesión/ })).toBeInTheDocument();
+    const trigger = within(actions).getByRole('button', { name: 'Herramientas de Uonify' });
+    await user.click(trigger);
+    const panel = document.getElementById('tools-panel')!;
+    // El mismo panel que la portada: los 10 servicios y «Conocer Uonify», con el primero enfocado.
+    expect(within(panel).getByRole('link', { name: 'Producto' })).toHaveFocus();
+    expect(within(panel).getAllByRole('link')).toHaveLength(11);
+    await user.keyboard('{Escape}');
+    expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    expect(trigger).toHaveFocus();
   });
 
   test('«Iniciar sesión» abre el acceso sin salir de la página', async () => {
@@ -208,7 +227,130 @@ describe('páginas legales', () => {
   test('con sesión, «Volver a Uonify» lleva al espacio', () => {
     authState.status = 'ready';
     renderPage(<LegalPage doc="terminos" />, '/terminos');
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Información sobre el acceso.');
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Términos y condiciones');
     expect(screen.getByRole('link', { name: 'Volver a Uonify' })).toHaveAttribute('href', '/espacio');
+  });
+
+  test('Privacidad: sin marcadores, con la barra de pestañas común y la pestaña Privacidad activa', () => {
+    renderPage(<LegalPage doc="privacidad" />, '/privacidad');
+    expect(document.body.innerHTML).not.toMatch(/\{\{|\}\}/);
+    const tabs = document.querySelector('.legal-tabs');
+    expect(tabs?.textContent).toContain('Términos y condiciones');
+    expect(tabs?.textContent).toContain('Cookies');
+    expect(document.querySelector('[data-tab="privacidad"]')).toHaveAttribute('aria-current', 'page');
+    expect(document.getElementById('panel-privacidad')).not.toBeNull();
+  });
+
+  test('Condiciones: sin marcadores, reúne el contrato en paneles con pestañas y anclas namespaceadas', () => {
+    renderPage(<LegalPage doc="terminos" />, '/terminos');
+    expect(document.body.innerHTML).not.toMatch(/\{\{|\}\}/);
+    for (const id of ['panel-terminos', 'panel-aviso-legal', 'panel-cookies', 'panel-dpa', 'panel-propiedad-intelectual']) {
+      expect(document.getElementById(id)).not.toBeNull();
+    }
+    // La pestaña Privacidad enlaza a su propia página; las anclas se namespacean por panel.
+    expect(document.querySelector('[data-tab="privacidad"]')).toHaveAttribute('href', '/privacidad');
+    expect(document.querySelector('#panel-dpa [id^="dpa-"]')).not.toBeNull();
+  });
+
+  test('con JS, un enlace a /terminos#panel-… abre esa pestaña, no la primera', () => {
+    renderPage(<LegalPage doc="terminos" />, '/terminos#panel-aviso-legal');
+    expect(document.getElementById('panel-aviso-legal')?.className).toContain('is-shown');
+    expect(document.getElementById('panel-terminos')?.className).not.toContain('is-shown');
+    expect(document.querySelector('[data-tab="aviso-legal"]')).toHaveAttribute('aria-current', 'page');
+  });
+
+  test('un ancla de apartado (#dpa-…) también abre su pestaña', () => {
+    renderPage(<LegalPage doc="terminos" />, '/terminos#dpa-medidas');
+    expect(document.getElementById('panel-dpa')?.className).toContain('is-shown');
+  });
+
+  test('/privacidad marca una sola pestaña activa (la de Privacidad)', () => {
+    renderPage(<LegalPage doc="privacidad" />, '/privacidad');
+    const actives = document.querySelectorAll('.legal-tabs a.is-active');
+    expect(actives).toHaveLength(1);
+    expect(actives[0]).toHaveAttribute('data-tab', 'privacidad');
+  });
+
+  test('el título de cada panel es un encabezado (h2) y las secciones quedan por debajo (h3)', () => {
+    renderPage(<LegalPage doc="terminos" />, '/terminos');
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Términos y condiciones');
+    const panelTitles = [...document.querySelectorAll('.tab-panel h2.panel-title')].map(h => h.textContent);
+    expect(panelTitles).toContain('Aviso legal');
+    expect(panelTitles).toContain('Política de cookies');
+    // Dentro de un panel, las secciones «##» bajan a h3 (no h2) para no competir con el título.
+    const dpa = document.getElementById('panel-dpa');
+    expect(dpa?.querySelector('h3')).not.toBeNull();
+    expect(dpa?.querySelector('h2:not(.panel-title)')).toBeNull();
+  });
+
+  test('las pestañas nuevas (Tus datos, Transparencia de la IA, Seguridad) están en la barra y en /terminos', () => {
+    renderPage(<LegalPage doc="terminos" />, '/terminos');
+    const tabs = document.querySelector('.legal-tabs');
+    for (const label of ['Tus datos', 'Transparencia de la IA', 'Seguridad']) expect(tabs?.textContent).toContain(label);
+    for (const id of ['panel-tus-datos', 'panel-transparencia-ia', 'panel-seguridad']) expect(document.getElementById(id)).not.toBeNull();
+  });
+
+  test('la Lista de proveedores va DENTRO de la pestaña del DPA (Anexo III), no como pestaña propia', () => {
+    renderPage(<LegalPage doc="terminos" />, '/terminos');
+    const dpa = document.getElementById('panel-dpa');
+    expect(dpa?.textContent).toContain('Lista de proveedores');
+    expect(dpa?.textContent).toContain('Amazon Web Services');
+    expect(document.querySelector('[data-tab="lista-proveedores"]')).toBeNull();
+  });
+
+  test('las marcas nuevas se rellenan (DataRep, Amazon SES, caducidad del security.txt)', () => {
+    renderPage(<LegalPage doc="terminos" />, '/terminos');
+    expect(document.getElementById('panel-aviso-legal')?.textContent).toContain('DataRep');
+    expect(document.getElementById('panel-dpa')?.textContent).toContain('Amazon SES');
+    expect(document.getElementById('panel-seguridad')?.textContent).toContain('2027-11-09');
+  });
+});
+
+describe('renderizador de los textos legales', () => {
+  test('listas numeradas → <ol> (no un párrafo pegado)', () => {
+    const { container } = render(<LegalMarkdown source={'1. Uno\n2. Dos\n3. Tres'} />);
+    const ol = container.querySelector('ol');
+    expect(ol).not.toBeNull();
+    expect(ol?.querySelectorAll(':scope > li')).toHaveLength(3);
+  });
+
+  test('viñetas anidadas bajo un número → <ul> dentro del <li>', () => {
+    const { container } = render(<LegalMarkdown source={'1. **Cifrado.**\n   - En tránsito.\n   - En reposo.\n2. **Acceso.**'} />);
+    const ol = container.querySelector('ol');
+    expect(ol?.querySelectorAll(':scope > li')).toHaveLength(2);
+    expect(ol?.querySelector(':scope > li ul')?.querySelectorAll('li')).toHaveLength(2);
+  });
+
+  test('«<br>» se renderiza como salto de línea, no como texto literal', () => {
+    const { container } = render(<LegalMarkdown source={'Incluye:<br>· uno<br>· dos'} />);
+    expect(container.querySelectorAll('br').length).toBeGreaterThanOrEqual(2);
+    expect(container.textContent).not.toContain('<br>');
+  });
+
+  test('`código` → <code> (sin comillas invertidas a la vista)', () => {
+    const { container } = render(<LegalMarkdown source={'La cookie `__stripe_mid` dura un año.'} />);
+    expect(container.querySelector('code')?.textContent).toBe('__stripe_mid');
+    expect(container.textContent).not.toContain('`');
+  });
+
+  test('`código` dentro de *cursiva* también se renderiza (sin comilla a la vista)', () => {
+    const { container } = render(<LegalMarkdown source={'*Identificador `estudio-ia` guardado.*'} />);
+    expect(container.querySelector('em code')?.textContent).toBe('estudio-ia');
+    expect(container.textContent).not.toContain('`');
+  });
+
+  test('bloque de código con ``` → <pre><code> (sin comillas invertidas a la vista)', () => {
+    const src = 'Antes.\n\n```\nContact: mailto:x@y.com\nExpires: 2027-11-09T00:00:00Z\n```\n\nDespués.';
+    const { container } = render(<LegalMarkdown source={src} />);
+    const pre = container.querySelector('pre code');
+    expect(pre?.textContent).toContain('Contact: mailto:x@y.com');
+    expect(pre?.textContent).toContain('Expires: 2027-11-09T00:00:00Z');
+    expect(container.textContent).not.toContain('`');
+  });
+
+  test('headingOffset baja el nivel de los títulos (## → h3)', () => {
+    const { container } = render(<LegalMarkdown source={'## Apartado\n\nTexto.'} headingOffset={1} />);
+    expect(container.querySelector('h3')?.textContent).toBe('Apartado');
+    expect(container.querySelector('h2')).toBeNull();
   });
 });

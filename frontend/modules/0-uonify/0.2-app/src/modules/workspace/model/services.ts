@@ -68,6 +68,42 @@ export function serviceIcon(service: ServiceId): string {
   return `/assets/product-icons/${SERVICES[service].icon}`;
 }
 
+/** Estado de un servicio en el catálogo: disponible o «Próximamente». */
+export type ServiceCatalogStatus = 'active' | 'soon';
+/** Id del catálogo: un servicio del espacio o «estudio» (acceso directo al chat, sin vista de módulo). */
+export type CatalogServiceId = ServiceId | 'estudio';
+
+export interface ServiceCatalogEntry {
+  id: CatalogServiceId;
+  name: string;
+  /** Ruta del icono en public/assets/product-icons. */
+  iconSrc: string;
+  status: ServiceCatalogStatus;
+}
+
+/** Icono de una entrada del catálogo (Estudio tiene icono propio y no es un ServiceId del espacio). */
+export function catalogIconSrc(id: CatalogServiceId): string {
+  return id === 'estudio' ? '/assets/product-icons/estudio.png' : serviceIcon(id);
+}
+
+const ACTIVE_CATALOG: CatalogServiceId[] = ['producto', 'estudio', 'erp', 'nexus', 'analitica', 'auditoria', 'agentes', 'academy', 'logistica', 'fabrica'];
+const SOON_CATALOG: CatalogServiceId[] = [];
+
+/**
+ * Fuente única de los servicios que muestran el lanzador del espacio (ServicesMenu)
+ * y el panel de la Home (ToolsPanel), con su estado. Orden: Producto, Estudio, ERP,
+ * Nexus y el resto. Desde el 10-11-2026 todos están activos (orden del dueño: ningún
+ * «Próximamente»); para volver a marcar uno como próximo, basta con pasarlo a
+ * SOON_CATALOG y los dos paneles lo pintan igual. Nombre e icono salen de SERVICES;
+ * Estudio es un acceso directo al chat, con icono propio y sin vista de módulo.
+ */
+export const SERVICE_CATALOG: ServiceCatalogEntry[] = [...ACTIVE_CATALOG, ...SOON_CATALOG].map(id => ({
+  id,
+  name: id === 'estudio' ? 'Estudio' : SERVICES[id].name,
+  iconSrc: catalogIconSrc(id),
+  status: ACTIVE_CATALOG.includes(id) ? 'active' : 'soon',
+}));
+
 /** Ruta de un servicio y su vista (equivale a `selectService(service, view)` del PROTO). */
 export function servicePath(service: ServiceId | null, view: string = DEFAULT_VIEW): string {
   if (!service) return WORKSPACE_PATH;

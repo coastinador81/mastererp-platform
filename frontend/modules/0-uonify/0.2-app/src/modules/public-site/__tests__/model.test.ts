@@ -17,7 +17,7 @@ describe('vistas públicas (tabla de unified.js)', () => {
     expect(PUBLIC_VIEWS.empresa).toMatchObject({ path: '/sobre-uonify', bodyClass: 'about-page' });
     expect(PUBLIC_VIEWS.novedades.bodyClass).toBe('news-page');
     expect(PUBLIC_VIEWS.privacidad).toMatchObject({ path: '/privacidad', title: 'Privacidad — Uonify' });
-    expect(PUBLIC_VIEWS.terminos).toMatchObject({ path: '/terminos', title: 'Condiciones — Uonify' });
+    expect(PUBLIC_VIEWS.terminos).toMatchObject({ path: '/terminos', title: 'Términos y condiciones — Uonify' });
     // Todas llevan una meta descripción propia (buscadores y buscadores de IA).
     Object.values(PUBLIC_VIEWS).forEach(view => expect(view.description.length).toBeGreaterThan(80));
   });

@@ -21,5 +21,5 @@ export const DEFAULT_CONFIG: BillingConfig = {
   maxRecharge: 5000,
   supportAmount: 9,
   vatRate: 0.21,
-  termsVersion: '2026-09-27',
+  termsVersion: '2026-11-09',
 };

@@ -1,4 +1,4 @@
-import { act, render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { MemoryRouter } from 'react-router';
@@ -177,5 +177,15 @@ it('mantiene la cabecera habitual fuera del marco y los servicios no pierden los
   expect(setup.firstIntent).toBe('Preparar Basic Mini Bricks');
   expect(post).not.toHaveBeenCalled();
   expect(put).not.toHaveBeenCalled();
+});
+
+it('la bienvenida lleva el pie global debajo de la conversación: nunca se oculta', async () => {
+  mount();
+  expect(await screen.findByRole('heading', { name: 'Condiciones de Uonify' })).toBeVisible();
+  const footers = screen.getAllByRole('contentinfo');
+  expect(footers).toHaveLength(1);
+  expect(screen.getByRole('main', { name: 'Conversación de bienvenida con Uony' })).not.toContainElement(footers[0]);
+  expect(within(footers[0]).getByRole('link', { name: 'Términos y condiciones' })).toHaveAttribute('href', '/terminos');
+  expect(within(footers[0]).getByRole('button', { name: 'Idioma' })).toHaveAttribute('aria-haspopup', 'dialog');
 });
 

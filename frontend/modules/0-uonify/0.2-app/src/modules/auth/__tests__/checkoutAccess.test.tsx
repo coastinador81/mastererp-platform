@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { HttpResponse, http } from 'msw';
 import { setupServer } from 'msw/node';
-import { createMemoryRouter, RouterProvider } from 'react-router';
+import { createMemoryRouter, MemoryRouter, RouterProvider } from 'react-router';
 import { appRoutes } from '@/app/appRoutes';
 import { billingApi, WorkspaceAccessGate } from '@/modules/billing';
 import { queryClient } from '@/shared/api/queryClient';
@@ -36,9 +36,10 @@ function account(address: string, plan: Profile['desiredPlan'] = 'basic') {
   // La guarda aislada recibe un perfil terminado; las rutas reales también lo validan.
   setSession({ ...parseSession(signInAs(address)), profileReady: true });
 }
-const payment = { planId: 'basic' as const, interval: 'monthly' as const, paymentMethod: 'new', newCard: { id: 'pm_access', brand: 'visa' as const, last4: '4242', expMonth: 12, expYear: 2035 }, acceptedTerms: true, acceptedWithdrawal: true, termsVersion: '2026-09-27' };
+const payment = { planId: 'basic' as const, interval: 'monthly' as const, paymentMethod: 'new', newCard: { id: 'pm_access', brand: 'visa' as const, last4: '4242', expMonth: 12, expYear: 2035 }, acceptedTerms: true, acceptedWithdrawal: true, termsVersion: '2026-11-09' };
 function mount() {
-  return render(<QueryClientProvider client={queryClient}><WorkspaceAccessGate><h1>Contenido privado</h1></WorkspaceAccessGate></QueryClientProvider>);
+  // Las pantallas de la puerta llevan el pie global, con enlaces: necesitan un router.
+  return render(<QueryClientProvider client={queryClient}><MemoryRouter><WorkspaceAccessGate><h1>Contenido privado</h1></WorkspaceAccessGate></MemoryRouter></QueryClientProvider>);
 }
 
 test('clic fuera y Escape mantienen el checkout; la aplicación no se monta', async () => {
@@ -97,6 +98,7 @@ test('si falla la comprobación del servidor no se muestra el espacio', async ()
   server.use(http.get(mock('/billing/workspace-access'), () => new HttpResponse(null, { status: 503 })));
   mount(); await screen.findByText('No se ha podido comprobar tu acceso');
   expect(screen.queryByText('Contenido privado')).toBeNull();
+  expect(screen.getAllByRole('contentinfo')).toHaveLength(1);
   server.resetHandlers(); fireEvent.click(screen.getByRole('button', { name: 'Reintentar' }));
   await screen.findByRole('dialog');
 });

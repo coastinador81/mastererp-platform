@@ -24,7 +24,7 @@ function mount(component: React.ReactNode) {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } });
   return render(<QueryClientProvider client={client}>{component}</QueryClientProvider>);
 }
-const request = { planId: 'basic' as const, paymentMethod: 'new', newCard: NEW_CARD, acceptedTerms: true, acceptedWithdrawal: true, termsVersion: '2026-09-27' };
+const request = { planId: 'basic' as const, paymentMethod: 'new', newCard: NEW_CARD, acceptedTerms: true, acceptedWithdrawal: true, termsVersion: '2026-11-09' };
 
 test('mensual cobra una cuota y renueva al mes; anual mantiene 12 cuotas y 13 meses', () => {
   const now = new Date('2026-01-31T12:00:00Z');

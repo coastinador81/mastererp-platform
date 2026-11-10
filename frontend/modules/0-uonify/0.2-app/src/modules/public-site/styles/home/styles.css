@@ -83,20 +83,7 @@ main[tabindex="-1"]:focus { outline: none; }
 .destination-links svg { width: 16px; height: 16px; }
 .truth-note { margin: 14px 0 0; color: #82909e; font-size: 9px; }
 
-.footer { max-width: var(--max); min-height: 104px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 32px; margin: 0 auto; padding: 20px 26px; color: var(--muted); border-top: 1px solid rgba(111,137,162,.15); font-size: 10px; }
-.footer p { display: flex; align-items: center; gap: 9px; margin: 0; }
-.footer img { width: 34px; height: 26px; object-fit: contain; }
-.footer nav { display: flex; gap: 22px; }
-.footer a { text-decoration: none; }
-.footer a:hover { color: var(--blue-dark); }
-.footer > span { justify-self: end; }
-/* Footer GLOBAL de Uonify: exactamente el de la portada (franja gris, izquierda/derecha).
-   Igual en TODAS las páginas públicas (decisión del dueño, 08-11-2026). */
-.site-footer { width: 100%; max-width: none; min-height: 52px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 24px; margin: 0; padding: 14px max(32px, env(safe-area-inset-right,0px)) 14px max(32px, env(safe-area-inset-left,0px)); background: #edf1f5; border-top: 1px solid #e0e6ec; color: #536272; font-size: 12px; }
-.site-footer nav { display: flex; flex-wrap: wrap; gap: 22px; }
-.site-footer a, .site-footer button { color: #536272; text-decoration: none; background: transparent; border: 0; font: inherit; cursor: pointer; padding: 0; }
-.site-footer a:hover, .site-footer button:hover { color: #0052bc; }
-@media (max-width: 560px) { .site-footer { justify-content: center; gap: 10px 18px; } }
+/* El pie global de Uonify (SiteFooter) trae su propia hoja: styles/site-footer.css. */
 
 @media (max-width: 760px) {
   .ambient::before { background-size: 48px 48px; }
@@ -131,9 +118,6 @@ main[tabindex="-1"]:focus { outline: none; }
   .destination-links { align-items: stretch; flex-direction: column; margin-top: 16px; }
   .destination-links a { min-height: 44px; }
   .truth-note { max-width: 300px; margin: 14px auto 0; line-height: 1.5; }
-  .footer { grid-template-columns: 1fr; gap: 18px; padding: 24px; text-align: center; }
-  .footer p, .footer nav { justify-content: center; }
-  .footer > span { justify-self: center; }
 }
 
 @media (max-width: 420px) {

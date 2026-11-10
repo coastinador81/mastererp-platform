@@ -37,12 +37,14 @@
 /* --- r28: conversation on the right (VS Code style), channels in the header --- */
 /* Chat only: centred, as ChatGPT or Claude. With a module: header bar on top,
    module on the left, conversation panel on the right. */
-.workspace-column.is-module { --chat-width: clamp(360px, 28vw, 440px); display: grid; grid-template-columns: minmax(0,1fr) var(--chat-width); grid-template-rows: 56px minmax(0,1fr); }
+.workspace-column.is-module { --chat-width: clamp(360px, 28vw, 440px); display: grid; grid-template-columns: minmax(0,1fr) var(--chat-width); grid-template-rows: 56px minmax(0,1fr) auto; }
 .workspace-column.is-module.is-chat-hidden { grid-template-columns: minmax(0,1fr); }
 .workspace-column.is-module > .topbar { grid-column: 1 / -1; grid-row: 1; position: relative; height: 56px; display: flex; align-items: center; gap: 12px; padding: 0 12px 0 10px; border-bottom: 1px solid #e3ebf2; background: #fff; pointer-events: auto; }
 .workspace-column.is-module .topbar-left, .workspace-column.is-module .topbar-right { position: static; }
 .workspace-column.is-module .topbar-right { margin-left: auto; gap: 6px; }
 .workspace-column.is-module > .workspace { grid-column: 1; grid-row: 2; min-width: 0; }
+/* Pie global: tercera fila, bajo el servicio y la conversación, a todo el ancho. */
+.workspace-column.is-module > .workspace-footer { grid-column: 1 / -1; grid-row: 3; }
 .workspace:not(.is-home):not(.is-product) { padding-top: 32px; }
 .workspace.is-product { container: module / inline-size; }
 
@@ -83,7 +85,9 @@
 
 /* Narrow screens: the conversation is a sheet over the module. */
 .chat-panel-scrim { position: fixed; inset: 0; z-index: 59; background: #0f2a4414; }
-.chat-panel-fab { position: fixed; z-index: 40; left: 50%; bottom: 16px; transform: translateX(-50%); max-width: min(calc(100vw - 32px), 440px); display: flex; align-items: center; gap: 8px; padding: 11px 18px 11px 14px; border: 1px solid #d8e4f1; border-radius: 999px; background: #fff; color: var(--ink); box-shadow: 0 14px 36px #1d487126; font-size: 13px; text-align: left; }
+/* El botón «Conversación» (solo con un servicio) flota al pie de la vista, en su misma celda
+   de la rejilla: queda encima del pie global sin taparlo, mida lo que mida este. */
+.chat-panel-fab { position: relative; z-index: 40; grid-column: 1; grid-row: 2; align-self: end; justify-self: center; margin-bottom: 16px; max-width: min(calc(100vw - 32px), 440px); display: flex; align-items: center; gap: 8px; padding: 11px 18px 11px 14px; border: 1px solid #d8e4f1; border-radius: 999px; background: #fff; color: var(--ink); box-shadow: 0 14px 36px #1d487126; font-size: 13px; text-align: left; }
 .chat-panel-fab:hover { border-color: #b9d3ea; }
 .chat-panel-fab .assistant-symbol { color: var(--blue); font-size: 16px; }
 .chat-panel-fab-text { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }

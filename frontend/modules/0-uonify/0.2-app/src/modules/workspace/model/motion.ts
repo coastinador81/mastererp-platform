@@ -3,13 +3,16 @@
  * de pantalla entra con el mismo efecto sutil (fundido, leve subida y enfoque);
  * otro producto o pestaña, con uno más ligero. Nada se mueve si la persona pidió
  * menos movimiento (ajuste del sistema o preferencia de Uonify).
+ * La preferencia de Uonify («Reducir movimiento», en el menú «Idioma y accesibilidad» del
+ * pie global) la aplica y la guarda el pie, que se monta en todas las pantallas del
+ * espacio; aquí solo se lee. Es la misma clave de pestaña que usa el pie (public-site).
  */
 export const PREFERENCES_STORAGE_KEY = 'uonify-preferences';
 
 export type EnterVariant = 'uon-enter' | 'uon-enter-side' | 'uon-enter-soft' | 'uon-reply-text' | 'uon-reply-card';
 const ENTER_VARIANTS: EnterVariant[] = ['uon-enter', 'uon-enter-side', 'uon-enter-soft', 'uon-reply-text', 'uon-reply-card'];
 
-function readPreferences(): { reduceMotion?: unknown; contrast?: unknown } | null {
+function readPreferences(): { reduceMotion?: unknown } | null {
   try {
     return JSON.parse(sessionStorage.getItem(PREFERENCES_STORAGE_KEY) || 'null');
   } catch {
@@ -21,17 +24,6 @@ export function reduceMotion(): boolean {
   if (typeof window === 'undefined') return true;
   if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches || document.documentElement.dataset.reduceMotion === 'true') return true;
   return readPreferences()?.reduceMotion === true;
-}
-
-/**
- * Las preferencias de Uonify (guardadas en la portada) también se aplican tras
- * recargar el espacio, donde la portada no se ejecuta.
- */
-export function applyStoredPreferences(): void {
-  const preferences = readPreferences();
-  if (!preferences) return;
-  document.documentElement.dataset.reduceMotion = String(preferences.reduceMotion === true);
-  document.documentElement.dataset.moreContrast = String(preferences.contrast === true);
 }
 
 export function playEnter(element: Element | null | undefined, variant: EnterVariant = 'uon-enter'): void {

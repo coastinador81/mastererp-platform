@@ -188,8 +188,6 @@
 .enterprise-close h2{font-size:clamp(3rem,5.3vw,5.2rem);line-height:1.02;margin:20px 0 26px}
 .enterprise-close>p:not(.eyebrow){max-width:680px;margin:0 auto 30px;color:var(--enterprise-muted);font-size:1.0625rem}
 .enterprise-close .enterprise-actions{justify-content:center}
-.enterprise-page .footer{margin-top:0}
-.enterprise-page .footer nav{row-gap:14px}
 .demo-toast{position:fixed;z-index:80;right:24px;bottom:24px;max-width:370px;padding:18px 20px;background:#122638;color:#fff;border-left:4px solid var(--enterprise-aqua);box-shadow:0 20px 50px #1226383d;font-size:.875rem;animation:toastIn .25s ease both}
 .demo-toast strong{display:block;margin-bottom:5px}
 .demo-toast span{color:#a8bac8;line-height:1.55}

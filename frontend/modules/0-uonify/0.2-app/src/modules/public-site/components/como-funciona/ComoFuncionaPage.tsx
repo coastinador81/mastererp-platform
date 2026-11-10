@@ -2,17 +2,16 @@ import productosCss from '../../styles/pages/productos.css?inline';
 import comoFuncionaCss from '../../styles/pages/como-funciona.css?inline';
 import { viewSheets } from '../../styles/sheets';
 import { PUBLIC_VIEWS } from '../../model/views';
-import { PageFooter, SITE_FOOTER_LINKS } from '../common/PageFooter';
 import { PageHeader } from '../common/PageHeader';
 import { PublicView } from '../common/PublicView';
 import { useDemoToast } from '../common/useDemoToast';
+import { SiteFooter } from '../footer/SiteFooter';
 import { PublishAndClose, ReviewStoryHow } from './HowClosing';
 import { HowHero } from './HowHero';
 import { AskStory, ConnectStory, CoordinateStory } from './HowStories';
 import { JourneyDemo } from './JourneyDemo';
 
 const SHEETS = viewSheets(productosCss, comoFuncionaCss);
-const FOOTER = SITE_FOOTER_LINKS;
 const STAGES: ReadonlyArray<{ id: string; number: string; label: string }> = [
   { id: 'pedir', number: '01', label: 'Pedir' },
   { id: 'conectar', number: '02', label: 'Conectar' },
@@ -39,7 +38,7 @@ export function ComoFuncionaPage() {
         <ReviewStoryHow />
         <PublishAndClose showToast={showToast} />
       </main>
-      <PageFooter links={FOOTER} note="Uonify · Todo tu trabajo, en contexto." />
+      <SiteFooter />
       {toast}
     </PublicView>
   );

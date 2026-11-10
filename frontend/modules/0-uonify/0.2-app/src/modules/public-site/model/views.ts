@@ -115,13 +115,13 @@ export const PUBLIC_VIEWS: Record<PublicViewKey, PublicViewMeta> = {
     key: 'privacidad',
     path: '/privacidad',
     title: 'Privacidad — Uonify',
-    description: 'Privacidad en Uonify: qué ocurre con lo que escribes en la web, cómo se guardan tus preferencias visuales y qué política de privacidad se aplica.',
+    description: 'Privacidad en Uonify: la política de privacidad completa. Qué datos tratamos, para qué, con quién los compartimos, cómo cumplimos las políticas de Google y Amazon y cómo ejerces tus derechos.',
   },
   terminos: {
     key: 'terminos',
     path: '/terminos',
-    title: 'Condiciones — Uonify',
-    description: 'Condiciones de Uonify: información sobre el acceso, los servicios externos y las acciones del espacio de trabajo, y las condiciones de servicio aplicables.',
+    title: 'Términos y condiciones — Uonify',
+    description: 'Centro legal de Uonify: las condiciones de uso, el aviso legal de la empresa, sus representantes y puntos de contacto, y los documentos que forman el contrato.',
   },
 };
 

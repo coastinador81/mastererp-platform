@@ -4,14 +4,13 @@ import sobreUonifyCss from '../../styles/pages/sobre-uonify.css?inline';
 import { viewSheets } from '../../styles/sheets';
 import { PATHS, PUBLIC_VIEWS } from '../../model/views';
 import { HomeLink } from '../common/HomeLink';
-import { PageFooter, SITE_FOOTER_LINKS } from '../common/PageFooter';
 import { PageHeader } from '../common/PageHeader';
 import { PublicView } from '../common/PublicView';
+import { SiteFooter } from '../footer/SiteFooter';
 import { AboutOpening, AboutPurpose } from './AboutIntro';
 import { AboutJourney } from './AboutJourney';
 
 const SHEETS = viewSheets(productosCss, sobreUonifyCss);
-const FOOTER = SITE_FOOTER_LINKS;
 
 function AboutTechnology() {
   return (
@@ -71,7 +70,7 @@ export function SobreUonifyPage() {
           <Link className="closing-news" to={PATHS.novedades}>Novedades de Uonify <span aria-hidden="true">↗</span></Link>
         </section>
       </main>
-      <PageFooter links={FOOTER} note="Uonify · Hazlo posible." />
+      <SiteFooter />
     </PublicView>
   );
 }

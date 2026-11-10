@@ -5,9 +5,9 @@ import { viewSheets } from '../../styles/sheets';
 import { PATHS, PUBLIC_VIEWS } from '../../model/views';
 import { DeviceFrame } from '../common/DeviceFrame';
 import { HomeLink } from '../common/HomeLink';
-import { PageFooter, SITE_FOOTER_LINKS } from '../common/PageFooter';
 import { PageHeader } from '../common/PageHeader';
 import { PublicView } from '../common/PublicView';
+import { SiteFooter } from '../footer/SiteFooter';
 
 const SHEETS = viewSheets(productosCss, clientesCss, richCss);
 
@@ -86,7 +86,7 @@ export function ClientesPage() {
           <HomeLink className="button primary" to={PATHS.composer}>Empieza ahora</HomeLink>
         </section>
       </main>
-      <PageFooter links={SITE_FOOTER_LINKS} note="Uonify · Clientes." />
+      <SiteFooter />
     </PublicView>
   );
 }

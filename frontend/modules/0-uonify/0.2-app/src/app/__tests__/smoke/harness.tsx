@@ -72,7 +72,7 @@ const SMOKE_EMAIL = 'ana@uonify.test';
  */
 export function seedSignedInSession(): void {
   sessionStorage.setItem('uonify-mock:auth-session', JSON.stringify({ email: SMOKE_EMAIL, provider: 'chatgpt', startedAt: new Date().toISOString() }));
-  sessionStorage.setItem('uonify-mock:auth-consents', JSON.stringify([{ id: SMOKE_EMAIL, consents: ['terms', 'privacy', 'ai-third-party'].map(id => ({ id, version: id === 'ai-third-party' ? '2026-09-26' : '2026-09-27', acceptedAt: new Date().toISOString() })) }]));
+  sessionStorage.setItem('uonify-mock:auth-consents', JSON.stringify([{ id: SMOKE_EMAIL, consents: ['terms', 'privacy', 'ai-third-party'].map(id => ({ id, version: id === 'ai-third-party' ? '2026-09-26' : '2026-11-09', acceptedAt: new Date().toISOString() })) }]));
   sessionStorage.setItem('uonify-mock:auth-profiles', JSON.stringify([{
     id: SMOKE_EMAIL,
     savedAt: new Date().toISOString(),

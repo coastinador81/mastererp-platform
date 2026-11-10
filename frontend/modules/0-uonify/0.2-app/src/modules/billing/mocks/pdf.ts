@@ -40,7 +40,7 @@ export function documentLines(doc: BillingDocument): string[] {
     `IVA (${percent(doc.vatRate)}): ${euros(doc.vat)}`,
     `Total: ${euros(doc.total)}`,
     '',
-    'Uonify LLC · hola@uonify.com',
+    'ETHICS CLOUD & SECURITY SERVICES LLC (Uonify) · hola@uonify.com',
     'Documento sin validez fiscal.',
   ];
   return lines.filter((line, index) => line !== '' || lines[index - 1] !== '');

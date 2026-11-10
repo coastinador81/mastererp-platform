@@ -1,6 +1,7 @@
 import { useId, useLayoutEffect, useRef, type KeyboardEvent, type RefObject } from 'react';
 import { useComposerStore } from '../../hooks/composerStore';
 import { useDismissOnPointerDown } from '../../hooks/useDismiss';
+import { visibleBottom } from '../../hooks/uiStore';
 import { pickerPlacement, toBox } from '../../model/placement';
 import { ChevronDownIcon } from '../ShellIcons';
 import { googleSelectionEfforts, type GoogleOptions, type GooglePreferences, type GoogleEffort } from '../../hooks/googlePreferences';
@@ -13,7 +14,7 @@ function placeMenu(panel: HTMLElement, picker: HTMLElement, form: HTMLElement, d
     picker: toBox(picker),
     form: toBox(form),
     menu: toBox(panel),
-    viewportHeight: window.innerHeight,
+    viewportHeight: visibleBottom(),
     viewportWidth: window.innerWidth,
     scrollHeight: panel.scrollHeight,
     desired,

@@ -22,15 +22,19 @@ export function saveSession(key: string, value: unknown): boolean {
   }
 }
 
-/** Preferencias visuales de la portada («Preferencias» del pie), por pestaña. */
+/**
+ * Ajustes de accesibilidad («Más contraste» y «Reducir movimiento», en el menú «Idioma y
+ * accesibilidad» del pie global), por pestaña. El espacio de trabajo lee la misma clave.
+ */
 export interface HomePreferences { contrast: boolean; reduceMotion: boolean }
 
 export const HOME_PREFERENCES_KEY = 'uonify-preferences';
 export const DEFAULT_HOME_PREFERENCES: HomePreferences = { contrast: false, reduceMotion: false };
 
-export function readHomePreferences(): HomePreferences {
+/** Las guardadas en la pestaña; sin nada guardado, `fallback` (por defecto, las dos apagadas). */
+export function readHomePreferences(fallback: HomePreferences = DEFAULT_HOME_PREFERENCES): HomePreferences {
   const saved = readSession<Partial<HomePreferences> | null>(HOME_PREFERENCES_KEY, null);
-  if (!saved) return { ...DEFAULT_HOME_PREFERENCES };
+  if (!saved) return { ...fallback };
   return { contrast: saved.contrast === true, reduceMotion: saved.reduceMotion === true };
 }
 
@@ -38,4 +42,9 @@ export function readHomePreferences(): HomePreferences {
 export function applyHomePreferences(preferences: HomePreferences, root: HTMLElement = document.documentElement): void {
   root.dataset.moreContrast = String(preferences.contrast);
   root.dataset.reduceMotion = String(preferences.reduceMotion);
+}
+
+/** Las que ya tiene el documento (`:root[data-more-contrast]` y `:root[data-reduce-motion]`). */
+export function documentHomePreferences(root: HTMLElement = document.documentElement): HomePreferences {
+  return { contrast: root.dataset.moreContrast === 'true', reduceMotion: root.dataset.reduceMotion === 'true' };
 }

@@ -16,6 +16,19 @@
 .account-avatar { width: 35px; height: 35px; display: grid; place-items: center; flex: 0 0 auto; border-radius: 50%; background: #e4f0ff; color: var(--blue-dark); font-size: 14px; font-weight: 800; }
 
 .workspace-column { min-width: 0; height: 100svh; display: flex; flex-direction: column; position: relative; }
+/* Pie global (SiteFooter, módulo public-site): su propia franja al final de la columna, en
+   todas las vistas; lo de encima (lienzo, conversación o servicio) se reparte el resto.
+   Con la cabecera en barra es la tercera fila de la rejilla (04-module-layout.css). */
+.workspace-footer { flex: 0 0 auto; min-width: 0; }
+/* Alto que guarda el pie: el que mide el espacio (--workspace-footer-height, que escribe
+   useFooterHeight en la columna y sigue sus filas al cambiar el ancho); sin medida, una
+   fila (dos en móvil) redondeada a la retícula de 8. Lo descuentan los paneles que se
+   abren sobre el compositor y se miden contra la pantalla (preguntas y revisión de Uony),
+   así no empujan el compositor bajo el pie. La hoja de la conversación en móvil tapa el
+   pie: ahí no se descuenta. */
+.workspace-column { --workspace-footer-space: var(--workspace-footer-height, 64px); }
+@media (max-width: 560px) { .workspace-column { --workspace-footer-space: var(--workspace-footer-height, 96px); } }
+.workspace-column.is-chat-sheet { --workspace-footer-space: 0px; }
 .topbar { position: absolute; z-index: 14; inset: 0 0 auto; height: 0; min-height: 0; pointer-events: none; }
 .topbar-left, .topbar-right { display: flex; align-items: center; min-width: 0; gap: 12px; }
 .topbar-left { display: none; }

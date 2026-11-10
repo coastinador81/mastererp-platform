@@ -27,6 +27,22 @@ describe('portada', () => {
     expect(document.head.querySelectorAll('style[data-uon-view-style]')).toHaveLength(0);
   });
 
+  test('cabecera mínima: sin sesión solo «Sobre Uonify» y «Cómo funciona»; con sesión, ningún enlace comercial', () => {
+    const { unmount } = renderPage(<HomePage />);
+    const nav = screen.getByRole('navigation', { name: 'Navegación principal' });
+    expect(within(nav).getByRole('link', { name: 'Sobre Uonify' })).toHaveAttribute('href', '/sobre-uonify');
+    expect(within(nav).getByRole('link', { name: 'Cómo funciona' })).toHaveAttribute('href', '/como-funciona');
+    // Reorganización (09-11-2026): fuera Servicios, Lo que puedes hacer, Partners, Clientes, Precios y Ayuda de la Home.
+    ['Servicios', 'Lo que puedes hacer', 'Partners', 'Clientes', 'Precios', 'Ayuda'].forEach(name =>
+      expect(within(nav).queryByRole('link', { name })).toBeNull(),
+    );
+    unmount();
+    authState.status = 'ready';
+    renderPage(<HomePage />);
+    // Con sesión la cabecera no muestra enlaces comerciales (E1).
+    expect(within(screen.getByRole('navigation', { name: 'Navegación principal' })).queryByRole('link')).toBeNull();
+  });
+
   test('una petición vacía también abre el acceso; con texto conserva la petición', async () => {
     const user = userEvent.setup();
     renderPage(<HomePage />);
@@ -138,21 +154,30 @@ describe('portada', () => {
     renderPage(<HomePage />);
     const trigger = screen.getByRole('button', { name: 'Herramientas de Uonify' });
     await user.click(trigger);
-    expect(screen.getByRole('link', { name: 'ERP' })).toHaveFocus();
-    expect(screen.getByRole('link', { name: 'Catálogo' })).toHaveAttribute('href', '/espacio?service=producto');
+    // Enfoca la primera herramienta (Producto); la fuente única pone nombre, destino y estado.
+    expect(screen.getByRole('link', { name: 'Producto' })).toHaveFocus();
+    expect(screen.getByRole('link', { name: 'Producto' })).toHaveAttribute('href', '/espacio?service=producto');
+    expect(screen.getByRole('link', { name: 'Estudio' })).toHaveAttribute('href', '/espacio');
     expect(screen.getByRole('link', { name: 'Academy' })).toHaveAttribute('href', '/espacio?service=academy');
+    expect(screen.getByRole('link', { name: /Conocer Uonify/ })).toHaveAttribute('href', '/productos');
+    // Desde el demo del 10-11 todos los servicios están activos: ninguno dice «Próximamente».
+    expect(screen.getAllByRole('link').filter(link => link.closest('#tools-panel'))).toHaveLength(11);
+    expect(screen.queryByText('Próximamente')).toBeNull();
     await user.keyboard('{Escape}');
     expect(trigger).toHaveAttribute('aria-expanded', 'false');
   });
 
-  test('las preferencias se aplican al documento y se guardan en la pestaña', async () => {
+  test('lleva el pie global: Partners y Clientes; Términos y condiciones, Idioma y Ayuda', async () => {
     const user = userEvent.setup();
     renderPage(<HomePage />);
-    await user.click(screen.getByRole('checkbox', { name: /Más contraste/, hidden: true }));
+    const footer = screen.getByRole('contentinfo');
+    expect(within(footer).getAllByRole('link').map(link => link.textContent)).toEqual(['Partners', 'Clientes', 'Términos y condiciones', 'Ayuda']);
+    // Las preferencias («Más contraste», «Reducir movimiento») viven ahora en el globo «Idioma».
+    await user.click(within(footer).getByRole('button', { name: 'Idioma' }));
+    await user.click(screen.getByRole('checkbox', { name: 'Más contraste' }));
     expect(document.documentElement.dataset.moreContrast).toBe('true');
     expect(JSON.parse(sessionStorage.getItem(HOME_PREFERENCES_KEY) ?? '{}')).toEqual({ contrast: true, reduceMotion: false });
-    expect(document.getElementById('preferences-status')).toHaveTextContent('Preferencias guardadas para esta pestaña.');
-    await user.click(screen.getByRole('button', { name: 'Restablecer preferencias', hidden: true }));
+    await user.click(screen.getByRole('button', { name: 'Restablecer' }));
     expect(document.documentElement.dataset.moreContrast).toBe('false');
   });
 

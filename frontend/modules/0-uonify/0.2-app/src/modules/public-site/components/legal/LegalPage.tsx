@@ -1,19 +1,21 @@
-import { Fragment } from 'react';
 import legalCss from '../../styles/legal/legal.css?inline';
 import { viewSheets } from '../../styles/sheets';
 import { PATHS, PUBLIC_VIEWS } from '../../model/views';
 import { HomeLink } from '../common/HomeLink';
 import { PublicView } from '../common/PublicView';
-import { LEGAL_DOCUMENTS, type LegalKey } from './legalContent';
+import { SiteFooter } from '../footer/SiteFooter';
+import { LegalCenter } from './LegalCenter';
+import { PAGE_META, type LegalPageKey } from './legalContent';
 
 const SHEETS = viewSheets(legalCss);
 
 /**
- * Privacidad y Condiciones (#view-privacidad y #view-terminos). Públicas en todos
- * los entornos y sin sesión: se abren desde el acceso en otra pestaña.
+ * Centro legal de Uonify (#view-privacidad y #view-terminos). Público en todos los
+ * entornos y sin sesión. Una barra de pestañas común lleva a cada texto; /terminos
+ * reúne el contrato y /privacidad es su propia pestaña. Lleva el pie global (SiteFooter).
  */
-export function LegalPage({ doc }: { doc: LegalKey }) {
-  const content = LEGAL_DOCUMENTS[doc];
+export function LegalPage({ doc }: { doc: LegalPageKey }) {
+  const meta = PAGE_META[doc];
   return (
     <PublicView view={PUBLIC_VIEWS[doc]} sheets={SHEETS}>
       <header>
@@ -23,17 +25,13 @@ export function LegalPage({ doc }: { doc: LegalKey }) {
         <HomeLink to={PATHS.composer}>Volver a Uonify</HomeLink>
       </header>
       <main>
-        <p className="eyebrow">{content.eyebrow}</p>
-        <h1>{content.title}</h1>
-        <p className="lead">{content.lead}</p>
-        {content.sections.map(section => (
-          <Fragment key={section.heading}>
-            <h2>{section.heading}</h2>
-            <p>{section.body}</p>
-          </Fragment>
-        ))}
+        <p className="eyebrow">{meta.eyebrow}</p>
+        <h1>{meta.title}</h1>
+        <p className="lead">{meta.lead}</p>
+        <LegalCenter page={doc} />
         <HomeLink className="back" to={PATHS.composer}>Volver a Uonify →</HomeLink>
       </main>
+      <SiteFooter />
     </PublicView>
   );
 }

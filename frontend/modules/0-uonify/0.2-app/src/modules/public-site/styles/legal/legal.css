@@ -1,16 +1,225 @@
-/* Copia fiel de ../home-v21-propuesta/legal.css del prototipo (home-v22-propuesta).
-   Se inyecta solo mientras la vista está montada (hooks/useViewStyles), como el PROTO. */
+/* Páginas legales de Uonify (Privacidad y Condiciones). Identidad del manual:
+   azul #0178F7 solo para titular, foco y decoración; azul 600 #006AE1 para el texto
+   azul pequeño y los enlaces (regla del 600). Tinta #152438. Inter.
+   Se inyecta solo mientras la vista está montada (useViewStyles). */
 * { box-sizing: border-box; }
-body { margin: 0; color: #223b50; background: #f7fbff; font-family: system-ui, sans-serif; line-height: 1.7; }
-header { max-width: 1060px; padding: 28px 24px; margin: auto; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+body {
+  margin: 0;
+  color: #34445a;
+  background: #f7fbff;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+header {
+  max-width: 1060px;
+  padding: 24px max(24px, env(safe-area-inset-left, 0px));
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
 header img { display: block; }
-a { color: #075db5; text-underline-offset: 4px; }
-header > a:last-child { font-size: 13px; }
-main { max-width: 760px; margin: 34px auto 80px; padding: 0 24px; }
-.eyebrow { color: #47657c; font-size: 11px; letter-spacing: .08em; font-weight: 700; }
-h1 { color: #102b40; font-size: clamp(32px,5vw,46px); line-height: 1.14; letter-spacing: -.04em; margin: 20px 0; }
-.lead { font-size: 19px; color: #476174; }
-h2 { margin-top: 32px; font-size: 20px; color: #18394f; }
-p { font-size: 15px; }
-.back { display: inline-block; margin-top: 22px; font-weight: 650; }
-:focus-visible { outline: 3px solid #0178f7; outline-offset: 5px; }
+header > a:last-child {
+  font-size: 13px;
+  color: #006AE1;
+  text-decoration: none;
+  font-weight: 600;
+}
+header > a:last-child:hover { text-decoration: underline; }
+
+main {
+  max-width: 788px;
+  margin: 28px auto 56px;
+  padding: 0 max(24px, env(safe-area-inset-left, 0px));
+}
+
+.eyebrow {
+  color: #006AE1;
+  font-size: 12px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  font-weight: 700;
+  margin: 0;
+}
+h1 {
+  color: #152438;
+  font-size: clamp(30px, 5vw, 44px);
+  line-height: 1.12;
+  letter-spacing: -.03em;
+  margin: 14px 0 16px;
+  text-wrap: balance;
+}
+.lead {
+  font-size: 18px;
+  color: #4a5a6e;
+  margin: 0 0 8px;
+  max-width: 62ch;
+}
+
+/* Cuerpo del documento */
+.legal-body { margin-top: 10px; }
+.legal-body h2 {
+  margin: 40px 0 10px;
+  font-size: 22px;
+  color: #152438;
+  letter-spacing: -.02em;
+  scroll-margin-top: 20px;
+}
+.legal-body h3 {
+  margin: 24px 0 8px;
+  font-size: 17px;
+  color: #152438;
+  scroll-margin-top: 20px;
+}
+.legal-body p { font-size: 15.5px; margin: 10px 0; }
+.legal-body strong { color: #152438; font-weight: 650; }
+.legal-body a { color: #006AE1; text-underline-offset: 3px; }
+
+.legal-body ul {
+  margin: 10px 0;
+  padding: 0;
+  list-style: none;
+}
+.legal-body li {
+  position: relative;
+  padding-left: 20px;
+  margin: 6px 0;
+  font-size: 15.5px;
+}
+.legal-body li::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 10px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #0178F7;
+}
+.legal-body li ul { margin: 6px 0 6px; }
+.legal-body li ul li::before { background: #9fb2c8; }
+
+.legal-rule {
+  border: 0;
+  border-top: 1px solid #e1e8f1;
+  margin: 24px 0;
+}
+
+blockquote {
+  margin: 14px 0;
+  padding: 12px 18px;
+  border-left: 3px solid #0178F7;
+  background: #f2f7ff;
+  border-radius: 0 10px 10px 0;
+  color: #4a5a6e;
+  font-size: 14.5px;
+}
+
+/* Tablas (datos, bases legales, plazos) */
+.legal-table-wrap { overflow-x: auto; margin: 14px 0; }
+.legal-pre { overflow-x: auto; margin: 14px 0; padding: 14px 16px; background: #f4f7fb; border: 1px solid #e1e8f1; border-radius: 10px; }
+.legal-pre code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; line-height: 1.5; color: #152438; white-space: pre; }
+.legal-body :not(pre) > code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .9em; padding: 1px 5px; background: #eef2f8; border-radius: 5px; }
+.legal-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  min-width: 440px;
+}
+.legal-table th,
+.legal-table td {
+  text-align: left;
+  vertical-align: top;
+  padding: 10px 14px;
+  border-bottom: 1px solid #e8edf3;
+}
+.legal-table thead th {
+  background: #f4f7fb;
+  color: #374151;
+  font-weight: 600;
+  border-bottom: 1px solid #dbe4ee;
+}
+.legal-table tbody tr:nth-child(even) { background: #fafcff; }
+
+.back {
+  display: inline-block;
+  margin-top: 30px;
+  font-weight: 600;
+  color: #006AE1;
+  text-decoration: none;
+}
+.back:hover { text-decoration: underline; }
+
+:focus-visible { outline: 3px solid #0178F7; outline-offset: 4px; border-radius: 3px; }
+
+@media (max-width: 640px) {
+  main { margin-top: 18px; }
+}
+
+/* El pie global (SiteFooter) trae su propia hoja: styles/site-footer.css. */
+
+/* Centro legal con pestañas. Sin JS: cada pestaña es un ancla :target; con :has, al
+   elegir una solo se ve su panel (sin :has, se ven apilados — degradación correcta). */
+.legal-center { margin-top: 22px; }
+.legal-tabs { margin: 0 0 6px; border-bottom: 1px solid #e1e8f1; overflow-x: auto; }
+.legal-tabs ul { display: flex; flex-wrap: wrap; gap: 2px; margin: 0; padding: 0; list-style: none; }
+.legal-tabs a { display: inline-block; padding: 9px 14px; font-size: 14px; font-weight: 600; color: #536272; text-decoration: none; border-bottom: 2px solid transparent; white-space: nowrap; }
+.legal-tabs a:hover { color: #006AE1; }
+.legal-tabs a.is-active { color: #152438; border-bottom-color: #0178F7; }
+/* Foco por dentro: el desplazamiento horizontal de la barra no recorta el contorno. */
+.legal-tabs a:focus-visible { outline: 2px solid #0178F7; outline-offset: -2px; border-radius: 4px; }
+
+.tab-panel { display: none; }
+
+/* Sin JS (la puerta sirve /terminos y /privacidad sin JS): la pestaña es un ancla :target
+   y el panel/la pestaña activa los decide el CSS. */
+@supports not selector(:has(*)) {
+  .legal-center:not(.is-hydrated) .tab-panel { display: block; } /* sin :has: apilados (degradación) */
+}
+@supports selector(:has(*)) {
+  .legal-center:not(.is-hydrated) .legal-panels:not(:has(:target)) > .tab-panel:first-child,
+  .legal-center:not(.is-hydrated) .legal-panels:has(:target) > .tab-panel:target,
+  .legal-center:not(.is-hydrated) .legal-panels:has(:target) > .tab-panel:has(:target) { display: block; }
+  :is(
+    .legal-center--terminos:not(.is-hydrated):not(:has(:target)) [data-tab="terminos"],
+    .legal-center:not(.is-hydrated):has(#panel-terminos:target) [data-tab="terminos"],
+    .legal-center:not(.is-hydrated):has(#panel-terminos :target) [data-tab="terminos"],
+    .legal-center:not(.is-hydrated):has(#panel-aviso-legal:target) [data-tab="aviso-legal"],
+    .legal-center:not(.is-hydrated):has(#panel-aviso-legal :target) [data-tab="aviso-legal"],
+    .legal-center:not(.is-hydrated):has(#panel-cookies:target) [data-tab="cookies"],
+    .legal-center:not(.is-hydrated):has(#panel-cookies :target) [data-tab="cookies"],
+    .legal-center:not(.is-hydrated):has(#panel-uso-aceptable:target) [data-tab="uso-aceptable"],
+    .legal-center:not(.is-hydrated):has(#panel-uso-aceptable :target) [data-tab="uso-aceptable"],
+    .legal-center:not(.is-hydrated):has(#panel-pago:target) [data-tab="pago"],
+    .legal-center:not(.is-hydrated):has(#panel-pago :target) [data-tab="pago"],
+    .legal-center:not(.is-hydrated):has(#panel-estudio:target) [data-tab="estudio"],
+    .legal-center:not(.is-hydrated):has(#panel-estudio :target) [data-tab="estudio"],
+    .legal-center:not(.is-hydrated):has(#panel-dpa:target) [data-tab="dpa"],
+    .legal-center:not(.is-hydrated):has(#panel-dpa :target) [data-tab="dpa"],
+    .legal-center:not(.is-hydrated):has(#panel-propiedad-intelectual:target) [data-tab="propiedad-intelectual"],
+    .legal-center:not(.is-hydrated):has(#panel-propiedad-intelectual :target) [data-tab="propiedad-intelectual"],
+    .legal-center:not(.is-hydrated):has(#panel-tus-datos:target) [data-tab="tus-datos"],
+    .legal-center:not(.is-hydrated):has(#panel-tus-datos :target) [data-tab="tus-datos"],
+    .legal-center:not(.is-hydrated):has(#panel-transparencia-ia:target) [data-tab="transparencia-ia"],
+    .legal-center:not(.is-hydrated):has(#panel-transparencia-ia :target) [data-tab="transparencia-ia"],
+    .legal-center:not(.is-hydrated):has(#panel-seguridad:target) [data-tab="seguridad"],
+    .legal-center:not(.is-hydrated):has(#panel-seguridad :target) [data-tab="seguridad"]
+  ) { color: #152438; border-bottom-color: #0178F7; }
+}
+/* Pestaña Privacidad activa sin JS en su propia página (no marca Términos a la vez). */
+.legal-center--privacidad:not(.is-hydrated) [data-tab="privacidad"] { color: #152438; border-bottom-color: #0178F7; }
+
+/* Con JS: React muestra solo el panel activo y marca su pestaña (respeta el ancla de la
+   URL al cargar y al navegar en la SPA; .is-active lo pinta .legal-tabs a.is-active). */
+.legal-center.is-hydrated .tab-panel.is-shown { display: block; }
+
+.panel-title { font-size: 24px; font-weight: 600; color: #152438; letter-spacing: -.02em; margin: 18px 0 6px; }
+.panel-toc { margin: 8px 0 20px; padding: 14px 18px; background: #fff; border: 1px solid #e1e8f1; border-radius: 12px; }
+.panel-toc ol { margin: 0; padding: 0; list-style: none; columns: 2; column-gap: 28px; }
+.panel-toc li { break-inside: avoid; margin: 0 0 6px; }
+.panel-toc a { color: #006AE1; text-decoration: none; font-size: 13.5px; }
+.panel-toc a:hover { text-decoration: underline; }
+@media (max-width: 640px) { .panel-toc ol { columns: 1; } }

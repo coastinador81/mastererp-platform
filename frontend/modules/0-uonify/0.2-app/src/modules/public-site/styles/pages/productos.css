@@ -27,6 +27,24 @@ h1,h2,h3{font-weight:500;letter-spacing:-.045em;line-height:1.13}
 .main-nav a[aria-current]:after{content:"";height:3px;position:absolute;bottom:0;left:0;right:0;background:var(--blue)}
 .login-link{margin-left:auto;font-size:.9rem;color:var(--blue-dark);display:flex;gap:12px;align-items:center}
 .login-link:hover,.main-nav a:hover{color:var(--blue-dark)}
+/* Dos filas, todo visible (D-HOME-REORG-20261109): el logo y los accesos arriba, el menú
+   comercial en dos filas debajo del logo; la actual, marcada. Retícula de 8 en el
+   espaciado (16 px entre el logo y el menú, 8 px entre las dos filas). */
+.header.header--rows{position:relative;min-height:0;padding:16px 40px;display:grid;grid-template-columns:auto 1fr auto;grid-template-areas:"brand . actions" "nav nav nav";align-items:center;column-gap:24px;row-gap:16px}
+.header--rows .brand{grid-area:brand}
+.header--rows .header-actions{grid-area:actions;display:flex;align-items:center;gap:16px;margin-left:0}
+.header--rows .login-link{margin-left:0}
+.header--rows .main-nav--rows{grid-area:nav;flex-direction:column;align-items:flex-start;gap:8px}
+.header--rows .nav-row{display:flex;flex-wrap:nowrap;align-items:center;gap:28px}
+.header--rows .nav-row a{white-space:nowrap;padding-bottom:5px}
+.header--rows .nav-row a:focus-visible{outline:2px solid var(--blue);outline-offset:3px;border-radius:4px}
+/* Móvil: el menú no se parte ni se corta; las filas se reflujan (propuesta a revisar). */
+@media(max-width:620px){
+  .header.header--rows{grid-template-columns:1fr auto;grid-template-areas:"brand actions" "nav nav";padding:12px 16px;column-gap:12px;row-gap:12px}
+  .header--rows .main-nav--rows{gap:10px}
+  .header--rows .nav-row{flex-wrap:wrap;gap:9px 18px}
+  .header--rows .nav-row a{padding-bottom:3px}
+}
 .universe{padding-top:36px}
 .marquee-shell{position:relative;display:flex;align-items:center;gap:18px;padding-inline:32px;max-width:1600px;margin:auto}
 .marquee{overflow:hidden;flex:1;mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent)}
@@ -62,17 +80,9 @@ h1,h2,h3{font-weight:500;letter-spacing:-.045em;line-height:1.13}
 .section-heading{text-align:center;max-width:760px;margin:102px auto 48px}
 .section-heading h2{font-size:clamp(2rem,3.3vw,3.25rem);margin-bottom:23px}
 .section-heading>p:not(.eyebrow){max-width:620px;margin-inline:auto;color:var(--muted);font-size:1.0625rem}
-.footer{display:flex;flex-wrap:wrap;align-items:center;gap:25px;padding-block:42px;border-top:1px solid var(--line);margin-top:84px}
-/* Footer GLOBAL de Uonify: exactamente el de la portada (franja gris, izquierda/derecha).
-   Igual en TODAS las páginas públicas (decisión del dueño, 08-11-2026). */
-.site-footer { width: 100%; max-width: none; min-height: 52px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 24px; margin: 48px 0 0; padding: 14px max(32px, env(safe-area-inset-right,0px)) 14px max(32px, env(safe-area-inset-left,0px)); background: #edf1f5; border-top: 1px solid #e0e6ec; color: #536272; font-size: 12px; }
-.site-footer nav { display: flex; flex-wrap: wrap; gap: 22px; }
-.site-footer a, .site-footer button { color: #536272; text-decoration: none; background: transparent; border: 0; font: inherit; cursor: pointer; padding: 0; }
-.site-footer a:hover, .site-footer button:hover { color: #0052bc; }
-@media (max-width: 560px) { .site-footer { justify-content: center; gap: 10px 18px; } }
-.footer nav{display:flex;gap:24px;margin-left:auto;font-size:.875rem;color:var(--muted)}
-.footer>p{width:100%;font-size:.8125rem;color:#6b7786;margin:0}
-.footer a:hover{color:var(--blue-dark)}
+/* El pie global (SiteFooter) trae su propia hoja (styles/site-footer.css) y no tiene márgenes
+   exteriores: en las interiores, la separación con el contenido es la de antes (48 px). */
+.site-footer{margin-top:48px}
 .story-intro{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:end;margin:70px 12px 32px}
 .story-intro h3{font-size:2.4rem;margin-bottom:0}
 .story-intro>p{max-width:470px;color:var(--muted);margin:0;font-size:1rem}
@@ -218,7 +228,6 @@ h1,h2,h3{font-weight:500;letter-spacing:-.045em;line-height:1.13}
 .product-directory a{display:flex;align-items:center;gap:18px;min-height:115px;padding:18px;border-bottom:1px solid var(--line);font-size:1rem;border-radius:8px;transition:background .2s}
 .product-directory a:hover{background:#f1f7fd;color:var(--blue-dark)}
 .product-directory img{width:65px;height:65px;object-fit:contain}
-.footer{margin-top:90px}
 @keyframes marquee{to{transform:translateX(-50%)}}
 @media(min-width:1700px){
   :root{--max:1340px}
@@ -242,7 +251,6 @@ h1,h2,h3{font-weight:500;letter-spacing:-.045em;line-height:1.13}
   .catalog-character{width:132%;margin-left:-18%}
   .hero-caption{right:26px;font-size:.8125rem}
   .section-heading{margin:72px auto 36px}
-  .footer nav{margin-left:0;flex-wrap:wrap}
 }
 @media(max-width:560px){
   .header{column-gap:16px;padding-block:14px}
@@ -262,8 +270,6 @@ h1,h2,h3{font-weight:500;letter-spacing:-.045em;line-height:1.13}
   .catalog-hero .button{font-size:.875rem;padding-inline:17px}
   .section-heading h2{font-size:2rem}
   .section-heading p{font-size:1rem}
-  .footer nav{gap:18px}
-  .footer{margin-top:60px}
   .section-nav a{font-size:.875rem;padding-inline:12px}
 }
 @media(prefers-reduced-motion:reduce){
@@ -408,7 +414,6 @@ h1,h2,h3{font-weight:500;letter-spacing:-.045em;line-height:1.13}
   .product-directory a{min-height:120px;flex-direction:column;align-items:center;gap:9px;text-align:center;padding:16px 8px;font-size:.875rem}
   .product-directory img{width:60px;height:60px}
   .explore-heading h2{font-size:1.9rem}
-  .footer{margin-top:60px}
 }
 /* Keep the editorial document open-ended at enlarged text sizes. */
 .sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}

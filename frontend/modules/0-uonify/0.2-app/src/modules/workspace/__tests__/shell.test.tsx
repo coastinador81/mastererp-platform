@@ -147,6 +147,134 @@ describe('marco del espacio', () => {
   });
 });
 
+// Pie global de Uonify (módulo public-site): el dueño pide que nunca se oculte, con o sin sesión.
+describe('pie global', () => {
+  /** El único pie de la página, al final de la columna, fuera de la vista y de la conversación. */
+  function footerOf(container: HTMLElement) {
+    const column = container.querySelector('.workspace-column') as HTMLElement;
+    const footer = screen.getByRole('contentinfo');
+    expect(container.querySelectorAll('footer.site-footer')).toHaveLength(1);
+    expect(column.lastElementChild).toHaveClass('workspace-footer');
+    expect(column.lastElementChild).toContainElement(footer);
+    expect(screen.getByRole('main', { name: 'Espacio de trabajo' })).not.toContainElement(footer);
+    expect(container.querySelector('#conversation-dock')).not.toContainElement(footer);
+    return { column, footer, wrapper: column.lastElementChild as HTMLElement };
+  }
+
+  it('cierra el marco en el lienzo, en un servicio y en Configuración', () => {
+    const home = renderWorkspace();
+    const { footer } = footerOf(home.container);
+    expect(within(footer).getAllByRole('link').map(link => [link.textContent, link.getAttribute('href')])).toEqual([
+      ['Partners', '/partners'], ['Clientes', '/clientes'], ['Términos y condiciones', '/terminos'], ['Ayuda', '/ayuda'],
+    ]);
+    expect(within(footer).getByRole('button', { name: 'Idioma' })).toHaveAttribute('aria-haspopup', 'dialog');
+    expect(footer).not.toHaveTextContent(/Próximamente|En preparación|En desarrollo/);
+    home.unmount();
+    const service = renderWorkspace('/espacio/analitica');
+    expect(footerOf(service.container).column).toHaveClass('is-module');
+    service.unmount();
+    const page = renderWithSettings('/espacio/configuracion/cuenta');
+    expect(footerOf(page.container).column).toHaveClass('is-page');
+  });
+
+  it('queda inerte con el panel de hilos abierto, como el resto del espacio', () => {
+    const { container } = renderWorkspace();
+    const { wrapper } = footerOf(container);
+    expect(wrapper).not.toHaveAttribute('inert');
+    fireEvent.click(within(container.querySelector('#composer') as HTMLElement).getByRole('button', { name: 'Hilos' }));
+    expect(wrapper).toHaveAttribute('inert');
+    fireEvent.keyDown(window, { key: 'Escape' });
+    expect(wrapper).not.toHaveAttribute('inert');
+  });
+
+  it('el globo abre «Idioma y accesibilidad» y Escape lo cierra devolviendo el foco al globo', () => {
+    const { container } = renderWorkspace();
+    const globe = within(footerOf(container).footer).getByRole('button', { name: 'Idioma' });
+    fireEvent.click(globe);
+    const menu = screen.getByRole('dialog', { name: 'Idioma y accesibilidad' });
+    expect(within(menu).getByRole('radio', { name: 'Español' })).toHaveFocus();
+    fireEvent.keyDown(document.activeElement as Element, { key: 'Escape' });
+    expect(screen.queryByRole('dialog', { name: 'Idioma y accesibilidad' })).toBeNull();
+    expect(globe).toHaveFocus();
+  });
+
+  it('los menús del compositor cuentan lo visible hasta el pie: el de modelo no se abre hacia él', () => {
+    const { container } = renderWorkspace();
+    const box = (top: number, bottom: number, left: number, right: number) =>
+      ({ top, bottom, left, right, width: right - left, height: bottom - top, x: left, y: top, toJSON: () => ({}) }) as DOMRect;
+    const menu = container.querySelector('.composer-model-menu') as HTMLElement;
+    vi.spyOn(container.querySelector('#composer') as HTMLElement, 'getBoundingClientRect').mockReturnValue(box(300, 420, 100, 700));
+    vi.spyOn(container.querySelector('.composer-ai-picker') as HTMLElement, 'getBoundingClientRect').mockReturnValue(box(380, 412, 400, 600));
+    vi.spyOn(menu, 'getBoundingClientRect').mockReturnValue(box(0, 0, 400, 700));
+    Object.defineProperty(menu, 'scrollHeight', { configurable: true, value: 588 });
+    // Encima caben 380 − 84 = 296 px. Hasta el borde de la ventana cabrían más debajo (se abriría
+    // hacia el pie); hasta el pie de 57 px, menos: se abre encima.
+    expect(window.innerHeight - 412 - 30).toBeGreaterThan(296);
+    expect(window.innerHeight - 57 - 412 - 30).toBeLessThan(296);
+    vi.spyOn(container.querySelector('.workspace-footer') as HTMLElement, 'getBoundingClientRect')
+      .mockReturnValue(box(window.innerHeight - 57, window.innerHeight, 0, window.innerWidth));
+    fireEvent.click(screen.getByRole('button', { name: /^Modelo:/ }));
+    expect(menu).not.toHaveAttribute('hidden');
+    expect(menu).not.toHaveClass('composer-popover-below');
+    expect(menu.style.maxHeight).toBe('296px');
+  });
+
+  it('escribe en la columna el alto real del pie y lo sigue cuando cambia de filas', () => {
+    const observed = new Map<Element, () => void>();
+    class FakeObserver {
+      callback: () => void;
+      constructor(callback: () => void) { this.callback = callback; }
+      observe(target: Element) { observed.set(target, this.callback); }
+      disconnect() {}
+    }
+    vi.stubGlobal('ResizeObserver', FakeObserver);
+    let height = 57;
+    const rect = vi.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementation(function (this: Element) {
+      const tall = this.classList.contains('workspace-footer') ? height : 0;
+      return { top: 0, bottom: tall, left: 0, right: 0, width: 0, height: tall, x: 0, y: 0, toJSON: () => ({}) } as DOMRect;
+    });
+    try {
+      const { container } = renderWorkspace();
+      const { column, wrapper } = footerOf(container);
+      expect(column.style.getPropertyValue('--workspace-footer-height')).toBe('57px');
+      // Dos filas en móvil: los paneles sobre el compositor descuentan lo que mide de verdad.
+      height = 89;
+      act(() => observed.get(wrapper)?.());
+      expect(column.style.getPropertyValue('--workspace-footer-height')).toBe('89px');
+    } finally {
+      rect.mockRestore();
+      vi.unstubAllGlobals();
+    }
+  });
+
+  it('aplica al entrar «Más contraste» y «Reducir movimiento» guardados en la pestaña (lo hace el pie)', () => {
+    sessionStorage.setItem('uonify-preferences', JSON.stringify({ contrast: true, reduceMotion: true }));
+    try {
+      renderWorkspace();
+      expect(document.documentElement.dataset).toMatchObject({ moreContrast: 'true', reduceMotion: 'true' });
+    } finally {
+      delete document.documentElement.dataset.moreContrast;
+      delete document.documentElement.dataset.reduceMotion;
+    }
+  });
+
+  it('en móvil, el botón «Conversación» se oculta mientras el menú de servicios está abierto', () => {
+    vi.stubGlobal('matchMedia', (query: string) => ({ matches: query === '(max-width: 900px)', addEventListener: () => {}, removeEventListener: () => {} }));
+    try {
+      const { container } = renderWorkspace('/espacio/analitica');
+      const fab = container.querySelector('#chat-panel-fab') as HTMLElement;
+      expect(fab).not.toHaveAttribute('hidden');
+      fireEvent.click(screen.getByRole('button', { name: 'Abrir servicios de Uonify' }));
+      expect(screen.getByRole('region', { name: 'Servicios de Uonify' })).not.toHaveAttribute('hidden');
+      expect(fab).toHaveAttribute('hidden');
+      fireEvent.keyDown(window, { key: 'Escape' });
+      expect(fab).not.toHaveAttribute('hidden');
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+});
+
 describe('servicios y panel de conversación', () => {
   it('?service= abre ese servicio (enlace profundo del PROTO)', () => {
     const { router } = renderWorkspace('/espacio?service=nexus');
