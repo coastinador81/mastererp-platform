@@ -1,6 +1,7 @@
 import { useId, useLayoutEffect, useRef, type KeyboardEvent, type RefObject } from 'react';
 import { useComposerStore, type Picker } from '../../hooks/composerStore';
 import { useDismissOnPointerDown } from '../../hooks/useDismiss';
+import { visibleBottom } from '../../hooks/uiStore';
 import { EFFORTS, effortLabel, findModel, maxEffortIndex, MODELS, type EffortId } from '../../model/composerOptions';
 import { pickerPlacement, toBox } from '../../model/placement';
 import { ChevronDownIcon } from '../ShellIcons';
@@ -17,7 +18,7 @@ function placeMenu(panel: HTMLElement, picker: HTMLElement, form: HTMLElement, d
     picker: toBox(picker),
     form: toBox(form),
     menu: toBox(panel),
-    viewportHeight: window.innerHeight,
+    viewportHeight: visibleBottom(),
     viewportWidth: window.innerWidth,
     scrollHeight: panel.scrollHeight,
     desired,

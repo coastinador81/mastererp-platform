@@ -24,6 +24,16 @@ async function write(relative, content) {
   await writeFile(file, content);
 }
 
+/**
+ * Pie global (D-HOME-REORG-20261109): cada página lleva un único <footer>, con el mismo
+ * marcado en todas. Devuelve su huella; si una página no la cumple, el prerender falla.
+ */
+function footerHash(path, html) {
+  const footers = html.match(/<footer[\s>][\s\S]*?<\/footer>/g) ?? [];
+  if (footers.length !== 1) throw new Error(`${path}: debe llevar un único <footer> y lleva ${footers.length}.`);
+  return createHash('sha256').update(footers[0]).digest('hex').slice(0, 10);
+}
+
 async function writeSheets(sheets) {
   const hrefs = [];
   for (const css of sheets) {
@@ -47,12 +57,16 @@ async function main() {
   await write('spa.html', template);
 
   const done = [];
+  let footer = null;
   for (const path of ssr.PRERENDER_PATHS) {
     const rendered = await ssr.renderPage(path);
     if (rendered.status !== 'ok') {
       console.warn(`  · ${path}: sin prerender (${rendered.status}${rendered.location ? ` → ${rendered.location}` : ''})`);
       continue;
     }
+    const hash = footerHash(path, rendered.html);
+    if (footer && hash !== footer) throw new Error(`${path}: su pie (${hash}) no es el de las demás páginas (${footer}).`);
+    footer = hash;
     const hrefs = await writeSheets(rendered.sheets);
     await write(ssr.outputFileFor(path), ssr.buildDocument(template, rendered, env, hrefs));
     done.push(path);
@@ -63,7 +77,7 @@ async function main() {
   await write('robots.txt', ssr.buildRobotsTxt(env));
   await write('sitemap.xml', ssr.buildSitemapXml(done, env, new Date()));
   const state = env.indexing ? 'INDEXABLE (lanzamiento)' : 'noindex y robots «Disallow: /» (antes del lanzamiento)';
-  console.log(`Prerender: ${done.length} páginas en dist/ · ${env.siteUrl} · ${state}`);
+  console.log(`Prerender: ${done.length} páginas en dist/ · el mismo pie en todas (${footer}) · ${env.siteUrl} · ${state}`);
 }
 
 main().catch(error => {

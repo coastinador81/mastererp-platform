@@ -7,7 +7,7 @@ import { viewSheets } from '../../styles/sheets';
 import { PUBLIC_VIEWS } from '../../model/views';
 import { PublicView } from '../common/PublicView';
 import { SkipLink } from '../common/SkipLink';
-import { HomeFooter } from './HomeFooter';
+import { SiteFooter } from '../footer/SiteFooter';
 import { HomeHeader } from './HomeHeader';
 import { HomeHero } from './HomeHero';
 
@@ -25,7 +25,7 @@ export function HomePage() {
       <div className="ambient" aria-hidden="true"><span></span><i></i><i></i></div>
       <HomeHeader />
       <HomeHero />
-      <HomeFooter />
+      <SiteFooter />
     </PublicView>
   );
 }

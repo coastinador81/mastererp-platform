@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { useQueryClient } from '@tanstack/react-query';
 import { OnboardingSubscription } from '@/modules/billing';
 import { DriveOnboarding } from '@/modules/drive';
+import { SiteFooterFrame } from '@/modules/public-site';
 import { Topbar } from '@/modules/workspace';
 import { errorMessage } from '@/shared/api/client';
 import { Icon, InformationDisclosure } from '@/shared/ui';
@@ -36,14 +37,15 @@ export function ConversationActivationAccess({ account, onFinished }: { account:
   return <ActivationScreen key={account} account={account} initial={false} onFinished={onFinished} />;
 }
 
+/** Bienvenida en /espacio, con el pie global al final (nunca se oculta, tampoco aquí). */
 function ActivationScreen({ account, initial = true, onFinished }: { account: string; initial?: boolean; onFinished?: () => Promise<void> }) {
   useEffect(() => { if (initial) showProfile(); }, [account, initial]);
-  return <div className="activation-screen">
+  return <SiteFooterFrame><div className="activation-screen">
     <Topbar preparing inert={false} accountMenu={<ActivationAccountMenu />} />
     <main className="activation-conversation" aria-label="Conversación de bienvenida con Uony">
       <ActivationJourney account={account} initial={initial} withComposer onFinished={onFinished} />
     </main>
-  </div>;
+  </div></SiteFooterFrame>;
 }
 
 /** Recuperación de una conexión dentro de la conversación ya abierta. */

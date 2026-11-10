@@ -6,6 +6,7 @@ import { LiveServices } from './LiveServices';
 import { stopVoice } from '../hooks/voiceSession';
 import { useLayoutEffect, useRef, useState, type CSSProperties, type MouseEvent } from 'react';
 import { Navigate, Outlet, useLocation, useNavigate } from 'react-router';
+import { SiteFooter } from '@/modules/public-site';
 import { useMediaQuery } from '@/shared/hooks';
 import { setChatPanel, toggleNavDrawer } from '../hooks/actions';
 import { syncComposerFromStorage } from '../hooks/composerStore';
@@ -14,6 +15,7 @@ import { useWorkspaceRoute } from '../hooks/useWorkspaceRoute';
 import {
   useChatSheetReset,
   useEscapeOrder,
+  useFooterHeight,
   useNavExpandedSync,
   useScreenMotion,
   useWindowResizeTick,
@@ -24,7 +26,6 @@ import { useLimitWatcher } from '../hooks/useLimitWatcher';
 import { activeThreadOf, useWorkspaceStore } from '../hooks/workspaceStore';
 import { chatLayout, clampChatWidth, NARROW_CHAT_QUERY } from '../model/chatPanel';
 import { entryRedirect, isEntryLoad, markEntryHandled, serviceLink } from '../model/entry';
-import { applyStoredPreferences } from '../model/motion';
 import { workspacePageOf } from '../model/pages';
 import { ConversationPanel } from './ConversationPanel';
 import { ChatGptLimitDialog } from './limit/ChatGptLimitDialog';
@@ -38,6 +39,9 @@ import '../styles/index.css';
  * móvil, panel de hilos, aviso del límite de ChatGPT y los diálogos de acceso.
  * Las páginas que no son servicios (Configuración) ocupan todo el ancho bajo la
  * cabecera, sin conversación.
+ * Abajo, en todas las rutas, el pie global de Uonify (el de la web pública, que nunca
+ * se oculta): ocupa su propia franja al final de la columna, así no tapa el
+ * compositor; queda inerte, como lo demás, con la hoja o el panel de hilos abiertos.
  */
 
 /** Servicios con mesa propia también en vivo: su módulo pinta la vista en el <Outlet/>. */
@@ -50,6 +54,7 @@ function WorkspaceShell() {
   const route = useWorkspaceRoute();
   const narrow = useMediaQuery(NARROW_CHAT_QUERY);
   const navOpen = useUiStore(state => state.navOpen);
+  const servicesOpen = useUiStore(state => state.servicesOpen);
   const sheetOpen = useUiStore(state => state.chatSheetOpen);
   const embedded = useUiStore(state => state.embeddedDocks > 0);
   const liveText = useUiStore(state => state.liveText);
@@ -61,9 +66,12 @@ function WorkspaceShell() {
   const column = useRef<HTMLDivElement>(null);
   const workspace = useRef<HTMLElement>(null);
   const chatFab = useRef<HTMLButtonElement>(null);
+  const footer = useRef<HTMLDivElement>(null);
   useRegisterRef('column', column);
   useRegisterRef('workspace', workspace);
   useRegisterRef('chatFab', chatFab);
+  useRegisterRef('footer', footer);
+  useFooterHeight(column, footer);
 
   // El motor y las acciones (fuera de React) navegan y leen el servicio actual por aquí.
   useLayoutEffect(() => {
@@ -73,7 +81,7 @@ function WorkspaceShell() {
     if (useUiStore.getState().route.pathname !== route.pathname) setUi({ route });
   }, [route]);
   useLayoutEffect(() => {
-    applyStoredPreferences();
+    // «Más contraste» y «Reducir movimiento» guardados en la pestaña los aplica el pie global.
     // Lo elegido en el compositor de la portada sigue al entrar (mismas claves de sesión).
     syncComposerFromStorage();
     document.title = 'Uonify — Hazlo posible';
@@ -138,6 +146,7 @@ function WorkspaceShell() {
             {liveText}
           </p>
           <div className="chat-panel-scrim" id="chat-panel-scrim" hidden={layout.scrimHidden} onClick={() => setChatPanel(false)} />
+          {/* Se oculta con el menú de servicios abierto: en móvil queda a la altura de sus últimas filas y se llevaría los toques. */}
           <button
             ref={chatFab}
             className="chat-panel-fab"
@@ -145,7 +154,7 @@ function WorkspaceShell() {
             type="button"
             aria-controls="conversation-dock"
             aria-expanded="false"
-            hidden={layout.fabHidden}
+            hidden={layout.fabHidden || servicesOpen}
             inert={navOpen}
             onClick={() => setChatPanel(true)}
           >
@@ -153,6 +162,9 @@ function WorkspaceShell() {
             <span className="chat-panel-fab-text" id="chat-panel-fab-text">{lastReply || 'Conversación'}</span>
           </button>
           <NavDrawer />
+          <div ref={footer} className="workspace-footer" inert={backgroundInert}>
+            <SiteFooter />
+          </div>
         </div>
       </div>
       <ChatGptLimitDialog />

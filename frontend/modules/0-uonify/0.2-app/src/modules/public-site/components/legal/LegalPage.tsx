@@ -1,9 +1,9 @@
 import legalCss from '../../styles/legal/legal.css?inline';
 import { viewSheets } from '../../styles/sheets';
 import { PATHS, PUBLIC_VIEWS } from '../../model/views';
-import { HomeFooter } from '../home/HomeFooter';
 import { HomeLink } from '../common/HomeLink';
 import { PublicView } from '../common/PublicView';
+import { SiteFooter } from '../footer/SiteFooter';
 import { LegalCenter } from './LegalCenter';
 import { PAGE_META, type LegalPageKey } from './legalContent';
 
@@ -12,7 +12,7 @@ const SHEETS = viewSheets(legalCss);
 /**
  * Centro legal de Uonify (#view-privacidad y #view-terminos). Público en todos los
  * entornos y sin sesión. Una barra de pestañas común lleva a cada texto; /terminos
- * reúne el contrato y /privacidad es su propia pestaña. Lleva el pie global de la Home.
+ * reúne el contrato y /privacidad es su propia pestaña. Lleva el pie global (SiteFooter).
  */
 export function LegalPage({ doc }: { doc: LegalPageKey }) {
   const meta = PAGE_META[doc];
@@ -31,7 +31,7 @@ export function LegalPage({ doc }: { doc: LegalPageKey }) {
         <LegalCenter page={doc} />
         <HomeLink className="back" to={PATHS.composer}>Volver a Uonify →</HomeLink>
       </main>
-      <HomeFooter />
+      <SiteFooter />
     </PublicView>
   );
 }

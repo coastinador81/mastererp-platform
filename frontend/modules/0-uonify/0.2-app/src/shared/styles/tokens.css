@@ -1,8 +1,11 @@
 /* Tokens de marca de Uonify (manual de identidad corporativa).
    Origen: app-shell.css (:root) y pim/core.css (:root) del prototipo HTML.
-   Azul = estructura; aqua SOLO para IA; un botón sólido por vista; radios 4/8/12/16. */
+   Azul = estructura; aqua SOLO para IA; un botón sólido por vista; radios 4/8/12/16.
+   .uon-token-scope vuelve a declarar estos valores en un componente común (el pie global)
+   que se monta dentro de vistas cuya hoja del prototipo redefine --ink, --muted o --line
+   en :root: así se ve igual en todas las páginas. */
 
-:root {
+:root, .uon-token-scope {
   --blue: #0178f7;        /* Azul rector (identidad, §10) — foco y degradado; no es texto */
   --blue-dark: #0052bc;   /* Azul 700 — acción fuerte / hover */
   --aqua: #35d5c4;
@@ -16,7 +19,7 @@
   --active: #eaf3ff;
 }
 
-:root {
+:root, .uon-token-scope {
   /* Brand (new frontend tokens, aligned with the manual) */
   --pim-blue: #006ae1;                        /* Azul 600 — acción y texto sobre claro (AA, regla del 600 §12) */
   --pim-blue-strong: var(--blue-dark, #0052bc);

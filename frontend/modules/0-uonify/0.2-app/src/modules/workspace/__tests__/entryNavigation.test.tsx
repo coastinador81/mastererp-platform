@@ -8,7 +8,7 @@ vi.mock('../hooks/liveConversation', () => ({ useLiveHistory: () => {} }));
 vi.mock('../hooks/useLimitWatcher', () => ({ useLimitWatcher: () => {} }));
 vi.mock('../hooks/useShellEffects', () => ({
   useChatSheetReset: () => {}, useEscapeOrder: () => {}, useNavExpandedSync: () => {},
-  useScreenMotion: () => {}, useWindowResizeTick: () => {}, usePendingPrompt: () => {},
+  useScreenMotion: () => {}, useWindowResizeTick: () => {}, usePendingPrompt: () => {}, useFooterHeight: () => {},
 }));
 vi.mock('../components/ConversationPanel', () => ({ ConversationPanel: () => null }));
 vi.mock('../components/navigation/NavDrawer', () => ({ NavDrawer: () => null }));

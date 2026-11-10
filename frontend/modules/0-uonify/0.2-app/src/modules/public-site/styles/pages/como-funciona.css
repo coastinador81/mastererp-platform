@@ -177,7 +177,6 @@
 .how-close h2{font-size:clamp(3rem,5vw,5rem);line-height:1.02;margin:21px 0 25px}
 .how-close>p:not(.eyebrow){max-width:680px;margin:0 auto 30px;color:var(--how-muted);font-size:1.0625rem}
 .how-close .how-actions{justify-content:center}
-.how-page .footer{margin-top:0}
 .how-toast{position:fixed;z-index:90;right:24px;bottom:24px;max-width:390px;padding:18px 20px;background:#112638;color:#fff;border-left:4px solid var(--how-aqua);box-shadow:0 20px 50px #11263838}
 .how-toast strong{display:block;margin-bottom:5px}
 .how-toast span{color:#a7bbc9;font-size:.8125rem;line-height:1.55}

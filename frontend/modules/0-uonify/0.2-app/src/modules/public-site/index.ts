@@ -17,3 +17,12 @@ export { useSeoHead } from './hooks/useSeoHead';
 export type { SeoPage, SeoCrumb, SeoQuestion, JsonLdNode } from './model/seo/types';
 
 export { useViewStyles } from './hooks/useViewStyles';
+
+/**
+ * Pie global de Uonify, idéntico en todas las páginas y también con sesión (nunca se oculta):
+ * Partners y Clientes; «Términos y condiciones», el globo «Idioma y accesibilidad» y «Ayuda».
+ * Trae su propia hoja de estilos; una sola instancia por página: `<SiteFooter />`.
+ * `<SiteFooterFrame>` monta una pantalla completa con el pie al final (pantallas de acceso).
+ */
+export { SiteFooter } from './components/footer/SiteFooter';
+export { SiteFooterFrame } from './components/footer/SiteFooterFrame';

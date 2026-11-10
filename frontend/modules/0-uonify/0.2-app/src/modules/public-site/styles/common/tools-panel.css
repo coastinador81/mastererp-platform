@@ -1,0 +1,42 @@
+/* Botón de servicios (9 puntos) y panel «Tu espacio Uonify» (components/common/ServicesButton):
+   el mismo en la cabecera de la portada y en la de las páginas interiores (D-HOME-REORG-20261109:
+   a la derecha, «Iniciar sesión» y el botón de servicios). Reglas movidas tal cual de
+   home/testing.css. Hoja propia: la inyecta el botón (useViewStyles) y el prerender la enlaza.
+   Todas llevan .header delante (dos clases como mínimo) para no ceder ante las hojas de las
+   vistas, que se inyectan después. */
+:root {
+  --tools-blue: #0178F7;
+  --tools-blue-deep: #0052BC;
+  --tools-ink: #0A0B0D;
+  --tools-line: #E1E3E8;
+  --tools-hover: #F0F2F6;
+  --tools-blue-600: #006AE1; /* azul 600 del manual: texto/enlaces azules pequeños */
+  --tools-muted: #536272;    /* gris de apoyo del manual (contraste AA) */
+}
+.header .tools-trigger { display: grid; place-items: center; width: 42px; height: 42px; padding: 10px; color: #426074; background: transparent; border: 1px solid transparent; border-radius: 50%; }
+.header .tools-trigger:hover, .header .tools-trigger[aria-expanded="true"] { background: #e7f0f9; border-color: #d6e2ed; }
+.header .tools-trigger svg { width: 22px; height: 22px; fill: currentColor; stroke: none; }
+.header .tools-panel { position: absolute; z-index: 40; top: 66px; right: 25px; width: 384px; max-width: calc(100vw - 28px); max-height: calc(100svh - 82px); overflow: auto; overscroll-behavior: contain; padding: 22px 14px 16px; color: var(--tools-ink); background: linear-gradient(180deg,#fbfdff 0%,#f2f8ff 48%,#fbfdff 100%); border: 1px solid var(--tools-line); border-radius: 23px; box-shadow: 0 18px 60px #23466524, 0 2px 8px #2346650c; color-scheme: light; }
+.header .tools-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 8px 15px; }
+.header .tools-heading h2 { margin: 0; font-size: 14px; font-weight: 650; }
+.header .tools-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 6px; }
+.header .tools-grid .tool-entry { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 7px; min-width: 0; min-height: 128px; padding: 9px 3px 12px; border: 0; border-radius: 15px; color: var(--tools-ink); background: transparent; text-decoration: none; text-align: center; font-family: inherit; font-size: .875rem; font-weight: 500; line-height: 1.25; }
+.header .tools-grid .tool-entry:hover, .header .tools-grid .tool-entry:focus-visible { background: var(--tools-hover); }
+.header .tools-grid .tool-entry:focus-visible { outline: 2px solid var(--tools-blue); outline-offset: -2px; }
+.header .tools-grid .tool-entry[aria-disabled="true"] { cursor: default; }
+.header .tools-heading .tools-know { flex: 0 0 auto; color: var(--tools-blue-600); font-size: 13px; font-weight: 600; text-decoration: none; white-space: nowrap; }
+.header .tools-heading .tools-know:hover { color: var(--tools-blue-deep); text-decoration: underline; }
+.header .tools-heading .tools-know:focus-visible { outline: 2px solid var(--tools-blue); outline-offset: 2px; border-radius: 4px; }
+.header .tools-grid .tool-entry.is-coming { color: var(--tools-muted); }
+.header .tools-grid .tool-entry.is-coming .product-icon { opacity: .5; }
+.header .tools-grid .tool-entry .coming-tag { font-size: 10px; font-weight: 600; letter-spacing: .02em; text-transform: uppercase; color: var(--tools-muted); }
+.header .product-icon { display: block; width: 72px; height: 72px; max-width: 100%; flex: 0 0 auto; object-fit: contain; filter: drop-shadow(0 1px 1px rgba(30,55,80,.24)); }
+@media (max-width: 760px) {
+  .header .tools-panel { top: 60px; right: 14px; }
+}
+@media (max-width: 480px) {
+  .header .tools-trigger { width: 38px; height: 38px; padding: 9px; }
+}
+@media (max-width: 360px) {
+  .header .tools-trigger { width: 36px; height: 36px; }
+}

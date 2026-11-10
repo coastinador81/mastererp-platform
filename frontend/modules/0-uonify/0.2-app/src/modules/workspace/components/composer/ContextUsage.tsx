@@ -3,6 +3,7 @@ import { InformationDisclosure } from '@/shared/ui';
 import { useContextUsage } from '../../hooks/useContextUsage';
 import { useComposerStore } from '../../hooks/composerStore';
 import { useDismissOnPointerDown } from '../../hooks/useDismiss';
+import { visibleBottom } from '../../hooks/uiStore';
 import { contextNumber, contextPercentage } from '../../model/contextUsage';
 import { toBox, usagePanelPosition } from '../../model/placement';
 import { GoogleBillingPanel } from './GoogleBillingPanel';
@@ -28,7 +29,7 @@ export function ContextUsage({ formRef }: { formRef: RefObject<HTMLFormElement |
       const outer = toBox(form);
       const inner = { ...outer, left: outer.left + form.clientLeft, width: form.clientWidth };
       const position = usagePanelPosition(inner, toBox(button.current), panel.current.offsetWidth,
-        { panelHeight: panel.current.offsetHeight, viewportHeight: window.innerHeight });
+        { panelHeight: panel.current.offsetHeight, viewportHeight: visibleBottom() });
       panel.current.style.left = `${position.left}px`;
       panel.current.style.bottom = `${position.bottom}px`;
     };

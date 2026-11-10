@@ -6,7 +6,7 @@ import { ContextUsage } from '../components/composer/ContextUsage';
 import { useComposerStore } from '../hooks/composerStore';
 import { useGooglePreferences } from '../hooks/googlePreferences';
 import { useWorkspaceStore } from '../hooks/workspaceStore';
-import { useUiStore } from '../hooks/uiStore';
+import { useUiStore, workspaceRefs } from '../hooks/uiStore';
 import { setActiveProduct, type PimProduct } from '@/shared/pim';
 import type { ContextMeasurement } from '../api/contextUsage';
 
@@ -171,4 +171,33 @@ it('mantiene el panel sobre el círculo al pasar de móvil a escritorio mientras
   width = 800; left = 400; buttonLeft = 900; panelWidth = 340;
   fireEvent(window, new Event('resize')); expect(panel.style.left).toBe('460px'); expect(panel.style.bottom).toBe('46px');
   expect(panel).not.toHaveAttribute('hidden');
+});
+it('con la hoja de conversación abierta (móvil) el panel cuenta toda la ventana: la hoja tapa el pie', async () => {
+  vi.spyOn(api, 'post').mockResolvedValue(measurement()); preview();
+  await screen.findByRole('button', { name: /25 % ocupado/ });
+  const form = trigger().closest('form')!;
+  const panel = document.querySelector('.composer-context-panel') as HTMLElement;
+  const rect = (top: number, bottom: number, left = 0, right = 390) => ({ left, right, width: right - left, top, bottom, height: bottom - top, x: left, y: top, toJSON: () => ({}) });
+  const edge = window.innerHeight;
+  // El compositor de la hoja acaba a 8 px del borde; debajo, el pie global de dos filas (89 px).
+  vi.spyOn(form, 'getBoundingClientRect').mockImplementation(() => rect(edge - 128, edge - 8));
+  vi.spyOn(trigger(), 'getBoundingClientRect').mockImplementation(() => rect(edge - 48, edge - 24, 300, 324));
+  Object.defineProperty(panel, 'offsetHeight', { configurable: true, value: 300 });
+  const column = document.createElement('div');
+  const footer = document.createElement('div');
+  vi.spyOn(footer, 'getBoundingClientRect').mockImplementation(() => rect(edge - 89, edge));
+  Object.assign(workspaceRefs, { column, footer });
+  try {
+    column.className = 'workspace-column is-module is-chat-sheet';
+    fireEvent.click(trigger());
+    // Justo encima de su botón (6 px), sin hueco: la hoja tapa el pie.
+    expect(panel.style.bottom).toBe('46px');
+    fireEvent.click(trigger());
+    column.className = 'workspace-column is-module';
+    fireEvent.click(trigger());
+    // Sin la hoja, el pie está a la vista y el panel no baja de su borde.
+    expect(panel.style.bottom).toBe('89px');
+  } finally {
+    Object.assign(workspaceRefs, { column: null, footer: null });
+  }
 });

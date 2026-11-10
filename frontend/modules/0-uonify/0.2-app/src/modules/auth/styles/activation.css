@@ -1,5 +1,6 @@
-/* Marco aprobado del alta; cabecera persistente y un único progreso por fases. */
-.activation-screen { height: 100dvh; box-sizing: border-box; padding: 68px 14px 14px; background: var(--uon-auth-sky); color: var(--uon-auth-text); display: grid; place-items: center; overflow: auto; }
+/* Marco aprobado del alta; cabecera persistente y un único progreso por fases. Ocupa la
+   pantalla menos el pie global, que va debajo (SiteFooterFrame, módulo public-site). */
+.activation-screen { flex: 1 1 auto; min-height: 0; box-sizing: border-box; padding: 68px 14px 14px; background: var(--uon-auth-sky); color: var(--uon-auth-text); display: grid; place-items: center; overflow: auto; }
 .activation-screen button, .activation-card button { cursor: pointer; }
 .activation-screen > .activation-topbar { position: fixed; z-index: 30; inset: 0 0 auto; height: 60px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; pointer-events: none; }
 .activation-topbar .topbar-left { position: static; display: flex; pointer-events: auto; }

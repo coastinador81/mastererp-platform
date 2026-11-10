@@ -2,6 +2,7 @@ import { Link } from 'react-router';
 import { PATHS, type PublicViewKey } from '../../model/views';
 import { HomeLink } from './HomeLink';
 import { LoginLink } from './LoginLink';
+import { ServicesButton } from './ServicesButton';
 import { SkipLink } from './SkipLink';
 
 type NavItem = { view: PublicViewKey; to: string; label: string };
@@ -11,7 +12,8 @@ type NavItem = { view: PublicViewKey; to: string; label: string };
  * con las 10 páginas siempre a la vista (decisión del dueño 09-11-2026: «dos filas, todo
  * visible»). Fila 1: lo que ofrece Uonify; fila 2: la empresa y su comunidad. Son dos
  * filas de enlaces, no menús desplegables. «Ayuda» va al pie global; «Servicios» es la
- * página de productos. Se muestra igual con y sin sesión.
+ * página de productos. Se muestra igual con y sin sesión. A la derecha, como en la
+ * portada: «Iniciar sesión» y el botón de servicios.
  */
 const NAV_ROWS: ReadonlyArray<ReadonlyArray<NavItem>> = [
   [
@@ -41,6 +43,7 @@ export function PageHeader({ current, loginLabel }: { current: PublicViewKey; lo
         </HomeLink>
         <div className="header-actions">
           <LoginLink pageLabel={loginLabel} />
+          <ServicesButton />
         </div>
         <nav className="main-nav main-nav--rows" aria-label="Navegación principal">
           {NAV_ROWS.map((row, index) => (

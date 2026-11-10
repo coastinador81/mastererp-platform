@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
+import { MemoryRouter } from 'react-router';
 import { WorkspaceAccessGate } from '../components/WorkspaceAccessGate';
 
 vi.mock('@/shared/api/config', async original => ({ ...await original<typeof import('@/shared/api/config')>(), USE_MOCKS: false }));
@@ -23,7 +24,8 @@ it.each(['onboarding_required', 'subscription_required', 'checkout_required'])('
   let mounted = 0;
   function PrivateModule() { useEffect(() => { mounted += 1; }, []); return <p>Servicio privado</p>; }
   server.use(http.get('/api/billing/workspace-access', () => HttpResponse.json({ status, planId: 'basic', interval: 'monthly' })));
-  render(<QueryClientProvider client={new QueryClient()}><WorkspaceAccessGate><PrivateModule /></WorkspaceAccessGate></QueryClientProvider>);
+  // El pie global de las pantallas de la puerta lleva enlaces: necesita un router.
+  render(<QueryClientProvider client={new QueryClient()}><MemoryRouter><WorkspaceAccessGate><PrivateModule /></WorkspaceAccessGate></MemoryRouter></QueryClientProvider>);
   expect(await screen.findByRole('main', { name: 'Activación conversacional' })).toHaveTextContent('one@example.test');
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   expect(screen.queryByText('Servicio privado')).not.toBeInTheDocument();
@@ -35,7 +37,7 @@ it('una actualización de acceso no cierra la confirmación hasta que el cliente
   let status = 'subscription_required';
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   server.use(http.get('/api/billing/workspace-access', () => HttpResponse.json({ status })));
-  render(<QueryClientProvider client={client}><WorkspaceAccessGate><p>Servicio privado</p></WorkspaceAccessGate></QueryClientProvider>);
+  render(<QueryClientProvider client={client}><MemoryRouter><WorkspaceAccessGate><p>Servicio privado</p></WorkspaceAccessGate></MemoryRouter></QueryClientProvider>);
   expect(await screen.findByRole('main', { name: 'Activación conversacional' })).toBeVisible();
   status = 'allowed';
   await act(async () => { await client.invalidateQueries({ queryKey: ['workspace-access', 'one@example.test'] }); });

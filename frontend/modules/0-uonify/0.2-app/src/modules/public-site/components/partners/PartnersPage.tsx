@@ -6,9 +6,9 @@ import richCss from '../../styles/pages/rich.css?inline';
 import { viewSheets } from '../../styles/sheets';
 import { PATHS, PUBLIC_VIEWS } from '../../model/views';
 import { DeviceFrame } from '../common/DeviceFrame';
-import { PageFooter, SITE_FOOTER_LINKS } from '../common/PageFooter';
 import { PageHeader } from '../common/PageHeader';
 import { PublicView } from '../common/PublicView';
+import { SiteFooter } from '../footer/SiteFooter';
 
 const SHEETS = viewSheets(productosCss, partnersCss, richCss);
 
@@ -144,7 +144,7 @@ export function PartnersPage() {
           </div>
         </section>
       </main>
-      <PageFooter links={SITE_FOOTER_LINKS} note="Uonify · Programa de partners." />
+      <SiteFooter />
     </PublicView>
   );
 }

@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react';
+import { cleanup, screen, waitFor } from '@testing-library/react';
 import {
   collectConsoleErrors,
   expectNoCrashScreen,
@@ -26,11 +26,24 @@ const WORKSPACE_ROUTES: Array<[path: string, heading: RegExp]> = [
   ['/espacio/nexus/shopify', /^Nexus$/],
 ];
 
+/** El pie global, una sola vez, cierra el espacio: fuera de la vista y de la conversación. */
+function expectGlobalFooter(): HTMLElement {
+  const footers = document.querySelectorAll<HTMLElement>('footer.site-footer');
+  expect(footers).toHaveLength(1);
+  expect(footers[0].parentElement).toHaveClass('workspace-footer');
+  expect(screen.getByRole('main', { name: 'Espacio de trabajo' })).not.toContainElement(footers[0]);
+  return footers[0];
+}
+
+/** Marcado del pie (sin espacios entre etiquetas), para compararlo entre páginas. */
+const footerMarkup = (footer: HTMLElement) => footer.outerHTML.replace(/>\s+</g, '><').trim();
+
 describe('espacio de trabajo (sesión lista)', () => {
   test.each(WORKSPACE_ROUTES)('%s se pinta sin errores', async (path, heading) => {
     const { router } = renderApp(path);
     expect(await screen.findByRole('heading', { level: 1, name: heading }, { timeout: 4000 })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Abrir servicios de Uonify' })).toBeInTheDocument();
+    expectGlobalFooter();
     expect(router.state.location.pathname).toBe(path);
     await settle();
     expectNoCrashScreen();
@@ -49,11 +62,42 @@ describe('espacio de trabajo (sesión lista)', () => {
     const { router } = renderApp(path);
     expect(await find()).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Abrir servicios de Uonify' })).toBeInTheDocument();
+    expectGlobalFooter();
     expect(router.state.location.pathname).toBe(path);
     await settle();
     expectNoCrashScreen();
     expect(consoleErrors).toEqual([]);
     expect(unhandledApiCalls).toEqual([]);
+  });
+
+  test('el pie de ERP y el del lienzo son el mismo que el de la web pública (/terminos con sesión)', async () => {
+    renderApp('/espacio/erp');
+    await screen.findByRole('complementary', { name: 'Menú de Finanzas' }, { timeout: 4000 });
+    const erp = footerMarkup(expectGlobalFooter());
+    await settle();
+    cleanup();
+    renderApp('/espacio');
+    await screen.findByRole('heading', { level: 1, name: /^Hazlo ?posible\.$/ }, { timeout: 4000 });
+    expect(footerMarkup(expectGlobalFooter())).toBe(erp);
+    await settle();
+    cleanup();
+    renderApp('/terminos');
+    await waitFor(() => expect(document.querySelector('footer.site-footer')).not.toBeNull(), { timeout: 5000 });
+    expect(footerMarkup(document.querySelector('footer.site-footer') as HTMLElement)).toBe(erp);
+    expect(erp).toContain('Términos y condiciones');
+    await settle();
+  });
+
+  test('el pie no se oculta mientras la puerta comprueba el acceso («Preparando tu espacio…»)', async () => {
+    renderApp('/espacio');
+    expect(await screen.findByText('Preparando tu espacio…', {}, { timeout: 4000 })).toBeInTheDocument();
+    const waiting = document.querySelectorAll<HTMLElement>('footer.site-footer');
+    expect(waiting).toHaveLength(1);
+    const markup = footerMarkup(waiting[0]);
+    // Al abrirse el espacio, su pie (en la columna) es el mismo.
+    await screen.findByRole('heading', { level: 1, name: /^Hazlo ?posible\.$/ }, { timeout: 4000 });
+    expect(footerMarkup(expectGlobalFooter())).toBe(markup);
+    await settle();
   });
 
   test('el enlace ?service= de la web pública abre ese servicio', async () => {

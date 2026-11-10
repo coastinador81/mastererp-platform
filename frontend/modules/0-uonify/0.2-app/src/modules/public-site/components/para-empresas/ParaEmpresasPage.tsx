@@ -2,9 +2,9 @@ import productosCss from '../../styles/pages/productos.css?inline';
 import paraEmpresasCss from '../../styles/pages/para-empresas.css?inline';
 import { viewSheets } from '../../styles/sheets';
 import { PUBLIC_VIEWS } from '../../model/views';
-import { PageFooter, SITE_FOOTER_LINKS } from '../common/PageFooter';
 import { PageHeader } from '../common/PageHeader';
 import { PublicView } from '../common/PublicView';
+import { SiteFooter } from '../footer/SiteFooter';
 import { EnterpriseHero } from './EnterpriseHero';
 
 const SHEETS = viewSheets(productosCss, paraEmpresasCss);
@@ -50,7 +50,7 @@ export function ParaEmpresasPage() {
           </div>
         </section>
       </main>
-      <PageFooter links={SITE_FOOTER_LINKS} note="Uonify · Para equipos y marcas." />
+      <SiteFooter />
     </PublicView>
   );
 }

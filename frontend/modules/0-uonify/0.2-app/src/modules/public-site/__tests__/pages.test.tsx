@@ -29,10 +29,28 @@ describe('Productos', () => {
     const nav = screen.getByRole('navigation', { name: 'Navegación principal' });
     expect(within(nav).getByRole('link', { name: 'Servicios' })).toHaveAttribute('aria-current', 'page');
     expect(within(nav).getByRole('link', { name: 'Cómo funciona' })).toHaveAttribute('href', '/como-funciona');
-    // Regla del dueño (08-11-2026): un solo pie, el de la Home, en todas las páginas públicas.
-    expect(screen.getByRole('contentinfo')).toHaveTextContent('Para equipos y marcasCómo funciona UonifyPrivacidadCondicionesPreferencias');
+    // Pie global (09-11-2026): el mismo en todas las páginas, también en las interiores.
+    const footer = screen.getByRole('contentinfo');
+    expect(within(footer).getAllByRole('link').map(link => link.textContent)).toEqual(['Partners', 'Clientes', 'Términos y condiciones', 'Ayuda']);
+    expect(within(footer).getByRole('button', { name: 'Idioma' })).toHaveAttribute('aria-haspopup', 'dialog');
     // Marco + productos, juego, galería, Administración (ERP) y la hoja rica (con la vista previa del cliente).
     expect(document.head.querySelectorAll('style[data-uon-view-style="producto"]')).toHaveLength(6);
+  });
+
+  test('a la derecha, como en la portada: «Iniciar sesión» y el botón de servicios', async () => {
+    const user = userEvent.setup();
+    renderPage(<ProductosPage />, '/productos');
+    const actions = document.querySelector<HTMLElement>('.header .header-actions')!;
+    expect(within(actions).getByRole('link', { name: /Iniciar sesión/ })).toBeInTheDocument();
+    const trigger = within(actions).getByRole('button', { name: 'Herramientas de Uonify' });
+    await user.click(trigger);
+    const panel = document.getElementById('tools-panel')!;
+    // El mismo panel que la portada: los 10 servicios y «Conocer Uonify», con el primero enfocado.
+    expect(within(panel).getByRole('link', { name: 'Producto' })).toHaveFocus();
+    expect(within(panel).getAllByRole('link')).toHaveLength(11);
+    await user.keyboard('{Escape}');
+    expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    expect(trigger).toHaveFocus();
   });
 
   test('«Iniciar sesión» abre el acceso sin salir de la página', async () => {

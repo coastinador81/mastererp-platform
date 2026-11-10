@@ -1,5 +1,6 @@
-import { useEffect, useRef, useSyncExternalStore } from 'react';
+import { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router';
+import { useHydrated } from '../../hooks/useHydrated';
 import { LegalMarkdown } from './LegalMarkdown';
 import {
   LEGAL_TABS, PRIVACY_PANEL, TERMINOS_PANELS,
@@ -23,13 +24,6 @@ function panelFromHash(hash: string, panels: readonly LegalPanel[]): LegalTabId 
     if (direct === panel.id || raw === panel.id || raw.startsWith(`${panel.id}-`)) return panel.id;
   }
   return null;
-}
-
-/** Cliente vs. servidor sin desajustes de hidratación: false en el prerender (sin JS,
- *  manda el CSS :target), true en la SPA (manda React). */
-const subscribeNoop = () => () => {};
-function useHydrated(): boolean {
-  return useSyncExternalStore(subscribeNoop, () => true, () => false);
 }
 
 function Panel({ panel, shown }: { panel: LegalPanel; shown: boolean }) {
@@ -68,6 +62,7 @@ export function LegalCenter({ page }: { page: LegalPageKey }) {
   const panels = page === 'terminos' ? TERMINOS_PANELS : [PRIVACY_PANEL];
   const defaultId: LegalTabId = page === 'privacidad' ? 'privacidad' : panels[0].id;
   const location = useLocation();
+  // false en el prerender (sin JS, manda el CSS :target); true en la SPA (manda React).
   const hydrated = useHydrated();
   const hashId = panelFromHash(location.hash, panels);
   const activeId = hashId ?? defaultId;

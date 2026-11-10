@@ -5,9 +5,9 @@ import { viewSheets } from '../../styles/sheets';
 import { PATHS, PUBLIC_VIEWS } from '../../model/views';
 import { formatEuros, MONTHLY_NET_EUR, MONTHLY_PRICE_EUR, YEARLY_NET_EUR, YEARLY_PRICE_EUR } from '../../model/seo/plans';
 import { HomeLink } from '../common/HomeLink';
-import { PageFooter, SITE_FOOTER_LINKS } from '../common/PageFooter';
 import { PageHeader } from '../common/PageHeader';
 import { PublicView } from '../common/PublicView';
+import { SiteFooter } from '../footer/SiteFooter';
 
 const SHEETS = viewSheets(productosCss, preciosCss, richCss);
 
@@ -98,7 +98,7 @@ export function PreciosPage() {
           ))}
         </section>
       </main>
-      <PageFooter links={SITE_FOOTER_LINKS} note="Uonify · Hazlo posible." />
+      <SiteFooter />
     </PublicView>
   );
 }

@@ -1,9 +1,14 @@
 // Vitest no carga CSS (css: false) y el proyecto no incluye los tipos de Node:
 // las hojas se leen del disco con node:fs importado dinámicamente (como shared/ui).
-interface NodeFs { readFileSync(path: string, encoding: 'utf8'): string }
+interface NodeFs {
+  readFileSync(path: string, encoding: 'utf8'): string;
+  readdirSync(path: string, options: { recursive: true }): string[];
+}
 const nodeFs = (): Promise<NodeFs> => import(/* @vite-ignore */ ['node', 'fs'].join(':')) as Promise<NodeFs>;
 const root = (globalThis as unknown as { process: { cwd(): string } }).process.cwd();
 const stylesDir = `${root}/src/modules/public-site/styles/`;
+/** Hoja del centro de ayuda (módulo help), que también pinta el pie global. */
+const helpSheet = `${root}/src/modules/help/components/help.css`;
 
 let fs: NodeFs;
 const styles = (path: string) => fs.readFileSync(stylesDir + path, 'utf8');
@@ -31,7 +36,26 @@ describe('hojas de la web pública', () => {
   });
 
   test('ninguna hoja carga fuentes externas por su cuenta (index.html ya trae Inter)', () => {
-    ['pages/productos.css', 'home/styles.css', 'legal/legal.css'].forEach(path => expect(styles(path)).not.toMatch(/^@import/m));
+    ['pages/productos.css', 'home/styles.css', 'legal/legal.css', 'site-footer.css'].forEach(path => expect(styles(path)).not.toMatch(/^@import/m));
+  });
+
+  test('el pie global trae su propia hoja, solo con tokens, y ninguna otra hoja copia estilos de pie', () => {
+    const footer = styles('site-footer.css');
+    expect(footer).not.toMatch(/#[0-9a-f]{3,8}\b|rgba?\(/i);
+    expect(footer).toMatch(/\.site-footer \.site-footer__menu \{/);
+    expect(footer).toMatch(/:root\[data-more-contrast="true"\] \.site-footer \{/);
+    // Todas las hojas de la web pública (también las que se añadan) y la de Ayuda.
+    const views = fs.readdirSync(stylesDir, { recursive: true }).filter(path => path.endsWith('.css') && path !== 'site-footer.css');
+    expect(views).toEqual(expect.arrayContaining(['home/styles.css', 'legal/legal.css', 'pages/productos.css', 'pages/sobre-uonify.css']));
+    const sheets: Array<[string, string]> = [...views.map((path): [string, string] => [path, styles(path)]), ['help.css', fs.readFileSync(helpSheet, 'utf8')]];
+    for (const [path, text] of sheets) {
+      const css = text.replace(/\/\*[\s\S]*?\*\//g, '');
+      // Ni la clase .footer del prototipo, ni el elemento footer como selector, ni el diálogo «Preferencias».
+      expect(css, path).not.toMatch(/\.footer\b|\.preferences?-|#preferences-/);
+      expect(css, path).not.toMatch(/(^|[\s,>+~(){};])footer(?![\w-])/);
+      // Como mucho, la separación con el contenido; nunca colores ni tipografía del pie.
+      expect(css, path).not.toMatch(/\.site-footer[^{]*\{[^}]*(color|background|font|border)/);
+    }
   });
 });
 

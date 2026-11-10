@@ -84,6 +84,8 @@ export interface DomRefs {
   chatFab: HTMLButtonElement | null;
   servicesTrigger: HTMLButtonElement | null;
   accountButton: HTMLButtonElement | null;
+  /** Franja del pie global, al final de la columna (ver `visibleBottom`). */
+  footer: HTMLDivElement | null;
 }
 
 /**
@@ -107,7 +109,21 @@ export const workspaceRefs: DomRefs & {
   chatFab: null,
   servicesTrigger: null,
   accountButton: null,
+  footer: null,
 };
+
+/**
+ * Borde inferior de lo visible para los menús que se colocan según la pantalla (los del
+ * compositor): la ventana o, en el espacio, el comienzo del pie global, que siempre está a
+ * la vista y no deben tapar ni cortar. Con la hoja de la conversación abierta (móvil), la
+ * hoja tapa el pie y cuenta la ventana, como en el CSS (.is-chat-sheet no descuenta el pie).
+ * Sin maquetar (arriba en 0, como en las pruebas), también cuenta la ventana.
+ */
+export function visibleBottom(): number {
+  if (workspaceRefs.column?.classList.contains('is-chat-sheet')) return window.innerHeight;
+  const top = workspaceRefs.footer?.getBoundingClientRect().top ?? 0;
+  return top > 0 ? Math.min(window.innerHeight, top) : window.innerHeight;
+}
 
 /**
  * Publica un elemento del marco mientras está montado. Si dos instancias

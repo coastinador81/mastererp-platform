@@ -17,8 +17,10 @@
 .conversation-question-card dd { margin: 4px 0 0; overflow-wrap: anywhere; }
 .question-open { padding: 9px 12px; min-height: 40px; border: 1px solid var(--pim-blue-line); border-radius: var(--pim-r-control); background: var(--surface); color: var(--blue-dark); font: inherit; font-size: 13px; cursor: pointer; }
 .question-open:hover { background: var(--soft); }
-.uony-question-panel { display: flex; flex-direction: column; min-width: 0; width: 100%; max-height: min(420px, calc(100dvh - 220px)); box-sizing: border-box; overflow: hidden; border: 1px solid var(--pim-blue-line); border-radius: var(--pim-r-card); background: var(--surface); color: var(--text); white-space: normal; }
-.uony-question-panel.is-compact { max-height: min(360px, calc(100dvh - 190px)); border-color: var(--line); }
+/* Con poca altura útil (zoom, móvil apaisado), nunca menos de 160 px: la cabecera y las
+   acciones («Siguiente», «Enviar respuestas») siempre caben; encoge el cuerpo, que se desplaza. */
+.uony-question-panel { display: flex; flex-direction: column; min-width: 0; width: 100%; max-height: max(160px, min(420px, calc(100dvh - 220px - var(--workspace-footer-space, 0px)))); box-sizing: border-box; overflow: hidden; border: 1px solid var(--pim-blue-line); border-radius: var(--pim-r-card); background: var(--surface); color: var(--text); white-space: normal; }
+.uony-question-panel.is-compact { max-height: max(160px, min(360px, calc(100dvh - 190px - var(--workspace-footer-space, 0px)))); border-color: var(--line); }
 .uony-question-header { display: flex; align-items: center; gap: 12px; flex-shrink: 0; padding: 5px 8px 5px 14px; border-bottom: 1px solid var(--line); color: var(--muted); font-size: 12px; }
 .uony-question-panel.is-compact .uony-question-header { border-bottom: 0; }
 .uony-question-header > span:first-child { display: flex; align-items: center; gap: 7px; color: var(--pim-ai-strong); font-weight: 600; }

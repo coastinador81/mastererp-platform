@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type RefObject } from 'react';
 import { USE_MOCKS } from '@/shared/api/config';
 import { useInitialIntent } from './initialIntent';
 import { useOnboardingEntry } from './useOnboardingEntry';
@@ -116,6 +116,24 @@ export function useChatSheetReset(service: string | null, narrow: boolean): void
   useLayoutEffect(() => {
     if (useUiStore.getState().chatSheetOpen) setUi({ chatSheetOpen: false });
   }, [service, narrow]);
+}
+
+/**
+ * Alto real del pie global, escrito en la columna (--workspace-footer-height): lo descuentan
+ * los paneles que se miden contra la pantalla (01-shell.css). Sigue sus cambios de filas al
+ * cambiar el ancho; sin ResizeObserver quedan los valores por defecto de la hoja.
+ */
+export function useFooterHeight(column: RefObject<HTMLDivElement | null>, footer: RefObject<HTMLDivElement | null>): void {
+  useLayoutEffect(() => {
+    const host = column.current;
+    const strip = footer.current;
+    if (!host || !strip || typeof ResizeObserver === 'undefined') return undefined;
+    const measure = () => host.style.setProperty('--workspace-footer-height', `${Math.ceil(strip.getBoundingClientRect().height)}px`);
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(strip);
+    return () => { observer.disconnect(); host.style.removeProperty('--workspace-footer-height'); };
+  }, [column, footer]);
 }
 
 /** Los botones que abren el panel de hilos (también los de otros servicios) dicen si está abierto. */

@@ -167,14 +167,17 @@ describe('portada', () => {
     expect(trigger).toHaveAttribute('aria-expanded', 'false');
   });
 
-  test('las preferencias se aplican al documento y se guardan en la pestaña', async () => {
+  test('lleva el pie global: Partners y Clientes; Términos y condiciones, Idioma y Ayuda', async () => {
     const user = userEvent.setup();
     renderPage(<HomePage />);
-    await user.click(screen.getByRole('checkbox', { name: /Más contraste/, hidden: true }));
+    const footer = screen.getByRole('contentinfo');
+    expect(within(footer).getAllByRole('link').map(link => link.textContent)).toEqual(['Partners', 'Clientes', 'Términos y condiciones', 'Ayuda']);
+    // Las preferencias («Más contraste», «Reducir movimiento») viven ahora en el globo «Idioma».
+    await user.click(within(footer).getByRole('button', { name: 'Idioma' }));
+    await user.click(screen.getByRole('checkbox', { name: 'Más contraste' }));
     expect(document.documentElement.dataset.moreContrast).toBe('true');
     expect(JSON.parse(sessionStorage.getItem(HOME_PREFERENCES_KEY) ?? '{}')).toEqual({ contrast: true, reduceMotion: false });
-    expect(document.getElementById('preferences-status')).toHaveTextContent('Preferencias guardadas para esta pestaña.');
-    await user.click(screen.getByRole('button', { name: 'Restablecer preferencias', hidden: true }));
+    await user.click(screen.getByRole('button', { name: 'Restablecer' }));
     expect(document.documentElement.dataset.moreContrast).toBe('false');
   });
 

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router';
 import { Field, Input } from '@/shared/ui';
-import { PATHS, useSeoHead, useViewStyles } from '@/modules/public-site';
+import { PATHS, SiteFooter, useSeoHead, useViewStyles } from '@/modules/public-site';
 import { SEED_ARTICLES, SEED_COLLECTIONS } from '../content';
 import { buildIndex, search } from '../model/search';
 import { ArticleBody } from './ArticleBody';
@@ -29,25 +29,13 @@ function HelpHeader() {
   );
 }
 
-/** Pie común de la web pública. */
-function HelpFooter() {
-  return (
-    <footer className="hlp-site-footer">
-      <nav aria-label="Enlaces del pie">
-        <Link to={PATHS.comoFunciona}>Cómo funciona</Link>
-        <Link to={PATHS.productos}>Servicios</Link>
-        <Link to={PATHS.loQuePuedesHacer}>Lo que puedes hacer</Link>
-        <Link to={PATHS.precios}>Precios</Link>
-        <Link to="/ayuda">Ayuda</Link>
-        <Link to={PATHS.seguridad}>Seguridad</Link>
-        <Link to={PATHS.sobreUonify}>Sobre Uonify</Link>
-        <Link to={PATHS.privacidad}>Privacidad</Link>
-        <Link to={PATHS.terminos}>Condiciones</Link>
-      </nav>
-      <p>Google Drive, Gemini, Veo, Nano Banana, Lyria y Google Cloud son marcas de Google LLC. «Amazon and all related marks are trademarks of Amazon.com, Inc. or its affiliates.» Uonify no está afiliada, patrocinada ni respaldada por Google ni por Amazon.</p>
-    </footer>
-  );
-}
+/**
+ * Nota de marcas de las guías, justo encima del pie global. El aviso legal (§9, Marcas de
+ * terceros) no nombra Veo, Nano Banana ni Lyria ni recoge la atribución literal de Amazon,
+ * así que la nota sigue en Ayuda como contenido, no dentro del pie: en su propia región
+ * (aside) y con la cita de Amazon marcada en inglés.
+ */
+const TRADEMARKS_NOTE = <>Google Drive, Gemini, Veo, Nano Banana, Lyria y Google Cloud son marcas de Google LLC. «<span lang="en">Amazon and all related marks are trademarks of Amazon.com, Inc. or its affiliates.</span>» Uonify no está afiliada, patrocinada ni respaldada por Google ni por Amazon.</>;
 
 /** Bloque de soporte: Uony de ayuda, correo y videollamada de pago. */
 function SupportBlock() {
@@ -135,7 +123,8 @@ export function HelpPage() {
           </>
         )}
       </main>
-      <HelpFooter />
+      <aside className="hlp-trademarks" aria-label="Marcas de terceros">{TRADEMARKS_NOTE}</aside>
+      <SiteFooter />
     </div>
   );
 }
