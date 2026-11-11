@@ -19,6 +19,6 @@ export const HANDOFF = {
 export const FLOW = ['PENDING', 'CONFIRMED', 'PREPARING', 'READY', 'OUT_FOR_DELIVERY', 'DELIVERED'];
 export const statusLabel = value => STATUS[value]?.label || 'Pendiente';
 export const paymentMethodLabel=(value,payment)=>value==='custom'?(payment?.name||'Otro método'):({mobile_payment:'Pago móvil',mobile:'Pago móvil',bank_transfer:'Transferencia',transfer:'Transferencia',cash:'Efectivo',pos:'Punto de venta',card:'Tarjeta'}[value]||'Por confirmar');
-export const paymentStatusLabel=value=>({PENDING_VERIFICATION:'Pendiente de validación',VALIDATED:'Validado',REJECTED:'Rechazado',PENDING_COLLECTION:'Pendiente de cobro'}[value]||'Pendiente');
+export const paymentStatusLabel=value=>({PENDING_VERIFICATION:'En espera de validación de Finanzas',VALIDATED:'Pago validado por Finanzas',REJECTED:'Pago rechazado por Finanzas',PENDING_COLLECTION:'Pendiente de cobro'}[value]||'Pendiente');
 export const money = (value, currency = 'USD') => new Intl.NumberFormat('es-VE', { style: 'currency', currency }).format(Number(value || 0));
 export const dateTime = value => value ? new Intl.DateTimeFormat('es-VE', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value)) : 'Sin fecha';

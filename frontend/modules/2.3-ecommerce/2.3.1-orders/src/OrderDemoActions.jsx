@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {money} from './orderView.js';
 
-// Explicit UI previews only: no invoice/notes API exists in the current order contract.
+// Invoice remains an explicit preview. Notes use the authorized Orders API.
 export function OrderInvoicePreview({order}) {
   const [message, setMessage] = useState('');
   function download() {
@@ -12,10 +12,11 @@ export function OrderInvoicePreview({order}) {
   }
   return <div><button type="button" className="od-button secondary" onClick={download}>Descargar factura (demo)</button>{message && <small role="status">{message}</small>}</div>;
 }
-export function OrderNotesPreview({writable}) {
-  const [draft, setDraft] = useState(''), [notes, setNotes] = useState([]);
-  return <section className="od-card"><div className="od-card-title"><div><h2>Notas internas</h2><p>Simulación local: estas notas no se guardan ni se comparten. Se descartan al salir.</p></div></div><div className="od-side-content">
-    {notes.length > 0 && <ul>{notes.map((note, index) => <li key={index}>{note}</li>)}</ul>}
-    {writable && <><label htmlFor="order-demo-note">Nota de prueba</label><textarea id="order-demo-note" maxLength={2000} value={draft} onChange={event => setDraft(event.target.value)} style={{width:'100%',minHeight:90}}/><button type="button" className="od-button secondary" disabled={!draft.trim()} onClick={() => {setNotes(current => [...current, draft.trim()]); setDraft('');}}>Añadir nota (local)</button></>}
+export function OrderNotesPreview({notes,writable,addNote}) {
+  const [draft,setDraft]=useState(''),[saving,setSaving]=useState(false);
+  async function submit(){setSaving(true);if(await addNote(draft.trim()))setDraft('');setSaving(false);}
+  return <section className="od-card"><div className="od-card-title"><div><h2>Notas internas</h2><p>Información privada para el equipo operativo.</p></div></div><div className="od-side-content od-notes">
+    {notes.length > 0 ? <ul>{notes.map(note => <li key={note.id}><p>{note.note}</p><small>{note.actor_name||'Usuario autorizado'} · {new Intl.DateTimeFormat('es-VE',{dateStyle:'medium',timeStyle:'short'}).format(new Date(note.created_at))}</small></li>)}</ul> : <p className="od-notes-empty">No hay notas internas.</p>}
+    {writable && <><label htmlFor="order-note">Nueva nota</label><textarea id="order-note" maxLength={2000} value={draft} disabled={saving} onChange={event=>setDraft(event.target.value)}/><button type="button" className="od-button secondary" disabled={saving||!draft.trim()} onClick={submit}>{saving?'Guardando…':'Añadir nota'}</button></>}
   </div></section>;
 }

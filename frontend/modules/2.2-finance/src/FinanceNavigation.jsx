@@ -11,12 +11,12 @@ const groups = [
   ['2.2.1.1', 'Gestión comercial', [['Clientes','clientes'],['Cotizaciones'],['Ventas','ventas'],['Facturación']]],
   ['2.2.1.2', 'Gestión de compras', [['Proveedores','proveedores'],['Compras','solicitudes-compra'],['Órdenes de compra','ordenes-compra'],['Facturas de proveedores','facturas-proveedores']]],
   ['2.2.1.3', 'Cartera y obligaciones', [['Cuentas por cobrar'],['Cuentas por pagar']]],
-  ['2.2.1.4', 'Tesorería', [['Cobros'],['Pagos'],['Caja'],['Bancos'],['Transferencias'],['Conciliación']]],
+  ['2.2.1.4', 'Tesorería', [['Cobros','cobros'],['Pagos'],['Caja'],['Bancos'],['Transferencias'],['Conciliación']]],
   ['2.2.1.5', 'Gastos y fondos menores', [['Gastos operativos'],['Caja chica'],['Anticipos y rendiciones']]],
 ];
 export default function FinanceNavigation({allowed,path,navigate,permissions=[],previewOnly=false,onClose}) {
   useEffect(()=>{const close=e=>{if(e.key==='Escape'&&!e.defaultPrevented&&document.querySelector('.finance-app .integrated-nav:is(.is-open,:focus-within)')){onClose?.();document.querySelector('.finance-app .menu-toggle')?.focus();}};const media=matchMedia('(max-width:800px)');const reset=()=>onClose?.();document.addEventListener('keydown',close);media.addEventListener('change',reset);return()=>{document.removeEventListener('keydown',close);media.removeEventListener('change',reset);};},[onClose]);
-  const canOpen=route=>previewOnly?[...previewViews,'clientes','proveedores','ventas','facturas-proveedores'].includes(route):(devDesign&&designViews.includes(route))||allowed&&permissions.includes(route==='ventas'?'administration.read':['clientes','proveedores'].includes(route)?'administration.parties.read':'administration.purchases.read');
+  const canOpen=route=>previewOnly?[...previewViews,'clientes','proveedores','ventas','facturas-proveedores'].includes(route):(devDesign&&designViews.includes(route))||allowed&&permissions.includes(route==='ventas'?'administration.read':route==='cobros'?'administration.receipts.validate':['clientes','proveedores'].includes(route)?'administration.parties.read':'administration.purchases.read');
   return <nav className="finance-navigation" aria-label="Administración">
     <p className="nav-caption">FINANZAS</p>
     {allowed ? <a href="/" title="Resumen" aria-current={path==='/modulos/finanzas'?'page':undefined}><FinanceIcon name="summary"/><span className="finance-nav-label">Resumen</span></a> : null}

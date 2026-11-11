@@ -18,7 +18,17 @@ class OrdersRepository:
             "SELECT operaciones.pedidos_leer(%s,%s,NULL,1,NULL,NULL) AS value",
             (company_id, order_id),
         ).fetchone()
-        return row["value"]
+        result = row["value"]
+        result["notes"] = self.connection.execute(
+            "SELECT operaciones.pedido_notas_leer(%s,%s) AS value", (company_id, order_id)
+        ).fetchone()["value"]
+        return result
+
+    def add_note(self, company_id: str, order_id: str, note: str, idempotency_key: str) -> dict[str, Any]:
+        return self.connection.execute(
+            "SELECT operaciones.pedido_nota_crear(%s,%s,%s,%s) AS value",
+            (company_id, order_id, note, idempotency_key),
+        ).fetchone()["value"]
 
     def create(self, company_id: str, payload: dict[str, Any], idempotency_key: str) -> dict[str, Any]:
         row = self.connection.execute(
@@ -33,6 +43,14 @@ class OrdersRepository:
         return row["value"]
 
     def transition(self, company_id: str, order_id: str, payload: dict[str, Any]) -> dict[str, Any]:
+        if payload["status"] == "CANCELLED":
+            self.connection.execute(
+                "SELECT set_config('app.current_operation',%s,true)", ("operations.orders.cancel",)
+            )
+            return self.connection.execute(
+                "SELECT operaciones.pedido_cancelar(%s,%s,%s,%s,%s) AS value",
+                (company_id, order_id, payload["version"], payload["reason"], payload.get("detail")),
+            ).fetchone()["value"]
         if payload["status"] == "CONFIRMED":
             origin = self.connection.execute(
                 "SELECT operaciones.pedido_origen_ecommerce(%s,%s) AS value",

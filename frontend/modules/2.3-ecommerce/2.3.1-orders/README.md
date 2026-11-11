@@ -13,7 +13,9 @@ Estado: componente funcional integrado al código fuente del app-shell Uonify y
 aplicación independiente compilable. La UI permite filtrar, listar, consultar
 detalle y ejecutar manualmente las transiciones autorizadas del pedido. El
 rediseño operativo agrega indicadores, búsqueda, tabla ejecutiva, progreso,
-cliente, entrega, pago, productos y totales sin inventar historial no expuesto.
+cliente, entrega, pago, productos, totales e historial real de transiciones
+expuesto por el backend. Las notas internas de la ficha se leen y escriben por
+la API autorizada; no se conservan solamente en el navegador.
 
 
 ## Contrato y estado de esta capa

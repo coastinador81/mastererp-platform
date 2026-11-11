@@ -42,6 +42,14 @@ def _request(event: dict[str, Any], repository: OrdersRepository) -> tuple[int, 
         if not 1 <= limit <= 100:
             raise HttpError(400, "limit must be between 1 and 100", code="invalid_request")
         return 200, {"items": repository.list(company_id, query.get("status"), limit)}
+    if method == "POST" and order_id and request.get("path", "").endswith("/notes"):
+        UUID(order_id)
+        payload = parse_body(event)
+        key = _header(event, "idempotency-key")
+        note = payload.get("note")
+        if not isinstance(note, str) or not 1 <= len(note.strip()) <= 2000 or not key or not 1 <= len(key) <= 128:
+            raise HttpError(400, "note and Idempotency-Key are required", code="invalid_request")
+        return 201, repository.add_note(company_id, order_id, note, key)
     if method == "POST" and order_id and request.get("path", "").endswith("/transitions"):
         UUID(order_id)
         payload = parse_body(event)
@@ -89,7 +97,8 @@ def lambda_handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
             raise HttpError(400, "X-Tenant-Id is required", code="invalid_request")
         UUID(tenant_id)
         request = event.get("requestContext", {}).get("http", {})
-        operation = "operations.orders.create" if request.get("method") == "POST" and not (event.get("pathParameters") or {}).get("order_id") else "operations.orders.transition"
+        path = request.get("path", "")
+        operation = "operations.orders.notes.create" if path.endswith("/notes") else "operations.orders.create" if request.get("method") == "POST" and not (event.get("pathParameters") or {}).get("order_id") else "operations.orders.transition"
         if request.get("method", "GET") == "GET":
             operation = "operations.orders.read"
         with db_connection(tenant_id=tenant_id, correlation_id=correlation_id, operation=operation) as connection:

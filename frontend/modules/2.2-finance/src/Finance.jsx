@@ -2,12 +2,14 @@ import React from 'react';
 import Purchases from '../2.2.1-administration/2.2.1.2-gestion-compras/screens/purchases/Purchases.jsx';
 import Parties from '../2.2.1-administration/screens/parties/Parties.jsx';
 import Sales from '../2.2.1-administration/2.2.1.1-gestion-comercial/2.2.1.1.3-ventas/screens/list/Sales.jsx';
+import PaymentReviews from '../2.2.1-administration/2.2.1.4-tesoreria/2.2.1.4.1-cobros/PaymentReviews.jsx';
 export default function Finance({workspace,path,navigate}) {
   const allowed=workspace.context?.modules.includes('erp.finance')&&workspace.context?.permissions.some(p=>['administration.parties.read','administration.purchases.read','administration.read'].includes(p));
   if(!allowed)return <div className="notice" role="alert">No tienes acceso a Finanzas en este espacio.</div>;
   if(!workspace.context.companies.length)return <p className="notice" role="status">No hay empresas activas autorizadas para este módulo.</p>;
   if(!workspace.company)return <div className="notice" role="status">Selecciona una empresa para trabajar con Finanzas.</div>;
   if(/^\/modulos\/finanzas\/administracion\/ventas(?:\/.*)?$/.test(path))return <Sales key={workspace.tenant+':'+workspace.company+':'+path} workspace={workspace} path={path} navigate={navigate}/>;
+  if(path==='/modulos/finanzas/administracion/cobros')return <PaymentReviews key={workspace.tenant+':'+workspace.company} workspace={workspace}/>;
   const buying=path.match(/^\/modulos\/finanzas\/administracion\/(solicitudes-compra|ordenes-compra|facturas-proveedores)(?:\/.*)?$/);
   if(buying)return <Purchases key={workspace.tenant+':'+workspace.company+':'+path} workspace={workspace} capacity={buying[1]} path={path} navigate={navigate}/>;
   const match=path.match(/^\/modulos\/finanzas\/administracion\/(clientes|proveedores)(?:\/.*)?$/);

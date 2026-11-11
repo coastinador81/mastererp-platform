@@ -23,6 +23,13 @@ por Inventario. El artefacto se genera con
 El checkout Storefront crea esa reserva y el Pedido atómicamente mediante
 `ventas_digitales.checkout_crear`, resolviendo identidad, tienda y precios en el
 servidor. El endpoint administrativo de Pedidos conserva su contrato separado.
+La lectura de la ficha incluye `history`, proyectado desde los eventos
+inmutables del pedido con estado, motivo, detalle, actor y fecha; el Admin no
+fabrica historial local.
+Las notas internas se persisten de forma idempotente mediante
+`POST /v1/companies/{company_id}/orders/{order_id}/notes`. La cancelación previa
+al despacho coordina pedido, reserva de inventario y venta vinculada en una sola
+transacción; si alguna autorización o precondición falla, no deja efectos parciales.
 
 Validaciones: `python -m unittest discover -s backend/modules/2.3-ecommerce/2.3.1-orders/tests -p 'test_*.py'`
 y estructura local mediante `scripts/validate_structure.py`. El checkout E2E,

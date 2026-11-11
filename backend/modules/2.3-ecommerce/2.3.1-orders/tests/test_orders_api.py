@@ -38,6 +38,24 @@ class OrdersApiTests(unittest.TestCase):
         with self.assertRaises(HttpError):
             _request(self.event("POST", order_id, {"status": "CONFIRMED"}, f"/v1/companies/c/orders/{order_id}/transitions"), Mock())
 
+    def test_creates_persistent_note_idempotently(self):
+        order_id = "20000000-0000-0000-0000-000000000001"
+        repo = Mock(); repo.add_note.return_value = {"id": "note", "note": "Llamar al llegar"}
+        path = f"/v1/companies/c/orders/{order_id}/notes"
+        status, result = _request(self.event("POST", order_id, {"note": "  Llamar al llegar  "}, path), repo)
+        self.assertEqual((status, result), (201, {"id": "note", "note": "Llamar al llegar"}))
+        repo.add_note.assert_called_once_with(
+            "10000000-0000-0000-0000-000000000001", order_id, "  Llamar al llegar  ", "key-1"
+        )
+
+    def test_note_requires_content_and_idempotency_key(self):
+        order_id = "20000000-0000-0000-0000-000000000001"
+        event = self.event("POST", order_id, {"note": " "}, f"/v1/companies/c/orders/{order_id}/notes")
+        event["headers"] = {}
+        with self.assertRaises(HttpError) as caught:
+            _request(event, Mock())
+        self.assertEqual(caught.exception.status, 400)
+
     def test_maps_database_errors_without_leaking_details(self):
         error = RuntimeError("secret SQL detail")
         error.sqlstate = "40001"

@@ -13,9 +13,9 @@ def row(value):
 class SalesRepositoryTests(unittest.TestCase):
     def test_ecommerce_confirmation_is_one_controlled_command(self):
         c = Mock()
-        c.execute.side_effect = [row(True), Mock(), row({"id": "sale"}), Mock(), row({"status": "CONFIRMED"})]
+        c.execute.side_effect = [row(True), Mock(), row({"id": "sale"}), Mock(), row({"status": "CONFIRMED"}), row([])]
         result = OrdersRepository(c).transition("company", "order", {"status": "CONFIRMED", "version": 3})
-        self.assertEqual(result, {"status": "CONFIRMED", "sale": {"id": "sale"}})
+        self.assertEqual(result, {"status": "CONFIRMED", "notes": [], "sale": {"id": "sale"}})
         calls = c.execute.call_args_list
         self.assertIn("venta_desde_pedido", calls[2].args[0])
         self.assertEqual(calls[2].args[1][3], "sv:order:3")
@@ -41,6 +41,19 @@ class SalesRepositoryTests(unittest.TestCase):
 
     def test_explicit_key_is_forwarded(self):
         c = Mock()
-        c.execute.side_effect = [row(True), Mock(), row({"id": "sale"}), Mock(), row({})]
+        c.execute.side_effect = [row(True), Mock(), row({"id": "sale"}), Mock(), row({}), row([])]
         OrdersRepository(c).transition("company", "order", {"status": "CONFIRMED", "version": 2, "_idempotency_key": "explicit"})
         self.assertEqual(c.execute.call_args_list[2].args[1][3], "explicit")
+
+    def test_cancellation_uses_coordinated_database_command(self):
+        c = Mock(); c.execute.side_effect = [Mock(), row({"status": "CANCELLED"})]
+        result = OrdersRepository(c).transition(
+            "company", "order", {"status": "CANCELLED", "version": 2, "reason": "CUSTOMER_REQUEST"}
+        )
+        self.assertEqual(result["status"], "CANCELLED")
+        self.assertIn("pedido_cancelar", c.execute.call_args_list[1].args[0])
+        self.assertEqual(c.execute.call_args_list[0].args[1], ("operations.orders.cancel",))
+
+    def test_get_includes_persistent_notes(self):
+        c = Mock(); c.execute.side_effect = [row({"id": "order"}), row([{"id": "note"}])]
+        self.assertEqual(OrdersRepository(c).get("company", "order")["notes"], [{"id": "note"}])

@@ -2,10 +2,12 @@
 
 Responsabilidad general: Organizar el registro y seguimiento de cobros.
 
-Estado: pendiente de implementación.
+Estado: bandeja real de validación de pagos implementada; publicación y prueba autenticada DEV pendientes.
 
 Propietario funcional: Finanzas → Administración; responsable nominal pendiente de asignación.
 Dependencias: contexto autorizado de tenant y contratos del padre; reglas y criterios de aceptación se definirán con el Product Owner al priorizar la tarea.
+
+La pantalla muestra únicamente pagos electrónicos pendientes autorizados. Finanzas registra motivo y evidencia para validar o rechazar; no existen datos de respaldo simulados.
 
 <!-- ux-ui-standard:start -->
 ## UX/UI común

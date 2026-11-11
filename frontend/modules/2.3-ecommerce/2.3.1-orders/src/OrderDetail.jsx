@@ -23,6 +23,13 @@ function Progress({ status }) {
   </div>;
 }
 
+function OrderHistory({ history = [] }) {
+  return <section className="od-card od-history"><div className="od-card-title"><div><h2>Historial del pedido</h2><p>Cambios registrados por el backend</p></div></div>
+    {history.length ? <ol>{history.map(event => <li key={event.id}><span className="od-history-marker" aria-hidden="true"/><div><div className="od-history-heading"><StatusBadge status={event.status}>{statusLabel(event.status)}</StatusBadge><time dateTime={event.created_at}>{dateTime(event.created_at)}</time></div><p>{event.reason}</p>{event.detail&&<small>{event.detail}</small>}<small>Realizado por {event.actor_name||'Usuario autorizado'}</small></div></li>)}</ol>
+      : <p className="od-history-empty">No hay cambios de estado registrados.</p>}
+  </section>;
+}
+
 function SideCard({ title, children }) {
   return <section className="od-card od-side-card"><div className="od-card-title"><h2>{title}</h2></div><div className="od-side-content">{children}</div></section>;
 }
@@ -45,9 +52,9 @@ function CopyAddress({ address }) {
   return <><button type="button" className="od-button secondary full" disabled={!address} onClick={copy}>{copied === 'Dirección copiada' ? <><FinanceIcon name="check"/>Dirección copiada</> : 'Copiar dirección'}</button><span className="od-copy-feedback" role="status">{copied === 'Dirección copiada' ? '' : copied}</span></>;
 }
 
-export default function OrderDetail({ order, writable, transition, close, nodeName, customerOrders = [], canOpenCustomer }) {
+export default function OrderDetail({ order, writable, transition, addNote, close, nodeName, customerOrders = [], canOpenCustomer }) {
   const delivery = order.delivery_snapshot || {}, customer = order.customer_snapshot || {}, payment = order.payment_snapshot || {};
-  const next=(NEXT[order.status]||[]).filter(value=>value!=='CANCELLED'),handoff=HANDOFF[order.status],address=delivery.address||delivery.address_line_1||'';
+  const paymentReady=['VALIDATED','PENDING_COLLECTION'].includes(payment.status),next=(NEXT[order.status]||[]).filter(value=>value!=='CANCELLED'&&(value!=='CONFIRMED'||paymentReady)),handoff=HANDOFF[order.status],address=delivery.address||delivery.address_line_1||'';
   const handoffHref=handoff?.route==='routes'&&order.route_ref?detailHref('routes',order.route_ref):handoff?.detail?detailHref(handoff.route,order.id):handoff?listHref(handoff.route):'';
   const units=order.items.reduce((sum,item)=>sum+Number(item.quantity||0),0),initials=(customer.name||'C').split(/\s+/).slice(0,2).map(value=>value[0]).join('').toUpperCase();
   const financeUrl=MODULES.find(module=>module.id==='finance')?.href,customerUrl=canOpenCustomer&&financeUrl&&order.customer_id?`${financeUrl}#/modulos/finanzas/administracion/clientes/${encodeURIComponent(order.customer_id)}`:'';
@@ -58,13 +65,14 @@ export default function OrderDetail({ order, writable, transition, close, nodeNa
       <div className="od-main">
         <section className="od-card"><div className="od-status-heading"><div><span>ESTADO ACTUAL</span><StatusBadge status={order.status}>{statusLabel(order.status)}</StatusBadge></div><strong>{money(order.total,order.currency)}</strong></div>
           {order.status==='CANCELLED'?<p className="cancelled-note od-cancelled">Este pedido fue cancelado y su ciclo operativo terminó.</p>:<Progress status={order.status}/>}
-          {next[0]&&writable?<div className="od-status-action"><div><strong>Siguiente etapa: {statusLabel(next[0])}</strong><small>La actualización quedará registrada en el historial del pedido.</small></div><button type="button" className="od-button primary" onClick={()=>transition(next[0])}>Marcar como {statusLabel(next[0])}</button></div>:handoff?<div className="od-status-action"><div><strong>{handoff.title}</strong><small>{handoff.note}</small></div><a className="od-button primary" href={handoffHref}>{handoff.label}</a></div>:null}
+          {next[0]&&writable?<div className="od-status-action"><div><strong>Siguiente etapa: {statusLabel(next[0])}</strong><small>La actualización quedará registrada en el historial del pedido.</small></div><button type="button" className="od-button primary" onClick={()=>transition(next[0])}>Marcar como {statusLabel(next[0])}</button></div>:order.status==='PENDING'&&!paymentReady?<div className="od-status-action"><div><strong>En espera de validación de Finanzas</strong><small>Operaciones continuará cuando Finanzas valide el pago electrónico.</small></div></div>:handoff?<div className="od-status-action"><div><strong>{handoff.title}</strong><small>{handoff.note}</small></div><a className="od-button primary" href={handoffHref}>{handoff.label}</a></div>:null}
         </section>
         <section className="od-card od-products"><div className="od-card-title"><div><h2>Productos del pedido</h2><p>{units} {units===1?'unidad':'unidades'} en total</p></div></div>
           {order.items.map((item,index)=><div className="od-product-line" key={item.id||item.position||index}><span className="od-product-image"><FinanceIcon name="package"/></span><div><strong>{item.product_name||'Producto sin nombre'}</strong><small>SKU: {item.product_code||'Sin referencia'} · Cantidad: {item.quantity}</small></div><span>{money(item.unit_price,order.currency)}</span><strong>{money(item.subtotal,order.currency)}</strong></div>)}
           <div className="od-totals"><span>Subtotal <b>{money(order.subtotal,order.currency)}</b></span><span>Entrega <b>{money(order.delivery_fee,order.currency)}</b></span><span>Total <b>{money(order.total,order.currency)}</b></span></div>
         </section>
-        <OrderNotesPreview key={order.id} writable={writable}/>
+        <OrderHistory history={order.history}/>
+        <OrderNotesPreview key={order.id} notes={order.notes||[]} writable={writable} addNote={addNote}/>
         {writable&&(NEXT[order.status]||[]).includes('CANCELLED')?<div className="od-cancel"><button type="button" className="od-button danger" onClick={()=>transition('CANCELLED')}>Cancelar pedido</button></div>:null}
       </div>
       <div className="od-side">
