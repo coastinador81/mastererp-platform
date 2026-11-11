@@ -92,7 +92,10 @@ Decisión del dueño (08-11-2026, `b555b94`): se publica a mano, con su usuario 
 6. Verificar: `node edge/deploy_edge.mjs verify` y prueba por la UI real, con evidencia (Reglas comunes, sección 9).
 
 - Solo en `https://dev.uonify.com`, detrás de la puerta de acceso de DEV: el JavaScript de la app nunca queda público. Nunca con el workflow ni el hosting del equipo.
-- Excepción del dueño (10-11-2026, para un demo desde otro ordenador): «cualquiera que ingrese tiene que poder utilizar Uonify así como lo hago yo». Alcance: DEV queda abierto a cualquiera. La puerta de la web en vivo deja pasar todas las páginas (cambio a mano del equipo del 10-11 a las 00:28 UTC, que aún no está en git) y `edge/gate-api.js` tiene `API_OPEN = true`: /api/* ya no pide la cookie de puerta y cada ruta sigue exigiendo su sesión de Uonify. Para volver a cerrar: `API_OPEN = false`, `test_gate.mjs` y desplegar la función de /api; y llevar a git y desplegar la puerta de la web. Mientras la puerta de la web en vivo no sea la de este repo, no usar `deploy_edge.mjs functions` ni `publish`: despliegan las dos funciones y volverían a cerrar la web.
+- Excepción del dueño del 10-11-2026, ya cerrada:
+  - Para un demo abrió DEV a cualquiera: la puerta de la web en vivo dejaba pasar todas las páginas (un cambio a mano del equipo) y `API_OPEN = true`.
+  - El 11-11-2026 ordenó volver a cerrarlo: «devuelve el candado que tenía». Se desplegaron las dos funciones de este repo (`deploy_edge.mjs functions` y `publish`), con `API_OPEN = false` y la puerta de la web de git.
+  - Si se vuelve a abrir, ver el historial de este apartado.
 - `upload_dist.mjs` comprueba cada objeto que sube (sha256, tipo y caché) e invalida la caché de CloudFront. No sube el chunk de MSW (`assets/browser-*.js`), `mockServiceWorker.js`, los `.md` ni `.DS_Store`.
 - Se niega a subir si la puerta no se generó para ese dist (`build_gate.mjs --check`): si cambian las rutas prerenderizadas o lo que piden las páginas públicas, primero se regenera y se publica la puerta.
 - La portada (`index.html` raíz) solo se sube con `--root` y con la puerta cerrando ya «/».
