@@ -30,6 +30,8 @@ Las notas internas se persisten de forma idempotente mediante
 `POST /v1/companies/{company_id}/orders/{order_id}/notes`. La cancelación previa
 al despacho coordina pedido, reserva de inventario y venta vinculada en una sola
 transacción; si alguna autorización o precondición falla, no deja efectos parciales.
+La lectura y escritura de notas tipa explícitamente los UUID en el adapter para
+resolver las firmas PostgreSQL controladas sin depender de parámetros `unknown`.
 
 Validaciones: `python -m unittest discover -s backend/modules/2.3-ecommerce/2.3.1-orders/tests -p 'test_*.py'`
 y estructura local mediante `scripts/validate_structure.py`. El checkout E2E,

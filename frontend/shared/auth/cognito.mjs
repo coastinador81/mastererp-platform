@@ -36,6 +36,7 @@ export async function authorizationRequest(config, options = {}) {
     code_challenge: await pkceChallenge(verifier), code_challenge_method: 'S256'};
   if (options.identityProvider) params.identity_provider = options.identityProvider;
   if (options.screen === 'signup') params.lang = 'es';
+  if (options.prompt === 'none' || options.prompt === 'login') params.prompt = options.prompt;
   url.search = new URLSearchParams(params).toString();
   return {url: url.href, verifier, state, createdAt: Date.now()};
 }

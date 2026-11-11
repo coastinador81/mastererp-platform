@@ -57,3 +57,11 @@ class SalesRepositoryTests(unittest.TestCase):
     def test_get_includes_persistent_notes(self):
         c = Mock(); c.execute.side_effect = [row({"id": "order"}), row([{"id": "note"}])]
         self.assertEqual(OrdersRepository(c).get("company", "order")["notes"], [{"id": "note"}])
+        self.assertIn("%s::uuid,%s::uuid", c.execute.call_args_list[1].args[0])
+
+    def test_note_creation_uses_explicit_database_types(self):
+        c = Mock(); c.execute.return_value = row({"id": "note"})
+        OrdersRepository(c).add_note("company", "order", "note", "key")
+        statement = c.execute.call_args.args[0]
+        self.assertIn("%s::uuid,%s::uuid", statement)
+        self.assertIn("%s::text,%s::varchar", statement)

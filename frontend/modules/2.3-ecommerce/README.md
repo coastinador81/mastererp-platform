@@ -63,3 +63,13 @@ Ecommerce conserva el shell base ya compartido con Finanzas. Incluye servicios r
 Uony reutiliza el componente existente `../2.2-finance/src/FinanceAssistant.jsx`, parametrizado con el nombre y la pantalla de Ecommerce. El borrador solo vive en memoria y se limpia al cambiar sesion, tenant o empresa. No lee registros ni manda mensajes; envio deshabilitado y conexion de IA pendiente. No implica OAuth, Gemini ni otras integraciones. El workflow observa explicitamente los archivos compartidos de los que depende; conserva OIDC, hosting y permisos actuales. La identidad visual propia de Finanzas no se activa por esta reutilizacion.
 
 Validacion local: `npm run build` y `node --test src/access.test.mjs ../../shared/auth/cognito.test.mjs`. La ruta previa del workflow a las pruebas Cognito subia un nivel de mas; se corrige para ejecutar realmente ese archivo existente. Esta correccion no cambia autenticacion ni permisos.
+
+## Continuidad de sesión entre aplicaciones DEV
+
+Ecommerce conserva tokens y refresh token aislados en su propio origen. Cuando
+entra sin sesión local, intenta una autorización PKCE silenciosa con
+`prompt=none`: Cognito recupera la sesión existente de Uonify o Finanzas sin
+pedir credenciales otra vez. Si Cognito no tiene una sesión válida, devuelve
+`login_required` y Ecommerce muestra el acceso normal. No se pasan tokens por
+URL, no se usan cookies amplias entre subdominios y las APIs siguen validando
+identidad, tenant, empresa, módulo y permisos en cada operación.

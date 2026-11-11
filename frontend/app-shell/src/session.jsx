@@ -55,6 +55,7 @@ export function WorkspaceProvider({children}) {
       try {
         if(window.location.pathname==='/auth/callback') {await completeLogin(config);await discover();window.dispatchEvent(new HashChangeEvent('hashchange'));}
         else if(await restoreSession(config)) await discover();
+        else if(standalone) await login(config,{prompt:'none'});
       } catch {end('No se pudo validar el acceso. Vuelve a intentarlo.');}
       finally {setAuthenticating(false);}
     })();

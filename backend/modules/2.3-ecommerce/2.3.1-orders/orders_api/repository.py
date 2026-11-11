@@ -15,18 +15,18 @@ class OrdersRepository:
 
     def get(self, company_id: str, order_id: str) -> dict[str, Any]:
         row = self.connection.execute(
-            "SELECT operaciones.pedidos_leer(%s,%s,NULL,1,NULL,NULL) AS value",
+            "SELECT operaciones.pedidos_leer(%s::uuid,%s::uuid,NULL,1,NULL,NULL) AS value",
             (company_id, order_id),
         ).fetchone()
         result = row["value"]
         result["notes"] = self.connection.execute(
-            "SELECT operaciones.pedido_notas_leer(%s,%s) AS value", (company_id, order_id)
+            "SELECT operaciones.pedido_notas_leer(%s::uuid,%s::uuid) AS value", (company_id, order_id)
         ).fetchone()["value"]
         return result
 
     def add_note(self, company_id: str, order_id: str, note: str, idempotency_key: str) -> dict[str, Any]:
         return self.connection.execute(
-            "SELECT operaciones.pedido_nota_crear(%s,%s,%s,%s) AS value",
+            "SELECT operaciones.pedido_nota_crear(%s::uuid,%s::uuid,%s::text,%s::varchar) AS value",
             (company_id, order_id, note, idempotency_key),
         ).fetchone()["value"]
 

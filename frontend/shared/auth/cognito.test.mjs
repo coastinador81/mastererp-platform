@@ -23,6 +23,13 @@ test('public authorization-code request has random state and S256; no secret', a
   assert.equal(url.searchParams.get('code_challenge'),await pkceChallenge(first.verifier));
 });
 
+test('silent authorization preserves PKCE and requests no interactive login', async () => {
+  const request=await authorizationRequest(config,{prompt:'none'});
+  const url=new URL(request.url);
+  assert.equal(url.searchParams.get('prompt'),'none');
+  assert.equal(url.searchParams.get('code_challenge_method'),'S256');
+});
+
 test('callback validates state, consumes transaction, removes URL; tokens stay in memory', async () => {
   const store=new Map();
   globalThis.sessionStorage={getItem:k=>store.get(k)??null,setItem:(k,v)=>store.set(k,v),removeItem:k=>store.delete(k)};
