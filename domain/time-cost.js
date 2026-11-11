@@ -1,0 +1,7 @@
+export const hourlyRates = { 'Ana Díaz': 20, 'Carlos Pérez': 30, default: 15 };
+export const currency = 'USD';
+export function rateFor(assignee) { return hourlyRates[assignee] ?? hourlyRates.default; }
+export function validHours(hours) { return Number.isFinite(hours) && hours > 0 && hours <= 24 && Math.round(hours * 4) === hours * 4; }
+export function initializeCostData(task) { task.timeEntries ??= []; task.costEntries ??= []; task.estimatedHours ??= null; task.estimatedBudget ??= null; }
+export function taskCostSummary(task) { initializeCostData(task); const hours = task.timeEntries.reduce((total, entry) => total + entry.hours, 0); const timeCost = task.timeEntries.reduce((total, entry) => total + entry.cost, 0); const manualCost = task.costEntries.reduce((total, entry) => total + entry.amount, 0); const total = timeCost + manualCost; return { hours, timeCost, manualCost, total, hoursOver: task.estimatedHours !== null && hours > task.estimatedHours, budgetOver: task.estimatedBudget !== null && total > task.estimatedBudget }; }
+export function projectCostSummary(project) { const summaries = project.tasks.filter((task) => !task.archivedAt).map(taskCostSummary); return summaries.reduce((total, summary) => ({ hours: total.hours + summary.hours, timeCost: total.timeCost + summary.timeCost, manualCost: total.manualCost + summary.manualCost, total: total.total + summary.total, overrunTasks: total.overrunTasks + Number(summary.hoursOver || summary.budgetOver) }), { hours: 0, timeCost: 0, manualCost: 0, total: 0, overrunTasks: 0 }); }
