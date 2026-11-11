@@ -1,4 +1,1 @@
-.finance-app .context-controls{width:auto;margin-left:auto;justify-content:flex-end}
-@media(max-width:600px){.finance-app .integrated-header{flex-wrap:nowrap}.finance-app .context-controls{gap:8px}}
-
 .finance-chat-home{display:inline-flex;align-items:center;justify-content:center;flex:none;width:42px;height:42px;border-radius:50%;color:#667085;text-decoration:none}.finance-chat-home:hover{background:#edf3fc;color:#2563b8}.finance-chat-home:focus-visible{outline:2px solid #2563eb;outline-offset:3px}

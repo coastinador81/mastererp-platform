@@ -6,4 +6,5 @@ import '../../../app-shell/src/shell.css';
 import '../../2.2-finance/src/finance.css';
 import '../../2.3-ecommerce/src/operations.css';
 import './transport.css';
+import '../../../shared/ui/application-header.css';
 createRoot(document.getElementById('root')).render(<WorkspaceProvider><TransportApp/></WorkspaceProvider>);

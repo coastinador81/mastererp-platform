@@ -1,11 +1,5 @@
 @import './typography.css';
 .ecommerce-app .environment {margin:0 0 var(--finance-space-5);padding:var(--finance-space-4);border:1px solid var(--finance-border);border-radius:var(--finance-radius);background:var(--finance-selected);color:var(--finance-text);font-size:var(--finance-font-body)}
-.ecommerce-app .context-controls{width:auto;margin-left:auto;justify-content:flex-end}
-.ecommerce-app .integrated-header{height:80px;min-height:80px;padding:12px 24px;background:#fff;border-color:#e8edf3;gap:20px}
-.ecommerce-app .integrated-header .brand{margin-right:auto;min-width:0;color:#374151;font-size:22px;font-weight:500;line-height:1.2}
-.ecommerce-app .integrated-header .context-controls{width:auto;flex:none;margin:0;gap:16px}
-.ecommerce-app .integrated-header :is(button,.finance-chat-home,.finance-assistant-toggle,.module-launcher-toggle){min-height:40px}
-@media(max-width:600px){.ecommerce-app .integrated-header{flex-wrap:nowrap}.ecommerce-app .context-controls{gap:8px}}
 .ecommerce-app .finance-navigation,.ecommerce-app .administration-nav {width:100%}
 .ecommerce-app .administration-nav ul {margin:0;padding:0;list-style:none}
 .ecommerce-app .administration-nav-children {padding-top:var(--finance-space-2)}
@@ -57,7 +51,7 @@
 .ecommerce-app .integrated-content :is(.page-heading,.order-actions,.orders-bulk){flex-wrap:wrap}
 @container(max-width:850px){.ecommerce-app .operation-master-detail{grid-template-columns:minmax(0,1fr)}}
 @container(max-width:480px){.ecommerce-app .ecommerce-welcome{padding:24px 0}.ecommerce-app .ecommerce-welcome h1{font-size:32px}}
-@media(max-width:380px){.ecommerce-app .integrated-header{padding:12px 8px;gap:6px}.ecommerce-app .context-controls{gap:2px}.ecommerce-app .brand{font-size:18px}.ecommerce-app .finance-chat-home{width:34px}}
+@media(max-width:380px){.ecommerce-app .finance-chat-home{width:34px}}
 
 /* Figma Operations visual language, backed only by canonical APIs. */
 .ecommerce-app .integrated-content{background:#f5f7fb;font-family:var(--mastererp-font-family)}.ecommerce-app .environment{display:none}

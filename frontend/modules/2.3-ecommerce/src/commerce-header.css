@@ -10,4 +10,4 @@
 .ecommerce-app.ecommerce-app .integrated-content{font-family:var(--mastererp-font-family);background:#f6f8fc}
 .ecommerce-app .od-header-actions{flex-wrap:wrap}
 @media(max-width:600px){.ecommerce-app .commerce-header-menus .commerce-notifications{display:none}}
-@media(max-width:600px){.ecommerce-app .commerce-header-panel{position:fixed;top:76px;right:16px}.ecommerce-app .brand{font-size:16px}.ecommerce-app .brand span{font-size:10px}.ecommerce-app .commerce-header-menus{gap:2px}.ecommerce-app .commerce-header-menus .commerce-icon-button{width:36px;min-width:36px;height:44px;padding:6px}}
+@media(max-width:600px){.ecommerce-app .commerce-header-panel{position:fixed;top:76px;right:16px}.ecommerce-app .commerce-header-menus{gap:2px}.ecommerce-app .commerce-header-menus .commerce-icon-button{width:36px;min-width:36px;height:44px;padding:6px}}
