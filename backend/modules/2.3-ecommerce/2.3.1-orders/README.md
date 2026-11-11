@@ -32,6 +32,9 @@ al despacho coordina pedido, reserva de inventario y venta vinculada en una sola
 transacción; si alguna autorización o precondición falla, no deja efectos parciales.
 La lectura y escritura de notas tipa explícitamente los UUID en el adapter para
 resolver las firmas PostgreSQL controladas sin depender de parámetros `unknown`.
+El listado expone filtros y paginación keyset mediante `next_cursor`. Las
+acciones agrupadas se ejecutan en una sola transacción y cualquier error
+revierte el lote completo.
 
 Validaciones: `python -m unittest discover -s backend/modules/2.3-ecommerce/2.3.1-orders/tests -p 'test_*.py'`
 y estructura local mediante `scripts/validate_structure.py`. El checkout E2E,
@@ -51,4 +54,6 @@ Resultados: 18 pruebas unitarias remotas; importación del driver y comprobació
 
 Se conservan ventas selladas de prueba en un tenant DEV suspendido con pertenencia inactiva; no se desactivan triggers para borrarlas. No son un ambiente QA nuevo. Hubo un fallo inicial de empaquetado por typing_extensions.py ausente: se restauró el ZIP previo por CloudFormation, se corrigió el paquete y se repitió la suite con éxito. El artefacto x86 inicial se bloqueó antes de desplegar; el runtime real es Python 3.12 ARM64.
 
-Pendientes: asignar roles a personas reales sin perder propiedad, frontend propio de Ventas, otros orígenes, captura/verificación de cambio en consumidores, validación real de pagos y cancelaciones coordinadas. No hay facturación ni cobros automáticos.
+Pendientes: frontend propio de Ventas, otros orígenes, documentos fiscales,
+comprobantes de entrega y contrato separado de devoluciones/reembolsos. La
+validación del pago pertenece a Finanzas y Pedidos solo consume su estado.

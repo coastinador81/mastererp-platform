@@ -1,4 +1,5 @@
 """Only controlled PostgreSQL functions are exposed to the Orders adapter."""
+from __future__ import annotations
 from typing import Any
 
 
@@ -6,12 +7,22 @@ class OrdersRepository:
     def __init__(self, connection):
         self.connection = connection
 
-    def list(self, company_id: str, status: str | None, limit: int) -> list[dict[str, Any]]:
+    def list(self, company_id: str, filters: dict[str, Any], limit: int) -> dict[str, Any]:
         row = self.connection.execute(
-            "SELECT operaciones.pedidos_leer(%s,NULL,%s,%s,NULL,NULL) AS value",
-            (company_id, status, limit),
+            """SELECT operaciones.pedidos_listar(
+            %s::uuid,%s,%s,%s,%s,%s::date,%s::date,%s::boolean,%s::timestamptz,%s::uuid) AS value""",
+            (company_id, filters.get("status"), filters.get("query"), filters.get("payment"), limit,
+             filters.get("date_from"), filters.get("date_to"), filters.get("ascending", False),
+             filters.get("after"), filters.get("after_id")),
         ).fetchone()
         return row["value"]
+
+    def bulk_transition(self, company_id: str, orders: list[dict[str, Any]], payload: dict[str, Any]) -> list[dict[str, Any]]:
+        results = []
+        for order in orders:
+            command = {**payload, "version": order["version"], "_idempotency_key": None}
+            results.append(self.transition(company_id, order["id"], command))
+        return results
 
     def get(self, company_id: str, order_id: str) -> dict[str, Any]:
         row = self.connection.execute(

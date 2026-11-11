@@ -1,10 +1,9 @@
 # Pedidos
 
-El detalle sigue siendo una página completa. `OrderDemoActions.jsx` añade
-únicamente las simulaciones visuales autorizadas: notas en memoria descartadas
-al salir y descarga de texto rotulado «NO ES UNA FACTURA FISCAL», con importes
-del pedido real. No emite facturas ni guarda notas en el servidor; esas APIs
-siguen pendientes. Impresión y transiciones existentes permanecen reales.
+El detalle sigue siendo una página completa. Las notas internas se leen y
+persisten mediante la API autorizada. La descarga continúa siendo una vista
+previa rotulada «NO ES UNA FACTURA FISCAL»; no emite documentos fiscales.
+Impresión y transiciones permanecen reales.
 
 Objetivo específico: Gestionar pedidos y sus transiciones autorizadas.
 
@@ -27,6 +26,9 @@ Capa: frontend. Dependencias: contexto autenticado, tenant y contratos del padre
 Estado verificable: aplicación Vite compilada con `npm run build`; consume las
 cuatro rutas canónicas con bearer token y contexto tenant/empresa. La interfaz
 no concede permisos: el backend/PostgreSQL vuelve a autorizar cada operación.
+El directorio usa filtros y paginación por cursor en el backend. Las acciones
+agrupadas usan un comando transaccional: se aplican todas o ninguna. La UI
+niega escritura por defecto si no recibe el permiso real.
 
 Validaciones: build independiente y build Uonify correctos. Pendientes para el
 nuevo corte: publicación DEV y pruebas de navegador con identidad autorizada.

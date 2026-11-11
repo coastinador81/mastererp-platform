@@ -65,3 +65,11 @@ class SalesRepositoryTests(unittest.TestCase):
         statement = c.execute.call_args.args[0]
         self.assertIn("%s::uuid,%s::uuid", statement)
         self.assertIn("%s::text,%s::varchar", statement)
+
+    def test_bulk_transition_runs_every_order_on_the_same_connection(self):
+        repository = OrdersRepository(Mock())
+        repository.transition = Mock(side_effect=[{"id": "one"}, {"id": "two"}])
+        result = repository.bulk_transition("company", [{"id": "one", "version": 1}, {"id": "two", "version": 3}],
+                                            {"status": "CANCELLED", "reason": "BULK"})
+        self.assertEqual(result, [{"id": "one"}, {"id": "two"}])
+        self.assertEqual(repository.transition.call_count, 2)

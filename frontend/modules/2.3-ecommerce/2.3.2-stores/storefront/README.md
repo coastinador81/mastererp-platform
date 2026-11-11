@@ -22,6 +22,9 @@ coincidencia de correo. Los access e ID tokens viven solo en memoria. Estado:
 catálogo público validado en DEV; identidad candidata aprobada localmente y
 checkout canónico desplegado y probado en DEV. Cognito, invitación de un solo
 uso y checkout real aprobaron; MasterERP crea atómicamente reserva y pedido.
+Mis compras presenta los estados financieros canónicos como solo lectura:
+`PENDING_VERIFICATION`, `VALIDATED`, `REJECTED` y `PENDING_COLLECTION`, dejando
+la revisión y modificación exclusivamente en Finanzas.
 
 Ubicación canónica: `frontend/modules/2.3-ecommerce/2.3.2-stores/storefront/`.
 Hosting DEV: https://tienda-dev.uonify.com

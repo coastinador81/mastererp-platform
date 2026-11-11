@@ -14,9 +14,18 @@ class OrdersApiTests(unittest.TestCase):
                 "headers": {"Idempotency-Key": "key-1"}, "body": json.dumps(body or {})}
 
     def test_lists_orders(self):
-        repo = Mock(); repo.list.return_value = [{"id": "one"}]
+        repo = Mock(); repo.list.return_value = {"items": [{"id": "one"}], "next_cursor": None}
         status, result = _request(self.event(), repo)
-        self.assertEqual((status, result), (200, {"items": [{"id": "one"}]}))
+        self.assertEqual((status, result), (200, {"items": [{"id": "one"}], "next_cursor": None}))
+
+    def test_bulk_transition_is_one_repository_command(self):
+        order_id = "20000000-0000-0000-0000-000000000001"
+        repo = Mock(); repo.bulk_transition.return_value = [{"id": order_id, "status": "CANCELLED"}]
+        body = {"orders": [{"id": order_id, "version": 2}], "status": "CANCELLED", "reason": "CUSTOMER_REQUEST"}
+        status, result = _request(self.event("POST", body=body, path="/v1/companies/c/orders/bulk-transitions"), repo)
+        self.assertEqual(status, 200)
+        self.assertEqual(result["items"][0]["status"], "CANCELLED")
+        repo.bulk_transition.assert_called_once()
 
     def test_create_requires_inventory_reservation(self):
         with self.assertRaises(HttpError) as caught:

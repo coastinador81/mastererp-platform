@@ -41,7 +41,34 @@ def _request(event: dict[str, Any], repository: OrdersRepository) -> tuple[int, 
         limit = int(query.get("limit", 25))
         if not 1 <= limit <= 100:
             raise HttpError(400, "limit must be between 1 and 100", code="invalid_request")
-        return 200, {"items": repository.list(company_id, query.get("status"), limit)}
+        after, after_id = query.get("after"), query.get("after_id")
+        if bool(after) != bool(after_id):
+            raise HttpError(400, "after and after_id must be provided together", code="invalid_request")
+        if after_id:
+            UUID(after_id)
+        if query.get("sort", "newest") not in ("newest", "oldest"):
+            raise HttpError(400, "sort must be newest or oldest", code="invalid_request")
+        filters = {"status": query.get("status"), "query": query.get("q"),
+                   "payment": query.get("payment"), "date_from": query.get("date_from"),
+                   "date_to": query.get("date_to"), "ascending": query.get("sort") == "oldest",
+                   "after": after, "after_id": after_id}
+        return 200, repository.list(company_id, filters, limit)
+    if method == "POST" and request.get("path", "").endswith("/bulk-transitions"):
+        payload = parse_body(event)
+        orders = payload.get("orders")
+        if (not isinstance(orders, list) or not 1 <= len(orders) <= 50
+                or any(not isinstance(item, dict) or set(item) != {"id", "version"} for item in orders)):
+            raise HttpError(400, "orders must contain between 1 and 50 id/version pairs", code="invalid_request")
+        for item in orders:
+            UUID(item["id"])
+            if type(item["version"]) is not int or item["version"] < 1:
+                raise HttpError(400, "A positive integer version is required", code="invalid_request")
+        command = {key: payload.get(key) for key in ("status", "reason", "detail")}
+        if command["status"] not in ("CONFIRMED", "CANCELLED") or not isinstance(command["reason"], str) or not 1 <= len(command["reason"].strip()) <= 80:
+            raise HttpError(400, "A valid bulk transition is required", code="invalid_request")
+        if command["detail"] is not None and (not isinstance(command["detail"], str) or len(command["detail"]) > 500):
+            raise HttpError(400, "Invalid transition detail", code="invalid_request")
+        return 200, {"items": repository.bulk_transition(company_id, orders, command)}
     if method == "POST" and order_id and request.get("path", "").endswith("/notes"):
         UUID(order_id)
         payload = parse_body(event)
@@ -98,7 +125,7 @@ def lambda_handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
         UUID(tenant_id)
         request = event.get("requestContext", {}).get("http", {})
         path = request.get("path", "")
-        operation = "operations.orders.notes.create" if path.endswith("/notes") else "operations.orders.create" if request.get("method") == "POST" and not (event.get("pathParameters") or {}).get("order_id") else "operations.orders.transition"
+        operation = "operations.orders.notes.create" if path.endswith("/notes") else "operations.orders.transition" if path.endswith("/bulk-transitions") else "operations.orders.create" if request.get("method") == "POST" and not (event.get("pathParameters") or {}).get("order_id") else "operations.orders.transition"
         if request.get("method", "GET") == "GET":
             operation = "operations.orders.read"
         with db_connection(tenant_id=tenant_id, correlation_id=correlation_id, operation=operation) as connection:
