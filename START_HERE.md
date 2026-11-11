@@ -1,6 +1,6 @@
 # Empieza aquí
 
-`app-dev.uonify.com` es la entrada general DEV. Objetivo: dashboard común con chat y menú, mostrando solo módulos habilitados y autorizados; sus pantallas comparten el espacio, identidad y contexto de Uonify. No es obligatorio usar el chat. Finanzas DEV tiene hosting independiente para desarrollo y pruebas; el primer recorrido de Clientes/Proveedores usa composición en build y rutas hash internas, con resultados reales enlazados desde el contrato. Leer y respetar el [contrato frontend oficial](docs/FRONTEND_ARCHITECTURE.md), fuente Platform con copias idénticas.
+`dev.uonify.com` es el producto principal y la entrada general DEV: cuenta, espacios, chat y lanzador de aplicaciones autorizadas. No es obligatorio usar el chat. Finanzas, Ecommerce, Transporte y las demás aplicaciones son superficies conectadas del mismo producto, aunque mantengan subdominio, build y rollback independientes. `app-dev.uonify.com` conserva el shell administrativo histórico durante la transición. Leer y respetar el [contrato frontend oficial](docs/FRONTEND_ARCHITECTURE.md), fuente Platform con copias idénticas.
 
 MasterERP centraliza operaciones empresariales por módulos; Uonify es su entrada general con dashboard, menú y chat como experiencia objetivo. El tenant delimita acceso y módulos habilitados; una empresa es una entidad organizativa dentro de ese tenant.
 

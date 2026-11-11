@@ -1,0 +1,62 @@
+:root {
+  color-scheme: light;
+
+  /* Identidad común. Uonify conserva su implementación propia; los módulos
+     consumen estos fundamentos sin importar código interno de 0.2-app. */
+  --uon-brand-blue: #0178f7;
+  --uon-action-blue: #006ae1;
+  --uon-action-blue-hover: #0052bc;
+  --uon-ai-aqua: #35d5c4;
+  --uon-ai-text: #008376;
+
+  --uon-neutral-50: #f8fafe;
+  --uon-neutral-100: #f0f2f6;
+  --uon-neutral-200: #e1e3e8;
+  --uon-neutral-300: #caccd1;
+  --uon-neutral-500: #898c92;
+  --uon-neutral-600: #66696f;
+  --uon-neutral-700: #474a51;
+  --uon-neutral-800: #2b2e35;
+  --uon-neutral-900: #14171e;
+  --uon-surface: #ffffff;
+
+  --uon-success: #0f6b45;
+  --uon-success-surface: #eaf6ef;
+  --uon-warning: #9a6100;
+  --uon-warning-surface: #fff6e5;
+  --uon-error: #b3261e;
+  --uon-error-surface: #fdeeec;
+  --uon-information: #006ae1;
+  --uon-information-surface: #eaf3ff;
+  --uon-ai-surface: #e9faf7;
+
+  --uon-space-1: 4px;
+  --uon-space-2: 8px;
+  --uon-space-3: 12px;
+  --uon-space-4: 16px;
+  --uon-space-5: 20px;
+  --uon-space-6: 24px;
+  --uon-space-8: 32px;
+
+  --uon-radius-tag: 4px;
+  --uon-radius-control: 8px;
+  --uon-radius-card: 12px;
+  --uon-radius-modal: 16px;
+
+  --uon-motion-fast: 120ms;
+  --uon-motion-standard: 200ms;
+  --uon-motion-view: 320ms;
+  --uon-motion-easing: cubic-bezier(0.2, 0, 0, 1);
+
+  --uon-font-ui: Inter, Arimo, system-ui, -apple-system, sans-serif;
+  --uon-font-technical: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --uon-focus-ring: 0 0 0 2px var(--uon-surface), 0 0 0 4px var(--uon-brand-blue);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --uon-motion-fast: 0ms;
+    --uon-motion-standard: 0ms;
+    --uon-motion-view: 0ms;
+  }
+}

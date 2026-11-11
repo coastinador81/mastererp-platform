@@ -9,7 +9,7 @@ Estado: la raíz aloja la app integrada del equipo, que `publish-uonify-dev.yml`
 ## Dominio
 
 - `0.2-app`: la app de Uonify que sirve `https://dev.uonify.com`, la web aprobada por el dueño. Reglas y estado, en su README.
-- Uonify no usa `app-dev.uonify.com`; el destino de la app integrada lo decide el arquitecto. También queda pendiente con él cómo encaja la app de dev.uonify.com con la entrada general que el [contrato frontend](../../../docs/FRONTEND_ARCHITECTURE.md) sitúa allí (§1 a §3: cuenta común, espacios, chat y lanzador, con Cognito).
+- Uonify no usa `app-dev.uonify.com`: `dev.uonify.com` es el producto principal y la entrada general aprobada. `app-dev` conserva el shell administrativo histórico. La continuidad de cuenta y contexto con las aplicaciones independientes sigue el [contrato frontend](../../../docs/FRONTEND_ARCHITECTURE.md) y requiere validación explícita; no autoriza compartir tokens por URL ni omitir autorización backend.
 
 ## Contrato y estado de esta capa
 

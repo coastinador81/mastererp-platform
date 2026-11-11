@@ -8,7 +8,6 @@ on:
       - 'frontend/modules/2.2-finance/src/FinanceAssistant.jsx'
       - 'frontend/modules/2.2-finance/src/FinanceIcon.jsx'
       - 'frontend/modules/2.2-finance/src/UonifyChatLink.jsx'
-      - 'frontend/modules/2.2-finance/src/finance.css'
       - 'frontend/modules/2.2-finance/src/assets/brands/uonify-isotipo.svg'
       - 'frontend/modules/2.1-inventory/2.1.2-nodes/**'
       - 'frontend/modules/2.1-inventory/2.1.3-preparation/**'
@@ -20,6 +19,7 @@ on:
       - 'frontend/shared/status-badge/**'
       - 'frontend/shared/loading-state/**'
       - 'frontend/shared/workspace/**'
+      - 'frontend/shared/ui/**'
       - 'frontend/modules/0-uonify/auth-config.json'
       - '.github/workflows/publish-ecommerce-dev.yml'
 permissions:

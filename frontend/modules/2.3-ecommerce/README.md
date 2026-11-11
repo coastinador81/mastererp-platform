@@ -6,7 +6,7 @@ Ver [implementación, contratos y límites de Catálogo](2.3.4-catalog/README.md
 El selector presenta Operaciones o Catálogo y solo sus rutas autorizadas;
 conserva Métodos de pago dentro de Operaciones. La cabecera reutiliza la misma
 estructura compartida que Finanzas: Uony, chat de Uonify, lanzador y control de
-sesión, manteniendo la identidad propia de E-commerce. Arimo y estilos
+sesión, aplicando los fundamentos corporativos compartidos. Arimo y estilos
 acotados; no cambia hosting ni permisos.
 
 > Organización vigente: Ecommerce integra Pedidos, Tiendas, Website, Catálogo, Contenido y Marketplaces. Nodos y Preparación pertenecen a Inventario; Rutas de reparto a Transporte. Se conserva el frontend administrativo existente y sus contratos. Los apartados históricos conservados describen el contrato/estado previo cuando difieran; no modifican el mapa nuevo.

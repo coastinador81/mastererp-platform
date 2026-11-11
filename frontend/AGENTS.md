@@ -6,7 +6,7 @@ Antes de modificar una interfaz, leer [el estándar UX/UI](../docs/UX_UI_STANDAR
 
 - Conservar menú blanco, fondo #F6F8FC, acentos azules, Inter local y fallback sans-serif. Texto general #4B5563; secundario #667085.
 - Tablas de 14 px, peso 400, texto #667085 en códigos, nombres y celdas; cabecera #F4F7FB y bordes #E8EDF3. Sin negrita ni subrayados permanentes. Títulos #374151, peso 500.
-- Usar variables y componentes existentes; consultar los archivos de referencia antes de crear otro tema, paquete de iconos o copia de la fuente. El namespace --finance-* pertenece hoy a Finanzas: compartir la base exige respetar propiedad y consumidores, no aplicar finance-app a otras aplicaciones.
+- Usar variables y componentes existentes; consultar los archivos de referencia antes de crear otro tema, paquete de iconos o copia de la fuente. Los fundamentos `--uon-*` y la base administrativa pertenecen a `frontend/shared/ui`; `--finance-*` es un alias de compatibilidad que no debe extenderse en código nuevo. No aplicar `finance-app` para conceder identidad o comportamiento.
 - Mantener iconos SVG de línea fina, etiquetas accesibles, hover tenue, foco visible y legibilidad en móvil. Medir contraste de texto normal y foco.
 - En filas con ficha, conservar un enlace real en el nombre, teclado/Enter/nueva pestaña y navegación vigente. Respetar selección y controles; evitar columnas de detalle redundantes.
 - Verificar contratos antes de añadir búsqueda, filtros, métricas o botones. Nunca incluir fixtures en el runtime como respaldo de un servicio. No presentar un filtro de una sola página como búsqueda completa.

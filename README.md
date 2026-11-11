@@ -2,7 +2,7 @@
 
 ## Arquitectura frontend
 
-MasterERP conserva datos, reglas, procesos y autorización. `app-dev.uonify.com` es la entrada general DEV: la experiencia objetivo es un dashboard con chat y menú de módulos habilitados para el tenant y autorizados para el usuario. Sus pantallas se presentan dentro de Uonify, con navegación, identidad y contexto comunes; conversar no es obligatorio. Finanzas agrupa Administración, Contabilidad, BI y capacidades asociadas y conserva build/pipeline/despliegue propios. Su hosting `finanzas-dev.uonify.com` existe como acceso independiente de desarrollo y pruebas, no como navegación objetivo del usuario final; no se exige un subdominio financiero en producción ni una entrada `/finanzas`. El primer recorrido de Clientes/Proveedores ya está integrado y probado en DEV; las demás capacidades siguen pendientes. Cognito autentica; MasterERP autoriza cada operación por API. Ver [contrato oficial y estado desplegado](docs/FRONTEND_ARCHITECTURE.md).
+MasterERP conserva datos, reglas, procesos y autorización. `dev.uonify.com` es el producto principal y la entrada general DEV: chat, cuenta, espacios y lanzador conectan las aplicaciones autorizadas. Los subdominios de Finanzas, Ecommerce, Transporte y los demás módulos son superficies independientes del mismo producto, no proyectos separados; conservan build, despliegue y rollback propios. Conversar no es obligatorio y las vistas manuales usan los mismos contratos. `app-dev.uonify.com` es el shell administrativo histórico. Cognito autentica; MasterERP autoriza cada operación por API. Ver [contrato oficial y estado desplegado](docs/FRONTEND_ARCHITECTURE.md).
 
 Entrada rápida: [START_HERE.md](START_HERE.md).
 
@@ -42,7 +42,7 @@ Estado: estructura funcional creada; las implementaciones y despliegues se disti
 <!-- ux-ui-standard:start -->
 ## Estándar UX/UI de los módulos
 
-La referencia administrativa común es Finanzas/Proveedores: Inter regular, menú blanco, fondo gris azulado, acentos azules, tablas suaves e iconos de línea. Leer el [estándar UX/UI y la imagen de referencia](docs/UX_UI_STANDARD.md) antes de desarrollar una interfaz o su contrato. La implementación visual pertenece a Platform; esta guía no acredita que todos los módulos estén adaptados ni cambia las responsabilidades de cada repositorio.
+La identidad común parte del manual corporativo y de la experiencia principal de Uonify. Finanzas/Proveedores concreta el patrón administrativo con Inter regular, menú blanco, fondo gris azulado, acentos azules, tablas suaves e iconos de línea. Leer el [estándar UX/UI y la imagen de referencia](docs/UX_UI_STANDARD.md) antes de desarrollar una interfaz o su contrato. La implementación visual pertenece a Platform; esta guía no acredita que todos los módulos estén adaptados ni cambia las responsabilidades de cada repositorio.
 <!-- ux-ui-standard:end -->
 
 ## Diseño de Uonify: el manual de identidad corporativa es canon
@@ -53,7 +53,7 @@ Todo lo visual de Uonify —módulo `0-uonify` y https://dev.uonify.com: interfa
 - No se inventan diseños, estilos ni patrones de UX/UI nuevos. Todo cambio visual respeta el manual, y lo que el manual no cubra no se improvisa: lo decide el Product Owner.
 - Un cambio visual de Uonify que no cumpla el manual no se fusiona.
 - En Uonify prevalece este manual; [docs/UX_UI_STANDARD.md](docs/UX_UI_STANDARD.md) sigue rigiendo las interfaces administrativas de MasterERP.
-- Excepción del propietario (08-11-2026): Finanzas (`2.2-finance`) adopta también este manual. Alcance: fase 1, solo visual, en la Finanzas independiente (finanzas-dev), con una capa de tema propia de `2.2-finance` (selector `:root.finance-app.uonify-brand`). No cambian la funcionalidad, las APIs, las rutas, los permisos ni los datos. Ecommerce, la tienda y el resto de apps siguen con el estándar del equipo.
+- Excepción del propietario (08-11-2026): Finanzas (`2.2-finance`) adoptó también este manual mediante una capa de tema propia de `2.2-finance` (selector `:root.finance-app.uonify-brand`). Decisión ampliada el 11-11-2026: Ecommerce, Transporte, Nodos, storefront y las demás superficies convergen gradualmente en los fundamentos corporativos compartidos, conservando la composición y tipografía aprobadas para cada canal. No cambian la funcionalidad, las APIs, las rutas, los permisos ni los datos.
 
 ## Organización de aplicaciones vigente
 

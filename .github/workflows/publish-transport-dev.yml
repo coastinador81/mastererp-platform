@@ -1,0 +1,64 @@
+name: Publish Transport frontend DEV
+on:
+  workflow_dispatch:
+  push:
+    branches: [dev]
+    paths:
+      - 'frontend/modules/2.10-transport/**'
+      - 'frontend/modules/2.2-finance/src/FinanceAssistant.jsx'
+      - 'frontend/modules/2.2-finance/src/FinanceIcon.jsx'
+      - 'frontend/modules/2.2-finance/src/UonifyChatLink.jsx'
+      - 'frontend/app-shell/src/session.jsx'
+      - 'frontend/app-shell/src/shell.css'
+      - 'frontend/shared/auth/**'
+      - 'frontend/shared/module-launcher/**'
+      - 'frontend/shared/status-badge/**'
+      - 'frontend/shared/loading-state/**'
+      - 'frontend/shared/workspace/**'
+      - 'frontend/shared/ui/**'
+      - 'frontend/modules/0-uonify/auth-config.json'
+      - '.github/workflows/publish-transport-dev.yml'
+permissions:
+  contents: read
+  id-token: write
+concurrency:
+  group: mastererp-dev-transport-frontend
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend/modules/2.10-transport
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/modules/2.10-transport/package-lock.json
+      - run: npm ci
+      - name: Validate Transport contracts
+        run: node --test 2.10.1-drivers/src/driverView.test.mjs 2.10.5-routes/src/routePlanning.test.mjs ../../shared/auth/cognito.test.mjs
+      - run: npm run build
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::277352717693:role/mastererp-dev-transport-frontend-github-role
+          aws-region: us-west-1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: transport-dev-${{ github.sha }}
+          path: frontend/modules/2.10-transport/dist/
+      - name: Publish immutable assets then entry points
+        env:
+          BUCKET: ${{ vars.TRANSPORT_DEV_BUCKET }}
+          DISTRIBUTION: ${{ vars.TRANSPORT_DEV_DISTRIBUTION_ID }}
+        run: |
+          set -euo pipefail
+          test -n "$BUCKET" && test -n "$DISTRIBUTION"
+          test "$(aws sts get-caller-identity --query Account --output text)" = 277352717693
+          aws s3 sync dist/ "s3://$BUCKET/" --exclude index.html --cache-control 'public,max-age=31536000,immutable'
+          aws s3 cp dist/index.html "s3://$BUCKET/auth/callback" --content-type 'text/html; charset=utf-8' --cache-control 'no-cache,max-age=0,must-revalidate'
+          aws s3 cp dist/index.html "s3://$BUCKET/index.html" --content-type 'text/html; charset=utf-8' --cache-control 'no-cache,max-age=0,must-revalidate'
+          invalidation=$(aws cloudfront create-invalidation --distribution-id "$DISTRIBUTION" --paths / /index.html /auth/callback --query Invalidation.Id --output text)
+          aws cloudfront wait invalidation-completed --distribution-id "$DISTRIBUTION" --id "$invalidation"

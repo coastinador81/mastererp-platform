@@ -23,7 +23,7 @@ Se conserva la ruta y responsabilidad funcional. La composición Finanzas → Ad
 
 ## Navegación y unidad de entrega objetivo
 
-Finanzas agrupa Administración, Contabilidad, BI y capacidades asociadas. Sus pantallas deben presentarse dentro del espacio general de Uonify (entrada DEV app-dev.uonify.com), con navegación, identidad y contexto comunes y apertura desde el menú sin usar obligatoriamente el chat. Mantiene componentes, build, pipeline, despliegue y rollback propios. El primer recorrido usa composición de código en build y rutas hash documentadas en la guía de implementación; no se exige una entrada independiente `/finanzas` ni crear finanzas.uonify.com en producción. Administración no tiene frontend/subdominio separado. Ver [contrato oficial](../../../docs/FRONTEND_ARCHITECTURE.md).
+Finanzas agrupa Administración, Contabilidad, BI y capacidades asociadas. Es una aplicación conectada al producto principal Uonify, con identidad y contexto comunes, y mantiene componentes, build, pipeline, despliegue y rollback propios. Su entrada DEV vigente es `finanzas-dev.uonify.com`; el recorrido por `app-dev.uonify.com` queda como evidencia histórica de composición. No se exige conversar para operar y Administración no tiene frontend separado. Ver [contrato oficial](../../../docs/FRONTEND_ARCHITECTURE.md).
 
 ## Primer recorrido DEV (sustituye la página inicial)
 
@@ -43,7 +43,7 @@ Destino DEV: https://finanzas-dev.uonify.com. El resultado real y recursos se re
 
 ## Acabado visual de Finanzas
 
-Tema local en [src/finance.css](src/finance.css), importado solo por la entrada de Finanzas y delimitado por la clase `finance-app` en su HTML. No cambia los estilos compartidos de Uonify. Colores, espacios, radios, alturas y tipografía se centralizan en variables `--finance-*`. Menú blanco, fondo gris azulado, acentos azules y sombras mínimas.
+La base administrativa vive en [frontend/shared/ui/admin-application.css](../../shared/ui/admin-application.css) y es consumida por Finanzas, Ecommerce y Transporte. Finanzas añade únicamente su tema `uonify-brand`. Los alias `--finance-*` se conservan para compatibilidad mientras los consumidores migran a `--uon-*`; no son propiedad visual exclusiva de Finanzas.
 
 Inter variable se sirve desde el artefacto propio, con fallback sans-serif; fuente, procedencia y licencia en [assets/fonts](src/assets/fonts/README.md). La tabla usa 14 px, peso 400 y #667085, incluidos nombres y códigos; los encabezados usan #F4F7FB y separadores #E8EDF3. El nombre del proveedor conserva su enlace y el clic de fila existente; el buscador consulta los proveedores autorizados por nombre, código e identificación fiscal. No se añaden filtros adicionales ni operaciones de escritura.
 
@@ -95,7 +95,7 @@ El icono de destellos del encabezado abre el asistente de Finanzas, tanto en las
 
 Excepción del propietario (08-11-2026): Finanzas adopta el manual de identidad corporativa de Uonify. La regla y su alcance están en el [`README.md` de la raíz](../../../README.md) y en [`frontend/AGENTS.md`](../../AGENTS.md); este README solo la resume y no define identidad.
 
-Mecanismo: la hoja [src/uonify-theme.css](src/uonify-theme.css) re-mapea los tokens de color `--finance-*` a la paleta del manual, bajo el selector `:root.finance-app.uonify-brand` (más específico que el tema base) e importada después de `finance.css` en `src/main.js`. Se activa solo con la clase marcadora `uonify-brand` en el `<html>` de esta aplicación (`index.html`). No edita `finance.css` ni los estilos compartidos; Ecommerce usa `.finance-app` pero no `uonify-brand`, así que conserva sus tokens.
+Mecanismo: la hoja [src/uonify-theme.css](src/uonify-theme.css) ajusta los alias de compatibilidad bajo `:root.finance-app.uonify-brand` y se importa después de la base compartida. Se activa solo con la clase marcadora `uonify-brand` en esta aplicación. Ecommerce y Transporte consumen la base, pero no activan el tema financiero.
 
 Mapeo (fase 1, solo color): azul de acción Azul 600 `#006AE1` (cumple AA como texto y como relleno; §12 «regla del 600»), aro de foco Azul Uonify `#0178F7`, titulares Tinta `#0A0B0D`, cuerpo y apoyo en Neutros del manual, error semántico `#B3261E`. El espaciado (retícula de 8), los radios (8/12) y la tipografía (Inter) del tema base ya cumplían el manual. En fases siguientes: datos técnicos en monoespaciada, iconos neutros y el panel de IA en aqua con el isotipo «ON».
 

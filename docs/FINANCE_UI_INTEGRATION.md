@@ -1,6 +1,6 @@
 # Primer recorrido integrado de Finanzas — DEV
 
-> Decisión vigente: Uonify DEV es la interfaz matriz integrada y conserva la experiencia conversacional en `/#/chat`. El inicio, el chat y los módulos autorizados coexisten con identidad y contexto comunes; integrar módulos no elimina ni sustituye el chat. Finanzas conserva además `finanzas-dev.uonify.com` como entrada independiente de prueba.
+> Evidencia histórica: este documento acredita la integración publicada en `app-dev.uonify.com` y sus rutas hash. La decisión vigente sitúa el producto principal y la entrada general en `dev.uonify.com`; Finanzas conserva `finanzas-dev.uonify.com` como aplicación conectada e independiente. No reinterpretar esta evidencia como arquitectura objetivo.
 
 Estado: primer recorrido desplegado y validado en DEV el 2026-11-04. Se verifican Clientes/Proveedores y los controles descritos abajo; no constituye cierre de todas las capacidades financieras.
 
@@ -12,7 +12,7 @@ Finanzas conserva su propio package-lock, build, artefacto Actions, workflow y h
 
 ## Rutas y contexto
 
-Entrada general https://app-dev.uonify.com. Inicio `/#/`, chat `/#/chat`, Finanzas `/#/modulos/finanzas`; Clientes `/#/modulos/finanzas/administracion/clientes` y Proveedores `/#/modulos/finanzas/administracion/proveedores`. Detalle añade `/UUID`, creación `/nuevo`, edición `/UUID/editar`. Son rutas internas implementadas en este recorrido; la entrada independiente `/finanzas` no es obligatoria. Hash/history nativos soportan recarga, enlace directo y atrás/adelante sin fallback SPA de S3. El callback OAuth sigue siendo `/auth/callback`, servido como objeto HTML propio.
+Entrada histórica probada: https://app-dev.uonify.com. Inicio `/#/`, chat `/#/chat`, Finanzas `/#/modulos/finanzas`; Clientes `/#/modulos/finanzas/administracion/clientes` y Proveedores `/#/modulos/finanzas/administracion/proveedores`. Detalle añade `/UUID`, creación `/nuevo`, edición `/UUID/editar`. Son rutas internas implementadas en ese recorrido, no el contrato de navegación actual entre aplicaciones. Hash/history nativos soportan recarga, enlace directo y atrás/adelante sin fallback SPA de S3. El callback OAuth sigue siendo `/auth/callback`, servido como objeto HTML propio.
 
 Cognito Authorization Code + PKCE y state de un solo uso. Tokens solo en memoria. sessionStorage contiene transacción PKCE, indicador de retorno para recuperar la sesión administrada al recargar y selección candidata de tenant/empresa (solo IDs). Esa selección se revalida contra el servicio; no son permisos ni se comparte automáticamente entre subdominios. Sin tokens en URL, localStorage o logs. Logout limpia memoria/metadatos y UI antes de navegar al proveedor. La caducidad y 401 cierran el contexto; 403 retira datos y permite revalidar. Revisiones de contexto al entrar, cambiar tenant y al recuperar foco/intervalo; solicitudes previas se cancelan y sus resultados se invalidan por generación.
 

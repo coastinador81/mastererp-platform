@@ -1,52 +1,54 @@
+@import './design-tokens.css';
+
 @font-face {
   font-family: Arimo;
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('../../2.3-ecommerce/2.3.2-stores/storefront/public/Arimo-Regular.ttf') format('truetype');
+  src: url('../../modules/2.3-ecommerce/2.3.2-stores/storefront/public/Arimo-Regular.ttf') format('truetype');
 }
 @font-face {
   font-family: Arimo;
   font-style: normal;
   font-weight: 500;
   font-display: swap;
-  src: url('../../2.3-ecommerce/2.3.2-stores/storefront/public/Arimo-Medium.ttf') format('truetype');
+  src: url('../../modules/2.3-ecommerce/2.3.2-stores/storefront/public/Arimo-Medium.ttf') format('truetype');
 }
 @font-face {
   font-family: Arimo;
   font-style: normal;
   font-weight: 600 800;
   font-display: swap;
-  src: url('../../2.3-ecommerce/2.3.2-stores/storefront/public/Arimo-SemiBold.ttf') format('truetype');
+  src: url('../../modules/2.3-ecommerce/2.3.2-stores/storefront/public/Arimo-SemiBold.ttf') format('truetype');
 }
 @font-face {
   font-family: Arimo;
   font-style: normal;
   font-weight: 900;
   font-display: swap;
-  src: url('../../2.3-ecommerce/2.3.2-stores/storefront/public/Arimo-Bold.ttf') format('truetype');
+  src: url('../../modules/2.3-ecommerce/2.3.2-stores/storefront/public/Arimo-Bold.ttf') format('truetype');
 }
 
 /* Entry-point scope: these tokens and overrides never restyle Uonify. */
 :root.finance-app {
   --finance-font: var(--mastererp-font-family, Arimo, Arial, sans-serif);
-  --finance-text: #4B5563;
-  --finance-muted: #667085;
-  --finance-title: #374151;
-  --finance-background: #F6F8FC;
-  --finance-surface: #FFFFFF;
-  --finance-table-header: #F4F7FB;
-  --finance-border: #E8EDF3;
-  --finance-control-border: #D8E2F0;
-  --finance-primary: #096BDC;
-  --finance-primary-hover: #0758B3;
+  --finance-text: var(--uon-neutral-700);
+  --finance-muted: var(--uon-neutral-600);
+  --finance-title: var(--uon-neutral-800);
+  --finance-background: var(--uon-neutral-50);
+  --finance-surface: var(--uon-surface);
+  --finance-table-header: var(--uon-neutral-50);
+  --finance-border: var(--uon-neutral-200);
+  --finance-control-border: var(--uon-neutral-300);
+  --finance-primary: var(--uon-action-blue);
+  --finance-primary-hover: var(--uon-action-blue-hover);
   --finance-accent: #93C5FD;
-  --finance-selected: #EFF6FF;
+  --finance-selected: var(--uon-information-surface);
   --finance-row-hover: #F1F6FD;
   --finance-row-focus: var(--finance-selected);
-  --finance-focus: #3B82F6;
-  --finance-error-text: #922E30;
-  --finance-error-surface: #FFF0EF;
+  --finance-focus: var(--uon-brand-blue);
+  --finance-error-text: var(--uon-error);
+  --finance-error-surface: var(--uon-error-surface);
   --finance-error-border: #EFD1D0;
   --finance-space-1: 4px;
   --finance-space-2: 8px;
@@ -59,8 +61,8 @@
   --finance-font-small: 12px;
   --finance-font-title: 28px;
   --finance-line-height: 1.5;
-  --finance-radius: 12px;
-  --finance-radius-small: 8px;
+  --finance-radius: var(--uon-radius-card);
+  --finance-radius-small: var(--uon-radius-control);
   --finance-header-height: 80px;
   --finance-mobile-header-height: 140px;
   --finance-nav-width: 256px;

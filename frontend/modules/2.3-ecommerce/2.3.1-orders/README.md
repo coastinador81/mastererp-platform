@@ -30,6 +30,13 @@ El directorio usa filtros y paginación por cursor en el backend. Las acciones
 agrupadas usan un comando transaccional: se aplican todas o ninguna. La UI
 niega escritura por defecto si no recibe el permiso real.
 
+La lista y ficha de Pedidos consumen los fundamentos visuales `--uon-*` de
+Platform para color, estados, superficies, radios, foco y movimiento. Conservan
+Arimo, la composición operativa y los contratos existentes; no importan código
+interno de `0-uonify/0.2-app`. La dependencia histórica de componentes de
+Finanzas se retirará gradualmente cuando cada componente tenga propietario
+compartido, sin duplicarlo dentro de Pedidos.
+
 Validaciones: build independiente y build Uonify correctos. Pendientes para el
 nuevo corte: publicación DEV y pruebas de navegador con identidad autorizada.
 

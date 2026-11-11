@@ -1,5 +1,5 @@
 import {mountWorkspace} from '../../../app-shell/src/Shell.jsx';
-import './finance.css';
+import '../../../shared/ui/admin-application.css';
 import './uonify-theme.css';
 import '../../../shared/ui/application-header.css';
 const query=new URLSearchParams(window.location.search);

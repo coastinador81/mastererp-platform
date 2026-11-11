@@ -3,7 +3,7 @@ import {createRoot} from 'react-dom/client';
 import {WorkspaceProvider} from '../../../app-shell/src/session.jsx';
 import TransportApp from './TransportApp.jsx';
 import '../../../app-shell/src/shell.css';
-import '../../2.2-finance/src/finance.css';
+import '../../../shared/ui/admin-application.css';
 import '../../2.3-ecommerce/src/operations.css';
 import './transport.css';
 import '../../../shared/ui/application-header.css';

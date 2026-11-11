@@ -1,12 +1,12 @@
 /* Capa de tema «uonify-brand» de Finanzas (2.2-finance).
    Re-mapea los tokens --finance-* a la paleta del manual de identidad de Uonify
-   (modules/0-uonify/identidad-corporativa/Uonify_Identidad_Corporativa.pdf), SIN editar finance.css
+   (modules/0-uonify/identidad-corporativa/Uonify_Identidad_Corporativa.pdf), sobre la base compartida
    y SIN afectar a otras apps. Excepción del propietario (08-11-2026) documentada en el README.md de la
    raíz y en frontend/AGENTS.md. Alcance: fase 1 (solo visual), Finanzas independiente (finanzas-dev).
 
    Se activa SOLO con la clase marcadora «uonify-brand» en el <html> de 2.2-finance; Ecommerce (que también
    usa .finance-app) NO la lleva y conserva sus tokens. El selector tiene más especificidad (dos clases) que
-   «:root.finance-app» y la hoja se importa DESPUÉS de finance.css. Solo cambian COLORES: el espaciado
+   «:root.finance-app» y la hoja se importa DESPUÉS de admin-application.css. Solo cambian COLORES: el espaciado
    (retícula de 8), los radios (8/12) y la tipografía (Inter) del tema base ya cumplen el manual. */
 /* JetBrains Mono autohospedada (manual §14) para datos técnicos y cifras bajo uonify-brand.
    Fuente oficial: JetBrains/JetBrainsMono v2.304, licencia SIL OFL 1.1 (ver ./uonify-fonts/OFL.txt).
@@ -87,7 +87,7 @@
 }
 
 /* Panel «Asistente IA» = Uony (incremento 3). El acento de IA pasa a aqua y el isotipo «ON» (SVG oficial) marca
-   la IA. Solo override bajo uonify-brand; finance.css no se toca. El aqua solo tiñe superficies; el texto/icono
+   la IA. Solo override bajo uonify-brand. El aqua solo tiñe superficies; el texto/icono
    de IA sobre claro usa Aqua 600 (§12 asimetría). */
 :root.finance-app.uonify-brand .finance-assistant-toggle img,
 :root.finance-app.uonify-brand .finance-assistant-symbol img { display: block; width: 22px; height: auto; }

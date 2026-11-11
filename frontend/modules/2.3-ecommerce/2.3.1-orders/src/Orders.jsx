@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import '../../../../shared/ui/design-tokens.css';
 import './style.css';
 import './directory.css';
 import OrderDetail from './OrderDetail.jsx';

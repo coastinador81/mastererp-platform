@@ -1,5 +1,6 @@
 import React from 'react';
 import ModuleLauncher from '../module-launcher/ModuleLauncher.jsx';
+import './design-tokens.css';
 import './application-header.css';
 
 export default function ApplicationHeader({

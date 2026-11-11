@@ -1,13 +1,13 @@
 .orders-directory .page-heading{align-items:center}
-.orders-directory .page-heading h1{font-size:34px;margin:var(--finance-space-4) 0 var(--finance-space-1)}
-.orders-directory .orders-filters{display:flex;align-items:end;justify-content:space-between;gap:var(--finance-space-5)}
+.orders-directory .page-heading h1{font-size:34px;margin:var(--uon-space-4) 0 var(--uon-space-1)}
+.orders-directory .orders-filters{display:flex;align-items:end;justify-content:space-between;gap:var(--uon-space-5)}
 .orders-directory .supplier-search{flex:1}
-.orders-directory .orders-status-filter{display:grid;gap:var(--finance-space-1);min-width:180px;margin-bottom:var(--finance-space-5);color:var(--finance-muted);font-size:var(--finance-font-small)}
-.orders-directory .orders-status-filter select{min-height:44px;padding:var(--finance-space-2) var(--finance-space-3);border:1px solid var(--finance-control-border)}
+.orders-directory .orders-status-filter{display:grid;gap:var(--uon-space-1);min-width:180px;margin-bottom:var(--uon-space-5);color:var(--uon-neutral-600);font-size:12px}
+.orders-directory .orders-status-filter select{min-height:44px;padding:var(--uon-space-2) var(--uon-space-3);border:1px solid var(--uon-neutral-300);border-radius:var(--uon-radius-control);background:var(--uon-surface)}
 .orders-directory-table td{cursor:default}
 .orders-directory-table td:first-child,.orders-directory-table td:nth-child(2){display:table-cell}
 .orders-directory-table td :is(strong,small){display:block}
-.orders-directory-table td small{margin-top:4px;color:var(--finance-muted);font-size:11px}
+.orders-directory-table td small{margin-top:4px;color:var(--uon-neutral-600);font-size:11px}
 .orders-directory .orders-open{min-height:34px;padding:6px 12px;white-space:nowrap}
-.orders-directory .orders-count{margin:var(--finance-space-4) 0 0;color:var(--finance-muted);font-size:var(--finance-font-small)}
+.orders-directory .orders-count{margin:var(--uon-space-4) 0 0;color:var(--uon-neutral-600);font-size:12px}
 @media(max-width:800px){.orders-directory .orders-filters{align-items:stretch;flex-direction:column;gap:0}.orders-directory .orders-status-filter{width:100%}.orders-directory .page-heading{align-items:flex-start}.orders-directory .page-heading h1{font-size:28px}}
