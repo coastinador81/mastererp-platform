@@ -85,12 +85,12 @@ export function StoreProvider({ children }: PropsWithChildren) {
     return () => window.clearInterval(timer);
   }, [authenticated]);
 
-  useEffect(()=>{let active=true;if(!authenticated){setDriverAccess(false);return;}loadDriverRoute().then(()=>{if(active)setDriverAccess(true);}).catch(()=>{if(active)setDriverAccess(false);});return()=>{active=false;};},[authenticated]);
+  useEffect(()=>{let active=true;if(!authenticated)return;loadDriverRoute().then(()=>{if(active)setDriverAccess(true);}).catch(()=>{if(active)setDriverAccess(false);});return()=>{active=false;};},[authenticated]);
 
   useEffect(() => { if (!loading && typeof sessionStorage !== 'undefined') sessionStorage.setItem(cartKey(), JSON.stringify(cart)); }, [cart, loading]);
 
   const value = useMemo<StoreState>(() => ({
-    catalog, cart, authenticated, loading, sessionLoading, sessionError, error, driverAccess,
+    catalog, cart, authenticated, loading, sessionLoading, sessionError, error, driverAccess:authenticated&&driverAccess,
     add: (product, quantity = 1) => setCart(lines => {
       const found = lines.find(line => line.product.id === product.id);
       return found
