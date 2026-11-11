@@ -10,7 +10,7 @@ export function StoreHeader() {
   const { width } = useWindowDimensions();
   const compact = Platform.OS === 'web' || width < 700;
   const pathname = usePathname();
-  const { catalog, cart } = useStore();
+  const { catalog, cart, driverAccess } = useStore();
   const count = cart.reduce((total, line) => total + line.quantity, 0);
   const storeName = catalog?.store.name || '';
   const configuredLogoUrl = catalog?.store.branding?.logoUrl;
@@ -28,6 +28,7 @@ export function StoreHeader() {
           <Link href="/catalog" asChild><Pressable><Text style={[styles.link, pathname === '/catalog' && styles.active]}>Catálogo</Text></Pressable></Link>
         </View>}
         <View style={[styles.actions, compact && styles.actionsCompact]}>
+          {driverAccess?<Pressable style={styles.routes} onPress={()=>router.push('/driver-routes')} accessibilityLabel="Mis rutas"><Ionicons name="bicycle-outline" size={22} color={colors.primary}/><Text style={styles.routesText}>Mis rutas</Text></Pressable>:null}
           <Pressable style={styles.cart} onPress={() => router.push('/cart')} accessibilityLabel={`Carrito con ${count} productos`}>
             <Ionicons name="bag-handle-outline" size={22} color={colors.surface} />
             {count > 0 ? <View style={styles.badge}><Text style={styles.badgeText}>{count}</Text></View> : null}
@@ -56,6 +57,8 @@ const styles = StyleSheet.create({
   active: { color: colors.primary },
   actions: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: spacing.sm },
   actionsCompact: { flexGrow: 0, flexShrink: 0, flexBasis: 'auto' },
+  routes:{height:43,paddingHorizontal:12,flexDirection:'row',alignItems:'center',gap:6,borderRadius:14,borderWidth:1,borderColor:colors.line,backgroundColor:colors.surface},
+  routesText:{color:colors.primary,fontSize:13,fontWeight:'800'},
   cart: { width: 43, height: 43, alignItems: 'center', justifyContent: 'center', borderRadius: 14, backgroundColor: colors.primary },
   badge: { position: 'absolute', top: -5, right: -5, minWidth: 20, height: 20, paddingHorizontal: 4, alignItems: 'center', justifyContent: 'center', borderRadius: 10, backgroundColor: colors.accent, borderWidth: 2, borderColor: colors.surface },
   badgeText: { color: colors.ink, fontSize: 10, fontWeight: '900' },

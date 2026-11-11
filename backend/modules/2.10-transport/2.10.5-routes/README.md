@@ -9,6 +9,12 @@ Rutas planifica pedidos `READY`, enlaza un repartidor disponible del módulo
 Transporte y gobierna paradas y entrega. No posee perfiles de repartidor. Incluye
 API, repositorio SQL, paquete Lambda reproducible y pruebas unitarias.
 
+El contrato de repartidor resuelve el perfil exclusivamente desde el usuario
+autenticado vinculado. Permite consultar su ruta activa y registrar el resultado
+de una parada con evidencia. Database valida propiedad y ubicación, actualiza el
+pedido, cierra automáticamente la última parada y libera al repartidor dentro de
+la misma transacción; el frontend no compone esas transiciones.
+
 
 ## Contrato y estado de esta capa
 

@@ -23,6 +23,11 @@ export const updateAddress = (address: CustomerAddress) => authorizedIdentityFet
 export const loadPaymentMethods = async () => (await authorizedIdentityFetch(portalUrl('/v1/storefront/me/payment-methods'), portalOptions()) as { items: CustomerPaymentMethod[] }).items;
 export const loadOrders = async () => (await authorizedIdentityFetch(portalUrl('/v1/storefront/orders'), portalOptions()) as { items: CustomerOrder[] }).items;
 export const loadOrder = (id: string) => authorizedIdentityFetch(portalUrl(`/v1/storefront/orders/${encodeURIComponent(id)}`), portalOptions()) as Promise<CustomerOrder>;
+export const loadDriverRoute = () => authorizedIdentityFetch(portalUrl('/v1/storefront/driver-route'), portalOptions()) as Promise<{driver_id:string;route:DriverRoute|null}>;
+export const finishDriverStop = (routeId:string,orderId:string,status:'DELIVERED'|'FAILED',evidence:Record<string,unknown>) => authorizedIdentityFetch(portalUrl(`/v1/storefront/routes/${encodeURIComponent(routeId)}/driver-deliveries/${encodeURIComponent(orderId)}`), portalOptions({method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({status,evidence})})) as Promise<{route:DriverRoute;route_completed:boolean;idempotent:boolean}>;
+
+export type DriverStop={order_id:string;sequence:number;status:string;delivery?:Record<string,unknown>;customer?:{name?:string;phone?:string}};
+export type DriverRoute={id:string;status:string;date:string;stops:DriverStop[]};
 
 export async function submitCheckout(lines: CartLine[], address: string | CustomerAddress, paymentMethod: PaymentMethod, paymentReference?: string, payer?: PayerDetails) {
   assertStorefrontContext();

@@ -1,6 +1,10 @@
 @import './typography.css';
 .ecommerce-app .environment {margin:0 0 var(--finance-space-5);padding:var(--finance-space-4);border:1px solid var(--finance-border);border-radius:var(--finance-radius);background:var(--finance-selected);color:var(--finance-text);font-size:var(--finance-font-body)}
 .ecommerce-app .context-controls{width:auto;margin-left:auto;justify-content:flex-end}
+.ecommerce-app .integrated-header{height:80px;min-height:80px;padding:12px 24px;background:#fff;border-color:#e8edf3;gap:20px}
+.ecommerce-app .integrated-header .brand{margin-right:auto;min-width:0;color:#374151;font-size:22px;font-weight:500;line-height:1.2}
+.ecommerce-app .integrated-header .context-controls{width:auto;flex:none;margin:0;gap:16px}
+.ecommerce-app .integrated-header :is(button,.finance-chat-home,.finance-assistant-toggle,.module-launcher-toggle){min-height:40px}
 @media(max-width:600px){.ecommerce-app .integrated-header{flex-wrap:nowrap}.ecommerce-app .context-controls{gap:8px}}
 .ecommerce-app .finance-navigation,.ecommerce-app .administration-nav {width:100%}
 .ecommerce-app .administration-nav ul {margin:0;padding:0;list-style:none}
@@ -98,6 +102,7 @@
 .finance-app.ecommerce-app :is(.secondary,.ops-button,.orders-footer button):hover:not(:disabled){border-color:#b9c7d9;background:#fff;color:#0876dc}
 .finance-app.ecommerce-app .primary:hover:not(:disabled){background:#006ed9;color:#fff}
 .finance-app.ecommerce-app :is(.quiet,.detail-back,.sort-button,.ops-panel header button):hover:not(:disabled){background:transparent}
+.ecommerce-app .driver-route-card{padding:0;overflow:hidden}.ecommerce-app .driver-route-card>header{display:flex;align-items:flex-start;justify-content:space-between;padding:20px;border-bottom:1px solid #e8edf3}.ecommerce-app .driver-route-card h2,.ecommerce-app .driver-route-card p{margin:4px 0}.ecommerce-app .driver-route-card .route-stops{padding:0 20px}.ecommerce-app .driver-stop-actions{display:flex;gap:8px}.ecommerce-app .driver-stop-actions button{min-height:40px;padding:8px 12px}@media(max-width:620px){.ecommerce-app .driver-stop-actions{grid-column:2;flex-wrap:wrap}.ecommerce-app .driver-route-card .route-stops article{align-items:flex-start;flex-wrap:wrap}}
 .finance-app.ecommerce-app .view-toggle button:hover:not(:disabled){background:transparent;color:#344157}
 .finance-app.ecommerce-app .view-toggle button.active{background:#fff;color:#344157;box-shadow:0 1px 3px #26344a12}
 .finance-app.ecommerce-app .ops-quick>div>button:hover:not(:disabled){background:#f8fbff;color:#25344d}
