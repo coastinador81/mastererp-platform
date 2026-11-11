@@ -5,15 +5,7 @@ from tenant_security.http import HttpError,api_response,parse_body
 from .repository import RoutesRepository
 def _h(e,n):return{k.lower():v for k,v in(e.get('headers')or{}).items()}.get(n.lower())
 def _request(e,r):
- h=e.get('requestContext',{}).get('http',{});m=h.get('method','GET').upper();path=h.get('path','');p=e.get('pathParameters')or{};company=p.get('company_id');rid=p.get('route_id');order=p.get('order_id');q=e.get('queryStringParameters')or{};domain=q.get('domain')
- if path.startswith('/v1/storefront/'):
-  if not domain:raise HttpError(400,'domain is required',code='invalid_request')
-  if m=='GET'and path.endswith('/driver-route'):return 200,r.storefront_driver_route(domain)
-  if rid:UUID(rid)
-  if order:UUID(order)
-  b=parse_body(e)
-  if m=='POST'and'/driver-deliveries/'in path and b.get('status')in('DELIVERED','FAILED')and isinstance(b.get('evidence'),dict):return 200,r.storefront_deliver(domain,rid,order,b)
-  raise HttpError(400,'status and evidence are required',code='invalid_request')
+ h=e.get('requestContext',{}).get('http',{});m=h.get('method','GET').upper();path=h.get('path','');p=e.get('pathParameters')or{};company=p.get('company_id');rid=p.get('route_id');order=p.get('order_id')
  UUID(company or '');
  if rid:UUID(rid)
  if order:UUID(order)

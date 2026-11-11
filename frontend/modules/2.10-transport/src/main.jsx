@@ -1,0 +1,9 @@
+import React from 'react';
+import {createRoot} from 'react-dom/client';
+import {WorkspaceProvider} from '../../../app-shell/src/session.jsx';
+import TransportApp from './TransportApp.jsx';
+import '../../../app-shell/src/shell.css';
+import '../../2.2-finance/src/finance.css';
+import '../../2.3-ecommerce/src/operations.css';
+import './transport.css';
+createRoot(document.getElementById('root')).render(<WorkspaceProvider><TransportApp/></WorkspaceProvider>);

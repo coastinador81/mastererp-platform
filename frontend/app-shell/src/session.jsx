@@ -8,7 +8,7 @@ const SessionContext = createContext(null);
 export const useWorkspace = () => useContext(SessionContext);
 // dev.uonify.com es la entrada canónica; app-dev.uonify.com sigue como alias de transición (misma app, no standalone).
 const primaryOrigins = ['https://dev.uonify.com', 'https://app-dev.uonify.com'];
-const allowedOrigins = [...primaryOrigins, 'https://finanzas-dev.uonify.com', 'https://ecom-dev.uonify.com'];
+const allowedOrigins = [...primaryOrigins, 'https://finanzas-dev.uonify.com', 'https://ecom-dev.uonify.com', 'https://transporte-dev.uonify.com'];
 const origin = allowedOrigins.includes(window.location.origin) ? window.location.origin : 'https://dev.uonify.com';
 const standalone = !primaryOrigins.includes(origin);
 export const config = {...baseConfig, apiUrl:standalone?origin:baseConfig.apiUrl, adminApiUrl:standalone?origin:baseConfig.adminApiUrl, callbackUrl:origin + '/auth/callback', logoutUrl:origin + '/'};

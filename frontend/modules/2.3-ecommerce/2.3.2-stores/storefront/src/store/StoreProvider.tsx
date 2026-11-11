@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type PropsWithChildren } from 'react';
 import { completeLoginIfNeeded, isAuthenticated } from '../auth';
-import { loadCatalog, loadDriverRoute } from '../api';
+import { loadCatalog } from '../api';
 import { readCatalogCache, writeCatalogCache } from '../catalog-cache.mjs';
 import { storefrontScope } from '../config';
 import type { CartLine, Product, StorefrontCatalog } from '../types';
@@ -12,7 +12,6 @@ type StoreState = {
   loading: boolean;
   sessionLoading: boolean;
   sessionError: string;
-  driverAccess: boolean;
   error: string;
   add: (product: Product, quantity?: number) => void;
   setQuantity: (id: string, quantity: number) => void;
@@ -40,7 +39,6 @@ export function StoreProvider({ children }: PropsWithChildren) {
   const [loading, setLoading] = useState(initialCatalog === null);
   const [sessionLoading, setSessionLoading] = useState(true);
   const [sessionError, setSessionError] = useState('');
-  const [driverAccess, setDriverAccess] = useState(false);
   const [error, setError] = useState('');
 
   const refreshCatalog = useCallback(async () => {
@@ -85,12 +83,10 @@ export function StoreProvider({ children }: PropsWithChildren) {
     return () => window.clearInterval(timer);
   }, [authenticated]);
 
-  useEffect(()=>{let active=true;if(!authenticated)return;loadDriverRoute().then(()=>{if(active)setDriverAccess(true);}).catch(()=>{if(active)setDriverAccess(false);});return()=>{active=false;};},[authenticated]);
-
   useEffect(() => { if (!loading && typeof sessionStorage !== 'undefined') sessionStorage.setItem(cartKey(), JSON.stringify(cart)); }, [cart, loading]);
 
   const value = useMemo<StoreState>(() => ({
-    catalog, cart, authenticated, loading, sessionLoading, sessionError, error, driverAccess:authenticated&&driverAccess,
+    catalog, cart, authenticated, loading, sessionLoading, sessionError, error,
     add: (product, quantity = 1) => setCart(lines => {
       const found = lines.find(line => line.product.id === product.id);
       return found
@@ -107,7 +103,7 @@ export function StoreProvider({ children }: PropsWithChildren) {
       try { setAuthenticated(await completeLoginIfNeeded()); }
       finally { setSessionLoading(false); }
     },
-  }), [authenticated, cart, catalog, driverAccess, error, loading, refreshCatalog, sessionError, sessionLoading]);
+  }), [authenticated, cart, catalog, error, loading, refreshCatalog, sessionError, sessionLoading]);
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;
 }

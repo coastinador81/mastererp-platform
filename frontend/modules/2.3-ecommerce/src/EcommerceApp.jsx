@@ -3,7 +3,6 @@ import {config, useWorkspace} from '../../../app-shell/src/session.jsx';
 import Orders from '../2.3.1-orders/src/Orders.jsx';
 import Preparation from '../../2.1-inventory/2.1.3-preparation/src/Preparation.jsx';
 import Routes from '../../2.10-transport/2.10.5-routes/src/Routes.jsx';
-import Drivers from '../../2.10-transport/2.10.1-drivers/src/Drivers.jsx';
 import Nodes from '../../2.1-inventory/2.1.2-nodes/src/Nodes.jsx';
 import Products from '../2.3.4-catalog/2.3.4.1-products/src/Products.jsx';
 import Categories from '../2.3.4-catalog/2.3.4.2-categories/src/Categories.jsx';
@@ -20,8 +19,8 @@ import {FinanceAssistantProvider,FinanceAssistantToggle,FinanceAssistantPanel} f
 import ApplicationHeader from '../../../shared/ui/ApplicationHeader.jsx';
 import UonifyChatLink from '../../2.2-finance/src/UonifyChatLink.jsx';
 
-const routeLabels={summary:'Resumen de Ecommerce',orders:'Pedidos',payments:'Métodos de pago',preparation:'Preparacion',routes:'Rutas',drivers:'Repartidores',nodes:'Nodos',products:'Productos',categories:'Categorias',attributes:'Atributos',brands:'Marcas',suppliers:'Proveedores',inventory:'Inventario'};
-const routes = new Set(['summary','orders','payments','preparation','routes','drivers','nodes','products','categories','attributes','brands','suppliers','inventory']);
+const routeLabels={summary:'Resumen de Ecommerce',orders:'Pedidos',payments:'Métodos de pago',preparation:'Preparacion',routes:'Rutas',nodes:'Nodos',products:'Productos',categories:'Categorias',attributes:'Atributos',brands:'Marcas',suppliers:'Proveedores',inventory:'Inventario'};
+const routes = new Set(['summary','orders','payments','preparation','routes','nodes','products','categories','attributes','brands','suppliers','inventory']);
 const currentPath = () => {
   const value = window.location.hash.replace(/^#\/?/, '').split('?')[0];
   return routes.has(value.split('/')[0]) ? value : 'summary';
@@ -50,7 +49,6 @@ export default function EcommerceApp() {
   else if (route === 'payments' && allowed('payments')) content = <PaymentConfiguration key={path} runtime={runtime}/>;
   else if (route === 'preparation' && allowed('preparation')) content = <Preparation key={path} runtime={runtime}/>;
   else if (route === 'routes' && allowed('routes')) content = <Routes key={path} runtime={runtime}/>;
-  else if (route === 'drivers' && allowed('drivers')) content = <Drivers key={path} runtime={runtime}/>;
   else if (route === 'nodes' && allowed('nodes')) content = <Nodes key={path} runtime={runtime}/>;
   else if (route === 'products' && allowed('products')) content = <Products key={path} runtime={runtime}/>;
   else if (route === 'categories' && allowed('categories')) content = <Categories key={path} runtime={runtime}/>;

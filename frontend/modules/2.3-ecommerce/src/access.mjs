@@ -6,7 +6,6 @@ export const routePermissions = Object.freeze({
   payments: 'digital_sales.ecommerce.read',
   preparation: 'operations.preparation.read',
   routes: 'operations.routes.read',
-  drivers: 'transport.drivers.read',
   nodes: 'operations.nodes.read',
   products: 'catalog.products.read',
   categories: 'catalog.categories.read',
@@ -20,7 +19,7 @@ const catalogRoutes = new Set(['products','categories','attributes','brands','su
 
 export function canOpenOperationsRoute(context, route) {
   if(route==='summary')return Boolean(context?.modules?.some(module=>[operationsModule,'erp.catalog'].includes(module)));
-  const module=route==='drivers'?'erp.transport':catalogRoutes.has(route)?'erp.catalog':operationsModule;
+  const module=catalogRoutes.has(route)?'erp.catalog':operationsModule;
   return Boolean(
     context?.modules?.includes(module)
     && context?.permissions?.includes(routePermissions[route]),

@@ -5,7 +5,13 @@
 
 Objetivo específico: Gestionar repartidores y proveedores de transporte.
 
-Responsabilidad: repartidores, transportistas, Chipipro y MRW. Estado: planned.
+Responsabilidad: repartidores, transportistas, Chipipro y MRW. Estado: aplicación independiente implementada como candidata DEV; hosting y publicación pendientes del workflow autorizado.
+
+La aplicación visible se denomina **Repartidores** y usa el dominio canónico
+`transporte-dev.uonify.com`. Comparte Cognito y contexto autorizado con Uonify,
+pero conserva build y publicación propios. `tenant.owner` puede administrar
+repartidores y rutas según sus permisos; ejecutar una entrega exige además un
+perfil `ACTIVE` y `LINKED` asociado al usuario autenticado.
 
 ## Contrato y estado de esta capa
 
@@ -13,7 +19,7 @@ Código: 2.10. Nombre/ruta: `2.10-transport`. Objetivo y alcance: los descritos 
 
 Capa: frontend. Dependencias: contexto autenticado, tenant y contratos del padre cuando correspondan; contratos adicionales pendientes de definición. Exclusiones: lógica y recursos de otros módulos; conectores técnicos fuera de Digital Sales. APIs/eventos/MCP: no declarar disponibles por existir esta carpeta; revisar implementación y contrato antes de consumir. Propuestas sin contrato confirmado permanecen pendientes.
 
-Estado verificable: la reserva documental no acredita implementación; conservar cualquier código/plantilla existente y revisar evidencia específica antes de marcar implementado.
+Estado verificable: la interfaz consume los contratos reales de Repartidores y Rutas; su despliegue requiere infraestructura independiente todavía no aprovisionada.
 
 Validaciones: estructura local mediante scripts/validate_structure.py. Pendientes: contratos específicos, responsable nominal y pruebas funcionales antes de habilitar esta capacidad.
 

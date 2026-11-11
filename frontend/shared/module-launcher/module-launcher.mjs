@@ -4,7 +4,7 @@ export const MODULES=Object.freeze([
  {id:'finance',name:'Finanzas',color:'blue',icon:'finance',href:'https://finanzas-dev.uonify.com/'},
  {id:'ecommerce',name:'Ecommerce',color:'violet',icon:'sales',href:'https://ecom-dev.uonify.com/'},
  {id:'inventory',name:'Inventario',color:'teal',icon:'inventory',href:'https://inventario-dev.uonify.com/'},
- {id:'transport',name:'Transporte',color:'rose',icon:'transport'},
+ {id:'transport',name:'Repartidores',color:'rose',icon:'transport'},
  {id:'crm',name:'CRM',color:'rose',icon:'people'},
  {id:'marketing',name:'Marketing',color:'orange',icon:'marketing'},
  {id:'services',name:'Servicios',color:'teal',icon:'services'},
