@@ -11,6 +11,11 @@ def row(value):
 
 
 class SalesRepositoryTests(unittest.TestCase):
+    def test_directory_casts_limit_to_canonical_integer_signature(self):
+        c = Mock(); c.execute.return_value = row({"items": [], "next_cursor": None})
+        OrdersRepository(c).list("company", {}, 1)
+        self.assertIn("%s::integer", c.execute.call_args.args[0])
+
     def test_ecommerce_confirmation_is_one_controlled_command(self):
         c = Mock()
         c.execute.side_effect = [row(True), Mock(), row({"id": "sale"}), Mock(), row({"status": "CONFIRMED"}), row([])]

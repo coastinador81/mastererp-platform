@@ -10,7 +10,7 @@ class OrdersRepository:
     def list(self, company_id: str, filters: dict[str, Any], limit: int) -> dict[str, Any]:
         row = self.connection.execute(
             """SELECT operaciones.pedidos_listar(
-            %s::uuid,%s,%s,%s,%s,%s::date,%s::date,%s::boolean,%s::timestamptz,%s::uuid) AS value""",
+            %s::uuid,%s,%s,%s,%s::integer,%s::date,%s::date,%s::boolean,%s::timestamptz,%s::uuid) AS value""",
             (company_id, filters.get("status"), filters.get("query"), filters.get("payment"), limit,
              filters.get("date_from"), filters.get("date_to"), filters.get("ascending", False),
              filters.get("after"), filters.get("after_id")),
