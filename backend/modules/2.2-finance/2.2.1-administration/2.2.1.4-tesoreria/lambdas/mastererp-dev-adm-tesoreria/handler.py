@@ -1,8 +1,23 @@
 """Authorized Finance adapter for reviewing Storefront payment evidence."""
 import json
+import logging
 from uuid import UUID, uuid4
 from tenant_security.auth import resolve_auth
 from tenant_security.http import HttpError, api_response, parse_body
+
+LOG = logging.getLogger(__name__)
+LOG.setLevel(logging.INFO)
+
+def database_error(error, correlation_id):
+    sqlstate = getattr(error, "sqlstate", None)
+    diagnostic = getattr(error, "diag", None)
+    LOG.error(json.dumps({"event": "payment_review_failure", "correlation_id": correlation_id,
+        "sqlstate": sqlstate or "unknown", "constraint": getattr(diagnostic, "constraint_name", None),
+        "exception": type(error).__name__}, sort_keys=True))
+    return {"40001": (409, "stale_version"), "23514": (409, "invalid_review"),
+        "23505": (409, "idempotency_conflict"), "42501": (403, "forbidden"),
+        "P0002": (404, "not_found"), "55P03": (409, "resource_busy"),
+        "57014": (503, "review_timeout")}.get(sqlstate, (500, "internal_error"))
 
 def header(event, name):
     return {key.lower(): value for key, value in (event.get("headers") or {}).items()}.get(name.lower())
@@ -58,6 +73,5 @@ def lambda_handler(event, context):
     except (ValueError, TypeError):
         return api_response(400, {"error": {"code": "invalid_request", "message": "Invalid request values"}, "correlation_id": correlation_id})
     except Exception as error:
-        status, code = {"40001": (409, "stale_version"), "23514": (409, "invalid_review"),
-          "23505": (409, "idempotency_conflict"), "42501": (403, "forbidden"), "P0002": (404, "not_found")}.get(getattr(error, "sqlstate", None), (500, "internal_error"))
+        status, code = database_error(error, correlation_id)
         return api_response(status, {"error": {"code": code, "message": "Payment review could not be completed"}, "correlation_id": correlation_id})

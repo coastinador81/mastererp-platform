@@ -1,6 +1,6 @@
 import json, unittest
 from unittest.mock import Mock
-from handler import HttpError, request
+from handler import HttpError, database_error, request
 
 class PaymentReviewApiTests(unittest.TestCase):
     def test_lists_pending_reviews(self):
@@ -11,4 +11,7 @@ class PaymentReviewApiTests(unittest.TestCase):
         order="20000000-0000-0000-0000-000000000001"
         event={"requestContext":{"http":{"method":"POST","path":f"/v1/administration/receipts/{order}/review"}},"pathParameters":{"company_id":"10000000-0000-0000-0000-000000000001","order_id":order},"body":json.dumps({"version":1,"decision":"VALIDATED","reason":"Verified","evidence":{}})}
         with self.assertRaises(HttpError): request(event,Mock())
+    def test_query_cancellation_is_sanitized_as_unavailable(self):
+        error=Exception("sensitive");error.sqlstate="57014";error.diag=Mock(constraint_name=None)
+        self.assertEqual(database_error(error,"correlation"),(503,"review_timeout"))
 if __name__=="__main__": unittest.main()
