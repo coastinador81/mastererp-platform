@@ -8,3 +8,5 @@ Propietario funcional: Finanzas → Administración; responsable nominal pendien
 Dependencias: contexto autorizado de tenant y contratos del padre; reglas y criterios de aceptación se definirán con el Product Owner al priorizar la tarea.
 
 Contrato: `GET /v1/companies/{company_id}/finance/receipts/pending` y `POST /v1/companies/{company_id}/finance/receipts/{order_id}/review`. La ruta GET conserva su nombre por compatibilidad y devuelve pendientes más decisiones cerradas, recientes primero. Validar crea la venta y confirma el pedido atómicamente; rechazar permanece en Cobros como historial de solo lectura y bloquea el avance. Operaciones consume el estado como solo lectura.
+
+Cuando la moneda del pedido difiere de la moneda base de la empresa, validar exige tasa, fecha efectiva y fuente dentro de la evidencia. La venta conserva esos valores; rechazar no requiere conversión y el backend nunca inventa una tasa.

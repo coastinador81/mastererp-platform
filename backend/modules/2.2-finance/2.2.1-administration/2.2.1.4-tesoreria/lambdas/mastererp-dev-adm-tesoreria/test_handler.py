@@ -14,4 +14,7 @@ class PaymentReviewApiTests(unittest.TestCase):
     def test_query_cancellation_is_sanitized_as_unavailable(self):
         error=Exception("sensitive");error.sqlstate="57014";error.diag=Mock(constraint_name=None)
         self.assertEqual(database_error(error,"correlation"),(503,"review_timeout"))
+    def test_invalid_exchange_rate_is_not_internal_error(self):
+        error=Exception("sensitive");error.sqlstate="22023";error.diag=Mock(constraint_name=None)
+        self.assertEqual(database_error(error,"correlation"),(422,"invalid_exchange_rate"))
 if __name__=="__main__": unittest.main()

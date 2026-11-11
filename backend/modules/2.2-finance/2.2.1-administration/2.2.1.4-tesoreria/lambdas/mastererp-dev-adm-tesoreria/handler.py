@@ -1,6 +1,8 @@
 """Authorized Finance adapter for reviewing Storefront payment evidence."""
 import json
 import logging
+import re
+from datetime import date
 from uuid import UUID, uuid4
 from tenant_security.auth import resolve_auth
 from tenant_security.http import HttpError, api_response, parse_body
@@ -16,6 +18,8 @@ def database_error(error, correlation_id):
         "exception": type(error).__name__}, sort_keys=True))
     return {"40001": (409, "stale_version"), "23514": (409, "invalid_review"),
         "23505": (409, "idempotency_conflict"), "42501": (403, "forbidden"),
+        "22023": (422, "invalid_exchange_rate"), "22P02": (422, "invalid_exchange_rate"),
+        "22008": (422, "invalid_exchange_rate"),
         "P0002": (404, "not_found"), "55P03": (409, "resource_busy"),
         "57014": (503, "review_timeout")}.get(sqlstate, (500, "internal_error"))
 
@@ -49,6 +53,16 @@ def request(event, connection):
             raise HttpError(400, "Invalid payment decision", code="invalid_request")
         if not 1 <= len(payload["reason"].strip()) <= 300 or not isinstance(payload["evidence"], dict):
             raise HttpError(400, "Invalid payment review", code="invalid_request")
+        exchange = payload["evidence"].get("exchange_rate")
+        if exchange is not None:
+            if not isinstance(exchange, dict) or set(exchange) != {"rate", "date", "source"}:
+                raise HttpError(400, "Invalid exchange rate", code="invalid_request")
+            if not isinstance(exchange["rate"], str) or not re.fullmatch(r"[0-9]+(?:[.][0-9]{1,12})?", exchange["rate"]):
+                raise HttpError(400, "Invalid exchange rate", code="invalid_request")
+            if float(exchange["rate"]) <= 0 or not isinstance(exchange["source"], str) or not 1 <= len(exchange["source"].strip()) <= 150:
+                raise HttpError(400, "Invalid exchange rate", code="invalid_request")
+            try: date.fromisoformat(exchange["date"])
+            except (TypeError, ValueError): raise HttpError(400, "Invalid exchange rate date", code="invalid_request")
         if not key or not 1 <= len(key) <= 128: raise HttpError(400, "Idempotency-Key is required", code="invalid_request")
         row = connection.execute("SELECT administracion.pago_revisar(%s,%s,%s,%s,%s,%s,%s) AS value",
             (company_id, order_id, payload["version"], payload["decision"], payload["reason"],

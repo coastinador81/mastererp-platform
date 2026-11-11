@@ -9,6 +9,8 @@ Dependencias: contexto autorizado de tenant y contratos del padre; reglas y crit
 
 La pantalla muestra cobros electrónicos pendientes y revisados, recientes primero. Finanzas registra motivo y evidencia para validar o rechazar; las decisiones cerradas permanecen como historial de solo lectura y no existen datos de respaldo simulados.
 
+Si el pedido usa una moneda distinta de la moneda base empresarial, la validación solicita tasa, fecha efectiva y fuente. Rechazar continúa disponible sin esos campos.
+
 <!-- ux-ui-standard:start -->
 ## UX/UI común
 
