@@ -12,13 +12,13 @@ import Brands from '../2.3.4-catalog/2.3.4.4-brands/src/Brands.jsx';
 import Suppliers from '../2.3.4-catalog/2.3.4.5-suppliers/src/Suppliers.jsx';
 import Inventory from '../../2.1-inventory/2.1.1-inventory/src/Inventory.jsx';
 import PaymentConfiguration from '../2.3.2-stores/src/PaymentConfiguration.jsx';
-import CommerceHeaderMenus from './CommerceHeaderMenus.jsx';
 import OperationsNavigation from './OperationsNavigation.jsx';
 import EcommerceSummary from './EcommerceSummary.jsx';
 import {canOpenOperationsRoute, operationsModule} from './access.mjs';
 import RelatedServicesRail from '../../../shared/module-launcher/RelatedServicesRail.jsx';
 import {FinanceAssistantProvider,FinanceAssistantToggle,FinanceAssistantPanel} from '../../2.2-finance/src/FinanceAssistant.jsx';
-import ModuleLauncher from '../../../shared/module-launcher/ModuleLauncher.jsx';
+import ApplicationHeader from '../../../shared/ui/ApplicationHeader.jsx';
+import UonifyChatLink from '../../2.2-finance/src/UonifyChatLink.jsx';
 
 const routeLabels={summary:'Resumen de Ecommerce',orders:'Pedidos',payments:'Métodos de pago',preparation:'Preparacion',routes:'Rutas',drivers:'Repartidores',nodes:'Nodos',products:'Productos',categories:'Categorias',attributes:'Atributos',brands:'Marcas',suppliers:'Proveedores',inventory:'Inventario'};
 const routes = new Set(['summary','orders','payments','preparation','routes','drivers','nodes','products','categories','attributes','brands','suppliers','inventory']);
@@ -60,8 +60,6 @@ export default function EcommerceApp() {
   else if (route === 'inventory' && allowed('inventory')) content = <Inventory key={path} runtime={runtime}/>;
   else content = <div className="notice error">No tienes permiso para consultar esta capacidad.</div>;
   return <FinanceAssistantProvider applicationName="E-commerce" contextLabel={routeLabels[route]} contextKey={[workspace.signedIn,workspace.tenant,workspace.company].join(':')}><div className="integrated-app ecommerce-app"><a className="skip-link" href="#content">Saltar al contenido</a>
-    <header className="integrated-header"><button ref={menuTrigger} type="button" className="menu-toggle secondary" aria-controls="ecommerce-navigation" aria-label="Abrir menú" aria-expanded={menu} onClick={() => setMenu(!menu)}>☰</button><a className="brand" href="#/summary">Uonify Commerce<span>Entorno de desarrollo</span></a>
-      <div className="context-controls"><CommerceHeaderMenus workspace={workspace}/><FinanceAssistantToggle/><ModuleLauncher currentApp="ecommerce"/>{!workspace.signedIn && <button className="secondary" disabled={workspace.authenticating} onClick={workspace.startLogin}>{workspace.authenticating ? 'Redirigiendo…' : 'Acceder'}</button>}</div>
-    </header><div className="integrated-layout"><div className="finance-service-rail"><RelatedServicesRail currentApp="ecommerce" services={['uonify','finance','ecommerce','inventory','agents']}/></div><aside id="ecommerce-navigation" aria-label="Navegacion de Ecommerce" className={`integrated-nav ${menu ? 'is-open' : ''}`}><OperationsNavigation context={workspace.context} route={route} navigate={navigate}/></aside>{menu&&<button type="button" className="finance-nav-scrim" aria-label="Cerrar menu de Ecommerce" onClick={()=>{setMenu(false);menuTrigger.current?.focus();}}/>}<main id="content" className="integrated-content" tabIndex={-1}><p className="environment">Uonify Commerce · Entorno de desarrollo</p>{workspace.error && <div className="notice error" role="alert">{workspace.error}</div>}{content}</main><FinanceAssistantPanel/></div>
+    <ApplicationHeader workspace={workspace} currentApp="ecommerce" brand="E-commerce" brandHref="#/summary" menuOpen={menu} onToggleMenu={()=>setMenu(!menu)} menuTrigger={menuTrigger}><FinanceAssistantToggle/><UonifyChatLink/></ApplicationHeader><div className="integrated-layout"><div className="finance-service-rail"><RelatedServicesRail currentApp="ecommerce" services={['uonify','finance','ecommerce','inventory','agents']}/></div><aside id="ecommerce-navigation" aria-label="Navegacion de Ecommerce" className={`integrated-nav ${menu ? 'is-open' : ''}`}><OperationsNavigation context={workspace.context} route={route} navigate={navigate}/></aside>{menu&&<button type="button" className="finance-nav-scrim" aria-label="Cerrar menu de Ecommerce" onClick={()=>{setMenu(false);menuTrigger.current?.focus();}}/>}<main id="content" className="integrated-content" tabIndex={-1}><p className="environment">Uonify Commerce · Entorno de desarrollo</p>{workspace.error && <div className="notice error" role="alert">{workspace.error}</div>}{content}</main><FinanceAssistantPanel/></div>
   </div></FinanceAssistantProvider>;
 }

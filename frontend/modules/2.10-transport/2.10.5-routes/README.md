@@ -10,6 +10,8 @@ El Admin permite crear una ruta seleccionando nodo, fecha, franja y pedidos
 en una única operación idempotente, con autorización real
 `operations.routes.write`. Usa la sesión runtime del app-shell y conserva el
 aislamiento por tenant y empresa.
+El directorio presenta primero la fecha de ruta más reciente; para rutas del
+mismo día desempata por fecha de creación e identificador de forma estable.
 
 
 ## Contrato y estado de esta capa

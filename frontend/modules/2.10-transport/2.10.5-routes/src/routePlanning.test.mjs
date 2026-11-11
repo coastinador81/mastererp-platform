@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { deliveryWindowRange, readyOrdersForNode, routePayload } from './routePlanning.mjs';
+import { deliveryWindowRange, newestRoutes, readyOrdersForNode, routePayload } from './routePlanning.mjs';
 
 test('offers only READY orders without a route from the selected node', () => {
   const orders = [
@@ -22,4 +22,14 @@ test('requires an ordered delivery time range', () => {
   assert.equal(deliveryWindowRange('14:00', '17:00'), '14:00-17:00');
   assert.equal(deliveryWindowRange('17:00', '14:00'), '');
   assert.equal(deliveryWindowRange('', '17:00'), '');
+});
+
+test('orders routes by route date and creation date, newest first', () => {
+  const routes = [
+    { id: 'older-day', date: '2026-11-09', created_at: '2026-11-09T20:00:00Z' },
+    { id: 'newer-today', date: '2026-11-10', created_at: '2026-11-10T18:00:00Z' },
+    { id: 'older-today', date: '2026-11-10', created_at: '2026-11-10T12:00:00Z' },
+  ];
+  assert.deepEqual(newestRoutes(routes).map(route => route.id), ['newer-today', 'older-today', 'older-day']);
+  assert.equal(routes[0].id, 'older-day');
 });
