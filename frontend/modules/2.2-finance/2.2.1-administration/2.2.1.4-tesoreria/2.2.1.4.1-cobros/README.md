@@ -7,7 +7,7 @@ Estado: bandeja real de validación de pagos implementada; publicación y prueba
 Propietario funcional: Finanzas → Administración; responsable nominal pendiente de asignación.
 Dependencias: contexto autorizado de tenant y contratos del padre; reglas y criterios de aceptación se definirán con el Product Owner al priorizar la tarea.
 
-La pantalla muestra únicamente pagos electrónicos pendientes autorizados. Finanzas registra motivo y evidencia para validar o rechazar; no existen datos de respaldo simulados.
+La pantalla muestra cobros electrónicos pendientes y revisados, recientes primero. Finanzas registra motivo y evidencia para validar o rechazar; las decisiones cerradas permanecen como historial de solo lectura y no existen datos de respaldo simulados.
 
 <!-- ux-ui-standard:start -->
 ## UX/UI común
