@@ -310,15 +310,15 @@
 @media(max-width:800px){
  :root.finance-app{--finance-mobile-header-height:80px}
  .finance-app .integrated-header{display:flex;flex-wrap:nowrap;align-items:center}
- .finance-app .integrated-header .brand{flex:1;min-width:0;font-size:22px}
+ .finance-app .integrated-header .brand{flex:1;min-width:0;font-size:25px}
  .finance-app .integrated-header .context-controls{width:auto;flex:none;margin:0}
 }
 
 /* Finance-only compact navigation and responsive content. */
 .finance-app{--finance-mobile-header-height:80px}
-.finance-app .integrated-header{height:80px;min-height:80px;flex-wrap:nowrap;gap:12px}
+.finance-app .integrated-header{height:80px;min-height:80px;flex-wrap:nowrap;gap:20px}
 .finance-app .integrated-header .brand{margin-right:auto;min-width:0}
-.finance-app .context-controls{width:auto;flex-shrink:0;gap:8px}
+.finance-app .context-controls{width:auto;flex-shrink:0;gap:14px}
 .finance-app .menu-toggle{display:grid;place-items:center;flex:none;padding:8px;width:36px;min-height:36px}
 .finance-app .integrated-layout{grid-template-columns:64px minmax(0,1fr);align-items:start}
 .finance-app .integrated-layout:has(>.finance-service-rail){grid-template-columns:72px 64px minmax(0,1fr)}
