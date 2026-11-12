@@ -48,13 +48,13 @@ jobs:
           set -euo pipefail
           aws lambda update-function-code --function-name mastererp-dev-routes --zip-file fileb:///tmp/mastererp-dev-routes.zip >/dev/null
           aws lambda wait function-updated-v2 --function-name mastererp-dev-routes
-          integration=$(aws apigatewayv2 get-routes --api-id qx8nmypdhi --query "Items[?RouteKey=='GET /v1/companies/{company_id}/routes'].Target | [0]" --output text)
-          authorizer=$(aws apigatewayv2 get-routes --api-id qx8nmypdhi --query "Items[?RouteKey=='GET /v1/companies/{company_id}/routes'].AuthorizerId | [0]" --output text)
+          integration=$(aws apigatewayv2 get-routes --api-id qx8nmypdhi --query 'Items[?RouteKey==`GET /v1/companies/{company_id}/routes`].Target' --output text)
+          authorizer=$(aws apigatewayv2 get-routes --api-id qx8nmypdhi --query 'Items[?RouteKey==`GET /v1/companies/{company_id}/routes`].AuthorizerId' --output text)
           test -n "$integration" && test "$integration" != None && test -n "$authorizer" && test "$authorizer" != None
-          if ! aws apigatewayv2 get-routes --api-id qx8nmypdhi --query "Items[?RouteKey=='GET /v1/companies/{company_id}/driver-route'].RouteId | [0]" --output text | grep -qv '^None$'; then
+          if ! aws apigatewayv2 get-routes --api-id qx8nmypdhi --query 'Items[?RouteKey==`GET /v1/companies/{company_id}/driver-route`].RouteId' --output text | grep -q .; then
             aws apigatewayv2 create-route --api-id qx8nmypdhi --route-key 'GET /v1/companies/{company_id}/driver-route' --authorization-type JWT --authorizer-id "$authorizer" --target "$integration" >/dev/null
           fi
-          if ! aws apigatewayv2 get-routes --api-id qx8nmypdhi --query "Items[?RouteKey=='POST /v1/companies/{company_id}/routes/{route_id}/driver-deliveries/{order_id}'].RouteId | [0]" --output text | grep -qv '^None$'; then
+          if ! aws apigatewayv2 get-routes --api-id qx8nmypdhi --query 'Items[?RouteKey==`POST /v1/companies/{company_id}/routes/{route_id}/driver-deliveries/{order_id}`].RouteId' --output text | grep -q .; then
             aws apigatewayv2 create-route --api-id qx8nmypdhi --route-key 'POST /v1/companies/{company_id}/routes/{route_id}/driver-deliveries/{order_id}' --authorization-type JWT --authorizer-id "$authorizer" --target "$integration" >/dev/null
           fi
           if ! aws lambda get-policy --function-name mastererp-dev-routes --query Policy --output text | grep -q 'mastererp-driver-route-dev'; then
