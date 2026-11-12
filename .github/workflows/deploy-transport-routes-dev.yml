@@ -1,0 +1,65 @@
+name: Deploy Transport Routes backend DEV
+on:
+  push:
+    branches: [dev]
+    paths:
+      - '.github/transport-routes-dev.trigger'
+  workflow_dispatch:
+permissions:
+  contents: read
+  id-token: write
+concurrency:
+  group: mastererp-dev-transport-routes-backend
+  cancel-in-progress: false
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate Routes contract
+        env:
+          PYTHONPATH: backend/modules/2.10-transport/2.10.5-routes:backend/shared/tenant-security
+        run: python -m unittest discover -s backend/modules/2.10-transport/2.10.5-routes/tests -p test_routes_api.py
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::277352717693:role/mastererp-dev-transport-routes-github-role
+          aws-region: us-west-1
+      - name: Build Routes artifact from deployed runtime dependencies
+        run: |
+          set -euo pipefail
+          test "$(aws sts get-caller-identity --query Account --output text)" = 277352717693
+          current=$(aws lambda get-function --function-name mastererp-dev-routes --query 'Code.Location' --output text)
+          curl -sS "$current" -o /tmp/routes-current.zip
+          mkdir -p /tmp/routes-package
+          unzip -q /tmp/routes-current.zip -d /tmp/routes-package
+          cp backend/modules/2.10-transport/2.10.5-routes/lambdas/mastererp-dev-routes/handler.py /tmp/routes-package/handler.py
+          cp backend/modules/2.10-transport/2.10.5-routes/routes_api/*.py /tmp/routes-package/routes_api/
+          cp backend/shared/tenant-security/tenant_security/{__init__.py,auth.py,db.py,http.py,rds-us-west-1-bundle.pem} /tmp/routes-package/tenant_security/
+          find /tmp/routes-package -type d -name __pycache__ -prune -exec rm -rf {} +
+          (cd /tmp/routes-package && zip -qr /tmp/mastererp-dev-routes.zip .)
+          unzip -t /tmp/mastererp-dev-routes.zip >/dev/null
+      - name: Publish Lambda and JWT routes
+        run: |
+          set -euo pipefail
+          aws lambda update-function-code --function-name mastererp-dev-routes --zip-file fileb:///tmp/mastererp-dev-routes.zip >/dev/null
+          aws lambda wait function-updated-v2 --function-name mastererp-dev-routes
+          integration=$(aws apigatewayv2 get-routes --api-id qx8nmypdhi --query "Items[?RouteKey=='GET /v1/companies/{company_id}/routes'].Target | [0]" --output text)
+          authorizer=$(aws apigatewayv2 get-routes --api-id qx8nmypdhi --query "Items[?RouteKey=='GET /v1/companies/{company_id}/routes'].AuthorizerId | [0]" --output text)
+          test -n "$integration" && test "$integration" != None && test -n "$authorizer" && test "$authorizer" != None
+          if ! aws apigatewayv2 get-routes --api-id qx8nmypdhi --query "Items[?RouteKey=='GET /v1/companies/{company_id}/driver-route'].RouteId | [0]" --output text | grep -qv '^None$'; then
+            aws apigatewayv2 create-route --api-id qx8nmypdhi --route-key 'GET /v1/companies/{company_id}/driver-route' --authorization-type JWT --authorizer-id "$authorizer" --target "$integration" >/dev/null
+          fi
+          if ! aws apigatewayv2 get-routes --api-id qx8nmypdhi --query "Items[?RouteKey=='POST /v1/companies/{company_id}/routes/{route_id}/driver-deliveries/{order_id}'].RouteId | [0]" --output text | grep -qv '^None$'; then
+            aws apigatewayv2 create-route --api-id qx8nmypdhi --route-key 'POST /v1/companies/{company_id}/routes/{route_id}/driver-deliveries/{order_id}' --authorization-type JWT --authorizer-id "$authorizer" --target "$integration" >/dev/null
+          fi
+          if ! aws lambda get-policy --function-name mastererp-dev-routes --query Policy --output text | grep -q 'mastererp-driver-route-dev'; then
+            aws lambda add-permission --function-name mastererp-dev-routes --statement-id mastererp-driver-route-dev --action lambda:InvokeFunction --principal apigateway.amazonaws.com --source-account 277352717693 --source-arn 'arn:aws:execute-api:us-west-1:277352717693:qx8nmypdhi/$default/GET/v1/companies/*/driver-route' >/dev/null
+          fi
+      - name: Verify private Routes contract
+        run: |
+          set -euo pipefail
+          test "$(aws apigatewayv2 get-routes --api-id qx8nmypdhi --query "length(Items[?AuthorizationType=='JWT' && (contains(RouteKey, 'driver-route') || contains(RouteKey, 'driver-deliveries'))])" --output text)" = 2
+          test "$(curl -sS -o /tmp/driver-route-response -w '%{http_code}' https://qx8nmypdhi.execute-api.us-west-1.amazonaws.com/v1/companies/00000000-0000-0000-0000-000000000000/driver-route)" = 401
