@@ -5,7 +5,7 @@
 
 Objetivo específico: Gestionar repartidores y proveedores de transporte.
 
-Responsabilidad: repartidores, transportistas, Chipipro y MRW. Estado: aplicación independiente implementada como candidata DEV; hosting pendiente de un rol autorizado de aprovisionamiento y publicación preparada, pero no ejecutada.
+Responsabilidad: repartidores, transportistas, Chipipro y MRW. Estado: aplicación independiente publicada en DEV con hosting y pipeline propios. Comparte el cliente Cognito de Uonify; su callback y logout se administran desde el stack de identidad.
 
 La aplicación visible se denomina **Repartidores** y usa el dominio canónico
 `transporte-dev.uonify.com`. Comparte Cognito y contexto autorizado con Uonify,
@@ -19,7 +19,7 @@ Código: 2.10. Nombre/ruta: `2.10-transport`. Objetivo y alcance: los descritos 
 
 Capa: frontend. Dependencias: contexto autenticado, tenant y contratos del padre cuando correspondan; contratos adicionales pendientes de definición. Exclusiones: lógica y recursos de otros módulos; conectores técnicos fuera de Digital Sales. APIs/eventos/MCP: no declarar disponibles por existir esta carpeta; revisar implementación y contrato antes de consumir. Propuestas sin contrato confirmado permanecen pendientes.
 
-Estado verificable: la interfaz consume los contratos reales de Repartidores y Rutas, compila con la base administrativa de `frontend/shared/ui` y no importa estilos de Finanzas. El workflow local `publish-transport-dev.yml` exige el rol, bucket y distribución exclusivos que entregará el stack; no puede publicar hasta que esos recursos existan.
+Estado verificable: la interfaz consume los contratos reales de Repartidores y Rutas, compila con la base administrativa de `frontend/shared/ui`, no importa estilos de Finanzas y se publica mediante `publish-transport-dev.yml` en los recursos exclusivos aprovisionados para Transporte.
 
 Validaciones: estructura local mediante scripts/validate_structure.py. Pendientes: contratos específicos, responsable nominal y pruebas funcionales antes de habilitar esta capacidad.
 
