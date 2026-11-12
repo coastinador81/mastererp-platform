@@ -31,6 +31,7 @@
 
 /* Entry-point scope: these tokens and overrides never restyle Uonify. */
 :root.finance-app {
+  scrollbar-gutter: stable;
   --finance-font: var(--mastererp-font-family, Arimo, Arial, sans-serif);
   --finance-text: var(--uon-neutral-700);
   --finance-muted: var(--uon-neutral-600);
