@@ -1,5 +1,11 @@
 Componentes visuales reutilizables.
 
+`ApplicationShell.jsx` centraliza la composición del shell administrativo
+compartido entre Finanzas, Ecommerce y Transporte: cabecera unificada,
+rail de servicios relacionados (`RelatedServicesRail`), barra lateral colapsable
+a iconos con expansión al foco o puntero, capa modal móvil con cierre automático,
+área de contenido canónico y panel contextual de Uony.
+
 `ApplicationHeader.jsx` mantiene la estructura común de cabecera de las
 aplicaciones independientes: navegación móvil, identidad de la aplicación,
 acciones contextuales, lanzador y acceso o salida de la sesión. Cada aplicación
