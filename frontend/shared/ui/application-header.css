@@ -5,6 +5,7 @@
 .integrated-app .application-header .context-controls>button{min-height:40px;padding:var(--uon-space-2) var(--uon-space-4);border:1px solid var(--uon-neutral-200);border-radius:var(--uon-radius-control);background:var(--uon-surface);color:var(--uon-neutral-700);font-weight:500;transition:background-color var(--uon-motion-fast) var(--uon-motion-easing),border-color var(--uon-motion-fast) var(--uon-motion-easing)}
 .integrated-app .application-header .context-controls>button:hover:not(:disabled){border-color:var(--uon-neutral-300);background:var(--uon-information-surface);color:var(--uon-action-blue)}
 .integrated-app .application-header .finance-assistant-toggle{display:grid;width:40px;height:40px;min-height:40px;flex:none;place-items:center;padding:9px;border-radius:50%}
+.integrated-app .application-header .finance-assistant-toggle img{display:block;width:22px;max-width:100%;height:auto}
 .integrated-app .application-header .finance-chat-home{display:inline-flex;width:42px;height:42px;flex:none;align-items:center;justify-content:center;border-radius:50%;color:var(--uon-neutral-600);text-decoration:none}
 .integrated-app .application-header .finance-chat-home:hover{background:var(--uon-information-surface);color:var(--uon-action-blue)}
 .integrated-app .application-header .finance-chat-home:focus-visible{outline:2px solid var(--uon-brand-blue);outline-offset:3px}
