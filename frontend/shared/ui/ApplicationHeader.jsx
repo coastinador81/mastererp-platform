@@ -1,7 +1,7 @@
 import React from 'react';
 import ModuleLauncher from '../module-launcher/ModuleLauncher.jsx';
-import {FinanceAssistantToggle} from '../../modules/2.2-finance/src/FinanceAssistant.jsx';
-import UonifyChatLink from '../../modules/2.2-finance/src/UonifyChatLink.jsx';
+import {ApplicationAssistantToggle} from './ApplicationAssistant.jsx';
+import UonifyChatLink from './UonifyChatLink.jsx';
 import './design-tokens.css';
 import './application-header.css';
 
@@ -37,7 +37,7 @@ export default function ApplicationHeader({
       </a>
       <div className="context-controls">
         {children}
-        {displayAssistant && <FinanceAssistantToggle />}
+        {displayAssistant && <ApplicationAssistantToggle />}
         {displayAssistant && <UonifyChatLink />}
         <ModuleLauncher currentApp={currentApp} />
         {workspace && (

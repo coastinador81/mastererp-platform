@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import ApplicationHeader from './ApplicationHeader.jsx';
 import RelatedServicesRail from '../module-launcher/RelatedServicesRail.jsx';
-import {FinanceAssistantProvider, FinanceAssistantPanel} from '../../modules/2.2-finance/src/FinanceAssistant.jsx';
+import {ApplicationAssistantProvider, ApplicationAssistantPanel} from './ApplicationAssistant.jsx';
 
 export default function ApplicationShell({
   workspace,
@@ -46,7 +46,7 @@ export default function ApplicationShell({
   }, []);
 
   return (
-    <FinanceAssistantProvider
+    <ApplicationAssistantProvider
       applicationName={brand}
       contextLabel={contextLabel}
       contextKey={contextKey}
@@ -94,9 +94,9 @@ export default function ApplicationShell({
             {error && <div className="notice error" role="alert">{error}</div>}
             {children}
           </main>
-          {showAssistant && <FinanceAssistantPanel />}
+          {showAssistant && <ApplicationAssistantPanel />}
         </div>
       </div>
-    </FinanceAssistantProvider>
+    </ApplicationAssistantProvider>
   );
 }

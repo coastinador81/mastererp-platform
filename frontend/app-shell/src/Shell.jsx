@@ -3,7 +3,7 @@ import {createRoot} from 'react-dom/client';
 import {config,WorkspaceProvider,useWorkspace} from './session.jsx';
 import Finance from '../../modules/2.2-finance/src/Finance.jsx';
 import RelatedServicesRail from '../../shared/module-launcher/RelatedServicesRail.jsx';
-import {FinanceAssistantProvider,FinanceAssistantPanel} from '../../modules/2.2-finance/src/FinanceAssistant.jsx';
+import {ApplicationAssistantProvider as FinanceAssistantProvider,ApplicationAssistantPanel as FinanceAssistantPanel} from '../../shared/ui/ApplicationAssistant.jsx';
 import FinanceNavigation from '../../modules/2.2-finance/src/FinanceNavigation.jsx';
 import ModuleAppsGrid from '../../shared/module-launcher/ModuleAppsGrid.jsx';
 import ApplicationHeader from '../../shared/ui/ApplicationHeader.jsx';

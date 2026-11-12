@@ -1,15 +1,20 @@
 Componentes visuales reutilizables.
 
-`ApplicationShell.jsx` centraliza la composición del shell administrativo
-compartido entre Finanzas, Ecommerce y Transporte: cabecera unificada,
+Finanzas es el canon visual y de interacción del shell administrativo.
+`ApplicationShell.jsx` empaqueta ese patrón para Ecommerce y Transporte: cabecera unificada,
 rail de servicios relacionados (`RelatedServicesRail`), barra lateral colapsable
 a iconos con expansión al foco o puntero, capa modal móvil con cierre automático,
-área de contenido canónico y panel contextual de Uony.
+área de contenido canónico y panel contextual de Uony. Finanzas conserva su
+composición de rutas propia, pero consume los mismos componentes centrales.
 
 `ApplicationHeader.jsx` mantiene la estructura común de cabecera de las
 aplicaciones independientes: navegación móvil, identidad de la aplicación,
 acciones contextuales, lanzador y acceso o salida de la sesión. Cada aplicación
 inyecta únicamente sus acciones autorizadas y conserva su nombre y ruta.
+
+`ApplicationAssistant.jsx`, `ApplicationIcon.jsx` y `UonifyChatLink.jsx` son
+extracciones fieles de los componentes aprobados originalmente en Finanzas;
+los archivos de Finanzas mantienen reexportaciones compatibles.
 
 `design-tokens.css` expone los fundamentos visuales corporativos que pueden
 compartir las aplicaciones sin importar la implementación interna de Uonify.
