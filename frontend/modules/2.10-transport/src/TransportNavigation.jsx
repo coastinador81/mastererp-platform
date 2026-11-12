@@ -1,9 +1,16 @@
 import React from 'react';
+import FinanceIcon from '../../2.2-finance/src/FinanceIcon.jsx';
+import WorkspaceCard from '../../../shared/workspace/WorkspaceCard.jsx';
 const entries=[
-  ['my-route','Mi ruta','transport.deliveries.execute'],
-  ['drivers','Repartidores','transport.drivers.read'],
-  ['routes','Rutas','operations.routes.read'],
+  ['my-route','Mi ruta','route','transport.deliveries.execute'],
+  ['drivers','Repartidores','supplier','transport.drivers.read'],
+  ['routes','Rutas','route','operations.routes.read'],
 ];
 export default function TransportNavigation({permissions,route,navigate}){
- return <nav className="finance-navigation" aria-label="Navegación de Repartidores"><p className="finance-nav-heading">TRANSPORTE</p><ul>{entries.filter(([, ,permission])=>permissions.includes(permission)).map(([id,label])=><li key={id}><button type="button" className={route===id?'active':''} onClick={()=>navigate(id)}>{label}</button></li>)}</ul></nav>;
+ const links=entries.filter(([, , ,permission])=>permissions.includes(permission));
+ return <nav className="finance-navigation" aria-label="Espacios de Repartidores">
+  <WorkspaceCard application="Repartidores" showSelectedIcon value="transport" options={[{value:'transport',label:'Transporte',icon:'route'}]} onChange={()=>{}}/>
+  <p className="nav-caption">TRANSPORTE</p>
+  {links.map(([id,label,icon])=><a key={id} href={`#/${id}`} title={label} aria-current={route===id?'page':undefined}><FinanceIcon name={icon}/><span className="finance-nav-label">{label}</span></a>)}
+ </nav>;
 }
