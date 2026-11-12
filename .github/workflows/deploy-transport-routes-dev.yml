@@ -63,5 +63,5 @@ jobs:
       - name: Verify private Routes contract
         run: |
           set -euo pipefail
-          test "$(aws apigatewayv2 get-routes --api-id qx8nmypdhi --query "length(Items[?AuthorizationType=='JWT' && (contains(RouteKey, 'driver-route') || contains(RouteKey, 'driver-deliveries'))])" --output text)" = 2
+          test "$(aws apigatewayv2 get-routes --api-id qx8nmypdhi --query 'length(Items[?AuthorizationType==`JWT` && (contains(RouteKey, `driver-route`) || contains(RouteKey, `driver-deliveries`))])' --output text)" = 2
           test "$(curl -sS -o /tmp/driver-route-response -w '%{http_code}' https://qx8nmypdhi.execute-api.us-west-1.amazonaws.com/v1/companies/00000000-0000-0000-0000-000000000000/driver-route)" = 401
