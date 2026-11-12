@@ -19,6 +19,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install authorization test dependency
+        run: pip install --disable-pip-version-check 'PyJWT[crypto]>=2.9'
       - name: Validate Routes contract
         env:
           PYTHONPATH: backend/modules/2.10-transport/2.10.5-routes:backend/shared/tenant-security
