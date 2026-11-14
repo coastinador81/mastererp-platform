@@ -194,15 +194,16 @@ function ProductDetailScreen({product,nodes,dateFrom,dateTo,onBack}){
   <div className="inventory-table-scroll" role="region" aria-label="Existencias por producto" tabIndex={0}>
    <table><caption className="inventory-sr-only">Existencias mock por producto, con disponibilidad, valoración y rotación en el periodo seleccionado</caption>
     <thead>
-     <tr className="inventory-products-total-row"><th scope="row">Total</th><td>{(visibleRows.length*nodes.length).toLocaleString('es-VE')} lotes</td><td>{totals.physical.toLocaleString('es-VE')}</td><td>{totals.reserved.toLocaleString('es-VE')}</td><td>{totals.available.toLocaleString('es-VE')}</td><td>{totals.minimum.toLocaleString('es-VE')}</td><td>—</td><td>{formatInventoryCurrency(totals.value)}</td><td>{totals.rotationQuantity.toLocaleString('es-VE')}</td><td colSpan="2">{visibleRows.length} productos</td></tr>
-     <tr><th scope="col">Producto / SKU</th><th scope="col">Lote / nodo</th><th scope="col">Stock</th><th scope="col">Reservado</th><th scope="col">Disponible</th><th scope="col">Stock mínimo</th><th scope="col">Costo promedio</th><th scope="col">Valor inventario</th><th scope="col">Rotación</th><th scope="col">Vencimiento</th><th scope="col">Estado</th></tr>
+     <tr className="inventory-products-total-row"><th scope="row" colSpan="3">Total</th><td>{totals.physical.toLocaleString('es-VE')}</td><td>{totals.reserved.toLocaleString('es-VE')}</td><td>{totals.available.toLocaleString('es-VE')}</td><td>{totals.minimum.toLocaleString('es-VE')}</td><td>—</td><td>{formatInventoryCurrency(totals.value)}</td><td>{totals.rotationQuantity.toLocaleString('es-VE')}</td><td colSpan="2">{visibleRows.length} productos</td></tr>
+     <tr><th scope="col">#</th><th scope="col">Producto</th><th scope="col">SKU</th><th scope="col">Stock</th><th scope="col">Reservado</th><th scope="col">Disponible</th><th scope="col">Stock mínimo</th><th scope="col">Costo promedio</th><th scope="col">Valor inventario</th><th scope="col">Rotación</th><th scope="col">Vencimiento</th><th scope="col">Estado</th></tr>
     </thead>
-    <tbody>{visibleRows.length?visibleRows.map(product=><tr key={product.id} className="inventory-product-row" onClick={()=>onOpenProduct(product)}>
-     <th scope="row"><button type="button" className="inventory-product-name-button" onClick={event=>{event.stopPropagation();onOpenProduct(product);}}><strong>{product.name}</strong><small>SKU: {product.sku} · {product.category} · {product.unit}<span aria-hidden="true">　→</span></small></button></th>
-     <td><div className="inventory-product-batch-list">{nodes.map(node=><span key={node.id}><small>{node.name}</small><code className="inventory-batch-code">{getMockBatchCode(product,node.id)}</code></span>)}</div></td>
+    <tbody>{visibleRows.length?visibleRows.map((product,index)=><tr key={product.id} className="inventory-product-row" onClick={()=>onOpenProduct(product)}>
+     <td className="inventory-product-row-number">{(index+1).toLocaleString('es-VE')}</td>
+     <th scope="row"><button type="button" className="inventory-product-name-button" onClick={event=>{event.stopPropagation();onOpenProduct(product);}}><strong>{product.name}</strong><small>{product.category} · {product.unit}<span aria-hidden="true">　→</span></small></button></th>
+     <td><code className="inventory-sku-code">{product.sku}</code></td>
      <td>{product.physical.toLocaleString('es-VE')}</td><td>{product.reserved.toLocaleString('es-VE')}</td><td><strong>{product.available.toLocaleString('es-VE')}</strong></td><td>{product.minimum.toLocaleString('es-VE')}</td><td>{formatInventoryCurrency(product.unitCost)}</td><td>{formatInventoryCurrency(product.value)}</td><td><strong>{product.rotationQuantity.toLocaleString('es-VE')}</strong></td><td>{product.expiry}</td>
      <td><div className="inventory-product-tags">{product.status.map(tag=><span key={tag.label} className={'inventory-product-status inventory-product-status-'+tag.tone}>{tag.label}</span>)}</div></td>
-    </tr>):<tr><td colSpan="11"><div className="inventory-products-empty"><h3>No encontramos productos</h3><p>Prueba con otro nombre, SKU o categoría.</p></div></td></tr>}</tbody>
+    </tr>):<tr><td colSpan="12"><div className="inventory-products-empty"><h3>No encontramos productos</h3><p>Prueba con otro nombre, SKU o categoría.</p></div></td></tr>}</tbody>
    </table>
   </div>
  </section>;
