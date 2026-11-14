@@ -116,5 +116,6 @@ body{margin:0}.inventory-app *{box-sizing:border-box}.inventory-app button,.inve
 .inventory-product-filters>button:disabled{color:var(--inventory-muted);cursor:default}
 .inventory-date-error{margin:-6px 0 14px;color:#b63c2c;font-size:12px}
 .inventory-products-total-row th:first-child{text-align:left!important}
+.inventory-products thead .inventory-products-total-row td{text-align:right;font-variant-numeric:tabular-nums}
 @media(max-width:700px){.inventory-products-heading{flex-direction:column;gap:12px}.inventory-product-filters{align-items:stretch;flex-direction:column}.inventory-products-scope{margin:0}}
 @media(max-width:700px){.inventory-rotation-period{margin-left:0}}
