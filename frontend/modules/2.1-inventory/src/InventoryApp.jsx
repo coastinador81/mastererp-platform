@@ -97,6 +97,7 @@ function InventoryDashboard({onOpenTacticalProducts}){
 function ProductInventorySection({tacticalOnly=false,onClearFilter}){
  const [scope,setScope]=useState('total'),[selectedNodeId,setSelectedNodeId]=useState(mockInventoryNodes[0].id);
  const [searchTerm,setSearchTerm]=useState('');
+ const [selectedStatus,setSelectedStatus]=useState('');
  const [dateFrom,setDateFrom]=useState(''),[dateTo,setDateTo]=useState('');
  const nodes=scope==='total'?mockInventoryNodes:[mockInventoryNodes.find(node=>node.id===selectedNodeId)||mockInventoryNodes[0]];
  const rows=mockProductRecords.map(product=>{
@@ -114,7 +115,7 @@ function ProductInventorySection({tacticalOnly=false,onClearFilter}){
   return {...product,physical,reserved,minimum,available,value,rotationQuantity,lowStockNodes,isTactical,status};
  }).filter(product=>!tacticalOnly||product.isTactical);
  const normalizedQuery=normalizeInventorySearch(searchTerm);
- const filteredRows=rows.filter(product=>normalizeInventorySearch(`${product.name} ${product.sku} ${product.category}`).includes(normalizedQuery));
+ const filteredRows=rows.filter(product=>normalizeInventorySearch(`${product.name} ${product.sku} ${product.category}`).includes(normalizedQuery)&&(!selectedStatus||product.status.label===selectedStatus));
  const visibleRows=filteredRows.filter(product=>(!dateFrom&&!dateTo)||product.rotationQuantity>0);
  const totals=visibleRows.reduce((sum,row)=>({physical:sum.physical+row.physical,reserved:sum.reserved+row.reserved,available:sum.available+row.available,minimum:sum.minimum+row.minimum,value:sum.value+row.value,rotationQuantity:sum.rotationQuantity+row.rotationQuantity}),{physical:0,reserved:0,available:0,minimum:0,value:0,rotationQuantity:0});
  const scopeLabel=scope==='total'?`Total de ${nodes.length} nodos`:nodes[0].name;
@@ -125,6 +126,7 @@ function ProductInventorySection({tacticalOnly=false,onClearFilter}){
    <div className="inventory-summary-filter"><span className="inventory-filter-label" id="products-scope-label">Alcance</span><div className="inventory-scope-toggle" role="group" aria-labelledby="products-scope-label"><button type="button" aria-pressed={scope==='total'} onClick={()=>setScope('total')}>Total</button><button type="button" aria-pressed={scope==='node'} onClick={()=>setScope('node')}>Por nodo</button></div></div>
    {scope==='node'&&<label className="inventory-node-filter"><span className="inventory-filter-label">Nodo</span><select value={selectedNodeId} onChange={event=>setSelectedNodeId(event.target.value)}>{mockInventoryNodes.map(node=><option key={node.id} value={node.id}>{node.name}</option>)}</select></label>}
    <label className="inventory-product-search"><span className="inventory-filter-label">Buscar producto, SKU o categoría</span><input type="search" value={searchTerm} onChange={event=>setSearchTerm(event.target.value)} placeholder="Ej. yogur, LAC-001"/></label>
+   <label className="inventory-status-filter"><span className="inventory-filter-label">Estado</span><select value={selectedStatus} onChange={event=>setSelectedStatus(event.target.value)}><option value="">Todos los estados</option><option value="Vencido">Vencido</option><option value="Vence pronto">Vence pronto</option><option value="Stock mínimo">Stock mínimo</option><option value="Sobre Stock">Sobre Stock</option><option value="Stock adecuado">Stock adecuado</option></select></label>
    <label className="inventory-product-date-filter"><span>Desde</span><input type="date" value={dateFrom} max={dateTo||undefined} onChange={event=>setDateFrom(event.target.value)}/></label>
    <label className="inventory-product-date-filter"><span>Hasta</span><input type="date" value={dateTo} min={dateFrom||undefined} onChange={event=>setDateTo(event.target.value)}/></label>
    <button type="button" onClick={()=>{setDateFrom('');setDateTo('');}} disabled={!dateFrom&&!dateTo}>Restablecer fechas</button>
