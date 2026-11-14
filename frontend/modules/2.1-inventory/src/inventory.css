@@ -150,6 +150,13 @@ body{margin:0}.inventory-app *{box-sizing:border-box}.inventory-app button,.inve
 .inventory-product-detail-screen th:first-child{text-align:left}
 .inventory-product-detail-screen td{text-align:right;white-space:nowrap}
 .inventory-product-detail-screen td:nth-child(2){text-align:left}
+.inventory-node-detail-row{cursor:pointer}
+.inventory-node-detail-row:hover th,.inventory-node-detail-row:hover td{background:#f7faff}
+.inventory-node-open{padding:6px 8px;border:1px solid var(--inventory-border);border-radius:7px;background:#fff;color:var(--inventory-blue);font-size:11px;font-weight:600;white-space:nowrap}
+.inventory-product-node-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.inventory-product-node-metrics article{display:grid;gap:7px;padding:14px;border:1px solid var(--inventory-border);border-radius:9px;background:#f8fafc}
+.inventory-product-node-metrics span{color:var(--inventory-muted);font-size:11px}
+.inventory-product-node-metrics strong{color:var(--inventory-title);font-size:14px;font-weight:600}
 .inventory-product-actions>div{display:grid;gap:10px;margin-top:12px}
 .inventory-product-actions article{display:flex;align-items:flex-start;gap:12px;padding:14px;border:1px solid var(--inventory-border);border-radius:10px;background:#fff}
 .inventory-product-actions article>span{display:grid;width:24px;height:24px;flex:0 0 24px;place-items:center;border-radius:50%;background:#edf4fc;color:var(--inventory-blue);font-size:11px;font-weight:700}
@@ -157,3 +164,4 @@ body{margin:0}.inventory-app *{box-sizing:border-box}.inventory-app button,.inve
 .inventory-product-actions article p{margin:4px 0 0;color:var(--inventory-muted);font-size:12px;line-height:1.5}
 @media(max-width:900px){.inventory-detail-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.inventory-product-detail-screen-heading{flex-direction:column}}
 @media(max-width:520px){.inventory-detail-summary{grid-template-columns:1fr}.inventory-product-detail-section-heading{align-items:flex-start;flex-direction:column}}
+@media(max-width:700px){.inventory-product-node-metrics{grid-template-columns:1fr}}
