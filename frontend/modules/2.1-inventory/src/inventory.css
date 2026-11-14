@@ -152,7 +152,8 @@ body{margin:0}.inventory-app *{box-sizing:border-box}.inventory-app button,.inve
 .inventory-product-detail-screen td:nth-child(2){text-align:left}
 .inventory-node-detail-row{cursor:pointer}
 .inventory-node-detail-row:hover th,.inventory-node-detail-row:hover td{background:#f7faff}
-.inventory-node-open{padding:6px 8px;border:1px solid var(--inventory-border);border-radius:7px;background:#fff;color:var(--inventory-blue);font-size:11px;font-weight:600;white-space:nowrap}
+.inventory-node-name-open{padding:0;border:0;background:transparent;color:var(--inventory-title);font:inherit;font-weight:600;text-align:left;cursor:pointer}
+.inventory-node-name-open:focus-visible{outline:2px solid var(--inventory-blue);outline-offset:3px;border-radius:3px}
 .inventory-product-node-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
 .inventory-product-node-metrics article{display:grid;gap:7px;padding:14px;border:1px solid var(--inventory-border);border-radius:9px;background:#f8fafc}
 .inventory-product-node-metrics span{color:var(--inventory-muted);font-size:11px}
