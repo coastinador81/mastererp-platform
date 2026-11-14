@@ -110,22 +110,18 @@ body{margin:0}.inventory-app *{box-sizing:border-box}.inventory-app button,.inve
 .inventory-products-empty{padding:28px 18px;text-align:center}
 .inventory-products-empty h3{margin:0;color:var(--inventory-title);font-size:14px;font-weight:500}
 .inventory-products-empty p{margin:6px 0 0;font-size:12px}
-.inventory-products-total-row{position:sticky;top:0;z-index:2}
-.inventory-products-total-row th,.inventory-products-total-row td{background:#edf4fc!important;border-bottom:1px solid #d7e4f3!important;color:var(--inventory-muted)!important;font-weight:500!important}
 .inventory-product-date-filter{display:grid;gap:7px;color:var(--inventory-muted);font-size:11px}
 .inventory-product-date-filter input{min-height:42px;padding:8px 9px;border:1px solid var(--inventory-border);border-radius:8px;background:#fff;color:var(--inventory-title)}
 .inventory-product-filters>button{min-height:42px;padding:6px 11px;border:1px solid var(--inventory-border);border-radius:8px;background:#fff;color:var(--inventory-blue);font-size:12px;font-weight:500}
 .inventory-product-filters>button:disabled{color:var(--inventory-muted);cursor:default}
 .inventory-date-error{margin:-6px 0 14px;color:#b63c2c;font-size:12px}
-.inventory-products-total-row th:first-child{text-align:left!important}
-.inventory-products thead .inventory-products-total-row td{text-align:right;font-variant-numeric:tabular-nums}
 @media(max-width:700px){.inventory-products-heading{flex-direction:column;gap:12px}.inventory-product-filters{align-items:stretch;flex-direction:column}.inventory-products-scope{margin:0}}
 @media(max-width:700px){.inventory-rotation-period{margin-left:0}}
 
-.inventory-products thead tr:not(.inventory-products-total-row) th{color:#1f2937;font-weight:600}
+.inventory-products thead th{color:#1f2937;font-weight:600}
 .inventory-products tbody td{color:var(--inventory-muted)}
 .inventory-products th:nth-child(12),.inventory-products td:nth-child(12){text-align:center}
-.inventory-products tbody td:nth-child(3),.inventory-products thead tr:not(.inventory-products-total-row) th:nth-child(3){min-width:120px;text-align:left}
+.inventory-products tbody td:nth-child(3),.inventory-products thead th:nth-child(3){min-width:120px;text-align:left}
 .inventory-product-row-number{width:50px;text-align:center!important;font-variant-numeric:tabular-nums}
 .inventory-sku-code{padding:3px 6px;border:1px solid var(--inventory-border);border-radius:4px;background:#f6f8fc;color:var(--inventory-title);font-family:ui-monospace,Consolas,monospace;font-size:11px;font-weight:600;white-space:nowrap}
 .inventory-batch-code{padding:2px 5px;border:1px solid var(--inventory-border);border-radius:4px;background:#f6f8fc;color:var(--inventory-title);font-family:ui-monospace,Consolas,monospace;font-size:10px;font-weight:600;white-space:nowrap}
@@ -191,8 +187,7 @@ body{margin:0}.inventory-app *{box-sizing:border-box}.inventory-app button,.inve
 .inventory-low-glare .inventory-nav-items a[aria-current=page]{background:#3b4140;color:var(--inventory-blue)}
 .inventory-low-glare th{background:#343736;color:var(--inventory-muted)}
 .inventory-low-glare td,.inventory-low-glare th{border-color:var(--inventory-border)}
-.inventory-low-glare .inventory-products thead tr:not(.inventory-products-total-row) th{color:var(--inventory-title)}
-.inventory-low-glare .inventory-products-total-row th,.inventory-low-glare .inventory-products-total-row td{background:#343a38!important;border-color:#484d49!important;color:var(--inventory-muted)!important}
+.inventory-low-glare .inventory-products thead th{color:var(--inventory-title)}
 .inventory-low-glare .inventory-product-row:hover td,.inventory-low-glare .inventory-product-row:hover th,.inventory-low-glare .inventory-product-row.is-expanded td,.inventory-low-glare .inventory-product-row.is-expanded th,.inventory-low-glare .inventory-node-detail-row:hover th,.inventory-low-glare .inventory-node-detail-row:hover td{background:#303332}
 .inventory-low-glare .inventory-summary-card,.inventory-low-glare .inventory-summary-tag,.inventory-low-glare .inventory-tactical-indicator,.inventory-low-glare .inventory-tactical-indicator-primary,.inventory-low-glare .inventory-detail-summary article,.inventory-low-glare .inventory-product-state-grid article,.inventory-low-glare .inventory-product-node-metrics article,.inventory-low-glare .inventory-product-actions article{background:#2d302f;border-color:var(--inventory-border)}
 .inventory-low-glare .inventory-summary-icon,.inventory-low-glare .inventory-condition-icon{background:#39403e;color:var(--inventory-blue)}

@@ -173,7 +173,6 @@ function ProductDetailScreen({product,nodes,dateFrom,dateTo,onBack}){
  const normalizedQuery=normalizeInventorySearch(searchTerm);
  const filteredRows=rows.filter(product=>normalizeInventorySearch(`${product.name} ${product.sku} ${product.category}`).includes(normalizedQuery)&&(!selectedStatus||product.status.some(tag=>tag.label===selectedStatus)));
  const visibleRows=filteredRows.filter(product=>(!dateFrom&&!dateTo)||product.rotationQuantity>0);
- const totals=visibleRows.reduce((sum,row)=>({physical:sum.physical+row.physical,reserved:sum.reserved+row.reserved,available:sum.available+row.available,minimum:sum.minimum+row.minimum,value:sum.value+row.value,rotationQuantity:sum.rotationQuantity+row.rotationQuantity}),{physical:0,reserved:0,available:0,minimum:0,value:0,rotationQuantity:0});
  const scopeLabel=scope==='total'?`Total de ${nodes.length} nodos`:nodes[0].name;
  const invalidDateRange=Boolean(dateFrom&&dateTo&&dateFrom>dateTo);
  const selectedProduct=mockProductRecords.find(product=>product.id===productId);
@@ -194,7 +193,6 @@ function ProductDetailScreen({product,nodes,dateFrom,dateTo,onBack}){
   <div className="inventory-table-scroll" role="region" aria-label="Existencias por producto" tabIndex={0}>
    <table><caption className="inventory-sr-only">Existencias mock por producto, con disponibilidad, valoración y rotación en el periodo seleccionado</caption>
     <thead>
-     <tr className="inventory-products-total-row"><th scope="row" colSpan="3">Total</th><td>{totals.physical.toLocaleString('es-VE')}</td><td>{totals.reserved.toLocaleString('es-VE')}</td><td>{totals.available.toLocaleString('es-VE')}</td><td>{totals.minimum.toLocaleString('es-VE')}</td><td>—</td><td>{formatInventoryCurrency(totals.value)}</td><td>{totals.rotationQuantity.toLocaleString('es-VE')}</td><td colSpan="2">{visibleRows.length} productos</td></tr>
      <tr><th scope="col">#</th><th scope="col">Producto</th><th scope="col">SKU</th><th scope="col">Stock</th><th scope="col">Reservado</th><th scope="col">Disponible</th><th scope="col">Stock mínimo</th><th scope="col">Costo promedio</th><th scope="col">Valor inventario</th><th scope="col">Rotación</th><th scope="col">Vencimiento</th><th scope="col">Estado</th></tr>
     </thead>
     <tbody>{visibleRows.length?visibleRows.map((product,index)=><tr key={product.id} className="inventory-product-row" onClick={()=>onOpenProduct(product)}>
