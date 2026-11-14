@@ -94,12 +94,12 @@ body{margin:0}.inventory-app *{box-sizing:border-box}.inventory-app button,.inve
 .inventory-status-filter{display:grid;min-width:165px;gap:7px}
 .inventory-status-filter select{min-height:42px;padding:8px 34px 8px 12px;border:1px solid var(--inventory-border);border-radius:9px;background:#fff;color:var(--inventory-title)}
 .inventory-products-scope{margin:0 0 10px auto;color:var(--inventory-muted);font-size:12px}
-.inventory-products table{min-width:1260px}
+.inventory-products table{min-width:1360px}
 .inventory-products tbody th{min-width:220px;color:var(--inventory-muted);font-weight:500;text-align:left}
 .inventory-products tbody th strong,.inventory-products tbody th small{display:block}
 .inventory-products tbody th small{margin-top:4px;color:var(--inventory-muted);font-size:11px;font-weight:400}
 .inventory-products tbody td:nth-child(n+2){text-align:right;font-variant-numeric:tabular-nums}
-.inventory-products thead th:nth-child(n+4):nth-child(-n+9){text-align:right}
+.inventory-products thead th:nth-child(n+4):nth-child(-n+10){text-align:right}
 .inventory-products tfoot th,.inventory-products tfoot td{border-top:1px solid var(--inventory-border);background:#f8fafc;color:var(--inventory-title);font-weight:600;text-align:right;font-variant-numeric:tabular-nums}
 .inventory-products tfoot th{text-align:left}
 .inventory-product-status{display:inline-flex;max-width:170px;padding:5px 9px;border-radius:999px;font-size:11px;font-weight:600;line-height:1.35}
@@ -120,7 +120,7 @@ body{margin:0}.inventory-app *{box-sizing:border-box}.inventory-app button,.inve
 
 .inventory-products thead th{color:#1f2937;font-weight:600}
 .inventory-products tbody td{color:var(--inventory-muted)}
-.inventory-products th:nth-child(10),.inventory-products td:nth-child(10){text-align:center}
+.inventory-products th:nth-child(11),.inventory-products td:nth-child(11){text-align:center}
 .inventory-products tbody td:nth-child(3),.inventory-products thead th:nth-child(3){min-width:120px;text-align:left}
 .inventory-product-row-number{width:50px;text-align:center!important;font-variant-numeric:tabular-nums}
 .inventory-sku-code{padding:3px 6px;border:1px solid var(--inventory-border);border-radius:4px;background:#f6f8fc;color:var(--inventory-title);font-family:ui-monospace,Consolas,monospace;font-size:11px;font-weight:600;white-space:nowrap}
@@ -139,14 +139,14 @@ body{margin:0}.inventory-app *{box-sizing:border-box}.inventory-app button,.inve
 .inventory-product-detail-screen-heading h2{margin:0;color:var(--inventory-title);font-size:22px;font-weight:600}
 .inventory-product-detail-screen-heading p{margin:6px 0 0;font-size:12px}
 .inventory-product-locations,.inventory-product-actions{margin-top:22px}
-.inventory-product-locations table{min-width:1260px}
+.inventory-product-locations table{min-width:1360px}
 .inventory-product-locations thead th{color:#1f2937;font-weight:600}
 .inventory-product-locations tbody td{color:var(--inventory-muted);font-variant-numeric:tabular-nums}
 .inventory-product-locations th:nth-child(1),.inventory-product-locations td:nth-child(1){width:48px;text-align:center}
 .inventory-product-locations th:nth-child(2){min-width:230px;text-align:left}
 .inventory-product-locations td:nth-child(3),.inventory-product-locations th:nth-child(3){min-width:120px;text-align:left}
-.inventory-product-locations thead th:nth-child(n+4):nth-child(-n+9),.inventory-product-locations tbody td:nth-child(n+4):nth-child(-n+9){text-align:right}
-.inventory-product-locations th:nth-child(10),.inventory-product-locations td:nth-child(10){text-align:center}
+.inventory-product-locations thead th:nth-child(n+4):nth-child(-n+10),.inventory-product-locations tbody td:nth-child(n+4):nth-child(-n+10){text-align:right}
+.inventory-product-locations th:nth-child(11),.inventory-product-locations td:nth-child(11){text-align:center}
 .inventory-low-glare .inventory-product-locations thead th{color:var(--inventory-title)}
 .inventory-low-glare .inventory-product-locations tbody td{color:var(--inventory-muted)}
 .inventory-product-detail-section-heading{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:12px}
