@@ -89,12 +89,12 @@ body{margin:0}.inventory-app *{box-sizing:border-box}.inventory-app button,.inve
 .inventory-products-heading p{margin:7px 0 0;font-size:13px}
 .inventory-product-filters{display:flex;align-items:flex-end;gap:16px;margin-bottom:18px}
 .inventory-products-scope{margin:0 0 10px auto;color:var(--inventory-muted);font-size:12px}
-.inventory-products table{min-width:1250px}
+.inventory-products table{min-width:1150px}
 .inventory-products tbody th{min-width:220px;color:var(--inventory-title);font-weight:500;text-align:left}
 .inventory-products tbody th strong,.inventory-products tbody th small{display:block}
 .inventory-products tbody th small{margin-top:4px;color:var(--inventory-muted);font-size:11px;font-weight:400}
-.inventory-products tbody td:nth-child(n+3){text-align:right;font-variant-numeric:tabular-nums}
-.inventory-products thead th:nth-child(n+3):nth-child(-n+8){text-align:right}
+.inventory-products tbody td:nth-child(n+2){text-align:right;font-variant-numeric:tabular-nums}
+.inventory-products thead th:nth-child(n+2):nth-child(-n+7){text-align:right}
 .inventory-products tfoot th,.inventory-products tfoot td{border-top:1px solid var(--inventory-border);background:#f8fafc;color:var(--inventory-title);font-weight:600;text-align:right;font-variant-numeric:tabular-nums}
 .inventory-products tfoot th{text-align:left}
 .inventory-product-status{display:inline-flex;max-width:170px;padding:5px 9px;border-radius:999px;font-size:11px;font-weight:600;line-height:1.35}
