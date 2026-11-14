@@ -44,9 +44,9 @@ const mockProductRecords=[
   ['Jugo de naranja 1 L','Bebidas','unidad',3.4],['Galletas de avena 300 g','Snacks','paquete',2.6],['Detergente en polvo 1 kg','Limpieza','paquete',5.9],['Jabón líquido 500 ml','Limpieza','botella',4.2],
   ['Papel higiénico 4 rollos','Hogar','paquete',3.7],['Shampoo 400 ml','Cuidado personal','botella',6.5],['Manzanas rojas 1 kg','Frutas y verduras','kg',4.8],['Pollo entero 1 kg','Carnes','kg',7.2],
  ].map(([name,category,unit,unitCost],index)=>{
-  const n=index+1,expiryDays=n%6===0?5:n%5===0?12:null;
+  const n=index+1,expiryDays=n===2?-4:n%6===0?5:n%5===0?12:null;
   const makeNode=(factor)=>({physical:80+n*17*factor,reserved:n%4===0?8+n:3+n%5,minimum:n%4===0?105+n*12*factor:60+n*8*factor});
-  return {id:`mock-product-${n}`,sku:`MOCK-${String(n).padStart(3,'0')}`,name,category,unit,unitCost,expiryDays,expiry:expiryDays===null?'—':`${expiryDays} nov 2026`,coverage:3+(n*7)%30,nodes:{central:makeNode(1),north:makeNode(0.7),south:makeNode(1.3)},sales:[{nodeId:'central',date:'2026-10-15',quantity:90+n*13},{nodeId:'north',date:'2026-10-28',quantity:60+n*9},{nodeId:'south',date:'2026-11-08',quantity:110+n*17}]};
+  return {id:`mock-product-${n}`,sku:`MOCK-${String(n).padStart(3,'0')}`,name,category,unit,unitCost,expiryDays,expiry:expiryDays===null?'—':`${14+expiryDays} nov 2026`,coverage:3+(n*7)%30,nodes:{central:makeNode(1),north:makeNode(0.7),south:makeNode(1.3)},sales:[{nodeId:'central',date:'2026-10-15',quantity:90+n*13},{nodeId:'north',date:'2026-10-28',quantity:60+n*9},{nodeId:'south',date:'2026-11-08',quantity:110+n*17}]};
  }),
 ];
 const formatInventoryCurrency=value=>new Intl.NumberFormat('es-VE',{style:'currency',currency:'USD',maximumFractionDigits:2}).format(value);
@@ -108,8 +108,9 @@ function ProductInventorySection({tacticalOnly=false,onClearFilter}){
   const value=physical*product.unitCost;
   const rotationQuantity=product.sales.filter(sale=>nodes.some(node=>node.id===sale.nodeId)&&(!dateFrom||sale.date>=dateFrom)&&(!dateTo||sale.date<=dateTo)).reduce((sum,sale)=>sum+sale.quantity,0);
   const lowStockNodes=stockByNode.filter(item=>item.physical-item.reserved<item.minimum).length;
-  const isTactical=(product.expiryDays!==null&&product.expiryDays<=7)||lowStockNodes>0||product.coverage<=7;
-  const status=product.expiryDays!==null&&product.expiryDays<=7?{label:'Vence pronto',tone:'urgent'}:lowStockNodes?{label:`Bajo mínimo${scope==='total'?` en ${lowStockNodes} nodo${lowStockNodes===1?'':'s'}`:''}`,tone:'warning'}:{label:'Disponible',tone:'good'};
+  const expiryStatus=product.expiryDays!==null&&product.expiryDays<0?{label:'Vencido',tone:'urgent'}:product.expiryDays!==null&&product.expiryDays<=7?{label:'Vence pronto',tone:'warning'}:null;
+  const isTactical=Boolean(expiryStatus)||lowStockNodes>0||product.coverage<=7;
+  const status=expiryStatus||(available<minimum?{label:'Stock mínimo',tone:'warning'}:available>minimum*1.5?{label:'Sobre Stock',tone:'good'}:{label:'Stock adecuado',tone:'good'});
   return {...product,physical,reserved,minimum,available,value,rotationQuantity,lowStockNodes,isTactical,status};
  }).filter(product=>!tacticalOnly||product.isTactical);
  const normalizedQuery=normalizeInventorySearch(searchTerm);
