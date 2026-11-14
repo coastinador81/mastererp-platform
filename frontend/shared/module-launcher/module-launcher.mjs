@@ -31,14 +31,14 @@ const paths={
  pos:'<rect x="3" y="3" width="18" height="12" rx="2"/><path d="M9 15v5m6-5v5M6 21h12M7 7h5m-5 4h9"/>',
 };
 const styles=`
- :host{display:inline-flex;position:relative;flex:none;font-family:var(--mastererp-font-family,Arimo,Arial,sans-serif);font-size:14px;line-height:1.5;color:#374151;--border:#e8edf3;--muted:#667085}
+ :host{display:inline-flex;position:relative;flex:none;font-family:var(--mastererp-font-family,Arimo,Arial,sans-serif);font-size:14px;line-height:1.5;color:var(--inventory-launcher-text,#374151);--border:var(--inventory-launcher-border,#e8edf3);--muted:var(--inventory-launcher-muted,#667085)}
  *{box-sizing:border-box}[hidden]{display:none!important}button{font:inherit;cursor:pointer;border:0;background:transparent;color:var(--muted)}
  .trigger,.close{display:grid;place-items:center;padding:0;border-radius:50%}.trigger{width:42px;height:42px}.trigger svg{width:23px;height:23px;fill:currentColor}
- .trigger:hover,.trigger[aria-expanded=true],.close:hover{background:#edf3fc;color:#2563b8}button:focus-visible,a:focus-visible{outline:2px solid #2563eb;outline-offset:3px}
- .panel{position:absolute;right:0;top:calc(100% + 14px);z-index:1000;width:350px;max-width:calc(100vw - 32px);max-height:calc(100dvh - 110px);overflow:auto;overscroll-behavior:contain;padding:20px;background:#fff;border:1px solid var(--border);border-radius:22px;box-shadow:0 12px 40px #253c6521;text-align:left}
+ .trigger:hover,.trigger[aria-expanded=true],.close:hover{background:var(--inventory-launcher-hover,#edf3fc);color:var(--inventory-launcher-accent,#2563b8)}button:focus-visible,a:focus-visible{outline:2px solid var(--inventory-launcher-accent,#2563b8);outline-offset:3px}
+ .panel{position:absolute;right:0;top:calc(100% + 14px);z-index:1000;width:350px;max-width:calc(100vw - 32px);max-height:calc(100dvh - 110px);overflow:auto;overscroll-behavior:contain;padding:20px;background:var(--inventory-launcher-bg,#fff);border:1px solid var(--border);border-radius:22px;box-shadow:0 12px 40px #253c6521;text-align:left}
  .heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}.heading strong{font-size:15px;font-weight:500}.heading p{margin:4px 0 0;font-size:12px;color:var(--muted)}.close{width:30px;height:30px;font-size:24px;flex:none}
- .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.tile{display:flex;flex-direction:column;align-items:center;gap:9px;min-width:0;padding:14px 5px 12px;border-radius:14px;text-decoration:none;color:#374151;font-size:12px;font-weight:400;text-align:center;line-height:1.4}
- a.tile:hover{background:#f4f7fc}.current{background:#f0f6ff}.tile small{font-size:10px;color:var(--muted);margin-top:-5px}.icon{display:grid;place-items:center;width:48px;height:48px;border-radius:15px;background:#edf4ff;color:#3473cf}.icon svg{width:28px;height:28px}
+ .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.tile{display:flex;flex-direction:column;align-items:center;gap:9px;min-width:0;padding:14px 5px 12px;border-radius:14px;text-decoration:none;color:var(--inventory-launcher-text,#374151);font-size:12px;font-weight:400;text-align:center;line-height:1.4}
+ a.tile:hover{background:var(--inventory-launcher-hover,#f4f7fc)}.current{background:var(--inventory-launcher-current,#f0f6ff)}.tile small{font-size:10px;color:var(--muted);margin-top:-5px}.icon{display:grid;place-items:center;width:48px;height:48px;border-radius:15px;background:var(--inventory-launcher-icon-bg,#edf4ff);color:var(--inventory-launcher-accent,#3473cf)}.icon svg{width:28px;height:28px}
  .violet{background:#f0edfc;color:#7860c5}.teal{background:#e8f6f3;color:#278575}.orange{background:#fff1e6;color:#b66a2d}.rose{background:#fbeef3;color:#b65f83}.slate{background:#edf1f6;color:#60718b}.indigo{background:#edf0ff;color:#5e6cba}
  .note{margin:18px 0 0;padding-top:14px;border-top:1px solid var(--border);font-size:12px;line-height:1.6;color:var(--muted)}
  @media(max-width:600px){.panel{position:fixed;right:16px;top:84px;width:350px;max-height:calc(100dvh - 100px)}.grid{gap:4px}}
@@ -88,11 +88,11 @@ if(typeof window!=='undefined'&&!window.customElements.get('mastererp-module-lau
 // Related navigation uses the same fixed catalogue/icons as the nine-dot launcher.
 const railStyles=`
  :host{display:block;font-family:var(--mastererp-font-family,Arimo,Arial,sans-serif);color:#4b5563}*{box-sizing:border-box}
- nav{display:flex;flex-direction:column;align-items:center;gap:14px;padding:20px 4px;background:#f6f8fc}
- .service{display:flex;flex-direction:column;align-items:center;gap:6px;width:64px;padding:8px 2px;color:#667085;text-decoration:none;border-radius:12px;font-size:10px;line-height:1.4;text-align:center;font-weight:400}
- .icon{display:grid;place-items:center;width:44px;height:40px;border-radius:13px;color:#667085}.icon svg{width:23px;height:23px}
- a:hover .icon{background:#eaf1fa;color:#2563b8}.current .icon{background:#dceeff;color:#096bdc}.current{color:#096bdc}
- a:focus-visible{outline:2px solid #2563eb;outline-offset:1px}.service span:last-child{max-width:60px;overflow-wrap:anywhere}
+ nav{display:flex;flex-direction:column;align-items:center;gap:14px;padding:20px 4px;background:var(--inventory-rail-bg,#f6f8fc)}
+ .service{display:flex;flex-direction:column;align-items:center;gap:6px;width:64px;padding:8px 2px;color:var(--inventory-launcher-muted,#667085);text-decoration:none;border-radius:12px;font-size:10px;line-height:1.4;text-align:center;font-weight:400}
+ .icon{display:grid;place-items:center;width:44px;height:40px;border-radius:13px;color:var(--inventory-launcher-muted,#667085)}.icon svg{width:23px;height:23px}
+ a:hover .icon{background:var(--inventory-launcher-hover,#eaf1fa);color:var(--inventory-launcher-accent,#2563b8)}.current .icon{background:var(--inventory-launcher-current,#dceeff);color:var(--inventory-launcher-accent,#096bdc)}.current{color:var(--inventory-launcher-accent,#096bdc)}
+ a:focus-visible{outline:2px solid var(--inventory-launcher-accent,#2563eb);outline-offset:1px}.service span:last-child{max-width:60px;overflow-wrap:anywhere}
  @media(max-width:800px){nav{flex-direction:row;justify-content:center;gap:8px;padding:5px 8px;min-height:72px}.service{padding:3px 2px;gap:2px}.icon{height:36px}}
 `;
 if(typeof window!=='undefined'&&!window.customElements.get('mastererp-related-services')){
