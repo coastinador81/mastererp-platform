@@ -141,6 +141,12 @@ body{margin:0}.inventory-app *{box-sizing:border-box}.inventory-app button,.inve
 .inventory-detail-summary article{display:grid;gap:8px;padding:16px;border:1px solid var(--inventory-border);border-radius:10px;background:#f8fafc}
 .inventory-detail-summary span{color:var(--inventory-muted);font-size:11px}
 .inventory-detail-summary strong{color:var(--inventory-title);font-size:18px;font-weight:600;font-variant-numeric:tabular-nums}
+.inventory-product-state-summary{margin-top:24px}
+.inventory-product-state-summary .inventory-product-detail-section-heading{margin-bottom:12px}
+.inventory-product-state-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.inventory-product-state-grid article{display:grid;justify-items:start;gap:10px;min-width:0;padding:14px;border:1px solid var(--inventory-border);border-radius:10px;background:#fff}
+.inventory-product-state-grid article>strong{color:var(--inventory-title);font-size:22px;font-weight:600;font-variant-numeric:tabular-nums}
+.inventory-product-state-grid article>small{color:var(--inventory-muted);font-size:10px;line-height:1.4}
 .inventory-product-locations,.inventory-product-actions{margin-top:22px}
 .inventory-product-detail-section-heading{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:12px}
 .inventory-product-detail-section-heading h3,.inventory-product-actions h3{margin:0;color:var(--inventory-title);font-size:16px;font-weight:600}
@@ -164,5 +170,7 @@ body{margin:0}.inventory-app *{box-sizing:border-box}.inventory-app button,.inve
 .inventory-product-actions article strong{color:var(--inventory-title);font-size:13px}
 .inventory-product-actions article p{margin:4px 0 0;color:var(--inventory-muted);font-size:12px;line-height:1.5}
 @media(max-width:900px){.inventory-detail-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.inventory-product-detail-screen-heading{flex-direction:column}}
+@media(max-width:1100px){.inventory-product-state-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:700px){.inventory-product-state-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:520px){.inventory-detail-summary{grid-template-columns:1fr}.inventory-product-detail-section-heading{align-items:flex-start;flex-direction:column}}
 @media(max-width:700px){.inventory-product-node-metrics{grid-template-columns:1fr}}
