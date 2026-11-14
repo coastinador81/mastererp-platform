@@ -139,6 +139,16 @@ body{margin:0}.inventory-app *{box-sizing:border-box}.inventory-app button,.inve
 .inventory-product-detail-screen-heading h2{margin:0;color:var(--inventory-title);font-size:22px;font-weight:600}
 .inventory-product-detail-screen-heading p{margin:6px 0 0;font-size:12px}
 .inventory-product-locations,.inventory-product-actions{margin-top:22px}
+.inventory-product-locations table{min-width:1260px}
+.inventory-product-locations thead th{color:#1f2937;font-weight:600}
+.inventory-product-locations tbody td{color:var(--inventory-muted);font-variant-numeric:tabular-nums}
+.inventory-product-locations th:nth-child(1),.inventory-product-locations td:nth-child(1){width:48px;text-align:center}
+.inventory-product-locations th:nth-child(2){min-width:230px;text-align:left}
+.inventory-product-locations td:nth-child(3),.inventory-product-locations th:nth-child(3){min-width:120px;text-align:left}
+.inventory-product-locations thead th:nth-child(n+4):nth-child(-n+9),.inventory-product-locations tbody td:nth-child(n+4):nth-child(-n+9){text-align:right}
+.inventory-product-locations th:nth-child(10),.inventory-product-locations td:nth-child(10){text-align:center}
+.inventory-low-glare .inventory-product-locations thead th{color:var(--inventory-title)}
+.inventory-low-glare .inventory-product-locations tbody td{color:var(--inventory-muted)}
 .inventory-product-detail-section-heading{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:12px}
 .inventory-product-detail-section-heading h3,.inventory-product-actions h3{margin:0;color:var(--inventory-title);font-size:16px;font-weight:600}
 .inventory-product-detail-section-heading p{margin:5px 0 0;font-size:12px}
