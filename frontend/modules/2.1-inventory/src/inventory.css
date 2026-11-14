@@ -169,7 +169,7 @@ body{margin:0}.inventory-app *{box-sizing:border-box}.inventory-app button,.inve
 .inventory-product-lots table{min-width:1080px}
 .inventory-product-lots thead th{color:#1f2937;font-weight:600}
 .inventory-product-lots tbody td{color:var(--inventory-muted);font-variant-numeric:tabular-nums}
-.inventory-product-lots th,.inventory-product-lots td{text-align:center}
+.inventory-product-detail-screen .inventory-product-lots th,.inventory-product-detail-screen .inventory-product-lots td{text-align:center}
 .inventory-low-glare .inventory-product-lots thead th{color:var(--inventory-title)}
 .inventory-product-actions>div{display:grid;gap:10px;margin-top:12px}
 .inventory-product-actions article{display:flex;align-items:flex-start;gap:12px;padding:14px;border:1px solid var(--inventory-border);border-radius:10px;background:#fff}
