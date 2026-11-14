@@ -171,7 +171,7 @@ function ProductDetailScreen({product,nodes,dateFrom,dateTo,onBack}){
   return {...product,physical,reserved,minimum,available,value,rotationQuantity,lowStockNodes,isTactical,status};
  }).filter(product=>!tacticalOnly||product.isTactical);
  const normalizedQuery=normalizeInventorySearch(searchTerm);
- const filteredRows=rows.filter(product=>normalizeInventorySearch(`${product.name} ${product.sku} ${product.category}`).includes(normalizedQuery)&&(!selectedStatus||product.status.some(tag=>tag.label===selectedStatus)));
+ const filteredRows=rows.filter(product=>normalizeInventorySearch(`${product.name} ${product.sku} ${product.category}`).includes(normalizedQuery)&&(!selectedStatus||(selectedStatus==='Por Revisar'?product.status.some(tag=>tag.label!=='Normal'):product.status.every(tag=>tag.label==='Normal'))));
  const visibleRows=filteredRows.filter(product=>(!dateFrom&&!dateTo)||product.rotationQuantity>0);
  const scopeLabel=scope==='total'?`Total de ${nodes.length} nodos`:nodes[0].name;
  const invalidDateRange=Boolean(dateFrom&&dateTo&&dateFrom>dateTo);
@@ -183,7 +183,7 @@ function ProductDetailScreen({product,nodes,dateFrom,dateTo,onBack}){
    <div className="inventory-summary-filter"><span className="inventory-filter-label" id="products-scope-label">Alcance</span><div className="inventory-scope-toggle" role="group" aria-labelledby="products-scope-label"><button type="button" aria-pressed={scope==='total'} onClick={()=>setScope('total')}>Total</button><button type="button" aria-pressed={scope==='node'} onClick={()=>setScope('node')}>Por nodo</button></div></div>
    {scope==='node'&&<label className="inventory-node-filter"><span className="inventory-filter-label">Nodo</span><select value={selectedNodeId} onChange={event=>setSelectedNodeId(event.target.value)}>{mockInventoryNodes.map(node=><option key={node.id} value={node.id}>{node.name}</option>)}</select></label>}
    <label className="inventory-product-search"><span className="inventory-filter-label">Buscar producto, SKU o categoría</span><input type="search" value={searchTerm} onChange={event=>setSearchTerm(event.target.value)} placeholder="Ej. yogur, LAC-001"/></label>
-   <label className="inventory-status-filter"><span className="inventory-filter-label">Estado</span><select value={selectedStatus} onChange={event=>setSelectedStatus(event.target.value)}><option value="">Todos los estados</option><option value="Vencido">Vencido</option><option value="Vence pronto">Vence pronto</option><option value="Stock mínimo">Stock mínimo</option><option value="Sobre Stock">Sobre Stock</option><option value="Normal">Normal</option></select></label>
+   <label className="inventory-status-filter"><span className="inventory-filter-label">Estado</span><select value={selectedStatus} onChange={event=>setSelectedStatus(event.target.value)}><option value="">Todos los estados</option><option value="Por Revisar">Por Revisar</option><option value="Normal">Normal</option></select></label>
    <label className="inventory-product-date-filter"><span>Desde</span><input type="date" value={dateFrom} max={dateTo||undefined} onChange={event=>setDateFrom(event.target.value)}/></label>
    <label className="inventory-product-date-filter"><span>Hasta</span><input type="date" value={dateTo} min={dateFrom||undefined} onChange={event=>setDateTo(event.target.value)}/></label>
    <button type="button" onClick={()=>{setDateFrom('');setDateTo('');}} disabled={!dateFrom&&!dateTo}>Restablecer fechas</button>
@@ -193,15 +193,15 @@ function ProductDetailScreen({product,nodes,dateFrom,dateTo,onBack}){
   <div className="inventory-table-scroll" role="region" aria-label="Existencias por producto" tabIndex={0}>
    <table><caption className="inventory-sr-only">Existencias mock por producto, con disponibilidad, valoración y rotación en el periodo seleccionado</caption>
     <thead>
-     <tr><th scope="col">#</th><th scope="col">Producto</th><th scope="col">SKU</th><th scope="col">Stock</th><th scope="col">Reservado</th><th scope="col">Disponible</th><th scope="col">Stock mínimo</th><th scope="col">Costo</th><th scope="col">Valor inventario</th><th scope="col">Rotación</th><th scope="col">Vencimiento</th><th scope="col">Estado</th></tr>
+     <tr><th scope="col">#</th><th scope="col">Producto</th><th scope="col">SKU</th><th scope="col">Stock</th><th scope="col">Reservado</th><th scope="col">Disponible</th><th scope="col">Stock mínimo</th><th scope="col">Costo</th><th scope="col">Valor inventario</th><th scope="col">Estado</th></tr>
     </thead>
     <tbody>{visibleRows.length?visibleRows.map((product,index)=><tr key={product.id} className="inventory-product-row" onClick={()=>onOpenProduct(product)}>
      <td className="inventory-product-row-number">{(index+1).toLocaleString('es-VE')}</td>
      <th scope="row"><button type="button" className="inventory-product-name-button" onClick={event=>{event.stopPropagation();onOpenProduct(product);}}><strong>{product.name}</strong><small>{product.category} · {product.unit}<span aria-hidden="true">　→</span></small></button></th>
      <td><code className="inventory-sku-code">{product.sku}</code></td>
-     <td>{product.physical.toLocaleString('es-VE')}</td><td>{product.reserved.toLocaleString('es-VE')}</td><td><strong>{product.available.toLocaleString('es-VE')}</strong></td><td>{product.minimum.toLocaleString('es-VE')}</td><td>{formatInventoryCurrency(product.unitCost)}</td><td>{formatInventoryCurrency(product.value)}</td><td><strong>{product.rotationQuantity.toLocaleString('es-VE')}</strong></td><td>{product.expiry}</td>
-     <td><div className="inventory-product-tags">{product.status.map(tag=><span key={tag.label} className={'inventory-product-status inventory-product-status-'+tag.tone}>{tag.label}</span>)}</div></td>
-    </tr>):<tr><td colSpan="12"><div className="inventory-products-empty"><h3>No encontramos productos</h3><p>Prueba con otro nombre, SKU o categoría.</p></div></td></tr>}</tbody>
+     <td>{product.physical.toLocaleString('es-VE')}</td><td>{product.reserved.toLocaleString('es-VE')}</td><td><strong>{product.available.toLocaleString('es-VE')}</strong></td><td>{product.minimum.toLocaleString('es-VE')}</td><td>{formatInventoryCurrency(product.unitCost)}</td><td>{formatInventoryCurrency(product.value)}</td>
+     <td><div className="inventory-product-tags"><span className={'inventory-product-status inventory-product-status-'+(product.status.every(tag=>tag.label==='Normal')?'good':'warning')}>{product.status.every(tag=>tag.label==='Normal')?'Normal':'Por Revisar'}</span></div></td>
+    </tr>):<tr><td colSpan="10"><div className="inventory-products-empty"><h3>No encontramos productos</h3><p>Prueba con otro nombre, SKU o categoría.</p></div></td></tr>}</tbody>
    </table>
   </div>
  </section>;
