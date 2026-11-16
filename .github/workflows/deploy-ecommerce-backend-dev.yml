@@ -1,0 +1,53 @@
+name: Deploy E-commerce backend DEV
+on:
+  push:
+    branches: [dev]
+    paths:
+      - '.github/ecommerce-backend-dev.trigger'
+  workflow_dispatch:
+permissions:
+  contents: read
+  id-token: write
+concurrency:
+  group: mastererp-dev-ecommerce-backend
+  cancel-in-progress: false
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install test dependencies
+        run: pip install --no-compile --target /tmp/ecommerce-test-deps -r backend/modules/2.3-ecommerce/2.3.2-stores/lambdas/mastererp-dev-ecommerce/requirements-package.txt
+      - name: Validate E-commerce contract
+        env:
+          PYTHONPATH: /tmp/ecommerce-test-deps:backend/shared/tenant-security:backend/modules/2.3-ecommerce/2.3.2-stores
+        run: python -m unittest discover -s backend/modules/2.3-ecommerce/2.3.2-stores/tests -p 'test_*.py'
+      - name: Build Linux ARM64 artifact
+        run: |
+          set -euo pipefail
+          pip install --no-compile --platform manylinux_2_34_aarch64 --platform manylinux_2_28_aarch64 --platform manylinux2014_aarch64 --implementation cp --python-version 3.12 --abi cp312 --only-binary=:all: --target /tmp/ecommerce-deps -r backend/modules/2.3-ecommerce/2.3.2-stores/lambdas/mastererp-dev-ecommerce/requirements-package.txt
+          python backend/modules/2.3-ecommerce/2.3.2-stores/lambdas/mastererp-dev-ecommerce/package.py /tmp/mastererp-dev-ecommerce.zip --dependencies /tmp/ecommerce-deps
+          unzip -t /tmp/mastererp-dev-ecommerce.zip >/dev/null
+          python -c "import zipfile,struct; z=zipfile.ZipFile('/tmp/mastererp-dev-ecommerce.zip'); libs=[n for n in z.namelist() if n.endswith('.so')]; assert libs and all(struct.unpack('<H',z.read(n)[18:20])[0]==183 for n in libs)"
+          python -c "import zipfile; z=zipfile.ZipFile('/tmp/mastererp-dev-ecommerce.zip'); assert {'ecommerce_api/exchange_rate.py','ecommerce_api/repository.py','jwt/__init__.py','psycopg/__init__.py','tenant_security/rds-us-west-1-bundle.pem'} <= set(z.namelist())"
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::277352717693:role/mastererp-dev-ecommerce-backend-github-role
+          aws-region: us-west-1
+      - name: Publish E-commerce Lambda
+        run: |
+          set -euo pipefail
+          test "$(aws sts get-caller-identity --query Account --output text)" = 277352717693
+          aws lambda update-function-code --function-name mastererp-dev-ecommerce --zip-file fileb:///tmp/mastererp-dev-ecommerce.zip >/dev/null
+          aws lambda wait function-updated-v2 --function-name mastererp-dev-ecommerce
+          test "$(aws lambda get-function-configuration --function-name mastererp-dev-ecommerce --query Runtime --output text)" = python3.12
+          test "$(aws lambda get-function-configuration --function-name mastererp-dev-ecommerce --query 'Architectures[0]' --output text)" = arm64
+      - name: Verify public E-commerce contract
+        run: |
+          set -euo pipefail
+          status=$(curl -sS -o /tmp/catalog-response -w '%{http_code}' 'https://btqqku792c.execute-api.us-west-1.amazonaws.com/v1/storefront/catalog?domain=tienda-dev.uonify.com')
+          test "$status" = 200
+          python -c "import json; value=json.load(open('/tmp/catalog-response')); assert isinstance(value, dict) and value.get('store')"
