@@ -1,25 +1,28 @@
 export const MAX_DELIVERY_ACCURACY_METERS = 100;
 
-const locate = (geolocation, options) => new Promise((resolve, reject) => {
-  if (!geolocation) return reject({ code: 'LOCATION_UNAVAILABLE' });
-  geolocation.getCurrentPosition(resolve, reject, options);
-});
-
-export async function driverPosition({ geolocation = globalThis.navigator?.geolocation, permissions = globalThis.navigator?.permissions } = {}) {
-  try {
-    return await locate(geolocation, { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 });
-  } catch (problem) {
-    const permission = await permissions?.query?.({ name: 'geolocation' }).catch(() => null);
-    if (permission?.state === 'denied') throw { code: 'LOCATION_DENIED' };
-    try {
-      return await locate(geolocation, { enableHighAccuracy: false, timeout: 20000, maximumAge: 30000 });
-    } catch (fallbackProblem) {
-      const code = fallbackProblem?.code === 3 ? 'LOCATION_TIMEOUT'
-        : fallbackProblem?.code === 1 && permission?.state !== 'granted' ? 'LOCATION_DENIED'
-          : 'LOCATION_UNAVAILABLE';
-      throw { code };
-    }
-  }
+export async function driverPosition({ geolocation = globalThis.navigator?.geolocation, permissions = globalThis.navigator?.permissions, timeoutMs = 20000 } = {}) {
+  if (!geolocation?.watchPosition) throw { code: 'LOCATION_UNAVAILABLE' };
+  const permission = await permissions?.query?.({ name: 'geolocation' }).catch(() => null);
+  if (permission?.state === 'denied') throw { code: 'LOCATION_DENIED' };
+  return new Promise((resolve, reject) => {
+    let watchId, bestPosition, settled = false;
+    const finish = (callback, value) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      if (watchId !== undefined) geolocation.clearWatch?.(watchId);
+      callback(value);
+    };
+    const timer = setTimeout(() => finish(bestPosition ? resolve : reject, bestPosition || { code: 'LOCATION_TIMEOUT' }), timeoutMs);
+    watchId = geolocation.watchPosition(position => {
+      const accuracy = position?.coords?.accuracy;
+      if (!Number.isFinite(accuracy)) return;
+      if (!bestPosition || accuracy < bestPosition.coords.accuracy) bestPosition = position;
+      if (accuracy <= MAX_DELIVERY_ACCURACY_METERS) finish(resolve, position);
+    }, problem => {
+      if (problem?.code === 1 && permission?.state !== 'granted') finish(reject, { code: 'LOCATION_DENIED' });
+    }, { enableHighAccuracy: true, timeout: timeoutMs, maximumAge: 0 });
+  });
 }
 
 export function deliveryCoordinates(position) {
