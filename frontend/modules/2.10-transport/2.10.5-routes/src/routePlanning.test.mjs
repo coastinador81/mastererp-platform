@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { deliveryWindowRange, newestRoutes, readyOrdersForNode, routePayload, routeTimeOptions } from './routePlanning.mjs';
+import { deliveryWindowRange, newestRoutes, nodeWorkingHours, readyOrdersForNode, routeDurationLabel, routePayload, routeTimeLabel, shiftRouteTime } from './routePlanning.mjs';
 
 test('offers only READY orders without a route from the selected node', () => {
   const orders = [
@@ -24,11 +24,18 @@ test('requires an ordered delivery time range', () => {
   assert.equal(deliveryWindowRange('', '17:00'), '');
 });
 
-test('offers readable half-hour route windows and filters the ending time', () => {
-  const options = routeTimeOptions();
-  assert.equal(options.length, 48);
-  assert.deepEqual(options.find(option => option.value === '14:30'), { value: '14:30', label: '2:30 p. m.' });
-  assert.equal(routeTimeOptions('14:30')[0].value, '15:00');
+test('supports readable half-hour controls for a delivery window', () => {
+  assert.equal(routeTimeLabel('14:30'), '2:30 p. m.');
+  assert.equal(shiftRouteTime('14:30', 1), '15:00');
+  assert.equal(shiftRouteTime('00:00', -1), '00:00');
+  assert.equal(shiftRouteTime('14:30', -1, '14:30'), '14:30');
+  assert.equal(routeDurationLabel('08:00', '12:30'), '4 h 30 min');
+});
+
+test('reads the delivery limits from the selected node contract', () => {
+  assert.deepEqual(nodeWorkingHours({ opening_time: '08:00:00', closing_time: '17:30:00' }), { opening: '08:00', closing: '17:30' });
+  assert.equal(nodeWorkingHours({ opening_time: null, closing_time: null }), null);
+  assert.equal(nodeWorkingHours({ opening_time: '18:00:00', closing_time: '08:00:00' }), null);
 });
 
 test('orders routes by route date and creation date, newest first', () => {
