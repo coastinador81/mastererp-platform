@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { deliveryWindowRange, newestRoutes, readyOrdersForNode, routePayload } from './routePlanning.mjs';
+import { deliveryWindowRange, newestRoutes, readyOrdersForNode, routePayload, routeTimeOptions } from './routePlanning.mjs';
 
 test('offers only READY orders without a route from the selected node', () => {
   const orders = [
@@ -22,6 +22,13 @@ test('requires an ordered delivery time range', () => {
   assert.equal(deliveryWindowRange('14:00', '17:00'), '14:00-17:00');
   assert.equal(deliveryWindowRange('17:00', '14:00'), '');
   assert.equal(deliveryWindowRange('', '17:00'), '');
+});
+
+test('offers readable half-hour route windows and filters the ending time', () => {
+  const options = routeTimeOptions();
+  assert.equal(options.length, 48);
+  assert.deepEqual(options.find(option => option.value === '14:30'), { value: '14:30', label: '2:30 p. m.' });
+  assert.equal(routeTimeOptions('14:30')[0].value, '15:00');
 });
 
 test('orders routes by route date and creation date, newest first', () => {

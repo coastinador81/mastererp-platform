@@ -7,6 +7,16 @@ export function deliveryWindowRange(start, end) {
   return `${start}-${end}`;
 }
 
+export function routeTimeOptions(after = '') {
+  const formatter = new Intl.DateTimeFormat('es-VE', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'UTC' });
+  return Array.from({ length: 48 }, (_, index) => {
+    const hour = Math.floor(index / 2), minute = index % 2 ? 30 : 0;
+    const value = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+    const label = formatter.format(new Date(Date.UTC(2026, 0, 1, hour, minute))).replaceAll('\u00a0', ' ');
+    return { value, label };
+  }).filter(option => !after || option.value > after);
+}
+
 export function routePayload({ nodeId, date, deliveryStart, deliveryEnd, orderIds }) {
   return { node_id: nodeId, date, delivery_window_ref: deliveryWindowRange(deliveryStart, deliveryEnd), order_ids: orderIds };
 }
