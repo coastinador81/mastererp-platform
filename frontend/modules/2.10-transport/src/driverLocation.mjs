@@ -33,6 +33,10 @@ export function deliveryCoordinates(position) {
 }
 
 export function locationErrorMessage(problem) {
+  if (problem?.code === 'delivery_outside_radius') return 'Estás fuera del radio permitido para confirmar esta entrega. Acércate a la dirección del pedido y vuelve a intentarlo.';
+  if (problem?.code === 'route_not_active') return 'La ruta todavía no está iniciada. Iníciala antes de registrar entregas.';
+  if (problem?.code === 'order_not_on_route') return 'Este pedido no pertenece a la ruta activa del repartidor.';
+  if (problem?.code === 'invalid_gps') return 'El servidor rechazó la evidencia GPS. Obtén una ubicación precisa y vuelve a intentarlo.';
   if (problem?.code === 'LOCATION_DENIED') return 'La ubicación está bloqueada para este sitio. Permítela en el navegador y vuelve a intentarlo.';
   if (problem?.code === 'LOCATION_TIMEOUT') return 'El GPS tardó demasiado en responder. Muévete a un lugar abierto y vuelve a intentarlo.';
   if (problem?.code === 'LOCATION_INACCURATE') return `La ubicación es demasiado imprecisa (${Math.round(problem.accuracy).toLocaleString('es-VE')} m). Activa la ubicación precisa o intenta desde un teléfono con GPS.`;
