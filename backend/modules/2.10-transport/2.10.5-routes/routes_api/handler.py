@@ -5,7 +5,7 @@ from tenant_security.http import HttpError,api_response,parse_body
 from .repository import RoutesRepository
 def _h(e,n):return{k.lower():v for k,v in(e.get('headers')or{}).items()}.get(n.lower())
 def _failure(x):
- message=str(x);specific={'Delivery outside allowed radius':(409,'delivery_outside_radius'),'Driver route is not active':(409,'route_not_active'),'Order is not on driver route':(409,'order_not_on_route'),'Valid GPS evidence required':(400,'invalid_gps')}
+ message=str(x);specific={'Delivery outside allowed radius':(409,'delivery_outside_radius'),'Driver route is not active':(409,'route_not_active'),'Order is not on driver route':(409,'order_not_on_route'),'Valid GPS evidence required':(400,'invalid_gps'),'Failure reason required':(400,'failure_reason_required')}
  if message in specific:return specific[message]
  return{'22023':(400,'invalid_request'),'23505':(409,'conflict'),'23514':(409,'invalid_state'),'40001':(409,'stale_version'),'42501':(403,'forbidden'),'P0002':(404,'not_found')}.get(getattr(x,'sqlstate',None),(500,'internal_error'))
 def _request(e,r):
@@ -25,6 +25,7 @@ def _request(e,r):
  if m=='POST'and path.endswith('/transitions'):return 200,r.transition(company,rid,b)
  if m=='POST'and'/driver-deliveries/'in path:
   if b.get('status')not in('DELIVERED','FAILED')or not isinstance(b.get('evidence'),dict):raise HttpError(400,'status and evidence are required',code='invalid_request')
+  if b['status']=='FAILED'and(not isinstance(b['evidence'].get('reason'),str)or not 1<=len(b['evidence']['reason'].strip())<=500):raise HttpError(400,'Failure reason is required',code='failure_reason_required')
   return 200,r.deliver(company,rid,order,b)
  if m=='POST'and order:return 200,r.stop(company,rid,order,b)
  raise HttpError(404,'Route not found',code='not_found')

@@ -70,7 +70,7 @@ class EcommerceApiTest(unittest.TestCase):
         repository.checkout.return_value = {"id": "order-1"}
         event = {"headers": {"Idempotency-Key": "checkout-1"}, "body": (
             '{"domain":"shop.example.invalid","items":[{"product_id":"p","quantity":1}],'
-            '"delivery":{"address":"QA"},"delivery_method":"realtime","payment_method":"cash"}')}
+            '"delivery":{"address":"QA Street","latitude":10.48,"longitude":-66.9},"delivery_method":"realtime","payment_method":"cash"}')}
         self.assertEqual(_checkout(event, repository, claims), (201, {"id": "order-1"}))
         repository.checkout.assert_called_once_with(claims, unittest.mock.ANY, "checkout-1")
 
@@ -79,6 +79,14 @@ class EcommerceApiTest(unittest.TestCase):
                          '"delivery_method":"realtime","payment_method":"cash"}'}
         with self.assertRaises(HttpError):
             _checkout(event, Mock(), {})
+
+    def test_checkout_rejects_delivery_without_coordinates(self):
+        event = {"headers": {"Idempotency-Key": "checkout-location"}, "body": (
+            '{"domain":"shop","items":[{}],"delivery":{"address":"QA Street"},'
+            '"delivery_method":"realtime","payment_method":"cash"}')}
+        with self.assertRaises(HttpError) as raised:
+            _checkout(event, Mock(), {})
+        self.assertEqual(raised.exception.code, "invalid_delivery_address")
 
     @patch("ecommerce_api.handler._verified_profile")
     @patch("ecommerce_api.handler.current_rate", return_value={"rate":"914.0218","source":"bcv.today","effectiveDate":"2026-11-16"})
@@ -89,7 +97,7 @@ class EcommerceApiTest(unittest.TestCase):
         repository.checkout.return_value = {"id": "order-1"}
         event = {"headers": {"Idempotency-Key": "checkout-mobile"}, "body": (
             '{"domain":"shop.example.invalid","items":[{"product_id":"p","quantity":1}],'
-            '"delivery":{"address":"QA"},"delivery_method":"realtime",'
+            '"delivery":{"address":"QA Street","latitude":10.48,"longitude":-66.9},"delivery_method":"realtime",'
             '"payment_method":"mobile","payment_reference":"12345678"}')}
         self.assertEqual(_checkout(event, repository, claims)[0], 201)
 
@@ -102,7 +110,7 @@ class EcommerceApiTest(unittest.TestCase):
         repository.checkout.return_value = {"id": "order-1"}
         event = {"headers": {"Idempotency-Key": "checkout-payer"}, "body": (
             '{"domain":"shop.example.invalid","items":[{"product_id":"p","quantity":1}],'
-            '"delivery":{"address":"QA"},"delivery_method":"realtime","payment_method":"mobile",'
+            '"delivery":{"address":"QA Street","latitude":10.48,"longitude":-66.9},"delivery_method":"realtime","payment_method":"mobile",'
             '"payment_reference":"12345678","payer":{"bankCode":"0102","document":"V12345678","phone":"04121234567"}}')}
         self.assertEqual(_checkout(event, repository, claims), (201, {"id": "order-1"}))
         repository.save_payment_method.assert_called_once_with(
@@ -112,7 +120,7 @@ class EcommerceApiTest(unittest.TestCase):
     def test_checkout_rejects_invalid_payer_before_creating_order(self):
         repository = Mock()
         event = {"headers": {"Idempotency-Key": "checkout-payer"}, "body": (
-            '{"domain":"shop.example.invalid","items":[{}],"delivery":{"address":"QA"},'
+            '{"domain":"shop.example.invalid","items":[{}],"delivery":{"address":"QA Street","latitude":10.48,"longitude":-66.9},'
             '"delivery_method":"realtime","payment_method":"mobile","payment_reference":"12345678",'
             '"payer":{"bankCode":"0102","document":"V12345678"}}')}
         with self.assertRaises(HttpError):
@@ -125,7 +133,7 @@ class EcommerceApiTest(unittest.TestCase):
         repository = Mock()
         repository.checkout.return_value = {"id": "order-1"}
         event = {"headers": {"Idempotency-Key": "checkout-cash"}, "body": (
-            '{"domain":"shop.example.invalid","items":[{}],"delivery":{"address":"QA"},'
+            '{"domain":"shop.example.invalid","items":[{}],"delivery":{"address":"QA Street","latitude":10.48,"longitude":-66.9},'
             '"delivery_method":"realtime","payment_method":"cash","payer":{"bankCode":"x"}}')}
         self.assertEqual(_checkout(event, repository, {})[0], 201)
         repository.save_payment_method.assert_not_called()
@@ -164,7 +172,7 @@ class EcommerceApiTest(unittest.TestCase):
         repository = Mock()
         repository.checkout.return_value = {"id": "order-1"}
         base = ('{"domain":"shop.example.invalid","items":[{"product_id":"p","quantity":1}],'
-                '"delivery":{"address":"QA"},"delivery_method":"realtime",')
+                '"delivery":{"address":"QA Street","latitude":10.48,"longitude":-66.9},"delivery_method":"realtime",')
         pos = {"headers": {"Idempotency-Key": "checkout-pos"}, "body": base + '"payment_method":"pos"}'}
         self.assertEqual(_checkout(pos, repository, claims)[0], 201)
         custom = {"headers": {"Idempotency-Key": "checkout-custom"}, "body": base + (
@@ -205,7 +213,7 @@ class EcommerceApiTest(unittest.TestCase):
 
     def test_checkout_rejects_bank_payment_without_reference(self):
         event = {"headers": {"Idempotency-Key": "checkout-mobile"}, "body": (
-            '{"domain":"shop.example.invalid","items":[{}],"delivery":{"address":"QA"},'
+            '{"domain":"shop.example.invalid","items":[{}],"delivery":{"address":"QA Street","latitude":10.48,"longitude":-66.9},'
             '"delivery_method":"realtime","payment_method":"mobile"}')}
         with self.assertRaises(HttpError):
             _checkout(event, Mock(), {})

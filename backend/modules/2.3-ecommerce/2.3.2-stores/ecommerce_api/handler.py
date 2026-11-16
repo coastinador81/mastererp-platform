@@ -144,6 +144,12 @@ def _checkout(event, repository, claims):
             or not 1 <= len(key) <= 128 or not isinstance(payload["items"], list)
             or not payload["items"] or not isinstance(payload["delivery"], dict)):
         raise HttpError(400, "Checkout fields and Idempotency-Key are required", code="invalid_request")
+    delivery = payload["delivery"]
+    latitude, longitude = delivery.get("latitude"), delivery.get("longitude")
+    if (not isinstance(delivery.get("address"), str) or not 5 <= len(delivery["address"].strip()) <= 500
+            or isinstance(latitude, bool) or not isinstance(latitude, (int, float)) or not -90 <= latitude <= 90
+            or isinstance(longitude, bool) or not isinstance(longitude, (int, float)) or not -180 <= longitude <= 180):
+        raise HttpError(400, "A geocoded delivery address is required", code="invalid_delivery_address")
     method = payload.get("payment_method")
     reference = payload.get("payment_reference")
     if method not in ("cash", "pos", "mobile", "transfer", "custom") or (method not in ("cash", "pos") and (

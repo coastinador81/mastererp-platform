@@ -34,6 +34,11 @@ revisión. La copia completa del monto exige una tasa de cambio real publicada e
 la configuración; nunca usa una tasa simulada. El backend conserva la validación
 de la referencia, del pagador y del estado financiero.
 
+La entrega exige una dirección guardada por el cliente con latitud y longitud
+válidas. El checkout no acepta texto libre sin geocodificación; la API y la
+función transaccional vuelven a validar este contrato antes de crear el pedido.
+El pedido conserva nombre y teléfono operativo en su snapshot de cliente.
+
 Ubicación canónica: `frontend/modules/2.3-ecommerce/2.3.2-stores/storefront/`.
 Hosting DEV: https://tienda-dev.uonify.com
 

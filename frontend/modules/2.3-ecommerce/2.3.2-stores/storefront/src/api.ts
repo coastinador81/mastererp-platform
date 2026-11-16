@@ -23,7 +23,7 @@ export const updateAddress = (address: CustomerAddress) => authorizedIdentityFet
 export const loadPaymentMethods = async () => (await authorizedIdentityFetch(portalUrl('/v1/storefront/me/payment-methods'), portalOptions()) as { items: CustomerPaymentMethod[] }).items;
 export const loadOrders = async () => (await authorizedIdentityFetch(portalUrl('/v1/storefront/orders'), portalOptions()) as { items: CustomerOrder[] }).items;
 export const loadOrder = (id: string) => authorizedIdentityFetch(portalUrl(`/v1/storefront/orders/${encodeURIComponent(id)}`), portalOptions()) as Promise<CustomerOrder>;
-export async function submitCheckout(lines: CartLine[], address: string | CustomerAddress, paymentMethod: PaymentMethod, paymentReference?: string, payer?: PayerDetails) {
+export async function submitCheckout(lines: CartLine[], address: CustomerAddress, paymentMethod: PaymentMethod, paymentReference?: string, payer?: PayerDetails) {
   assertStorefrontContext();
   const storageKey = `mastererp.storefront.checkout-key:${storefrontConfig.tenant}:${storefrontConfig.domain}`;
   let key = sessionStorage.getItem(storageKey);
@@ -33,7 +33,7 @@ export async function submitCheckout(lines: CartLine[], address: string | Custom
   }
   const detail = {
     items: lines.map(({ product, quantity }) => ({ product_id: product.id, quantity })),
-    delivery: typeof address === 'string' ? { address } : {
+    delivery: {
       address: address.address, label: address.label, zone: address.zone, unit: address.unit,
       reference: address.reference, latitude: address.latitude, longitude: address.longitude,
     },

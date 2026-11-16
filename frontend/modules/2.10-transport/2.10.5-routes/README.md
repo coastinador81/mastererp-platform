@@ -13,6 +13,12 @@ aislamiento por tenant y empresa.
 El directorio presenta primero la fecha de ruta más reciente; para rutas del
 mismo día desempata por fecha de creación e identificador de forma estable.
 
+El repartidor registra `DELIVERED` únicamente con evidencia GPS precisa y
+dentro del radio permitido. `FAILED` exige un motivo, devuelve el pedido a
+`READY` sin ruta y no exige ubicación. Al resolver la última parada, Database
+cierra la ruta y libera al repartidor de forma transaccional. La interfaz cuenta
+paradas resueltas incluyendo entregas y no entregas.
+
 
 ## Contrato y estado de esta capa
 
