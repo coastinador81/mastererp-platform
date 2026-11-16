@@ -14,7 +14,10 @@ export async function driverPosition({ geolocation = globalThis.navigator?.geolo
     try {
       return await locate(geolocation, { enableHighAccuracy: false, timeout: 20000, maximumAge: 30000 });
     } catch (fallbackProblem) {
-      throw { code: fallbackProblem?.code === 3 ? 'LOCATION_TIMEOUT' : fallbackProblem?.code === 1 ? 'LOCATION_DENIED' : 'LOCATION_UNAVAILABLE' };
+      const code = fallbackProblem?.code === 3 ? 'LOCATION_TIMEOUT'
+        : fallbackProblem?.code === 1 && permission?.state !== 'granted' ? 'LOCATION_DENIED'
+          : 'LOCATION_UNAVAILABLE';
+      throw { code };
     }
   }
 }

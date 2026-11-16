@@ -14,6 +14,11 @@ test('does not retry a permission that is actually denied', async () => {
   await assert.rejects(driverPosition({ geolocation, permissions: { query: async () => ({ state: 'denied' }) } }), { code: 'LOCATION_DENIED' });
 });
 
+test('does not report a granted permission as blocked when providers fail', async () => {
+  const geolocation = { getCurrentPosition(resolve, reject) { reject({ code: 1 }); } };
+  await assert.rejects(driverPosition({ geolocation, permissions: { query: async () => ({ state: 'granted' }) } }), { code: 'LOCATION_UNAVAILABLE' });
+});
+
 test('rejects evidence that exceeds the backend accuracy contract', () => {
   assert.deepEqual(deliveryCoordinates({ coords: { latitude: 10, longitude: -66, accuracy: 40 } }), { latitude: 10, longitude: -66, accuracy_meters: 40 });
   assert.throws(() => deliveryCoordinates({ coords: { latitude: 10, longitude: -66, accuracy: 120 } }), { code: 'LOCATION_INACCURATE', accuracy: 120 });
