@@ -48,6 +48,6 @@ jobs:
       - name: Verify public E-commerce contract
         run: |
           set -euo pipefail
-          status=$(curl -sS -o /tmp/catalog-response -w '%{http_code}' 'https://btqqku792c.execute-api.us-west-1.amazonaws.com/v1/storefront/catalog?domain=tienda-dev.uonify.com')
+          status=$(curl -sS -o /tmp/catalog-response -w '%{http_code}' -H 'X-Tenant-Id: 9095f990-c1f7-4ccb-953d-f84083331bd6' 'https://btqqku792c.execute-api.us-west-1.amazonaws.com/v1/storefront/catalog?domain=tienda-dev.uonify.com')
           test "$status" = 200
           python -c "import json; value=json.load(open('/tmp/catalog-response')); assert isinstance(value, dict) and value.get('store')"
