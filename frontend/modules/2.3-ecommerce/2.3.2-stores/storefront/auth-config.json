@@ -4,5 +4,5 @@
   "callbackUrl": "https://tienda-dev.uonify.com/auth/callback",
   "logoutUrl": "https://tienda-dev.uonify.com/",
   "requestTimeoutMs": 30000,
-  "scopes": ["openid", "email", "profile"]
+  "scopes": ["openid", "email"]
 }

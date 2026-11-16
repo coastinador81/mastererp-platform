@@ -15,13 +15,18 @@ function parseTenantMap(value) {
   }
 }
 
+function isLoopback(domain) {
+  return domain === 'localhost' || domain === '127.0.0.1' || domain === '::1';
+}
+
 export function resolveStorefrontContext({ browserDomain, configuredDomain, tenantMapValue, defaultTenant }) {
   const normalizedBrowserDomain = normalizeDomain(browserDomain);
   const normalizedConfiguredDomain = normalizeDomain(configuredDomain);
-  const domain = normalizedBrowserDomain || normalizedConfiguredDomain;
+  const localPreview = isLoopback(normalizedBrowserDomain);
+  const domain = localPreview ? normalizedConfiguredDomain : normalizedBrowserDomain || normalizedConfiguredDomain;
   const tenantsByDomain = parseTenantMap(tenantMapValue);
   const tenant = tenantsByDomain[domain]
-    || (!normalizedBrowserDomain && domain === normalizedConfiguredDomain ? defaultTenant.trim() : '');
+    || ((!normalizedBrowserDomain || localPreview) && domain === normalizedConfiguredDomain ? defaultTenant.trim() : '');
 
-  return { domain, hostDomain: domain, tenant };
+  return { domain, hostDomain: normalizedBrowserDomain || domain, tenant };
 }

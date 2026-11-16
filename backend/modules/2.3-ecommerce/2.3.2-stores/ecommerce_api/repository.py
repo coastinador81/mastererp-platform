@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 class EcommerceRepository:
     def __init__(self, connection):
         self.connection = connection
@@ -43,11 +45,20 @@ class EcommerceRepository:
         payment = {"method": payload["payment_method"], "reference": payload.get("payment_reference")}
         if payload["payment_method"] == "custom":
             payment["methodId"] = payload.get("payment_method_id")
-        return self.connection.execute(
+        result = self.connection.execute(
             "SELECT ventas_digitales.checkout_crear(%s,%s,%s,%s,%s,%s,%s,%s) value",
             (claims["iss"], claims["sub"], payload["domain"], payload["items"],
              payload["delivery"], payload["delivery_method"], payment, idempotency_key),
         ).fetchone()["value"]
+        if payload["payment_method"] in ("mobile", "transfer"):
+            rate = payload["_exchange_rate"]
+            total = Decimal(str(result["total"]))
+            declaration = {"payer": payload["_payer"], "paymentDate": rate["effectiveDate"],
+                           "amountUSD": str(total), "amountVES": str((total * Decimal(rate["rate"])).quantize(Decimal("0.01"))),
+                           "exchangeRate": rate["rate"], "exchangeRateSource": rate["source"],
+                           "exchangeRateEffectiveDate": rate["effectiveDate"]}
+            self.connection.execute("SELECT ventas_digitales.pago_declaracion_registrar(%s,%s)", (result["id"], declaration))
+        return result
 
     def customer_read(self, claims, domain, section, item_id=None, limit=25):
         return self.connection.execute(

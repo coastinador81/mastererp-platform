@@ -15,6 +15,7 @@ import OperationsNavigation from './OperationsNavigation.jsx';
 import EcommerceSummary from './EcommerceSummary.jsx';
 import {canOpenOperationsRoute, operationsModule} from './access.mjs';
 import ApplicationShell from '../../../shared/ui/ApplicationShell.jsx';
+import BcvRateBadge from './BcvRateBadge.jsx';
 
 const routeLabels = {
   summary: 'Resumen de Ecommerce',
@@ -89,6 +90,7 @@ export default function EcommerceApp() {
       contextLabel={routeLabels[route]}
       contextKey={[workspace.signedIn, workspace.tenant, workspace.company].join(':')}
       navigation={<OperationsNavigation context={workspace.context} route={route} navigate={navigate} />}
+      headerActions={<BcvRateBadge />}
       environmentLabel="Uonify Commerce · Entorno de desarrollo"
       error={workspace.error}
     >

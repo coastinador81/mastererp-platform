@@ -26,6 +26,14 @@ Mis compras presenta los estados financieros canónicos como solo lectura:
 `PENDING_VERIFICATION`, `VALIDATED`, `REJECTED` y `PENDING_COLLECTION`, dejando
 la revisión y modificación exclusivamente en Finanzas.
 
+El checkout separa la selección del medio de pago de los datos bancarios. Pago
+móvil y transferencia abren un paso adicional con los datos configurados por la
+tienda, copia individual, copia completa en formato bancario, referencia y banco
+emisor venezolano. Efectivo al recibir y punto de venta pasan directamente a la
+revisión. La copia completa del monto exige una tasa de cambio real publicada en
+la configuración; nunca usa una tasa simulada. El backend conserva la validación
+de la referencia, del pagador y del estado financiero.
+
 Ubicación canónica: `frontend/modules/2.3-ecommerce/2.3.2-stores/storefront/`.
 Hosting DEV: https://tienda-dev.uonify.com
 

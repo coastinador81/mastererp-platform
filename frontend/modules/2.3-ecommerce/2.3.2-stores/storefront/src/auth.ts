@@ -11,6 +11,14 @@ import {
 import { assertStorefrontContext, storefrontConfig, storefrontScope } from './config';
 import { fetchWithTimeout } from './request-timeout.mjs';
 
+const localOrigin = typeof window !== 'undefined' && ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname)
+  ? window.location.origin
+  : '';
+const effectiveAuthConfig = localOrigin ? {
+  ...authConfig,
+  callbackUrl: `${localOrigin}/auth/callback`,
+  logoutUrl: `${localOrigin}/`,
+} : authConfig;
 const invitationKey = () => `mastererp.storefront.invitation:${storefrontScope()}`;
 
 async function postStorefrontIdentity(path: string, body: Record<string, unknown>) {
@@ -41,22 +49,31 @@ export function sessionEmail() {
     return typeof claims.email === 'string' ? claims.email : '';
   } catch { return ''; }
 }
-export const startLogin = (provider?: 'Google') => login(authConfig, provider ? { identityProvider: provider } : {});
-export const startRegistration = () => login(authConfig, { screen: 'signup' });
-export const signOut = () => logout(authConfig);
+export const startLogin = (provider?: 'Google') => login(effectiveAuthConfig, provider ? { identityProvider: provider } : {});
+export const startRegistration = () => login(effectiveAuthConfig, { screen: 'signup' });
+export const signOut = () => logout(effectiveAuthConfig);
 
 export async function completeLoginIfNeeded() {
   if (typeof window === 'undefined') return false;
   assertStorefrontContext();
+  if (window.location.pathname === '/auth/callback') {
+    const callback = new URL(window.location.href);
+    const oauthError = callback.searchParams.get('error');
+    if (oauthError) {
+      const description = callback.searchParams.get('error_description') || oauthError;
+      window.history.replaceState(null, '', '/');
+      throw new Error(`Cognito rechazó el acceso: ${description}`);
+    }
+  }
   const invitation = new URL(window.location.href).searchParams.get('invite');
   if (invitation) {
     sessionStorage.setItem(invitationKey(), invitation);
     window.history.replaceState(null, '', window.location.pathname + window.location.hash);
   }
   if (window.location.pathname === '/auth/callback') {
-    await completeLogin(authConfig);
+    await completeLogin(effectiveAuthConfig);
   } else if (!isAuthenticated()) {
-    await restoreSession(authConfig);
+    await restoreSession(effectiveAuthConfig);
   }
   const authenticated = isAuthenticated();
   const pendingInvitation = sessionStorage.getItem(invitationKey());

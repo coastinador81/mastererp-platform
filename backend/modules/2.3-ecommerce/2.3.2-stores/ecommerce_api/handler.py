@@ -11,6 +11,7 @@ from tenant_security.auth import resolve_auth
 from tenant_security.http import HttpError, api_response, parse_body
 
 from .repository import EcommerceRepository
+from .exchange_rate import current_rate
 
 
 def _validate_payment_configuration(changes):
@@ -152,7 +153,10 @@ def _checkout(event, repository, claims):
         raise HttpError(400, "Valid payment method is required", code="invalid_request")
     payer = _payer(method, payload.get("payer"))
     profile = _verified_profile(claims)
-    order = repository.checkout(profile, payload, key)
+    rate = current_rate() if method in ("mobile", "transfer") else None
+    if method in ("mobile", "transfer") and not rate:
+        raise HttpError(503, "Current exchange rate is unavailable", code="exchange_rate_unavailable")
+    order = repository.checkout(profile, {**payload, "_payer": payer, "_exchange_rate": rate}, key)
     if payer:
         repository.save_payment_method(profile, payload["domain"], method, payer)
     return 201, order

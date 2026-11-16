@@ -81,7 +81,8 @@ class EcommerceApiTest(unittest.TestCase):
             _checkout(event, Mock(), {})
 
     @patch("ecommerce_api.handler._verified_profile")
-    def test_checkout_accepts_tenant_bank_payment_reference(self, verify):
+    @patch("ecommerce_api.handler.current_rate", return_value={"rate":"914.0218","source":"bcv.today","effectiveDate":"2026-11-16"})
+    def test_checkout_accepts_tenant_bank_payment_reference(self, _rate, verify):
         claims = {"iss": "issuer", "sub": "subject"}
         verify.return_value = claims
         repository = Mock()
@@ -93,7 +94,8 @@ class EcommerceApiTest(unittest.TestCase):
         self.assertEqual(_checkout(event, repository, claims)[0], 201)
 
     @patch("ecommerce_api.handler._verified_profile")
-    def test_checkout_remembers_validated_payer_after_order(self, verify):
+    @patch("ecommerce_api.handler.current_rate", return_value={"rate":"914.0218","source":"bcv.today","effectiveDate":"2026-11-16"})
+    def test_checkout_remembers_validated_payer_after_order(self, _rate, verify):
         claims = {"iss": "issuer", "sub": "subject"}
         verify.return_value = claims
         repository = Mock()
@@ -184,6 +186,22 @@ class EcommerceApiTest(unittest.TestCase):
             "payment_method": "custom", "payment_method_id": "zelle", "payment_reference": "778899"}, "key")
         self.assertEqual(connection.execute.call_args.args[1][6],
                          {"method": "custom", "reference": "778899", "methodId": "zelle"})
+
+    def test_bank_checkout_persists_exchange_evidence_for_finance(self):
+        from ecommerce_api.repository import EcommerceRepository
+        connection = Mock()
+        connection.execute.return_value.fetchone.return_value = {"value": {"id": "order-1", "total": "112.00"}}
+        EcommerceRepository(connection).checkout({"iss": "issuer", "sub": "subject"}, {
+            "domain": "shop", "items": [], "delivery": {}, "delivery_method": "realtime",
+            "payment_method": "mobile", "payment_reference": "54646546",
+            "_payer": {"bankCode": "0102", "document": "V12345678", "phone": "04121234567"},
+            "_exchange_rate": {"rate": "914.0218", "source": "BCV", "effectiveDate": "2026-11-16"},
+        }, "key")
+        declaration = connection.execute.call_args_list[1].args[1][1]
+        self.assertEqual(declaration["exchangeRate"], "914.0218")
+        self.assertEqual(declaration["exchangeRateEffectiveDate"], "2026-11-16")
+        self.assertEqual(declaration["exchangeRateSource"], "BCV")
+        self.assertEqual(declaration["amountVES"], "102370.44")
 
     def test_checkout_rejects_bank_payment_without_reference(self):
         event = {"headers": {"Idempotency-Key": "checkout-mobile"}, "body": (

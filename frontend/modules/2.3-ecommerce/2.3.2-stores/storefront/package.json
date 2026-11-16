@@ -6,6 +6,8 @@
   "scripts": {
     "build": "expo export --platform web",
     "build:dev": "node scripts/build-dev.mjs",
+    "build:local": "node scripts/build-dev.mjs --local",
+    "preview:local": "node scripts/preview-local.mjs",
     "dev": "expo start --web",
     "lint": "expo lint",
     "test": "node --test src/*.test.mjs",

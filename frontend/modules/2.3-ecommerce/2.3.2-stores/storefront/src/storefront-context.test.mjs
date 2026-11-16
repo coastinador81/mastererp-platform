@@ -26,6 +26,15 @@ test('keeps a legacy browser domain instead of falling back to another store dom
   }), { domain: 'tienda-dev.tumandaito.com', hostDomain: 'tienda-dev.tumandaito.com', tenant });
 });
 
+test('uses the configured DEV store only for a loopback preview', () => {
+  assert.deepEqual(resolveStorefrontContext({
+    browserDomain: '127.0.0.1',
+    configuredDomain: 'tienda-dev.uonify.com',
+    tenantMapValue,
+    defaultTenant: tenant,
+  }), { domain: 'tienda-dev.uonify.com', hostDomain: '127.0.0.1', tenant });
+});
+
 test('does not assign a tenant to an unknown browser domain', () => {
   assert.deepEqual(resolveStorefrontContext({
     browserDomain: 'otra-tienda.example.com',

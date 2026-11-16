@@ -13,6 +13,10 @@ const values = Object.fromEntries(
     }),
 );
 
+if (process.argv.includes('--local')) {
+  values.EXPO_PUBLIC_STOREFRONT_API_URL = '/dev-api';
+}
+
 const result = spawnSync('npm', ['run', 'build'], {
   cwd: new URL('..', import.meta.url),
   env: { ...process.env, ...values },

@@ -3,6 +3,7 @@ import { completeLoginIfNeeded, isAuthenticated } from '../auth';
 import { loadCatalog } from '../api';
 import { readCatalogCache, writeCatalogCache } from '../catalog-cache.mjs';
 import { storefrontScope } from '../config';
+import { loadCurrentExchangeRate } from '../exchange-rate.mjs';
 import type { CartLine, Product, StorefrontCatalog } from '../types';
 
 type StoreState = {
@@ -25,6 +26,12 @@ const cartKey = () => `mastererp.storefront.cart:${storefrontScope()}`;
 const cachedCatalog = () => typeof localStorage === 'undefined'
   ? null
   : readCatalogCache(localStorage, storefrontScope()) as StorefrontCatalog | null;
+async function loadCatalogWithRate() {
+  const catalog = await loadCatalog();
+  const exchangeRate = await loadCurrentExchangeRate().catch(() => null);
+  if (!exchangeRate) return catalog;
+  return {...catalog, store:{...catalog.store, configuration:{...catalog.store.configuration, exchangeRate}}};
+}
 function initialCart(): CartLine[] {
   if (typeof sessionStorage === 'undefined') return [];
   try { return JSON.parse(sessionStorage.getItem(cartKey()) || '[]'); }
@@ -45,7 +52,7 @@ export function StoreProvider({ children }: PropsWithChildren) {
     setLoading(true);
     setError('');
     try {
-      const nextCatalog = await loadCatalog();
+      const nextCatalog = await loadCatalogWithRate();
       setCatalog(nextCatalog);
       if (typeof localStorage !== 'undefined') writeCatalogCache(localStorage, storefrontScope(), nextCatalog);
     }
@@ -56,7 +63,7 @@ export function StoreProvider({ children }: PropsWithChildren) {
 
   useEffect(() => {
     let cancelled = false;
-    loadCatalog()
+    loadCatalogWithRate()
       .then(nextCatalog => {
         if (cancelled) return;
         setCatalog(nextCatalog);

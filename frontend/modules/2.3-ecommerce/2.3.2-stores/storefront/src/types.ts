@@ -35,7 +35,8 @@ export type PaymentRecipient = {
 };
 export type StoreConfiguration = {
   headline?: string;
-  exchangeRate?: { rate?: number };
+  deliveryFee?: string | number;
+  exchangeRate?: { base?: string; quote?: string; rate?: number; source?: string; effectiveDate?: string; updatedAt?: string };
   payments?: Record<string, boolean>;
   paymentDetails?: {
     mobilePayment?: PaymentRecipient | null;
