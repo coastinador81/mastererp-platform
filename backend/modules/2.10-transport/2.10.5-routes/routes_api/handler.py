@@ -1,8 +1,10 @@
+import logging
 from typing import Any
 from uuid import UUID,uuid4
 from tenant_security.auth import resolve_auth
 from tenant_security.http import HttpError,api_response,parse_body
 from .repository import RoutesRepository
+logger=logging.getLogger(__name__)
 def _h(e,n):return{k.lower():v for k,v in(e.get('headers')or{}).items()}.get(n.lower())
 def _failure(x):
  message=str(x);specific={'Delivery outside allowed radius':(409,'delivery_outside_radius'),'Driver route is not active':(409,'route_not_active'),'Order is not on driver route':(409,'order_not_on_route'),'Valid GPS evidence required':(400,'invalid_gps'),'Failure reason required':(400,'failure_reason_required')}
@@ -42,4 +44,6 @@ def lambda_handler(e:dict[str,Any],context:Any):
   with db_connection(tenant_id=tenant,correlation_id=cid,operation=op)as c:a=resolve_auth(e,c,verified_claims=claims);c.execute("SELECT set_config('app.current_user_id',%s,true)",(str(a.user_id),));status,body=_request(e,RoutesRepository(c))
   return api_response(status,body)
  except HttpError as x:return api_response(x.status,{'error':{'code':x.code,'message':x.message},'correlation_id':cid})
- except Exception as x:status,code=_failure(x);return api_response(status,{'error':{'code':code,'message':'Route request failed'},'correlation_id':cid})
+ except Exception as x:
+  logger.exception('Route request failed correlation_id=%s',cid)
+  status,code=_failure(x);return api_response(status,{'error':{'code':code,'message':'Route request failed'},'correlation_id':cid})
