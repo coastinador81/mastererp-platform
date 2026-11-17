@@ -23,6 +23,10 @@ desde la evidencia propietaria de Rutas, sin crear eventos retroactivos.
 La evidencia identifica ruta y parada, muestra observaciones y coordenadas cuando
 existen, y la cronología enlaza el inicio de ruta y la referencia financiera
 persistidos por sus módulos propietarios.
+Cada intento entregado permite consultar y descargar en PDF un comprobante operativo
+con pedido, ruta, parada, repartidor, ubicación, observaciones y productos. El
+documento se deriva de la evidencia de Rutas y se identifica expresamente como
+distinto de una factura fiscal.
 Los usuarios con `operations.orders.address.correct` pueden corregir la
 dirección y coordenadas de un pedido elegible mediante el contrato backend; la
 interfaz no geocodifica ni inventa coordenadas y no altera la libreta del cliente.

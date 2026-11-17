@@ -71,6 +71,13 @@
 .ecommerce-app .figma-order-detail .od-deliveries dl div{min-width:0}
 .ecommerce-app .figma-order-detail .od-deliveries dt{color:#667185;font-size:10px}
 .ecommerce-app .figma-order-detail .od-deliveries dd{margin:3px 0 0;color:#344054;font-size:12px;overflow-wrap:anywhere}
+.ecommerce-app .figma-order-detail .delivery-receipt{display:flex;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--uon-border)}
+.ecommerce-app .figma-order-detail .delivery-receipt-preview{display:grid;width:100%;gap:12px;padding:14px;border-radius:10px;background:#f6f8fc}
+.ecommerce-app .figma-order-detail .delivery-receipt-preview h3,.ecommerce-app .figma-order-detail .delivery-receipt-preview p{margin:0}
+.ecommerce-app .figma-order-detail .delivery-receipt-preview dl{grid-template-columns:repeat(2,minmax(0,1fr));margin:0}
+.ecommerce-app .figma-order-detail .delivery-receipt-preview .od-button{width:max-content}
+.ecommerce-app .figma-order-detail .delivery-receipt-preview>small{min-height:14px;color:#087443}
+.ecommerce-app .figma-order-detail .delivery-receipt-preview>p{color:#667085;font-size:10px}
 .ecommerce-app .figma-order-detail .od-side-card .od-card-title{min-height:56px;padding:14px 16px}
 .ecommerce-app .figma-order-detail .od-side-content{padding:16px}
 .ecommerce-app .figma-order-detail .od-address-correction{display:grid;gap:12px;margin-top:12px;padding-top:12px;border-top:1px solid var(--uon-border)}
@@ -104,4 +111,4 @@
 .ecommerce-app .figma-order-detail .od-notes textarea:focus{border-color:var(--uon-brand-blue);outline:0;box-shadow:var(--uon-focus-ring)}
 .ecommerce-app .figma-order-detail .od-notes-empty{color:#667185}
 @media(max-width:900px){.ecommerce-app .figma-order-detail .od-layout{grid-template-columns:minmax(0,1fr)}}
-@media(max-width:620px){.ecommerce-app .figma-order-detail .od-header{flex-direction:column}.ecommerce-app .figma-order-detail .od-header-actions{margin-top:0}.ecommerce-app .figma-order-detail .od-stepper{margin:24px 12px 20px}.ecommerce-app .figma-order-detail .od-status-action{align-items:stretch;flex-direction:column}.ecommerce-app .figma-order-detail .od-product-line{flex-wrap:wrap}.ecommerce-app .figma-order-detail .od-product-line>div{min-width:0}.ecommerce-app .figma-order-detail .od-deliveries dl,.ecommerce-app .figma-order-detail .od-address-correction>div{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:620px){.ecommerce-app .figma-order-detail .od-header{flex-direction:column}.ecommerce-app .figma-order-detail .od-header-actions{margin-top:0}.ecommerce-app .figma-order-detail .od-stepper{margin:24px 12px 20px}.ecommerce-app .figma-order-detail .od-status-action{align-items:stretch;flex-direction:column}.ecommerce-app .figma-order-detail .od-product-line{flex-wrap:wrap}.ecommerce-app .figma-order-detail .od-product-line>div{min-width:0}.ecommerce-app .figma-order-detail .od-deliveries dl,.ecommerce-app .figma-order-detail .od-address-correction>div,.ecommerce-app .figma-order-detail .delivery-receipt-preview dl{grid-template-columns:minmax(0,1fr)}}

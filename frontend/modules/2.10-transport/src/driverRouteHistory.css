@@ -8,6 +8,7 @@
 .driver-history-list>article>button{display:flex;width:100%;align-items:center;justify-content:space-between;gap:18px;padding:14px 16px;border:0;background:#fff;color:#152438;text-align:left;cursor:pointer}
 .driver-history-list>article>button:hover:not(:disabled){background:#f6f8fb;color:#152438}
 .driver-history-list>article>button:focus-visible{background:#f6f8fb;color:#152438}
+.finance-app .driver-history-list>article>button:is(:hover,:focus-visible):not(:disabled) :is(strong,small){color:inherit}
 .transport-app .driver-stop-items button:is(:hover,:focus-visible):not(:disabled){background:transparent;color:#0758b3;text-decoration:underline;text-underline-offset:3px}
 .driver-history-list>article>button>span{display:grid;gap:4px}
 .driver-history-list>article>button>span:last-child{justify-items:end}
