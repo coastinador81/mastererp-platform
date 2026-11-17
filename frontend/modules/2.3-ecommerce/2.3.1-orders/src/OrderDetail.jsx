@@ -23,10 +23,10 @@ function Progress({ status }) {
   </div>;
 }
 
-function OrderHistory({ history = [], attempts = [] }) {
+function OrderHistory({ history = [], attempts = [], payment = {} }) {
   const events=operationalHistory(history,attempts);
-  return <section className="od-card od-history"><div className="od-card-title"><div><h2>Historial del pedido</h2><p>Cronología consolidada de Pedidos y Rutas</p></div></div>
-    {events.length ? <ol>{events.map(event => <li key={event.id}><span className="od-history-marker" aria-hidden="true"/><div><div className="od-history-heading"><StatusBadge status={event.status}>{event.source==='routes'?(event.status==='DELIVERED'?'Entregado':'No entregado'):statusLabel(event.status)}</StatusBadge><time dateTime={event.created_at}>{dateTime(event.created_at)}</time></div><p>{eventReasonLabel(event.reason)}</p>{event.detail&&<small>{event.detail}</small>}{event.route_id?<small>Evidencia de Rutas · <a href={detailHref('routes',event.route_id)}>Ver ruta</a></small>:null}<small>Realizado por {event.actor_name||'Usuario autorizado'}</small></div></li>)}</ol>
+  return <section className="od-card od-history"><div className="od-card-title"><div><h2>Historial del pedido</h2><p>Cronología consolidada de Pedidos, Finanzas, Preparación y Rutas</p></div></div>
+    {events.length ? <ol>{events.map(event => <li key={event.id}><span className="od-history-marker" aria-hidden="true"/><div><div className="od-history-heading"><StatusBadge status={event.status}>{event.source==='routes'?(event.status==='DELIVERED'?'Entregado':'No entregado'):statusLabel(event.status)}</StatusBadge><time dateTime={event.created_at}>{dateTime(event.created_at)}</time></div><p>{eventReasonLabel(event.reason)}</p>{event.detail&&<small>{event.detail}</small>}{event.reason==='PAYMENT_VALIDATED'&&payment.reference?<small>Referencia financiera: {payment.reference} · {paymentMethodLabel(payment.method,payment)}</small>:null}{event.route_id?<small>{event.reason==='ROUTE_STARTED'?'Ruta operativa':'Evidencia de Rutas'} · <a href={detailHref('routes',event.route_id)}>Ruta #{event.route_id.slice(-6).toUpperCase()}</a></small>:null}<small>Realizado por {event.actor_name||'Usuario autorizado'}</small></div></li>)}</ol>
       : <p className="od-history-empty">No hay cambios de estado registrados.</p>}
   </section>;
 }
@@ -37,7 +37,7 @@ function DeliveryAttempts({ attempts = [] }) {
     <ol>{attempts.map((attempt, index) => {
       const evidence=attempt.evidence||{},delivered=attempt.status==='DELIVERED';
       return <li key={`${attempt.route_id}-${attempt.updated_at||index}`}><div><StatusBadge status={delivered?'DELIVERED':'FAILED'}>{delivered?'Entregado':'No entregado'}</StatusBadge><time dateTime={attempt.updated_at}>{dateTime(attempt.updated_at)}</time></div>
-        <dl><div><dt>Ruta</dt><dd><a href={detailHref('routes',attempt.route_id)}>Ver ruta</a></dd></div>{attempt.driver_name?<div><dt>Repartidor</dt><dd>{attempt.driver_name}</dd></div>:null}{evidence.reason?<div><dt>Motivo</dt><dd>{evidence.reason}</dd></div>:null}{(evidence.observations||evidence.notes)?<div><dt>Observaciones</dt><dd>{evidence.observations||evidence.notes}</dd></div>:null}{evidence.recorded_at?<div><dt>Registrado</dt><dd>{dateTime(evidence.recorded_at)}</dd></div>:null}{evidence.accuracy_meters!=null?<div><dt>Precisión GPS</dt><dd>{decimal(evidence.accuracy_meters)} m</dd></div>:null}{evidence.distance_meters!=null?<div><dt>Distancia al destino</dt><dd>{decimal(evidence.distance_meters)} m</dd></div>:null}</dl>
+        <dl><div><dt>Ruta</dt><dd><a href={detailHref('routes',attempt.route_id)}>Ruta #{attempt.route_id.slice(-6).toUpperCase()}</a></dd></div>{attempt.stop_sequence!=null?<div><dt>Parada</dt><dd>Parada {attempt.stop_sequence}</dd></div>:null}{attempt.driver_name?<div><dt>Repartidor</dt><dd>{attempt.driver_name}</dd></div>:null}{evidence.reason?<div><dt>Motivo</dt><dd>{evidence.reason}</dd></div>:null}<div><dt>Observaciones</dt><dd>{evidence.observations||evidence.notes||'Sin observaciones registradas'}</dd></div>{evidence.recorded_at?<div><dt>Registrado</dt><dd>{dateTime(evidence.recorded_at)}</dd></div>:null}{evidence.latitude!=null&&evidence.longitude!=null?<div><dt>Coordenadas</dt><dd>{decimal(evidence.latitude)}, {decimal(evidence.longitude)}</dd></div>:null}{evidence.accuracy_meters!=null?<div><dt>Precisión GPS</dt><dd>{decimal(evidence.accuracy_meters)} m</dd></div>:null}{evidence.distance_meters!=null?<div><dt>Distancia al destino</dt><dd>{decimal(evidence.distance_meters)} m</dd></div>:null}</dl>
       </li>;
     })}</ol>
   </section>;
@@ -88,7 +88,7 @@ export default function OrderDetail({ order, writable, transition, addNote, corr
           <div className="od-totals"><span>Subtotal <b>{money(order.subtotal,order.currency)}</b></span><span>Entrega <b>{money(order.delivery_fee,order.currency)}</b></span><span>Total <b>{money(order.total,order.currency)}</b></span></div>
         </section>
         <DeliveryAttempts attempts={order.delivery_attempts}/>
-        <OrderHistory history={order.history} attempts={order.delivery_attempts}/>
+        <OrderHistory history={order.history} attempts={order.delivery_attempts} payment={payment}/>
         <OrderNotesPreview key={order.id} notes={order.notes||[]} writable={writable} addNote={addNote}/>
         {writable&&(NEXT[order.status]||[]).includes('CANCELLED')?<div className="od-cancel"><button type="button" className="od-button danger" onClick={()=>transition('CANCELLED')}>Cancelar pedido</button></div>:null}
       </div>

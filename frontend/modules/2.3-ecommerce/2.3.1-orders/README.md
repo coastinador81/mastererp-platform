@@ -20,6 +20,9 @@ incluidos resultado, motivo, fecha y métricas GPS disponibles, sin permitir que
 Pedidos altere esa evidencia.
 La cronología traduce los códigos internos y consolida los resultados históricos
 desde la evidencia propietaria de Rutas, sin crear eventos retroactivos.
+La evidencia identifica ruta y parada, muestra observaciones y coordenadas cuando
+existen, y la cronología enlaza el inicio de ruta y la referencia financiera
+persistidos por sus módulos propietarios.
 Los usuarios con `operations.orders.address.correct` pueden corregir la
 dirección y coordenadas de un pedido elegible mediante el contrato backend; la
 interfaz no geocodifica ni inventa coordenadas y no altera la libreta del cliente.

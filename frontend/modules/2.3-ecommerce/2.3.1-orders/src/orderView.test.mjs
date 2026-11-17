@@ -6,6 +6,14 @@ test('translates internal order event codes for users',()=>{
   assert.equal(eventReasonLabel('STOREFRONT_CHECKOUT'),'Pedido realizado en la tienda');
   assert.equal(eventReasonLabel('PAYMENT_VALIDATED'),'Pago validado');
   assert.equal(eventReasonLabel('PREPARATION_STARTED'),'Preparación iniciada');
+  assert.equal(eventReasonLabel('ROUTE_STARTED'),'Ruta iniciada');
+});
+
+test('links a persisted route start event from the consolidated history',()=>{
+  const routeId='67932655-9218-4793-898b-0a211c4dfc77';
+  const [event]=operationalHistory([{id:'started',reason:'ROUTE_STARTED',detail:routeId,created_at:'2026-11-17T21:00:00Z'}],[]);
+  assert.equal(event.route_id,routeId);
+  assert.equal(event.detail,'');
 });
 
 test('consolidates historical route attempts without duplicating delivery events',()=>{

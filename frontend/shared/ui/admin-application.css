@@ -93,6 +93,7 @@
   min-height: 40px;
 }
 .finance-app button:hover:not(:disabled) { background: var(--finance-primary-hover); }
+.finance-app button:hover:not(:disabled):not(.secondary) { color: #fff; }
 .finance-app button.secondary {
   background: var(--finance-surface);
   border-color: var(--finance-border);

@@ -18,6 +18,9 @@ dentro del radio permitido. `FAILED` exige un motivo, devuelve el pedido a
 `READY` sin ruta y no exige ubicación. Al resolver la última parada, Database
 cierra la ruta y libera al repartidor de forma transaccional. La interfaz cuenta
 paradas resueltas incluyendo entregas y no entregas.
+Al iniciar una ruta, Rutas registra para cada pedido el evento operativo
+`ROUTE_STARTED`; Pedidos lo consulta para mostrar «En ruta» sin duplicar la
+propiedad del proceso.
 
 
 ## Contrato y estado de esta capa
