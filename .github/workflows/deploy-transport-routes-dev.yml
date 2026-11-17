@@ -68,7 +68,7 @@ jobs:
           fi
       - name: Verify private Routes contract
         run: |
-          set -euo pipefail
+          set -euxo pipefail
           test "$(aws apigatewayv2 get-routes --api-id qx8nmypdhi --query 'Items[?RouteKey==`GET /v1/companies/{company_id}/driver-route`].AuthorizationType | [0]' --output text)" = JWT
           test "$(aws apigatewayv2 get-routes --api-id qx8nmypdhi --query 'Items[?RouteKey==`POST /v1/companies/{company_id}/driver-route/start`].AuthorizationType | [0]' --output text)" = JWT
           test "$(aws apigatewayv2 get-routes --api-id qx8nmypdhi --query 'Items[?RouteKey==`POST /v1/companies/{company_id}/routes/{route_id}/driver-deliveries/{order_id}`].AuthorizationType | [0]' --output text)" = JWT
