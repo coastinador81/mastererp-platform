@@ -46,6 +46,6 @@ export function newestRoutes(routes) {
 export function routeProgress(stops = []) {
   const delivered=stops.filter(stop=>stop.status==='DELIVERED').length;
   const failed=stops.filter(stop=>stop.status==='FAILED').length;
-  const resolved=delivered+failed,total=stops.length;
-  return {delivered,failed,resolved,pending:total-resolved,total,percent:total?Math.round(resolved/total*100):0};
+  const closed=delivered+failed,total=stops.length;
+  return {delivered,failed,closed,pending:total-closed,total,percent:total?Math.round(closed/total*100):0};
 }

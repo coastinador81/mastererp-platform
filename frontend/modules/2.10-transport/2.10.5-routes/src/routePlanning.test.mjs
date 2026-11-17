@@ -48,7 +48,7 @@ test('orders routes by route date and creation date, newest first', () => {
   assert.equal(routes[0].id, 'older-day');
 });
 
-test('counts delivered and failed stops as resolved route progress', () => {
+test('counts delivered and failed stops as closed route stops', () => {
   assert.deepEqual(routeProgress([{status:'FAILED'},{status:'DELIVERED'},{status:'FAILED'}]),
-    {delivered:1,failed:2,resolved:3,pending:0,total:3,percent:100});
+    {delivered:1,failed:2,closed:3,pending:0,total:3,percent:100});
 });

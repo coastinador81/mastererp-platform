@@ -56,12 +56,6 @@ function SideCard({ title, children }) {
   return <section className="od-card od-side-card"><div className="od-card-title"><h2>{title}</h2></div><div className="od-side-content">{children}</div></section>;
 }
 
-function customerHistory(order, customerOrders) {
-  const orders = customerOrders.some(item => item.id === order.id) ? customerOrders : [...customerOrders, order];
-  const since = Math.min(...orders.map(item => new Date(item.created_at).getTime()).filter(Number.isFinite));
-  return `${Number.isFinite(since) ? `Cliente desde ${new Date(since).getFullYear()} · ` : ''}${orders.length} ${orders.length === 1 ? 'pedido' : 'pedidos'}`;
-}
-
 function CopyAddress({ address }) {
   const [copied, setCopied] = useState('');
   const copy = async () => {
@@ -74,7 +68,7 @@ function CopyAddress({ address }) {
   return <><button type="button" className="od-button secondary full" disabled={!address} onClick={copy}>{copied === 'Dirección copiada' ? <><FinanceIcon name="check"/>Dirección copiada</> : 'Copiar dirección'}</button><span className="od-copy-feedback" role="status">{copied === 'Dirección copiada' ? '' : copied}</span></>;
 }
 
-export default function OrderDetail({ order, writable, transition, addNote, correctAddress, canCorrectAddress, close, nodeName, customerOrders = [], canOpenCustomer }) {
+export default function OrderDetail({ order, writable, transition, addNote, correctAddress, canCorrectAddress, close, nodeName, canOpenCustomer }) {
   const delivery = order.delivery_snapshot || {}, customer = order.customer_snapshot || {}, payment = order.payment_snapshot || {};
   const paymentReady=['VALIDATED','PENDING_COLLECTION'].includes(payment.status),next=(NEXT[order.status]||[]).filter(value=>value!=='CANCELLED'&&(value!=='CONFIRMED'||paymentReady)),handoff=HANDOFF[order.status],address=delivery.address||delivery.address_line_1||'';
   const handoffHref=handoff?.route==='routes'&&order.route_ref?detailHref('routes',order.route_ref):handoff?.detail?detailHref(handoff.route,order.id):handoff?listHref(handoff.route):'';
@@ -99,7 +93,7 @@ export default function OrderDetail({ order, writable, transition, addNote, corr
         {writable&&(NEXT[order.status]||[]).includes('CANCELLED')?<div className="od-cancel"><button type="button" className="od-button danger" onClick={()=>transition('CANCELLED')}>Cancelar pedido</button></div>:null}
       </div>
       <div className="od-side">
-        <SideCard title="Cliente"><div className="od-customer"><span>{initials}</span><div><strong>{customer.name||'Cliente del pedido'}</strong><small>{customerHistory(order,customerOrders)}</small></div></div><dl className="snapshot-fields"><div><dt>Correo</dt><dd>{customer.email||'Sin registrar'}</dd></div><div><dt>Teléfono</dt><dd>{customer.phone||'Sin registrar'}</dd></div></dl><SnapshotFields value={customer} exclude={['name','email','phone']}/>{customerUrl?<a className="od-button secondary full" href={customerUrl}>Ver ficha del cliente</a>:null}</SideCard>
+        <SideCard title="Cliente"><div className="od-customer"><span>{initials}</span><div><strong>{customer.name||'Cliente del pedido'}</strong><small>Datos guardados en este pedido</small></div></div><dl className="snapshot-fields"><div><dt>Correo</dt><dd>{customer.email||'Sin registrar en el pedido'}</dd></div><div><dt>Teléfono</dt><dd>{customer.phone||'Sin registrar en el pedido'}</dd></div></dl><SnapshotFields value={customer} exclude={['name','email','phone']}/>{customerUrl?<a className="od-button secondary full" href={customerUrl}>Ver ficha del cliente</a>:null}</SideCard>
         <SideCard title="Entrega"><dl className="snapshot-fields"><div><dt>Dirección</dt><dd>{address||'Dirección por confirmar'}</dd></div><div><dt>Método</dt><dd>{order.delivery_method==='scheduled'?'Entrega programada':'Entrega en tiempo real'}</dd></div>{nodeName?<div><dt>Nodo asignado</dt><dd>{nodeName}</dd></div>:null}</dl><DeliveryDetails delivery={delivery}/><CopyAddress address={address}/>{canCorrectAddress?<AddressCorrection order={order} correctAddress={correctAddress}/>:null}</SideCard>
         <SideCard title="Pago"><dl className="snapshot-fields"><div><dt>Método</dt><dd>{paymentMethodLabel(payment.method,payment)}</dd></div><div><dt>Estado</dt><dd>{paymentStatusLabel(payment.status)}</dd></div></dl><PaymentDetails payment={payment}/></SideCard>
       </div>
