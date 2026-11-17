@@ -14,6 +14,7 @@ def _request(e,r):
  if rid:UUID(rid)
  if order:UUID(order)
  if m=='GET'and path.endswith('/driver-route'):return 200,r.driver_route(company)
+ if m=='POST'and path.endswith('/driver-route/start'):return 200,r.start_driver_route(company)
  if m=='GET'and rid:return 200,r.get(company,rid)
  if m=='GET':q=e.get('queryStringParameters')or{};return 200,{'items':r.list(company,q.get('status'),int(q.get('limit',50)))}
  b=parse_body(e)
@@ -37,7 +38,7 @@ def lambda_handler(e:dict[str,Any],context:Any):
   if not isinstance(claims,dict)or not claims.get('iss')or not claims.get('sub'):raise HttpError(401,'Verified JWT claims are required',code='unauthorized')
   try:UUID(tenant or '')
   except ValueError:raise HttpError(400,'Valid X-Tenant-Id is required',code='invalid_request')from None
-  h=e.get('requestContext',{}).get('http',{});m=h.get('method','GET').upper();path=h.get('path','');op='transport.deliveries.execute'if path.endswith('/driver-route')or'/driver-deliveries/'in path else'operations.routes.read'if m=='GET'else'operations.routes.create'if m=='POST'and'/stops/'not in path and not path.endswith('/transitions')else'operations.routes.assign'if m=='PUT'else'operations.routes.transition'if path.endswith('/transitions')else'operations.routes.stop.complete'
+  h=e.get('requestContext',{}).get('http',{});m=h.get('method','GET').upper();path=h.get('path','');op='transport.routes.start'if path.endswith('/driver-route/start')else'transport.deliveries.execute'if path.endswith('/driver-route')or'/driver-deliveries/'in path else'operations.routes.read'if m=='GET'else'operations.routes.create'if m=='POST'and'/stops/'not in path and not path.endswith('/transitions')else'operations.routes.assign'if m=='PUT'else'operations.routes.transition'if path.endswith('/transitions')else'operations.routes.stop.complete'
   with db_connection(tenant_id=tenant,correlation_id=cid,operation=op)as c:a=resolve_auth(e,c,verified_claims=claims);c.execute("SELECT set_config('app.current_user_id',%s,true)",(str(a.user_id),));status,body=_request(e,RoutesRepository(c))
   return api_response(status,body)
  except HttpError as x:return api_response(x.status,{'error':{'code':x.code,'message':x.message},'correlation_id':cid})

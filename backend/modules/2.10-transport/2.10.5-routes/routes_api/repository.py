@@ -7,4 +7,5 @@ class RoutesRepository:
  def transition(self,company,id,p):return self.c.execute("SELECT operaciones.ruta_transicionar(%s,%s,%s,%s)value",(company,id,p['version'],p['status'])).fetchone()['value']
  def stop(self,company,id,order,p):return self.c.execute("SELECT operaciones.ruta_parada_finalizar(%s,%s,%s,%s,%s)value",(company,id,order,p['status'],p.get('evidence',{}))).fetchone()['value']
  def driver_route(self,company):return self.c.execute("SELECT operaciones.ruta_repartidor_actual(%s)value",(company,)).fetchone()['value']
+ def start_driver_route(self,company):return self.c.execute("SELECT operaciones.ruta_repartidor_iniciar(%s)value",(company,)).fetchone()['value']
  def deliver(self,company,id,order,p):return self.c.execute("SELECT operaciones.ruta_entrega_registrar(%s,%s,%s,%s,%s)value",(company,id,order,p['status'],p['evidence'])).fetchone()['value']

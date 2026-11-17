@@ -11,6 +11,9 @@ class T(unittest.TestCase):
  def test_driver_route(self):
   r=Mock();r.driver_route.return_value={'driver_id':C,'route':None};e={'requestContext':{'http':{'method':'GET','path':'/v1/companies/x/driver-route'}},'pathParameters':{'company_id':C}}
   self.assertEqual(_request(e,r),(200,{'driver_id':C,'route':None}))
+ def test_driver_starts_own_route(self):
+  r=Mock();r.start_driver_route.return_value={'driver_id':C,'route':{'status':'IN_ROUTE'}};e={'requestContext':{'http':{'method':'POST','path':'/v1/companies/x/driver-route/start'}},'pathParameters':{'company_id':C}}
+  self.assertEqual(_request(e,r),(200,{'driver_id':C,'route':{'status':'IN_ROUTE'}}));r.start_driver_route.assert_called_once_with(C)
  def test_driver_delivery(self):
   r=Mock();r.deliver.return_value={'route_completed':True};e={'requestContext':{'http':{'method':'POST','path':'/v1/companies/x/routes/'+C+'/driver-deliveries/'+C}},'pathParameters':{'company_id':C,'route_id':C,'order_id':C},'body':'{"status":"DELIVERED","evidence":{"latitude":10,"longitude":-66,"accuracy_meters":10}}'}
   self.assertEqual(_request(e,r),(200,{'route_completed':True}))
