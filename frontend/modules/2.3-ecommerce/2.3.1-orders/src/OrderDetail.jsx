@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { MODULES } from '../../../../shared/module-launcher/module-launcher.mjs';
 import { detailHref, listHref } from '../../../../app-shell/src/detailRoutes.mjs';
-import { FLOW, HANDOFF, NEXT, dateTime, money, paymentMethodLabel, paymentStatusLabel, statusLabel } from './orderView.js';
+import { FLOW, HANDOFF, NEXT, dateTime, eventReasonLabel, money, operationalHistory, paymentMethodLabel, paymentStatusLabel, statusLabel } from './orderView.js';
 import FinanceIcon from '../../../2.2-finance/src/FinanceIcon.jsx';
 import StatusBadge from '../../../../shared/status-badge/StatusBadge.jsx';
 import './order-detail.css';
@@ -23,9 +23,10 @@ function Progress({ status }) {
   </div>;
 }
 
-function OrderHistory({ history = [] }) {
-  return <section className="od-card od-history"><div className="od-card-title"><div><h2>Historial del pedido</h2><p>Cambios registrados por el backend</p></div></div>
-    {history.length ? <ol>{history.map(event => <li key={event.id}><span className="od-history-marker" aria-hidden="true"/><div><div className="od-history-heading"><StatusBadge status={event.status}>{statusLabel(event.status)}</StatusBadge><time dateTime={event.created_at}>{dateTime(event.created_at)}</time></div><p>{event.reason}</p>{event.detail&&<small>{event.detail}</small>}<small>Realizado por {event.actor_name||'Usuario autorizado'}</small></div></li>)}</ol>
+function OrderHistory({ history = [], attempts = [] }) {
+  const events=operationalHistory(history,attempts);
+  return <section className="od-card od-history"><div className="od-card-title"><div><h2>Historial del pedido</h2><p>Cronología consolidada de Pedidos y Rutas</p></div></div>
+    {events.length ? <ol>{events.map(event => <li key={event.id}><span className="od-history-marker" aria-hidden="true"/><div><div className="od-history-heading"><StatusBadge status={event.status}>{event.source==='routes'?(event.status==='DELIVERED'?'Entregado':'No entregado'):statusLabel(event.status)}</StatusBadge><time dateTime={event.created_at}>{dateTime(event.created_at)}</time></div><p>{eventReasonLabel(event.reason)}</p>{event.detail&&<small>{event.detail}</small>}{event.route_id?<small>Evidencia de Rutas · <a href={detailHref('routes',event.route_id)}>Ver ruta</a></small>:null}<small>Realizado por {event.actor_name||'Usuario autorizado'}</small></div></li>)}</ol>
       : <p className="od-history-empty">No hay cambios de estado registrados.</p>}
   </section>;
 }
@@ -48,7 +49,7 @@ function AddressCorrection({ order, correctAddress }) {
   const submit=async event=>{event.preventDefault();setSaving(true);const saved=await correctAddress({address:form.address.trim(),latitude:Number(form.latitude),longitude:Number(form.longitude),reason:form.reason.trim()});setSaving(false);if(saved)setOpen(false);};
   if(!['PENDING','CONFIRMED','PREPARING','READY'].includes(order.status)||order.route_ref)return null;
   if(!open)return <button type="button" className="od-button secondary full" onClick={()=>setOpen(true)}>Corregir dirección</button>;
-  return <form className="od-address-correction" onSubmit={submit}><p>Corrige la ubicación operativa de este pedido. La libreta del cliente no cambia.</p><label>Dirección<input required minLength="5" maxLength="500" value={form.address} onChange={event=>setForm({...form,address:event.target.value})}/></label><div><label>Latitud<input required type="number" min="-90" max="90" step="any" value={form.latitude} onChange={event=>setForm({...form,latitude:event.target.value})}/></label><label>Longitud<input required type="number" min="-180" max="180" step="any" value={form.longitude} onChange={event=>setForm({...form,longitude:event.target.value})}/></label></div><label>Motivo de la corrección<textarea required minLength="3" maxLength="500" value={form.reason} onChange={event=>setForm({...form,reason:event.target.value})}/></label><div className="od-address-actions"><button type="button" className="od-button secondary" onClick={()=>setOpen(false)}>Cancelar</button><button type="submit" className="od-button primary" disabled={saving}>{saving?'Guardando…':'Guardar corrección'}</button></div></form>;
+  return <form className="od-address-correction" onSubmit={submit}><p>Corrige la ubicación operativa de este pedido. La libreta del cliente no cambia.</p><label>Dirección<textarea className="od-address-field" required minLength="5" maxLength="500" rows="3" value={form.address} onChange={event=>setForm({...form,address:event.target.value})}/></label><div><label>Latitud<input required type="number" min="-90" max="90" step="any" value={form.latitude} onChange={event=>setForm({...form,latitude:event.target.value})}/></label><label>Longitud<input required type="number" min="-180" max="180" step="any" value={form.longitude} onChange={event=>setForm({...form,longitude:event.target.value})}/></label></div><small>Usa coordenadas reales del destino; no se generan valores automáticos.</small><label>Motivo de la corrección<textarea required minLength="3" maxLength="500" rows="4" value={form.reason} onChange={event=>setForm({...form,reason:event.target.value})}/></label><div className="od-address-actions"><button type="button" className="od-button secondary" onClick={()=>setOpen(false)}>Cancelar</button><button type="submit" className="od-button primary" disabled={saving}>{saving?'Guardando…':'Guardar corrección'}</button></div></form>;
 }
 
 function SideCard({ title, children }) {
@@ -93,7 +94,7 @@ export default function OrderDetail({ order, writable, transition, addNote, corr
           <div className="od-totals"><span>Subtotal <b>{money(order.subtotal,order.currency)}</b></span><span>Entrega <b>{money(order.delivery_fee,order.currency)}</b></span><span>Total <b>{money(order.total,order.currency)}</b></span></div>
         </section>
         <DeliveryAttempts attempts={order.delivery_attempts}/>
-        <OrderHistory history={order.history}/>
+        <OrderHistory history={order.history} attempts={order.delivery_attempts}/>
         <OrderNotesPreview key={order.id} notes={order.notes||[]} writable={writable} addNote={addNote}/>
         {writable&&(NEXT[order.status]||[]).includes('CANCELLED')?<div className="od-cancel"><button type="button" className="od-button danger" onClick={()=>transition('CANCELLED')}>Cancelar pedido</button></div>:null}
       </div>

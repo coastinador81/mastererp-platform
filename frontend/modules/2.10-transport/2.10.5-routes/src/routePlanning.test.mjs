@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { deliveryWindowRange, newestRoutes, nodeWorkingHours, readyOrdersForNode, routeDurationLabel, routePayload, routeTimeLabel, shiftRouteTime } from './routePlanning.mjs';
+import { deliveryWindowRange, newestRoutes, nodeWorkingHours, readyOrdersForNode, routeDurationLabel, routePayload, routeProgress, routeTimeLabel, shiftRouteTime } from './routePlanning.mjs';
 
 test('offers only READY orders without a route from the selected node', () => {
   const orders = [
@@ -46,4 +46,9 @@ test('orders routes by route date and creation date, newest first', () => {
   ];
   assert.deepEqual(newestRoutes(routes).map(route => route.id), ['newer-today', 'older-today', 'older-day']);
   assert.equal(routes[0].id, 'older-day');
+});
+
+test('counts delivered and failed stops as resolved route progress', () => {
+  assert.deepEqual(routeProgress([{status:'FAILED'},{status:'DELIVERED'},{status:'FAILED'}]),
+    {delivered:1,failed:2,resolved:3,pending:0,total:3,percent:100});
 });

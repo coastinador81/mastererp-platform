@@ -42,3 +42,10 @@ export function newestRoutes(routes) {
     || String(right.created_at || '').localeCompare(String(left.created_at || ''))
     || String(right.id || '').localeCompare(String(left.id || '')));
 }
+
+export function routeProgress(stops = []) {
+  const delivered=stops.filter(stop=>stop.status==='DELIVERED').length;
+  const failed=stops.filter(stop=>stop.status==='FAILED').length;
+  const resolved=delivered+failed,total=stops.length;
+  return {delivered,failed,resolved,pending:total-resolved,total,percent:total?Math.round(resolved/total*100):0};
+}

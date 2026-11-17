@@ -18,6 +18,8 @@ la API autorizada; no se conservan solamente en el navegador.
 La ficha también muestra los intentos reales de entrega registrados por Rutas,
 incluidos resultado, motivo, fecha y métricas GPS disponibles, sin permitir que
 Pedidos altere esa evidencia.
+La cronología traduce los códigos internos y consolida los resultados históricos
+desde la evidencia propietaria de Rutas, sin crear eventos retroactivos.
 Los usuarios con `operations.orders.address.correct` pueden corregir la
 dirección y coordenadas de un pedido elegible mediante el contrato backend; la
 interfaz no geocodifica ni inventa coordenadas y no altera la libreta del cliente.
