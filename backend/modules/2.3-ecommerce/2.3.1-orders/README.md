@@ -6,6 +6,12 @@ Responsabilidad: Pedidos, dentro de Ecommerce.
 Estado: desplegado y validado en DEV. Incluye reglas de dominio,
 repositorio sobre funciones PostgreSQL controladas, adapter HTTP para API
 Gateway v2 y entrada/paquete reproducible de Lambda.
+El comportamiento transversal vigente está descrito en
+[`docs/ORDERS_CURRENT_BEHAVIOR.md`](../../../../docs/ORDERS_CURRENT_BEHAVIOR.md).
+La primera etapa de devoluciones será administrativa: Pedidos coordina el
+expediente, Inventario conserva movimientos y Finanzas los reembolsos y notas
+de crédito. Un contrato candidato de datos no acredita endpoints ni
+disponibilidad hasta completar integración y smoke DEV.
 
 
 ## Contrato y estado de esta capa

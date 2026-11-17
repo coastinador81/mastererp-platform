@@ -71,6 +71,15 @@ class SalesRepositoryTests(unittest.TestCase):
         self.assertIn("%s::uuid,%s::uuid", statement)
         self.assertIn("%s::text,%s::varchar", statement)
 
+    def test_return_request_uses_controlled_function(self):
+        c = Mock(); c.execute.return_value = row({"status": "REQUESTED"})
+        result = OrdersRepository(c).request_return(
+            "company", "order", {"items": [{"order_item_id": "line", "quantity": 1}], "reason": "Defect"}, "key"
+        )
+        self.assertEqual(result["status"], "REQUESTED")
+        self.assertIn("devolucion_solicitar", c.execute.call_args.args[0])
+        self.assertIn("%s::jsonb", c.execute.call_args.args[0])
+
     def test_bulk_transition_runs_every_order_on_the_same_connection(self):
         repository = OrdersRepository(Mock())
         repository.transition = Mock(side_effect=[{"id": "one"}, {"id": "two"}])

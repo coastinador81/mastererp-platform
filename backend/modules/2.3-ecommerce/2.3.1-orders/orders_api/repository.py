@@ -49,6 +49,36 @@ class OrdersRepository:
              payload["latitude"], payload["longitude"], payload["reason"]),
         ).fetchone()["value"]
 
+    def returns(self, company_id: str, order_id: str) -> list[dict[str, Any]]:
+        return self.connection.execute(
+            "SELECT operaciones.devoluciones_leer(%s::uuid,%s::uuid,NULL) AS value", (company_id, order_id)
+        ).fetchone()["value"]
+
+    def request_return(self, company_id: str, order_id: str, payload: dict[str, Any], key: str) -> dict[str, Any]:
+        return self.connection.execute(
+            "SELECT operaciones.devolucion_solicitar(%s::uuid,%s::uuid,%s::jsonb,%s::text,%s::varchar) AS value",
+            (company_id, order_id, payload["items"], payload["reason"], key),
+        ).fetchone()["value"]
+
+    def decide_return(self, company_id: str, return_id: str, payload: dict[str, Any]) -> dict[str, Any]:
+        return self.connection.execute(
+            "SELECT operaciones.devolucion_decidir(%s::uuid,%s::uuid,%s::bigint,%s::text,%s::text) AS value",
+            (company_id, return_id, payload["version"], payload["decision"], payload["detail"]),
+        ).fetchone()["value"]
+
+    def receive_return(self, company_id: str, return_id: str, payload: dict[str, Any]) -> dict[str, Any]:
+        return self.connection.execute(
+            "SELECT operaciones.devolucion_recibir(%s::uuid,%s::uuid,%s::bigint,%s::uuid,%s::jsonb,%s::text) AS value",
+            (company_id, return_id, payload["version"], payload["node_id"], payload["items"], payload["detail"]),
+        ).fetchone()["value"]
+
+    def settle_return(self, company_id: str, return_id: str, payload: dict[str, Any]) -> dict[str, Any]:
+        return self.connection.execute(
+            "SELECT operaciones.devolucion_completar(%s::uuid,%s::uuid,%s::bigint,%s::text,%s::text,%s::text) AS value",
+            (company_id, return_id, payload["version"], payload["refund_reference"],
+             payload["credit_note_reference"], payload["detail"]),
+        ).fetchone()["value"]
+
     def create(self, company_id: str, payload: dict[str, Any], idempotency_key: str) -> dict[str, Any]:
         row = self.connection.execute(
             """SELECT operaciones.pedido_crear(

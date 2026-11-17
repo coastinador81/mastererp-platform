@@ -30,6 +30,11 @@ distinto de una factura fiscal.
 Los usuarios con `operations.orders.address.correct` pueden corregir la
 dirección y coordenadas de un pedido elegible mediante el contrato backend; la
 interfaz no geocodifica ni inventa coordenadas y no altera la libreta del cliente.
+El comportamiento vigente, sus propietarios y límites está documentado en
+[`docs/ORDERS_CURRENT_BEHAVIOR.md`](../../../../docs/ORDERS_CURRENT_BEHAVIOR.md).
+El flujo de devoluciones acordado será administrativo y separará solicitud,
+autorización, recepción, reintegro, reembolso y nota de crédito. No se presenta
+como disponible hasta conectar y validar su API en DEV.
 
 
 ## Contrato y estado de esta capa
@@ -52,8 +57,9 @@ interno de `0-uonify/0.2-app`. La dependencia histórica de componentes de
 Finanzas se retirará gradualmente cuando cada componente tenga propietario
 compartido, sin duplicarlo dentro de Pedidos.
 
-Validaciones: build independiente y build Uonify correctos. Pendientes para el
-nuevo corte: publicación DEV y pruebas de navegador con identidad autorizada.
+Validaciones: build independiente, build Uonify y publicación DEV del
+comprobante PDF correctos. Cada flujo nuevo mantiene pendiente su prueba de
+navegador con identidad autorizada hasta que se informe expresamente.
 
 <!-- ux-ui-standard:start -->
 ## UX/UI común

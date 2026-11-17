@@ -29,10 +29,43 @@ def _request(event: dict[str, Any], repository: OrdersRepository) -> tuple[int, 
     request = event.get("requestContext", {}).get("http", {})
     method = request.get("method", event.get("httpMethod", "GET")).upper()
     params = event.get("pathParameters") or {}
-    company_id, order_id = params.get("company_id"), params.get("order_id")
+    company_id, order_id, return_id = params.get("company_id"), params.get("order_id"), params.get("return_id")
     if not company_id:
         raise HttpError(400, "company_id is required", code="invalid_request")
     UUID(company_id)
+    path = request.get("path", "")
+    if method == "GET" and order_id and path.endswith("/returns"):
+        UUID(order_id)
+        return 200, {"items": repository.returns(company_id, order_id)}
+    if method == "POST" and order_id and path.endswith("/returns"):
+        UUID(order_id); payload = parse_body(event); key = _header(event, "idempotency-key")
+        if (set(payload) != {"items", "reason"} or not isinstance(payload["items"], list)
+                or not 1 <= len(payload["items"]) <= 100 or not isinstance(payload["reason"], str)
+                or not 3 <= len(payload["reason"].strip()) <= 500 or not key or not 1 <= len(key) <= 128):
+            raise HttpError(400, "A valid return request and Idempotency-Key are required", code="invalid_request")
+        return 201, repository.request_return(company_id, order_id, payload, key)
+    if method == "POST" and return_id and path.endswith("/decision"):
+        UUID(return_id); payload = parse_body(event)
+        if (set(payload) != {"version", "decision", "detail"} or type(payload["version"]) is not int
+                or payload["version"] < 1 or payload["decision"] not in ("AUTHORIZED", "REJECTED")
+                or not isinstance(payload["detail"], str) or not 3 <= len(payload["detail"].strip()) <= 500):
+            raise HttpError(400, "A valid return decision is required", code="invalid_request")
+        return 200, repository.decide_return(company_id, return_id, payload)
+    if method == "POST" and return_id and path.endswith("/receipt"):
+        UUID(return_id); payload = parse_body(event)
+        if (set(payload) != {"version", "node_id", "items", "detail"} or type(payload["version"]) is not int
+                or payload["version"] < 1 or not isinstance(payload["items"], list) or not payload["items"]
+                or not isinstance(payload["detail"], str) or not 3 <= len(payload["detail"].strip()) <= 500):
+            raise HttpError(400, "A valid physical return receipt is required", code="invalid_request")
+        UUID(payload["node_id"])
+        return 200, repository.receive_return(company_id, return_id, payload)
+    if method == "POST" and return_id and path.endswith("/settlement"):
+        UUID(return_id); payload = parse_body(event)
+        required = {"version", "refund_reference", "credit_note_reference", "detail"}
+        if (set(payload) != required or type(payload["version"]) is not int or payload["version"] < 1
+                or any(not isinstance(payload[name], str) or not payload[name].strip() for name in required-{"version"})):
+            raise HttpError(400, "Refund and credit note references are required", code="invalid_request")
+        return 200, repository.settle_return(company_id, return_id, payload)
     if method == "GET" and order_id:
         UUID(order_id)
         return 200, repository.get(company_id, order_id)
@@ -137,8 +170,7 @@ def lambda_handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
             raise HttpError(400, "X-Tenant-Id is required", code="invalid_request")
         UUID(tenant_id)
         request = event.get("requestContext", {}).get("http", {})
-        path = request.get("path", "")
-        operation = "operations.orders.notes.create" if path.endswith("/notes") else "operations.orders.address.correct" if path.endswith("/address-corrections") else "operations.orders.transition" if path.endswith("/bulk-transitions") else "operations.orders.create" if request.get("method") == "POST" and not (event.get("pathParameters") or {}).get("order_id") else "operations.orders.transition"
+        operation = "operations.orders.notes.create" if path.endswith("/notes") else "operations.orders.address.correct" if path.endswith("/address-corrections") else "operations.returns.request" if path.endswith("/returns") and request.get("method") == "POST" else "operations.returns.authorize" if path.endswith("/decision") else "catalog.inventory.returns.receive" if path.endswith("/receipt") else "administration.returns.settle" if path.endswith("/settlement") else "operations.orders.transition" if path.endswith("/bulk-transitions") else "operations.orders.create" if request.get("method") == "POST" and not (event.get("pathParameters") or {}).get("order_id") else "operations.orders.transition"
         if request.get("method", "GET") == "GET":
             operation = "operations.orders.read"
         with db_connection(tenant_id=tenant_id, correlation_id=correlation_id, operation=operation) as connection:

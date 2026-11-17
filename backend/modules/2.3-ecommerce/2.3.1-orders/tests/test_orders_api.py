@@ -77,6 +77,28 @@ class OrdersApiTests(unittest.TestCase):
             _request(self.event("POST", order_id, payload, path), Mock())
         self.assertEqual(caught.exception.status, 400)
 
+    def test_requests_an_internal_return(self):
+        order_id = "20000000-0000-0000-0000-000000000001"
+        payload = {"items": [{"order_item_id": "30000000-0000-0000-0000-000000000001", "quantity": 1}],
+                   "reason": "Producto defectuoso"}
+        repo = Mock(); repo.request_return.return_value = {"status": "REQUESTED"}
+        path = f"/v1/companies/c/orders/{order_id}/returns"
+        status, result = _request(self.event("POST", order_id, payload, path), repo)
+        self.assertEqual((status, result["status"]), (201, "REQUESTED"))
+        repo.request_return.assert_called_once_with(
+            "10000000-0000-0000-0000-000000000001", order_id, payload, "key-1"
+        )
+
+    def test_return_settlement_requires_both_finance_references(self):
+        order_id = "20000000-0000-0000-0000-000000000001"
+        return_id = "30000000-0000-0000-0000-000000000001"
+        event = self.event("POST", order_id, {"version": 3, "refund_reference": "REF-1", "detail": "Procesado"},
+                           f"/v1/companies/c/orders/{order_id}/returns/{return_id}/settlement")
+        event["pathParameters"]["return_id"] = return_id
+        with self.assertRaises(HttpError) as caught:
+            _request(event, Mock())
+        self.assertEqual(caught.exception.status, 400)
+
     def test_note_requires_content_and_idempotency_key(self):
         order_id = "20000000-0000-0000-0000-000000000001"
         event = self.event("POST", order_id, {"note": " "}, f"/v1/companies/c/orders/{order_id}/notes")
