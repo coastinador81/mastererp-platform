@@ -1,5 +1,9 @@
 name: Deploy Orders backend DEV
 on:
+  push:
+    branches: [dev]
+    paths:
+      - '.github/orders-backend-dev.trigger'
   workflow_dispatch:
     inputs:
       confirm:
@@ -14,7 +18,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   deploy:
-    if: inputs.confirm == 'DEPLOY_ORDERS_DEV'
+    if: github.event_name == 'push' || inputs.confirm == 'DEPLOY_ORDERS_DEV'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
