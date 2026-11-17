@@ -54,9 +54,10 @@ export default function EcommerceApp() {
     api: config.adminApiUrl,
     tenant: workspace.tenant,
     company: workspace.company,
+    companyProfile: workspace.context?.companies?.find(company => company.id === workspace.company) || null,
     permissions,
     request: workspace.request,
-  }), [workspace.tenant, workspace.company, permissions, workspace.request]);
+  }), [workspace.tenant, workspace.company, workspace.context?.companies, permissions, workspace.request]);
 
   const navigate = value => { window.location.hash = `/${value}`; };
   const allowed = value => canOpenOperationsRoute(workspace.context, value);
