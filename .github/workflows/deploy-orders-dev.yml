@@ -28,6 +28,7 @@ jobs:
       - name: Install and test Orders
         run: |
           set -euo pipefail
+          python -m pip install boto3
           pip install --no-compile --target /tmp/orders-test-deps boto3 -r backend/modules/2.3-ecommerce/2.3.1-orders/lambdas/mastererp-dev-orders/requirements-package.txt
           PYTHONPATH=/tmp/orders-test-deps:backend/shared/tenant-security:backend/modules/2.3-ecommerce/2.3.1-orders python -m unittest discover -s backend/modules/2.3-ecommerce/2.3.1-orders/tests -p 'test_*.py'
       - name: Build reviewed Linux ARM64 artifact
