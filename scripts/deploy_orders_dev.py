@@ -29,6 +29,12 @@ def main():
     assert session.client("sts").get_caller_identity()["Account"] == ACCOUNT
     cfn, s3, lam, api = (session.client(name) for name in ("cloudformation", "s3", "lambda", "apigatewayv2"))
 
+    stack_status = cfn.describe_stacks(StackName=STACK)["Stacks"][0]["StackStatus"]
+    if not args.execute and stack_status == "UPDATE_ROLLBACK_FAILED":
+        cfn.continue_update_rollback(StackName=STACK)
+        cfn.get_waiter("stack_rollback_complete").wait(
+            StackName=STACK, WaiterConfig={"Delay": 5, "MaxAttempts": 120})
+
     def resources():
         rows = [r for page in cfn.get_paginator("list_stack_resources").paginate(StackName=STACK)
                 for r in page["StackResourceSummaries"]]
