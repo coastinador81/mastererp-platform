@@ -1,4 +1,5 @@
 export const routeLabel=status=>({ASSIGNED:'Asignada',IN_ROUTE:'En ruta',COMPLETED:'Completada',CANCELLED:'Cancelada'}[status]||status);
+export const routeAllowsDelivery=route=>route?.status==='IN_ROUTE';
 
 export function routeTotals(route){
  const stops=route?.stops||[];

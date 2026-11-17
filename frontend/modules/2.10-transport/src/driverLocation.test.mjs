@@ -29,6 +29,7 @@ test('rejects evidence that exceeds the backend accuracy contract', () => {
 test('explains safe delivery contract failures returned by Routes', () => {
   assert.match(locationErrorMessage({ code: 'delivery_outside_radius' }), /fuera del radio permitido/);
   assert.match(locationErrorMessage({ code: 'route_not_active' }), /ruta todavía no está iniciada/);
+  assert.match(locationErrorMessage({ code: 'invalid_state' }), /cambió de estado/);
   assert.match(locationErrorMessage({ code: 'order_not_on_route' }), /no pertenece a la ruta activa/);
   assert.match(locationErrorMessage({ code: 'invalid_gps' }), /rechazó la evidencia GPS/);
 });
