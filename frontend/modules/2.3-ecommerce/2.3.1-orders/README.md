@@ -15,6 +15,12 @@ rediseño operativo agrega indicadores, búsqueda, tabla ejecutiva, progreso,
 cliente, entrega, pago, productos, totales e historial real de transiciones
 expuesto por el backend. Las notas internas de la ficha se leen y escriben por
 la API autorizada; no se conservan solamente en el navegador.
+La ficha también muestra los intentos reales de entrega registrados por Rutas,
+incluidos resultado, motivo, fecha y métricas GPS disponibles, sin permitir que
+Pedidos altere esa evidencia.
+Los usuarios con `operations.orders.address.correct` pueden corregir la
+dirección y coordenadas de un pedido elegible mediante el contrato backend; la
+interfaz no geocodifica ni inventa coordenadas y no altera la libreta del cliente.
 
 
 ## Contrato y estado de esta capa

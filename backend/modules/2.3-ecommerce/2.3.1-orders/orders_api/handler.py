@@ -77,6 +77,19 @@ def _request(event: dict[str, Any], repository: OrdersRepository) -> tuple[int, 
         if not isinstance(note, str) or not 1 <= len(note.strip()) <= 2000 or not key or not 1 <= len(key) <= 128:
             raise HttpError(400, "note and Idempotency-Key are required", code="invalid_request")
         return 201, repository.add_note(company_id, order_id, note, key)
+    if method == "POST" and order_id and request.get("path", "").endswith("/address-corrections"):
+        UUID(order_id)
+        payload = parse_body(event)
+        if set(payload) != {"version", "address", "latitude", "longitude", "reason"}:
+            raise HttpError(400, "A complete address correction is required", code="invalid_request")
+        if type(payload["version"]) is not int or payload["version"] < 1:
+            raise HttpError(400, "A positive integer version is required", code="invalid_request")
+        if (not isinstance(payload["address"], str) or not 5 <= len(payload["address"].strip()) <= 500
+                or not isinstance(payload["reason"], str) or not 3 <= len(payload["reason"].strip()) <= 500
+                or type(payload["latitude"]) not in (int, float) or not -90 <= payload["latitude"] <= 90
+                or type(payload["longitude"]) not in (int, float) or not -180 <= payload["longitude"] <= 180):
+            raise HttpError(400, "Invalid address correction", code="invalid_request")
+        return 200, repository.correct_address(company_id, order_id, payload)
     if method == "POST" and order_id and request.get("path", "").endswith("/transitions"):
         UUID(order_id)
         payload = parse_body(event)
@@ -125,7 +138,7 @@ def lambda_handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
         UUID(tenant_id)
         request = event.get("requestContext", {}).get("http", {})
         path = request.get("path", "")
-        operation = "operations.orders.notes.create" if path.endswith("/notes") else "operations.orders.transition" if path.endswith("/bulk-transitions") else "operations.orders.create" if request.get("method") == "POST" and not (event.get("pathParameters") or {}).get("order_id") else "operations.orders.transition"
+        operation = "operations.orders.notes.create" if path.endswith("/notes") else "operations.orders.address.correct" if path.endswith("/address-corrections") else "operations.orders.transition" if path.endswith("/bulk-transitions") else "operations.orders.create" if request.get("method") == "POST" and not (event.get("pathParameters") or {}).get("order_id") else "operations.orders.transition"
         if request.get("method", "GET") == "GET":
             operation = "operations.orders.read"
         with db_connection(tenant_id=tenant_id, correlation_id=correlation_id, operation=operation) as connection:

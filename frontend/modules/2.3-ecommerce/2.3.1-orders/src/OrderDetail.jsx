@@ -30,6 +30,27 @@ function OrderHistory({ history = [] }) {
   </section>;
 }
 
+function DeliveryAttempts({ attempts = [] }) {
+  if (!attempts.length) return null;
+  return <section className="od-card od-deliveries"><div className="od-card-title"><div><h2>Intentos de entrega</h2><p>Evidencia registrada por Rutas</p></div></div>
+    <ol>{attempts.map((attempt, index) => {
+      const evidence=attempt.evidence||{},delivered=attempt.status==='DELIVERED';
+      return <li key={`${attempt.route_id}-${attempt.updated_at||index}`}><div><StatusBadge status={delivered?'DELIVERED':'FAILED'}>{delivered?'Entregado':'No entregado'}</StatusBadge><time dateTime={attempt.updated_at}>{dateTime(attempt.updated_at)}</time></div>
+        <dl><div><dt>Ruta</dt><dd><a href={detailHref('routes',attempt.route_id)}>Ver ruta</a></dd></div>{attempt.driver_name?<div><dt>Repartidor</dt><dd>{attempt.driver_name}</dd></div>:null}{evidence.reason?<div><dt>Motivo</dt><dd>{evidence.reason}</dd></div>:null}{(evidence.observations||evidence.notes)?<div><dt>Observaciones</dt><dd>{evidence.observations||evidence.notes}</dd></div>:null}{evidence.recorded_at?<div><dt>Registrado</dt><dd>{dateTime(evidence.recorded_at)}</dd></div>:null}{evidence.accuracy_meters!=null?<div><dt>Precisión GPS</dt><dd>{decimal(evidence.accuracy_meters)} m</dd></div>:null}{evidence.distance_meters!=null?<div><dt>Distancia al destino</dt><dd>{decimal(evidence.distance_meters)} m</dd></div>:null}</dl>
+      </li>;
+    })}</ol>
+  </section>;
+}
+
+function AddressCorrection({ order, correctAddress }) {
+  const delivery=order.delivery_snapshot||{},[open,setOpen]=useState(false),[saving,setSaving]=useState(false);
+  const [form,setForm]=useState({address:delivery.address||delivery.address_line_1||'',latitude:delivery.latitude??'',longitude:delivery.longitude??'',reason:''});
+  const submit=async event=>{event.preventDefault();setSaving(true);const saved=await correctAddress({address:form.address.trim(),latitude:Number(form.latitude),longitude:Number(form.longitude),reason:form.reason.trim()});setSaving(false);if(saved)setOpen(false);};
+  if(!['PENDING','CONFIRMED','PREPARING','READY'].includes(order.status)||order.route_ref)return null;
+  if(!open)return <button type="button" className="od-button secondary full" onClick={()=>setOpen(true)}>Corregir dirección</button>;
+  return <form className="od-address-correction" onSubmit={submit}><p>Corrige la ubicación operativa de este pedido. La libreta del cliente no cambia.</p><label>Dirección<input required minLength="5" maxLength="500" value={form.address} onChange={event=>setForm({...form,address:event.target.value})}/></label><div><label>Latitud<input required type="number" min="-90" max="90" step="any" value={form.latitude} onChange={event=>setForm({...form,latitude:event.target.value})}/></label><label>Longitud<input required type="number" min="-180" max="180" step="any" value={form.longitude} onChange={event=>setForm({...form,longitude:event.target.value})}/></label></div><label>Motivo de la corrección<textarea required minLength="3" maxLength="500" value={form.reason} onChange={event=>setForm({...form,reason:event.target.value})}/></label><div className="od-address-actions"><button type="button" className="od-button secondary" onClick={()=>setOpen(false)}>Cancelar</button><button type="submit" className="od-button primary" disabled={saving}>{saving?'Guardando…':'Guardar corrección'}</button></div></form>;
+}
+
 function SideCard({ title, children }) {
   return <section className="od-card od-side-card"><div className="od-card-title"><h2>{title}</h2></div><div className="od-side-content">{children}</div></section>;
 }
@@ -52,7 +73,7 @@ function CopyAddress({ address }) {
   return <><button type="button" className="od-button secondary full" disabled={!address} onClick={copy}>{copied === 'Dirección copiada' ? <><FinanceIcon name="check"/>Dirección copiada</> : 'Copiar dirección'}</button><span className="od-copy-feedback" role="status">{copied === 'Dirección copiada' ? '' : copied}</span></>;
 }
 
-export default function OrderDetail({ order, writable, transition, addNote, close, nodeName, customerOrders = [], canOpenCustomer }) {
+export default function OrderDetail({ order, writable, transition, addNote, correctAddress, canCorrectAddress, close, nodeName, customerOrders = [], canOpenCustomer }) {
   const delivery = order.delivery_snapshot || {}, customer = order.customer_snapshot || {}, payment = order.payment_snapshot || {};
   const paymentReady=['VALIDATED','PENDING_COLLECTION'].includes(payment.status),next=(NEXT[order.status]||[]).filter(value=>value!=='CANCELLED'&&(value!=='CONFIRMED'||paymentReady)),handoff=HANDOFF[order.status],address=delivery.address||delivery.address_line_1||'';
   const handoffHref=handoff?.route==='routes'&&order.route_ref?detailHref('routes',order.route_ref):handoff?.detail?detailHref(handoff.route,order.id):handoff?listHref(handoff.route):'';
@@ -71,13 +92,14 @@ export default function OrderDetail({ order, writable, transition, addNote, clos
           {order.items.map((item,index)=><div className="od-product-line" key={item.id||item.position||index}><span className="od-product-image"><FinanceIcon name="package"/></span><div><strong>{item.product_name||'Producto sin nombre'}</strong><small>SKU: {item.product_code||'Sin referencia'} · Cantidad: {item.quantity}</small></div><span>{money(item.unit_price,order.currency)}</span><strong>{money(item.subtotal,order.currency)}</strong></div>)}
           <div className="od-totals"><span>Subtotal <b>{money(order.subtotal,order.currency)}</b></span><span>Entrega <b>{money(order.delivery_fee,order.currency)}</b></span><span>Total <b>{money(order.total,order.currency)}</b></span></div>
         </section>
+        <DeliveryAttempts attempts={order.delivery_attempts}/>
         <OrderHistory history={order.history}/>
         <OrderNotesPreview key={order.id} notes={order.notes||[]} writable={writable} addNote={addNote}/>
         {writable&&(NEXT[order.status]||[]).includes('CANCELLED')?<div className="od-cancel"><button type="button" className="od-button danger" onClick={()=>transition('CANCELLED')}>Cancelar pedido</button></div>:null}
       </div>
       <div className="od-side">
         <SideCard title="Cliente"><div className="od-customer"><span>{initials}</span><div><strong>{customer.name||'Cliente del pedido'}</strong><small>{customerHistory(order,customerOrders)}</small></div></div><dl className="snapshot-fields"><div><dt>Correo</dt><dd>{customer.email||'Sin registrar'}</dd></div><div><dt>Teléfono</dt><dd>{customer.phone||'Sin registrar'}</dd></div></dl><SnapshotFields value={customer} exclude={['name','email','phone']}/>{customerUrl?<a className="od-button secondary full" href={customerUrl}>Ver ficha del cliente</a>:null}</SideCard>
-        <SideCard title="Entrega"><dl className="snapshot-fields"><div><dt>Dirección</dt><dd>{address||'Dirección por confirmar'}</dd></div><div><dt>Método</dt><dd>{order.delivery_method==='scheduled'?'Entrega programada':'Entrega en tiempo real'}</dd></div>{nodeName?<div><dt>Nodo asignado</dt><dd>{nodeName}</dd></div>:null}</dl><DeliveryDetails delivery={delivery}/><CopyAddress address={address}/></SideCard>
+        <SideCard title="Entrega"><dl className="snapshot-fields"><div><dt>Dirección</dt><dd>{address||'Dirección por confirmar'}</dd></div><div><dt>Método</dt><dd>{order.delivery_method==='scheduled'?'Entrega programada':'Entrega en tiempo real'}</dd></div>{nodeName?<div><dt>Nodo asignado</dt><dd>{nodeName}</dd></div>:null}</dl><DeliveryDetails delivery={delivery}/><CopyAddress address={address}/>{canCorrectAddress?<AddressCorrection order={order} correctAddress={correctAddress}/>:null}</SideCard>
         <SideCard title="Pago"><dl className="snapshot-fields"><div><dt>Método</dt><dd>{paymentMethodLabel(payment.method,payment)}</dd></div><div><dt>Estado</dt><dd>{paymentStatusLabel(payment.status)}</dd></div></dl><PaymentDetails payment={payment}/></SideCard>
       </div>
     </div>

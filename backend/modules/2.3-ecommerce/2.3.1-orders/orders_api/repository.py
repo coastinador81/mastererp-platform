@@ -41,6 +41,14 @@ class OrdersRepository:
             (company_id, order_id, note, idempotency_key),
         ).fetchone()["value"]
 
+    def correct_address(self, company_id: str, order_id: str, payload: dict[str, Any]) -> dict[str, Any]:
+        return self.connection.execute(
+            """SELECT operaciones.pedido_direccion_corregir(
+            %s::uuid,%s::uuid,%s::bigint,%s::text,%s::numeric,%s::numeric,%s::text) AS value""",
+            (company_id, order_id, payload["version"], payload["address"],
+             payload["latitude"], payload["longitude"], payload["reason"]),
+        ).fetchone()["value"]
+
     def create(self, company_id: str, payload: dict[str, Any], idempotency_key: str) -> dict[str, Any]:
         row = self.connection.execute(
             """SELECT operaciones.pedido_crear(

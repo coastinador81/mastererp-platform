@@ -26,6 +26,11 @@ servidor. El endpoint administrativo de Pedidos conserva su contrato separado.
 La lectura de la ficha incluye `history`, proyectado desde los eventos
 inmutables del pedido con estado, motivo, detalle, actor y fecha; el Admin no
 fabrica historial local.
+
+El comando `operations.orders.address.correct` corrige únicamente la dirección
+operativa de un pedido histórico en estado seguro. Exige permiso backend,
+versión optimista, coordenadas válidas, motivo, correlación y ausencia de ruta
+activa; no modifica la dirección maestra del cliente.
 Las notas internas se persisten de forma idempotente mediante
 `POST /v1/companies/{company_id}/orders/{order_id}/notes`. La cancelación previa
 al despacho coordina pedido, reserva de inventario y venta vinculada en una sola

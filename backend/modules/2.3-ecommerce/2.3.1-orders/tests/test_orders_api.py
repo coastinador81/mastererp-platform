@@ -57,6 +57,26 @@ class OrdersApiTests(unittest.TestCase):
             "10000000-0000-0000-0000-000000000001", order_id, "  Llamar al llegar  ", "key-1"
         )
 
+    def test_corrects_historical_address_with_version_and_reason(self):
+        order_id = "20000000-0000-0000-0000-000000000001"
+        payload = {"version": 4, "address": "Av. Principal 123", "latitude": 10.48,
+                   "longitude": -66.9, "reason": "Dirección histórica incompleta"}
+        repo = Mock(); repo.correct_address.return_value = {"id": order_id, "version": 5}
+        path = f"/v1/companies/c/orders/{order_id}/address-corrections"
+        status, result = _request(self.event("POST", order_id, payload, path), repo)
+        self.assertEqual((status, result["version"]), (200, 5))
+        repo.correct_address.assert_called_once_with(
+            "10000000-0000-0000-0000-000000000001", order_id, payload
+        )
+
+    def test_address_correction_rejects_missing_coordinates(self):
+        order_id = "20000000-0000-0000-0000-000000000001"
+        payload = {"version": 1, "address": "Av. Principal", "reason": "Corrección"}
+        path = f"/v1/companies/c/orders/{order_id}/address-corrections"
+        with self.assertRaises(HttpError) as caught:
+            _request(self.event("POST", order_id, payload, path), Mock())
+        self.assertEqual(caught.exception.status, 400)
+
     def test_note_requires_content_and_idempotency_key(self):
         order_id = "20000000-0000-0000-0000-000000000001"
         event = self.event("POST", order_id, {"note": " "}, f"/v1/companies/c/orders/{order_id}/notes")
