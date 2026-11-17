@@ -1,0 +1,51 @@
+name: Deploy Orders backend DEV
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: Escribe DEPLOY_ORDERS_DEV para publicar Lambda y ruta revisadas
+        required: true
+        type: string
+permissions:
+  contents: read
+  id-token: write
+concurrency:
+  group: mastererp-dev-orders-backend
+  cancel-in-progress: false
+jobs:
+  deploy:
+    if: inputs.confirm == 'DEPLOY_ORDERS_DEV'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install and test Orders
+        run: |
+          set -euo pipefail
+          pip install --no-compile --target /tmp/orders-test-deps boto3 -r backend/modules/2.3-ecommerce/2.3.1-orders/lambdas/mastererp-dev-orders/requirements-package.txt
+          PYTHONPATH=/tmp/orders-test-deps:backend/shared/tenant-security:backend/modules/2.3-ecommerce/2.3.1-orders python -m unittest discover -s backend/modules/2.3-ecommerce/2.3.1-orders/tests -p 'test_*.py'
+      - name: Build reviewed Linux ARM64 artifact
+        run: |
+          set -euo pipefail
+          pip install --no-compile --platform manylinux_2_34_aarch64 --platform manylinux_2_28_aarch64 --platform manylinux2014_aarch64 --implementation cp --python-version 3.12 --abi cp312 --only-binary=:all: --target /tmp/orders-deps -r backend/modules/2.3-ecommerce/2.3.1-orders/lambdas/mastererp-dev-orders/requirements-package.txt
+          python backend/modules/2.3-ecommerce/2.3.1-orders/lambdas/mastererp-dev-orders/package.py /tmp/mastererp-dev-orders.zip --dependencies /tmp/orders-deps
+          python -c "import zipfile,struct; z=zipfile.ZipFile('/tmp/mastererp-dev-orders.zip'); libs=[n for n in z.namelist() if n.endswith('.so')]; assert libs and all(struct.unpack('<H',z.read(n)[18:20])[0]==183 for n in libs)"
+          python -c "import zipfile; z=zipfile.ZipFile('/tmp/mastererp-dev-orders.zip'); assert {'typing_extensions.py','psycopg/__init__.py','jwt/__init__.py','tenant_security/rds-us-west-1-bundle.pem'} <= set(z.namelist())"
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::277352717693:role/mastererp-dev-ecommerce-backend-github-role
+          aws-region: us-west-1
+      - name: Prepare guarded Orders change set
+        run: |
+          set -euo pipefail
+          test "$(aws sts get-caller-identity --query Account --output text)" = 277352717693
+          python scripts/deploy_orders_dev.py --artifact /tmp/mastererp-dev-orders.zip --source-commit "$GITHUB_SHA" --plan /tmp/orders-plan.json --add-address-correction-route --profile ""
+      - name: Execute guarded Orders change set
+        run: python scripts/deploy_orders_dev.py --plan /tmp/orders-plan.json --execute --profile ""
+      - name: Verify protected route
+        run: |
+          set -euo pipefail
+          status=$(curl -sS -o /tmp/orders-address-response -w '%{http_code}' -X POST -H 'Content-Type: application/json' -H 'X-Tenant-Id: 00000000-0000-0000-0000-000000000000' -d '{}' 'https://qx8nmypdhi.execute-api.us-west-1.amazonaws.com/v1/companies/00000000-0000-0000-0000-000000000000/orders/00000000-0000-0000-0000-000000000000/address-corrections')
+          test "$status" = 401
