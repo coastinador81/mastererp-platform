@@ -132,6 +132,7 @@ body{margin:0}.inventory-app *{box-sizing:border-box}.inventory-app button,.inve
 .inventory-product-name-button strong{color:var(--inventory-title)}
 .inventory-product-name-button small span{color:var(--inventory-blue);font-weight:600}
 .inventory-product-tags{display:flex;flex-direction:column;align-items:center;gap:5px}
+.inventory-alert-explainer{margin:6px 0 10px;color:var(--inventory-muted);font-size:12px;line-height:1.5}
 .inventory-product-tags .inventory-product-status{padding:4px 7px;font-size:10px}
 .inventory-eye-toggle{min-height:36px;padding:6px 10px;border:1px solid var(--inventory-border);border-radius:8px;background:#f6f8fc;color:var(--inventory-title);font-size:11px}
 .inventory-product-back{margin:0 0 20px;padding:8px 12px;border:1px solid var(--inventory-border);border-radius:8px;background:#fff;color:var(--inventory-blue);font-size:12px;font-weight:600}
