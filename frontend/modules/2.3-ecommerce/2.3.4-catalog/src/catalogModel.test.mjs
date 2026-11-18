@@ -12,6 +12,9 @@ test('updates whitelist contract fields and preserve optimistic versions', () =>
   assert.deepEqual(payloadFor('products', {name: 'Café', price: 2, status: 'DRAFT', stock: 900, tax: 16, code: 'overwritten', id: 'other'}, {version: 4}), {name: 'Café', price: 2, status: 'DRAFT', version: 4});
   assert.deepEqual(payloadFor('categories', {name: 'Bebidas', slug: 'other', status: 'INACTIVE'}, {version: 3}), {name: 'Bebidas', status: 'INACTIVE', version: 3});
 });
+test('empty optional product relations are normalized', () => {
+  assert.deepEqual(payloadFor('products', {name: 'Café', price: 2, status: 'ACTIVE', brand_ref: ''}, {version: 1}), {name: 'Café', price: 2, status: 'ACTIVE', brand_ref: null, version: 1});
+});
 test('creation uses existing identifiers and does not invent draft states', () => {
   assert.deepEqual(payloadFor('brands', {name: 'Marca', slug: 'marca', status: 'DRAFT'}), {name: 'Marca', slug: 'marca'});
   assert.deepEqual(payloadFor('attributes', {name: 'Color', code: 'color', type: 'SELECT', options: ['Rojo']}), {name: 'Color', options: ['Rojo'], code: 'color', type: 'SELECT'});

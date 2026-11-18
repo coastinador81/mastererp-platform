@@ -15,7 +15,7 @@ export const definitions = {
 export function payloadFor(route, draft, record) {
   const definition = definitions[route];
   const payload = Object.fromEntries(definition.fields.filter(key => draft[key] !== undefined).map(key => [key, draft[key]]));
-  for (const key of ['parent_slug', 'category_ref', 'image_url', 'logo_url', 'website_url', 'unit']) {
+  for (const key of ['parent_slug', 'category_ref', 'brand_ref', 'image_url', 'logo_url', 'website_url', 'unit']) {
     if (key in payload && payload[key] === '') payload[key] = null;
   }
   if (record) return {...payload, status: draft.status, version: record.version};
