@@ -6,6 +6,7 @@ import OrderDetail from './OrderDetail.jsx';
 import FinanceIcon from '../../../2.2-finance/src/FinanceIcon.jsx';
 import StatusBadge from '../../../../shared/status-badge/StatusBadge.jsx';
 import LoadingState from '../../../../shared/loading-state/LoadingState.jsx';
+import Toast from '../../../../shared/toast/Toast.jsx';
 import { NEXT, STATUS, dateTime, money, paymentMethodLabel, statusLabel } from './orderView.js';
 import {closeDetail,detailFromHash,openDetail} from '../../src/operationView.mjs';
 
@@ -22,7 +23,7 @@ async function call(runtime, path, options = {}) {
 
 export default function Orders({ runtime }) {
   const [items, setItems] = useState([]), [status, setStatus] = useState(''), [query, setQuery] = useState('');
-  const [selected, setSelected] = useState(null), [checked, setChecked] = useState([]), [bulkAction, setBulkAction] = useState(''), [ascending,setAscending]=useState(false),[loading, setLoading] = useState(true), [error, setError] = useState(''), [nodes, setNodes] = useState({});
+  const [selected, setSelected] = useState(null), [checked, setChecked] = useState([]), [bulkAction, setBulkAction] = useState(''), [ascending,setAscending]=useState(false),[loading, setLoading] = useState(true), [error, setError] = useState(''),[notice,setNotice]=useState(''), [nodes, setNodes] = useState({});
   const [moreFilters,setMoreFilters]=useState(false),[payment,setPayment]=useState(''),[dateFrom,setDateFrom]=useState(''),[dateTo,setDateTo]=useState(''),[cursor,setCursor]=useState(null),[previous,setPrevious]=useState([]),[nextCursor,setNextCursor]=useState(null);
   const writable = runtime.permissions?.includes('operations.orders.write') === true;
   const canCorrectAddress = runtime.permissions?.includes('operations.orders.address.correct') === true;
@@ -41,35 +42,35 @@ export default function Orders({ runtime }) {
   async function transition(nextStatus) {
     if (!(NEXT[selected.status] || []).includes(nextStatus)) return;
     const reason = window.prompt(`Motivo para cambiar a ${statusLabel(nextStatus)}`, 'MANUAL_OPERATION'); if (!reason) return;
-    try { setSelected(await call(runtime, `/v1/companies/${runtime.company}/orders/${selected.id}/transitions`, { method: 'POST', body: JSON.stringify({ version: selected.version, status: nextStatus, reason }) })); await load(); }
+    try { setSelected(await call(runtime, `/v1/companies/${runtime.company}/orders/${selected.id}/transitions`, { method: 'POST', body: JSON.stringify({ version: selected.version, status: nextStatus, reason }) }));setNotice('Estado del pedido actualizado.'); await load(); }
     catch (problem) { setError(problem.message); }
   }
   async function addNote(note) {
     const key=`order-note-${crypto.randomUUID()}`;
-    try { await call(runtime, `/v1/companies/${runtime.company}/orders/${selected.id}/notes`, {method:'POST',headers:{'Idempotency-Key':key},body:JSON.stringify({note})}); setSelected(await call(runtime,`/v1/companies/${runtime.company}/orders/${selected.id}`)); return true; }
+    try { await call(runtime, `/v1/companies/${runtime.company}/orders/${selected.id}/notes`, {method:'POST',headers:{'Idempotency-Key':key},body:JSON.stringify({note})}); setSelected(await call(runtime,`/v1/companies/${runtime.company}/orders/${selected.id}`));setNotice('Nota interna registrada.'); return true; }
     catch (problem) { setError(problem.message); return false; }
   }
   async function correctAddress(correction) {
-    try { setSelected(await call(runtime, `/v1/companies/${runtime.company}/orders/${selected.id}/address-corrections`, {method:'POST',body:JSON.stringify({version:selected.version,...correction})})); await load(); return true; }
+    try { setSelected(await call(runtime, `/v1/companies/${runtime.company}/orders/${selected.id}/address-corrections`, {method:'POST',body:JSON.stringify({version:selected.version,...correction})}));setNotice('Dirección del pedido corregida.'); await load(); return true; }
     catch (problem) { setError(problem.message); return false; }
   }
-  async function returnCommand(path,payload,key){
-    try{await call(runtime,`/v1/companies/${runtime.company}/orders/${selected.id}/returns${path}`,{method:'POST',headers:key?{'Idempotency-Key':key}:{},body:JSON.stringify(payload)});const order=await call(runtime,`/v1/companies/${runtime.company}/orders/${selected.id}`);order.returns=(await call(runtime,`/v1/companies/${runtime.company}/orders/${selected.id}/returns`)).items;setSelected(order);return true;}catch(problem){setError(problem.message);return false;}
+  async function returnCommand(path,payload,key,success){
+    try{await call(runtime,`/v1/companies/${runtime.company}/orders/${selected.id}/returns${path}`,{method:'POST',headers:key?{'Idempotency-Key':key}:{},body:JSON.stringify(payload)});const order=await call(runtime,`/v1/companies/${runtime.company}/orders/${selected.id}`);order.returns=(await call(runtime,`/v1/companies/${runtime.company}/orders/${selected.id}/returns`)).items;setSelected(order);setNotice(success);return true;}catch(problem){setError(problem.message);return false;}
   }
-  const requestReturn=payload=>returnCommand('',payload,`order-return-${crypto.randomUUID()}`);
-  const decideReturn=(record,payload)=>returnCommand(`/${record.id}/decision`,payload);
-  const receiveReturn=(record,payload)=>returnCommand(`/${record.id}/receipt`,payload);
+  const requestReturn=payload=>returnCommand('',payload,`order-return-${crypto.randomUUID()}`,'Solicitud de devolución registrada.');
+  const decideReturn=(record,payload)=>returnCommand(`/${record.id}/decision`,payload,null,payload.decision==='AUTHORIZED'?'Devolución autorizada.':'Devolución rechazada.');
+  const receiveReturn=(record,payload)=>returnCommand(`/${record.id}/receipt`,payload,null,'Recepción e inventario registrados.');
   async function applyBulk(){
     const orders=items.filter(order=>checked.includes(order.id)&&(NEXT[order.status]||[]).includes(bulkAction)&&(bulkAction!=='CONFIRMED'||['VALIDATED','PENDING_COLLECTION'].includes(order.payment_snapshot?.status)));
     if(!bulkAction||!orders.length)return;
     if(orders.length!==checked.length){setError('La acción no es válida para todos los pedidos seleccionados. Filtra por estado e inténtalo nuevamente.');return;}
     const reason=window.prompt(`Motivo para cambiar ${orders.length} pedidos a ${statusLabel(bulkAction)}`,'OPERACION_AGRUPADA');if(!reason)return;
-    try{await call(runtime,`/v1/companies/${runtime.company}/orders/bulk-transitions`,{method:'POST',body:JSON.stringify({orders:orders.map(order=>({id:order.id,version:order.version})),status:bulkAction,reason})});setChecked([]);setBulkAction('');await load();}
+    try{await call(runtime,`/v1/companies/${runtime.company}/orders/bulk-transitions`,{method:'POST',body:JSON.stringify({orders:orders.map(order=>({id:order.id,version:order.version})),status:bulkAction,reason})});setChecked([]);setBulkAction('');setNotice('Pedidos actualizados correctamente.');await load();}
     catch(problem){setError(problem.message);}
   }
   return <section className="canonical-module orders-module supplier-directory orders-directory">
     <div className="page-heading"><div><nav className="supplier-breadcrumb" aria-label="Ruta de navegación"><span>E-commerce</span><span>/</span><span className="current">Operaciones</span></nav><h1>Pedidos</h1><p className="supplier-subtitle">Consulta y gestiona el ciclo operativo de cada pedido.</p></div><button onClick={()=>void load(cursor)} disabled={loading}>{loading ? 'Sincronizando…' : 'Sincronizar pedidos'}</button></div>
-    {error ? <p className="error" role="alert">{error}</p> : null}
+    <Toast message={error} tone="error" onClose={()=>setError('')}/><Toast message={!error&&notice} tone="success" onClose={()=>setNotice('')}/>
     {selected ? <OrderDetail order={selected} companyProfile={runtime.companyProfile} writable={writable} transition={transition} addNote={addNote} correctAddress={correctAddress} canCorrectAddress={canCorrectAddress} requestReturn={requestReturn} decideReturn={decideReturn} receiveReturn={receiveReturn} permissions={runtime.permissions||[]} nodes={nodes} close={() => closeDetail('orders')} nodeName={nodes[selected.branch_id]} canOpenCustomer={runtime.permissions?.includes('administration.parties.read')} /> : loading && detailFromHash('orders') ? <LoadingState label="Cargando pedido…"/> : <>
       <div className="panel supplier-directory-panel"><div className="orders-list-title"><div><h2>Todos los pedidos <span>{items.length}</span></h2><small>Información operativa actual</small></div></div><div className="orders-filters"><label className="supplier-search"><FinanceIcon name="search"/><input type="search" aria-label="Buscar pedidos" value={query} onChange={event => setQuery(event.target.value)} placeholder="Buscar por pedido, cliente o correo…" /></label><label className="orders-status-filter"><span className="sr-only">Estado</span><select value={status} onChange={event => setStatus(event.target.value)}><option value="">Todos</option>{Object.entries(STATUS).map(([value, item]) => <option key={value} value={value}>{item.label}</option>)}</select></label><button className="secondary" onClick={()=>setMoreFilters(value=>!value)} aria-expanded={moreFilters}>Más filtros</button></div>{moreFilters?<div className="orders-advanced"><label>Desde<input type="date" value={dateFrom} onChange={event=>setDateFrom(event.target.value)}/></label><label>Hasta<input type="date" value={dateTo} onChange={event=>setDateTo(event.target.value)}/></label><label>Método de pago<select value={payment} onChange={event=>setPayment(event.target.value)}><option value="">Todos</option><option value="cash">Efectivo</option><option value="mobile_payment">Pago móvil</option><option value="card">Tarjeta</option><option value="transfer">Transferencia</option></select></label></div>:null}<div className="orders-bulk"><span>{checked.length} seleccionados</span><select aria-label="Acción agrupada" value={bulkAction} onChange={event=>setBulkAction(event.target.value)}><option value="">Acciones agrupadas</option><option value="CONFIRMED">Confirmar</option><option value="CANCELLED">Cancelar</option></select><button className="secondary" disabled={!checked.length||!bulkAction} onClick={applyBulk}>Aplicar</button></div>
         <div className="table-scroll"><table className="suppliers-table orders-directory-table prestashop-orders-table"><thead><tr><th><input type="checkbox" aria-label="Seleccionar todos" checked={pageItems.length>0&&pageItems.every(order=>checked.includes(order.id))} onChange={event=>setChecked(event.target.checked?[...new Set([...checked,...pageItems.map(order=>order.id)])]:checked.filter(id=>!pageItems.some(order=>order.id===id)))}/></th><th>Pedido</th><th>Cliente</th><th>Productos</th><th>Pago</th><th>Total</th><th>Estado</th><th><button className="sort-button" onClick={()=>setAscending(!ascending)}>Fecha {ascending?'↑':'↓'}</button></th><th><span className="sr-only">Ver</span></th></tr></thead><tbody>{pageItems.map(order => <tr key={order.id} className="order-clickable-row" onClick={event=>{if(!event.target.closest('a,button,input,label,select'))openDetail('orders',order.id);}}><td><input type="checkbox" aria-label={`Seleccionar pedido ${order.number}`} checked={checked.includes(order.id)} onChange={event=>setChecked(current=>event.target.checked?[...new Set([...current,order.id])]:current.filter(id=>id!==order.id))}/></td><td><a className="order-number-link" href={`#/orders/${encodeURIComponent(order.id)}/view`}>{order.number}</a></td><td><span className="customer-cell"><i>{(order.customer_snapshot?.name||'C').split(/\s+/).slice(0,2).map(part=>part[0]).join('').toUpperCase()}</i><span><strong>{order.customer_snapshot?.name || 'Cliente del pedido'}</strong><small>{order.customer_snapshot?.email || order.customer_snapshot?.phone || 'Sin contacto'}</small></span></span></td><td>{order.items.reduce((sum,item)=>sum+Number(item.quantity||0),0)} productos</td><td>{paymentMethodLabel(order.payment_snapshot?.method,order.payment_snapshot)}</td><td><strong>{money(order.total, order.currency)}</strong></td><td><StatusBadge status={order.status}>{statusLabel(order.status)}</StatusBadge></td><td>{dateTime(order.created_at)}</td><td><a className="row-chevron" href={`#/orders/${encodeURIComponent(order.id)}/view`} aria-label={`Ver detalle del pedido ${order.number}`}>›</a></td></tr>)}</tbody></table></div>

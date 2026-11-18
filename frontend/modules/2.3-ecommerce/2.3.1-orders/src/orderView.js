@@ -22,6 +22,11 @@ export const paymentMethodLabel=(value,payment)=>value==='custom'?(payment?.name
 export const paymentStatusLabel=value=>({PENDING_VERIFICATION:'En espera de validación de Finanzas',VALIDATED:'Pago validado por Finanzas',REJECTED:'Pago rechazado por Finanzas',PENDING_COLLECTION:'Pendiente de cobro'}[value]||'Pendiente');
 export const money = (value, currency = 'USD') => new Intl.NumberFormat('es-VE', { style: 'currency', currency }).format(Number(value || 0));
 export const dateTime = value => value ? new Intl.DateTimeFormat('es-VE', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value)) : 'Sin fecha';
+export function returnableItems(order,records=[]){
+  const reserved=new Map();
+  records.filter(record=>record.status!=='REJECTED').forEach(record=>(record.items||[]).forEach(item=>reserved.set(item.order_item_id,(reserved.get(item.order_item_id)||0)+Number(item.requested_quantity||0))));
+  return (order.items||[]).map(item=>({...item,returnable_quantity:Math.max(0,Number(item.quantity||0)-(reserved.get(item.id)||0))})).filter(item=>item.returnable_quantity>0);
+}
 const EVENT_LABELS={STOREFRONT_CHECKOUT:'Pedido realizado en la tienda',PAYMENT_VALIDATED:'Pago validado',PREPARATION_STARTED:'Preparación iniciada',PREPARATION_COMPLETED:'Preparación completada',ORDER_CREATED:'Pedido creado',ORDER_CONFIRMED:'Pedido confirmado',ROUTE_STARTED:'Ruta iniciada',DELIVERY_FAILED:'Entrega no realizada',DELIVERY_COMPLETED:'Entrega completada',DELIVERY_ADDRESS_CORRECTED:'Dirección de entrega corregida',RETURN_REQUESTED:'Devolución solicitada',RETURN_AUTHORIZED:'Devolución autorizada',RETURN_REJECTED:'Devolución rechazada',RETURN_RECEIVED:'Devolución recibida e inventario registrado',RETURN_COMPLETED:'Reembolso y nota de crédito registrados'};
 export const eventReasonLabel=value=>EVENT_LABELS[value]||String(value||'Actualización del pedido').replaceAll('_',' ').toLocaleLowerCase('es-VE').replace(/^./,letter=>letter.toLocaleUpperCase('es-VE'));
 export function operationalHistory(history=[],attempts=[],returns=[]){

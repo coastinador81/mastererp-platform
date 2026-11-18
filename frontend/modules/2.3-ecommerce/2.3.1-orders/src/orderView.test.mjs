@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {eventReasonLabel,operationalHistory} from './orderView.js';
+import {eventReasonLabel,operationalHistory,returnableItems} from './orderView.js';
 
 test('translates internal order event codes for users',()=>{
   assert.equal(eventReasonLabel('STOREFRONT_CHECKOUT'),'Pedido realizado en la tienda');
@@ -34,4 +34,16 @@ test('includes return lifecycle events in the consolidated order history',()=>{
   const result=operationalHistory([],[],returns);
   assert.deepEqual(result.map(event=>event.reason),['RETURN_REQUESTED','RETURN_RECEIVED']);
   assert.equal(eventReasonLabel(result[1].reason),'Devolución recibida e inventario registrado');
+});
+
+test('only offers quantities not already committed to a return',()=>{
+  const order={items:[{id:'line-1',quantity:1},{id:'line-2',quantity:3}]};
+  const records=[{status:'RECEIVED',items:[{order_item_id:'line-1',requested_quantity:1},{order_item_id:'line-2',requested_quantity:2}]}];
+  assert.deepEqual(returnableItems(order,records).map(item=>[item.id,item.returnable_quantity]),[['line-2',1]]);
+});
+
+test('rejected returns release their quantities for a new request',()=>{
+  const order={items:[{id:'line-1',quantity:1}]};
+  const records=[{status:'REJECTED',items:[{order_item_id:'line-1',requested_quantity:1}]}];
+  assert.equal(returnableItems(order,records)[0].returnable_quantity,1);
 });

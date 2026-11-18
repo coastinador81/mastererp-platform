@@ -1,54 +1,509 @@
-import React,{useCallback,useEffect,useMemo,useState}from'react';
-import'../../../2.3-ecommerce/2.3.4-catalog/src/catalog.css';
-import'./style.css';
-import FinanceIcon from'../../../2.2-finance/src/FinanceIcon.jsx';
-import StatusBadge from'../../../../shared/status-badge/StatusBadge.jsx';
-import LoadingState from'../../../../shared/loading-state/LoadingState.jsx';
-import{detailFromHash,detailHref,listHref,readableStatus,shortReference}from'../../../2.3-ecommerce/src/operationView.mjs';
-import{driverAccess,driverAvailability,driverStats,routeOutcome}from'./driverView.mjs';
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import "../../../2.3-ecommerce/2.3.4-catalog/src/catalog.css";
+import "./style.css";
+import FinanceIcon from "../../../2.2-finance/src/FinanceIcon.jsx";
+import StatusBadge from "../../../../shared/status-badge/StatusBadge.jsx";
+import LoadingState from "../../../../shared/loading-state/LoadingState.jsx";
+import Toast from "../../../../shared/toast/Toast.jsx";
+import { detailFromHash, detailHref, listHref, readableStatus, shortReference } from "../../../2.3-ecommerce/src/operationView.mjs";
+import { driverAccess, driverAvailability, driverStats, routeOutcome } from "./driverView.mjs";
 
-const call=(runtime,path,options={})=>runtime.request(runtime.api+path,{...options,headers:{'X-Tenant-Id':runtime.tenant,'Content-Type':'application/json',...(options.headers||{})}});
-const formatDate=value=>{if(!value)return'No disponible';const parsed=new Date(value);return new Intl.DateTimeFormat('es-VE',{dateStyle:'medium',...(/^\d{4}-\d{2}-\d{2}$/.test(value)?{timeZone:'UTC'}:{})}).format(parsed);};
+const call = (runtime, path, options = {}) =>
+  runtime.request(runtime.api + path, {
+    ...options,
+    headers: {
+      "X-Tenant-Id": runtime.tenant,
+      "Content-Type": "application/json",
+      ...(options.headers || {}),
+    },
+  });
+const formatDate = (value) => {
+  if (!value) return "No disponible";
+  const parsed = new Date(value);
+  return new Intl.DateTimeFormat("es-VE", {
+    dateStyle: "medium",
+    ...(/^\d{4}-\d{2}-\d{2}$/.test(value) ? { timeZone: "UTC" } : {}),
+  }).format(parsed);
+};
 
-function DriverBadge({driver}){return <StatusBadge status={driver.availability}>{driverAvailability(driver.availability)}</StatusBadge>}
-function DriverMetrics({items,loading}){const metrics=[[items.length,'Repartidores','supplier'],[items.filter(item=>item.availability==='AVAILABLE').length,'Disponibles','check'],[items.filter(item=>item.availability==='ON_ROUTE').length,'En ruta','route']];return <div className="cat-metrics">{metrics.map(([value,label,icon])=><div key={label}><span className="cat-icon"><FinanceIcon name={icon}/></span><div><strong>{loading?'—':value}</strong><small>{label}</small></div></div>)}</div>}
-
-function DriverList({items,loading,error,refresh}){
-  const[query,setQuery]=useState(''),[availability,setAvailability]=useState(''),[page,setPage]=useState(1);
-  const filtered=items.filter(item=>(!availability||item.availability===availability)&&`${item.name} ${item.code} ${item.phone}`.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase())),pages=Math.max(1,Math.ceil(filtered.length/15)),current=Math.min(page,pages),rows=filtered.slice((current-1)*15,current*15);
-  useEffect(()=>setPage(1),[query,availability,items]);
-  return <><div className="cat-heading"><div><nav aria-label="Ruta de navegación">E-commerce / Operaciones</nav><h1>Repartidores</h1><p>Gestiona disponibilidad, nodos asignados y desempeño de entregas.</p></div></div><DriverMetrics items={items} loading={loading}/><section className="cat-surface" aria-busy={loading}><div className="cat-toolbar"><label className="cat-search"><FinanceIcon name="search"/><input type="search" aria-label="Buscar repartidores" placeholder="Buscar por nombre, código o teléfono…" value={query} onChange={event=>setQuery(event.target.value)}/></label><select aria-label="Filtrar por disponibilidad" value={availability} onChange={event=>setAvailability(event.target.value)}><option value="">Toda disponibilidad</option><option value="AVAILABLE">Disponible</option><option value="ON_ROUTE">En ruta</option><option value="OFFLINE">Desconectado</option></select><button type="button" disabled={loading} onClick={refresh}>{loading?'Actualizando…':'Actualizar'}</button></div>{loading?<LoadingState label="Cargando repartidores…"/>:!error&&<div className="cat-table-scroll" role="region" aria-label="Tabla de repartidores" tabIndex="0"><table className="cat-table drivers-table"><thead><tr><th>Repartidor</th><th>Código</th><th>Teléfono</th><th>Nodos</th><th>Disponibilidad</th><th>Estado</th><th>Acción</th></tr></thead><tbody>{rows.map(driver=>{const href=detailHref('drivers',driver.id);return <tr key={driver.id} onClick={event=>{if(event.target.closest('a,button,input,select')||event.ctrlKey||event.metaKey||event.shiftKey||window.getSelection()?.toString())return;window.location.hash=href;}}><td><div className="cat-name"><span className="cat-icon"><FinanceIcon name="supplier"/></span><a href={href}>{driver.name}</a></div></td><td>{driver.code}</td><td>{driver.phone}</td><td>{(driver.node_ids||[]).length}</td><td><DriverBadge driver={driver}/></td><td><StatusBadge status={driver.status}>{readableStatus(driver.status)}</StatusBadge></td><td><a className="cat-detail-link" href={href}>Ver detalle</a></td></tr>})}</tbody></table></div>}{!loading&&!error&&!filtered.length?<div className="cat-empty"><FinanceIcon name="supplier"/><h2>No hay coincidencias</h2><p>Prueba otro nombre, código, teléfono o disponibilidad.</p></div>:null}<footer className="cat-pagination"><span>{filtered.length} resultados · Página {current} de {pages}</span><div><button disabled={current===1||loading} onClick={()=>setPage(current-1)}>Anterior</button><button disabled={current===pages||loading} onClick={()=>setPage(current+1)}>Siguiente</button></div></footer></section></>;
+function DriverBadge({ driver }) {
+  return <StatusBadge status={driver.availability}>{driverAvailability(driver.availability)}</StatusBadge>;
+}
+function DriverMetrics({ items, loading }) {
+  const metrics = [
+    [items.length, "Repartidores", "supplier"],
+    [items.filter((item) => item.availability === "AVAILABLE").length, "Disponibles", "check"],
+    [items.filter((item) => item.availability === "ON_ROUTE").length, "En ruta", "route"],
+  ];
+  return (
+    <div className="cat-metrics">
+      {metrics.map(([value, label, icon]) => (
+        <div key={label}>
+          <span className="cat-icon">
+            <FinanceIcon name={icon} />
+          </span>
+          <div>
+            <strong>{loading ? "—" : value}</strong>
+            <small>{label}</small>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
 }
 
-function ProfileFields({driver,disabled}){return <div className="cat-fields"><label className="cat-full">Nombre *<input name="name" defaultValue={driver.name} disabled={disabled} required/></label><label>Teléfono *<input name="phone" defaultValue={driver.phone} disabled={disabled} required/></label><label>Correo<input name="email" type="email" defaultValue={driver.email||''} disabled={disabled}/></label><label>Estado<select name="status" defaultValue={driver.status} disabled={disabled}><option value="ACTIVE">Activo</option><option value="INACTIVE">Inactivo</option><option value="SUSPENDED">Suspendido</option></select></label><label>Disponibilidad<select name="availability" defaultValue={driver.availability} disabled={disabled}><option value="OFFLINE">Desconectado</option><option value="AVAILABLE">Disponible</option><option value="ON_ROUTE">En ruta</option></select></label><label className="cat-full">Usuario interno vinculado<input name="user_id" defaultValue={driver.user_id||''} disabled={disabled} placeholder="UUID del usuario autorizado"/></label><label>Acceso<select name="access_status" defaultValue={driver.access_status} disabled={disabled}><option value="PENDING">Pendiente</option><option value="LINKED">Vinculado</option><option value="DISABLED">Deshabilitado</option><option value="ERROR">Error</option></select></label></div>}
-function Equipment({driver}){const vehicle=driver.vehicle||{},license=driver.license||{};return <dl className="driver-data-grid"><div><dt>Vehículo</dt><dd>{[vehicle.brand,vehicle.model,vehicle.type].filter(Boolean).join(' · ')||'Sin registrar'}</dd></div><div><dt>Placa</dt><dd>{vehicle.plate||'Sin registrar'}</dd></div><div><dt>Licencia</dt><dd>{license.number||license.code||'Sin registrar'}</dd></div><div><dt>Vencimiento</dt><dd>{license.expires_at?formatDate(license.expires_at):'Sin registrar'}</dd></div></dl>}
-
-function NodeAssignments({driver,nodes,canRead,canAssign,saving,onToggle}){
-  if(!canRead)return <p>Necesitas permiso de lectura de nodos para ver sus asignaciones.</p>;
-  if(!nodes.length)return <p>No hay nodos disponibles para esta empresa.</p>;
-  return <div className="driver-node-list">{nodes.map(node=>{const assigned=(driver.node_ids||[]).includes(node.id);return <div key={node.id}><span className="cat-icon"><FinanceIcon name="location"/></span><span><strong>{node.name}</strong><small>{node.code}</small></span><span>{assigned?'Asignado':'Sin asignar'}</span>{canAssign?<input type="checkbox" role="switch" aria-label={`${assigned?'Desasignar':'Asignar'} ${node.name}`} checked={assigned} disabled={saving} onChange={event=>onToggle(node.id,event.target.checked)}/>:null}</div>})}</div>;
+function DriverList({ items, loading, error, refresh }) {
+  const [query, setQuery] = useState(""),
+    [availability, setAvailability] = useState(""),
+    [page, setPage] = useState(1);
+  const filtered = items.filter((item) => (!availability || item.availability === availability) && `${item.name} ${item.code} ${item.phone}`.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase())),
+    pages = Math.max(1, Math.ceil(filtered.length / 15)),
+    current = Math.min(page, pages),
+    rows = filtered.slice((current - 1) * 15, current * 15);
+  useEffect(() => setPage(1), [query, availability, items]);
+  return (
+    <>
+      <div className="cat-heading">
+        <div>
+          <nav aria-label="Ruta de navegación">E-commerce / Operaciones</nav>
+          <h1>Repartidores</h1>
+          <p>Gestiona disponibilidad, nodos asignados y desempeño de entregas.</p>
+        </div>
+      </div>
+      <DriverMetrics items={items} loading={loading} />
+      <section className="cat-surface" aria-busy={loading}>
+        <div className="cat-toolbar">
+          <label className="cat-search">
+            <FinanceIcon name="search" />
+            <input type="search" aria-label="Buscar repartidores" placeholder="Buscar por nombre, código o teléfono…" value={query} onChange={(event) => setQuery(event.target.value)} />
+          </label>
+          <select aria-label="Filtrar por disponibilidad" value={availability} onChange={(event) => setAvailability(event.target.value)}>
+            <option value="">Toda disponibilidad</option>
+            <option value="AVAILABLE">Disponible</option>
+            <option value="ON_ROUTE">En ruta</option>
+            <option value="OFFLINE">Desconectado</option>
+          </select>
+          <button type="button" disabled={loading} onClick={refresh}>
+            {loading ? "Actualizando…" : "Actualizar"}
+          </button>
+        </div>
+        {loading ? (
+          <LoadingState label="Cargando repartidores…" />
+        ) : (
+          !error && (
+            <div className="cat-table-scroll" role="region" aria-label="Tabla de repartidores" tabIndex="0">
+              <table className="cat-table drivers-table">
+                <thead>
+                  <tr>
+                    <th>Repartidor</th>
+                    <th>Código</th>
+                    <th>Teléfono</th>
+                    <th>Nodos</th>
+                    <th>Disponibilidad</th>
+                    <th>Estado</th>
+                    <th>Acción</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.map((driver) => {
+                    const href = detailHref("drivers", driver.id);
+                    return (
+                      <tr
+                        key={driver.id}
+                        onClick={(event) => {
+                          if (event.target.closest("a,button,input,select") || event.ctrlKey || event.metaKey || event.shiftKey || window.getSelection()?.toString()) return;
+                          window.location.hash = href;
+                        }}
+                      >
+                        <td>
+                          <div className="cat-name">
+                            <span className="cat-icon">
+                              <FinanceIcon name="supplier" />
+                            </span>
+                            <a href={href}>{driver.name}</a>
+                          </div>
+                        </td>
+                        <td>{driver.code}</td>
+                        <td>{driver.phone}</td>
+                        <td>{(driver.node_ids || []).length}</td>
+                        <td>
+                          <DriverBadge driver={driver} />
+                        </td>
+                        <td>
+                          <StatusBadge status={driver.status}>{readableStatus(driver.status)}</StatusBadge>
+                        </td>
+                        <td>
+                          <a className="cat-detail-link" href={href}>
+                            Ver detalle
+                          </a>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )
+        )}
+        {!loading && !error && !filtered.length ? (
+          <div className="cat-empty">
+            <FinanceIcon name="supplier" />
+            <h2>No hay coincidencias</h2>
+            <p>Prueba otro nombre, código, teléfono o disponibilidad.</p>
+          </div>
+        ) : null}
+        <footer className="cat-pagination">
+          <span>
+            {filtered.length} resultados · Página {current} de {pages}
+          </span>
+          <div>
+            <button disabled={current === 1 || loading} onClick={() => setPage(current - 1)}>
+              Anterior
+            </button>
+            <button disabled={current === pages || loading} onClick={() => setPage(current + 1)}>
+              Siguiente
+            </button>
+          </div>
+        </footer>
+      </section>
+    </>
+  );
 }
 
-function RouteHistory({routes,canReadOrders}){
-  if(!routes.length)return <p>Este repartidor todavía no tiene rutas registradas.</p>;
-  return <div className="driver-route-list">{routes.map(route=><article key={route.id}><header><div><strong>Ruta {shortReference(route.id,'#')}</strong><small>{formatDate(route.date)} · {route.delivery_window_ref||'Sin franja'}</small></div><StatusBadge status={route.status}>{readableStatus(route.status)}</StatusBadge></header>{route.stops.map(stop=><div className="driver-stop" key={stop.order_id}><span>{stop.sequence}</span><div><strong>{canReadOrders?<a href={detailHref('orders',stop.order_id)}>Pedido {shortReference(stop.order_id,'#')}</a>:`Pedido ${shortReference(stop.order_id,'#')}`}</strong><small>{routeOutcome(route.status,stop.status)}</small></div><StatusBadge status={stop.status}>{routeOutcome(route.status,stop.status)}</StatusBadge></div>)}</article>)}</div>;
+function ProfileFields({ driver, disabled }) {
+  return (
+    <div className="cat-fields">
+      <label className="cat-full">
+        Nombre *
+        <input name="name" defaultValue={driver.name} disabled={disabled} required />
+      </label>
+      <label>
+        Teléfono *
+        <input name="phone" defaultValue={driver.phone} disabled={disabled} required />
+      </label>
+      <label>
+        Correo
+        <input name="email" type="email" defaultValue={driver.email || ""} disabled={disabled} />
+      </label>
+      <label>
+        Estado
+        <select name="status" defaultValue={driver.status} disabled={disabled}>
+          <option value="ACTIVE">Activo</option>
+          <option value="INACTIVE">Inactivo</option>
+          <option value="SUSPENDED">Suspendido</option>
+        </select>
+      </label>
+      <label>
+        Disponibilidad
+        <select name="availability" defaultValue={driver.availability} disabled={disabled}>
+          <option value="OFFLINE">Desconectado</option>
+          <option value="AVAILABLE">Disponible</option>
+          <option value="ON_ROUTE">En ruta</option>
+        </select>
+      </label>
+      <label className="cat-full">
+        Usuario interno vinculado
+        <input name="user_id" defaultValue={driver.user_id || ""} disabled={disabled} placeholder="UUID del usuario autorizado" />
+      </label>
+      <label>
+        Acceso
+        <select name="access_status" defaultValue={driver.access_status} disabled={disabled}>
+          <option value="PENDING">Pendiente</option>
+          <option value="LINKED">Vinculado</option>
+          <option value="DISABLED">Deshabilitado</option>
+          <option value="ERROR">Error</option>
+        </select>
+      </label>
+    </div>
+  );
+}
+function Equipment({ driver }) {
+  const vehicle = driver.vehicle || {},
+    license = driver.license || {};
+  return (
+    <dl className="driver-data-grid">
+      <div>
+        <dt>Vehículo</dt>
+        <dd>{[vehicle.brand, vehicle.model, vehicle.type].filter(Boolean).join(" · ") || "Sin registrar"}</dd>
+      </div>
+      <div>
+        <dt>Placa</dt>
+        <dd>{vehicle.plate || "Sin registrar"}</dd>
+      </div>
+      <div>
+        <dt>Licencia</dt>
+        <dd>{license.number || license.code || "Sin registrar"}</dd>
+      </div>
+      <div>
+        <dt>Vencimiento</dt>
+        <dd>{license.expires_at ? formatDate(license.expires_at) : "Sin registrar"}</dd>
+      </div>
+    </dl>
+  );
 }
 
-function DriverSide({driver,routes}){const stats=driverStats(routes);return <aside className="cat-editor-side"><section className="cat-surface"><h2 className="cat-panel-title">Estado operativo</h2><div className="cat-panel-body"><div className="driver-side-badges"><StatusBadge status={driver.status}>{readableStatus(driver.status)}</StatusBadge><DriverBadge driver={driver}/></div><dl><dt>Código</dt><dd>{driver.code}</dd><dt>Acceso</dt><dd>{driverAccess(driver.access_status)}</dd><dt>Nodos</dt><dd>{(driver.node_ids||[]).length}</dd><dt>Actualizado</dt><dd>{formatDate(driver.updated_at)}</dd></dl></div></section><section className="cat-surface"><h2 className="cat-panel-title">Resultados cargados</h2><div className="cat-panel-body"><dl><dt>Rutas</dt><dd>{routes.length}</dd><dt>Entregados</dt><dd>{stats.delivered}</dd><dt>Fallidos</dt><dd>{stats.failed}</dd><dt>Pendientes</dt><dd>{stats.pending}</dd></dl><p className="driver-scope">Calculado sobre un máximo de 100 rutas cargadas.</p></div></section></aside>}
-
-function DriverDetail({runtime,driver,nodes,routes,saving,onSave,onToggleNode}){
-  const[tab,setTab]=useState('general'),writable=runtime.permissions.includes('transport.drivers.write'),canAssign=runtime.permissions.includes('transport.drivers.assign'),canReadNodes=runtime.permissions.includes('operations.nodes.read'),canReadOrders=runtime.permissions.includes('operations.orders.read'),tabs=[['general','Información general'],['nodes','Nodos asignados'],['routes','Rutas y entregas']];
-  return <form className="cat-editor" onSubmit={onSave}><a className="cat-back" href={listHref('drivers')}>← Volver a repartidores</a><div className="cat-heading"><div><nav aria-label="Ruta de navegación">E-commerce / Operaciones / Repartidores</nav><h1>{driver.name}</h1><p>Edita su perfil y consulta sus asignaciones y resultados.</p></div><div className="cat-actions"><a href={listHref('drivers')}>Cancelar</a>{writable?<button className="cat-primary" disabled={saving}>{saving?'Guardando…':'Guardar'}</button>:null}</div></div><div className="cat-editor-layout"><div className="cat-surface"><div className="cat-tabs" role="tablist" aria-label="Secciones del repartidor">{tabs.map(([key,label])=><button type="button" role="tab" aria-selected={tab===key} key={key} onClick={()=>setTab(key)}>{label}</button>)}</div><div role="tabpanel" hidden={tab!=='general'}><section className="cat-form-section"><h2>Información general</h2><p>Identidad, contacto y estado operativo del repartidor.</p><ProfileFields driver={driver} disabled={!writable||saving}/></section><section className="cat-form-section driver-equipment"><h2>Vehículo y licencia</h2><p>Información registrada en el perfil.</p><Equipment driver={driver}/></section></div><div role="tabpanel" hidden={tab!=='nodes'}><section className="cat-form-section"><h2>Nodos asignados</h2><p>Ubicaciones desde las que puede recibir rutas.</p><NodeAssignments driver={driver} nodes={nodes} canRead={canReadNodes} canAssign={canAssign} saving={saving} onToggle={onToggleNode}/></section></div><div role="tabpanel" hidden={tab!=='routes'}><section className="cat-form-section"><h2>Rutas y entregas</h2><p>Resultados disponibles para este repartidor.</p><RouteHistory routes={routes} canReadOrders={canReadOrders}/></section></div><div className="cat-editor-footer"><a href={listHref('drivers')}>Cancelar</a>{writable?<button className="cat-primary" disabled={saving}>Guardar repartidor</button>:null}</div></div><DriverSide driver={driver} routes={routes}/></div></form>;
+function NodeAssignments({ driver, nodes, canRead, canAssign, saving, onToggle }) {
+  if (!canRead) return <p>Necesitas permiso de lectura de nodos para ver sus asignaciones.</p>;
+  if (!nodes.length) return <p>No hay nodos disponibles para esta empresa.</p>;
+  return (
+    <div className="driver-node-list">
+      {nodes.map((node) => {
+        const assigned = (driver.node_ids || []).includes(node.id);
+        return (
+          <div key={node.id}>
+            <span className="cat-icon">
+              <FinanceIcon name="location" />
+            </span>
+            <span>
+              <strong>{node.name}</strong>
+              <small>{node.code}</small>
+            </span>
+            <span>{assigned ? "Asignado" : "Sin asignar"}</span>
+            {canAssign ? <input type="checkbox" role="switch" aria-label={`${assigned ? "Desasignar" : "Asignar"} ${node.name}`} checked={assigned} disabled={saving} onChange={(event) => onToggle(node.id, event.target.checked)} /> : null}
+          </div>
+        );
+      })}
+    </div>
+  );
 }
 
-export default function Drivers({runtime}){
-  const[items,setItems]=useState([]),[selected,setSelected]=useState(null),[nodes,setNodes]=useState([]),[routes,setRoutes]=useState([]),[loading,setLoading]=useState(true),[saving,setSaving]=useState(false),[error,setError]=useState(''),[notice,setNotice]=useState('');
-  const canReadNodes=runtime.permissions.includes('operations.nodes.read'),canReadRoutes=runtime.permissions.includes('operations.routes.read');
-  const load=useCallback(async()=>{setLoading(true);setError('');try{const[drivers,nodeRows,routeRows]=await Promise.all([call(runtime,`/v1/companies/${runtime.company}/drivers?limit=100`).then(value=>value.items),canReadNodes?call(runtime,`/v1/companies/${runtime.company}/nodes`).then(value=>value.items):[],canReadRoutes?call(runtime,`/v1/companies/${runtime.company}/routes?limit=100`).then(value=>value.items):[]]),requested=detailFromHash('drivers');setItems(drivers);setNodes(nodeRows);setRoutes(routeRows);setSelected(drivers.find(driver=>driver.id===requested)||null);}catch(problem){setError(problem.message||'No se pudo cargar la información.');}finally{setLoading(false);}},[runtime,canReadNodes,canReadRoutes]);
-  useEffect(()=>{if(runtime.company)void load();},[runtime.company,load]);
-  const driverRoutes=useMemo(()=>routes.filter(route=>route.driver_id===selected?.id).sort((a,b)=>String(b.date).localeCompare(String(a.date))),[routes,selected]);
-  const updateDriver=driver=>{setSelected(driver);setItems(current=>current.map(item=>item.id===driver.id?driver:item))};
-  const save=async event=>{event.preventDefault();const form=new FormData(event.currentTarget);setSaving(true);setError('');try{const driver=await call(runtime,`/v1/companies/${runtime.company}/drivers/${selected.id}`,{method:'PATCH',body:JSON.stringify({version:selected.version,name:form.get('name'),phone:form.get('phone'),email:form.get('email')||null,status:form.get('status'),availability:form.get('availability'),access_status:form.get('access_status'),user_id:form.get('user_id')||null,vehicle:selected.vehicle,license:selected.license})});updateDriver(driver);setNotice('Perfil actualizado.')}catch(problem){setError(problem.message||'No se pudo guardar el perfil.')}finally{setSaving(false)}};
-  const toggleNode=async(nodeId,active)=>{setSaving(true);setError('');try{const driver=await call(runtime,`/v1/companies/${runtime.company}/nodes/${nodeId}/drivers/${selected.id}`,{method:'PUT',body:JSON.stringify({active})});updateDriver(driver);setNotice(active?'Nodo asignado.':'Nodo desasignado.')}catch(problem){setError(problem.message||'No se pudo cambiar la asignación.')}finally{setSaving(false)}};
-  return <section className="catalog-ui drivers-catalog">{notice?<p className="cat-notice" role="status">{notice}</p>:null}{error?<div className="cat-error" role="alert"><p>{error}</p><button type="button" onClick={load}>Actualizar</button></div>:null}{selected?<DriverDetail runtime={runtime} driver={selected} nodes={nodes} routes={driverRoutes} saving={saving} onSave={save} onToggleNode={toggleNode}/>:<DriverList items={items} loading={loading} error={error} refresh={load}/>}</section>;
+function RouteHistory({ routes, canReadOrders }) {
+  if (!routes.length) return <p>Este repartidor todavía no tiene rutas registradas.</p>;
+  return (
+    <div className="driver-route-list">
+      {routes.map((route) => (
+        <article key={route.id}>
+          <header>
+            <div>
+              <strong>Ruta {shortReference(route.id, "#")}</strong>
+              <small>
+                {formatDate(route.date)} · {route.delivery_window_ref || "Sin franja"}
+              </small>
+            </div>
+            <StatusBadge status={route.status}>{readableStatus(route.status)}</StatusBadge>
+          </header>
+          {route.stops.map((stop) => (
+            <div className="driver-stop" key={stop.order_id}>
+              <span>{stop.sequence}</span>
+              <div>
+                <strong>{canReadOrders ? <a href={detailHref("orders", stop.order_id)}>Pedido {shortReference(stop.order_id, "#")}</a> : `Pedido ${shortReference(stop.order_id, "#")}`}</strong>
+                <small>{routeOutcome(route.status, stop.status)}</small>
+              </div>
+              <StatusBadge status={stop.status}>{routeOutcome(route.status, stop.status)}</StatusBadge>
+            </div>
+          ))}
+        </article>
+      ))}
+    </div>
+  );
+}
+
+function DriverSide({ driver, routes }) {
+  const stats = driverStats(routes);
+  return (
+    <aside className="cat-editor-side">
+      <section className="cat-surface">
+        <h2 className="cat-panel-title">Estado operativo</h2>
+        <div className="cat-panel-body">
+          <div className="driver-side-badges">
+            <StatusBadge status={driver.status}>{readableStatus(driver.status)}</StatusBadge>
+            <DriverBadge driver={driver} />
+          </div>
+          <dl>
+            <dt>Código</dt>
+            <dd>{driver.code}</dd>
+            <dt>Acceso</dt>
+            <dd>{driverAccess(driver.access_status)}</dd>
+            <dt>Nodos</dt>
+            <dd>{(driver.node_ids || []).length}</dd>
+            <dt>Actualizado</dt>
+            <dd>{formatDate(driver.updated_at)}</dd>
+          </dl>
+        </div>
+      </section>
+      <section className="cat-surface">
+        <h2 className="cat-panel-title">Resultados cargados</h2>
+        <div className="cat-panel-body">
+          <dl>
+            <dt>Rutas</dt>
+            <dd>{routes.length}</dd>
+            <dt>Entregados</dt>
+            <dd>{stats.delivered}</dd>
+            <dt>Fallidos</dt>
+            <dd>{stats.failed}</dd>
+            <dt>Pendientes</dt>
+            <dd>{stats.pending}</dd>
+          </dl>
+          <p className="driver-scope">Calculado sobre un máximo de 100 rutas cargadas.</p>
+        </div>
+      </section>
+    </aside>
+  );
+}
+
+function DriverDetail({ runtime, driver, nodes, routes, saving, onSave, onToggleNode }) {
+  const [tab, setTab] = useState("general"),
+    writable = runtime.permissions.includes("transport.drivers.write"),
+    canAssign = runtime.permissions.includes("transport.drivers.assign"),
+    canReadNodes = runtime.permissions.includes("operations.nodes.read"),
+    canReadOrders = runtime.permissions.includes("operations.orders.read"),
+    tabs = [
+      ["general", "Información general"],
+      ["nodes", "Nodos asignados"],
+      ["routes", "Rutas y entregas"],
+    ];
+  return (
+    <form className="cat-editor" onSubmit={onSave}>
+      <a className="cat-back" href={listHref("drivers")}>
+        ← Volver a repartidores
+      </a>
+      <div className="cat-heading">
+        <div>
+          <nav aria-label="Ruta de navegación">E-commerce / Operaciones / Repartidores</nav>
+          <h1>{driver.name}</h1>
+          <p>Edita su perfil y consulta sus asignaciones y resultados.</p>
+        </div>
+        <div className="cat-actions">
+          <a href={listHref("drivers")}>Cancelar</a>
+          {writable ? (
+            <button className="cat-primary" disabled={saving}>
+              {saving ? "Guardando…" : "Guardar"}
+            </button>
+          ) : null}
+        </div>
+      </div>
+      <div className="cat-editor-layout">
+        <div className="cat-surface">
+          <div className="cat-tabs" role="tablist" aria-label="Secciones del repartidor">
+            {tabs.map(([key, label]) => (
+              <button type="button" role="tab" aria-selected={tab === key} key={key} onClick={() => setTab(key)}>
+                {label}
+              </button>
+            ))}
+          </div>
+          <div role="tabpanel" hidden={tab !== "general"}>
+            <section className="cat-form-section">
+              <h2>Información general</h2>
+              <p>Identidad, contacto y estado operativo del repartidor.</p>
+              <ProfileFields driver={driver} disabled={!writable || saving} />
+            </section>
+            <section className="cat-form-section driver-equipment">
+              <h2>Vehículo y licencia</h2>
+              <p>Información registrada en el perfil.</p>
+              <Equipment driver={driver} />
+            </section>
+          </div>
+          <div role="tabpanel" hidden={tab !== "nodes"}>
+            <section className="cat-form-section">
+              <h2>Nodos asignados</h2>
+              <p>Ubicaciones desde las que puede recibir rutas.</p>
+              <NodeAssignments driver={driver} nodes={nodes} canRead={canReadNodes} canAssign={canAssign} saving={saving} onToggle={onToggleNode} />
+            </section>
+          </div>
+          <div role="tabpanel" hidden={tab !== "routes"}>
+            <section className="cat-form-section">
+              <h2>Rutas y entregas</h2>
+              <p>Resultados disponibles para este repartidor.</p>
+              <RouteHistory routes={routes} canReadOrders={canReadOrders} />
+            </section>
+          </div>
+          <div className="cat-editor-footer">
+            <a href={listHref("drivers")}>Cancelar</a>
+            {writable ? (
+              <button className="cat-primary" disabled={saving}>
+                Guardar repartidor
+              </button>
+            ) : null}
+          </div>
+        </div>
+        <DriverSide driver={driver} routes={routes} />
+      </div>
+    </form>
+  );
+}
+
+export default function Drivers({ runtime }) {
+  const [items, setItems] = useState([]),
+    [selected, setSelected] = useState(null),
+    [nodes, setNodes] = useState([]),
+    [routes, setRoutes] = useState([]),
+    [loading, setLoading] = useState(true),
+    [saving, setSaving] = useState(false),
+    [error, setError] = useState(""),
+    [notice, setNotice] = useState("");
+  const canReadNodes = runtime.permissions.includes("operations.nodes.read"),
+    canReadRoutes = runtime.permissions.includes("operations.routes.read");
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const [drivers, nodeRows, routeRows] = await Promise.all([call(runtime, `/v1/companies/${runtime.company}/drivers?limit=100`).then((value) => value.items), canReadNodes ? call(runtime, `/v1/companies/${runtime.company}/nodes`).then((value) => value.items) : [], canReadRoutes ? call(runtime, `/v1/companies/${runtime.company}/routes?limit=100`).then((value) => value.items) : []]),
+        requested = detailFromHash("drivers");
+      setItems(drivers);
+      setNodes(nodeRows);
+      setRoutes(routeRows);
+      setSelected(drivers.find((driver) => driver.id === requested) || null);
+    } catch (problem) {
+      setError(problem.message || "No se pudo cargar la información.");
+    } finally {
+      setLoading(false);
+    }
+  }, [runtime, canReadNodes, canReadRoutes]);
+  useEffect(() => {
+    if (runtime.company) void load();
+  }, [runtime.company, load]);
+  const driverRoutes = useMemo(() => routes.filter((route) => route.driver_id === selected?.id).sort((a, b) => String(b.date).localeCompare(String(a.date))), [routes, selected]);
+  const updateDriver = (driver) => {
+    setSelected(driver);
+    setItems((current) => current.map((item) => (item.id === driver.id ? driver : item)));
+  };
+  const save = async (event) => {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    setSaving(true);
+    setError("");
+    try {
+      const driver = await call(runtime, `/v1/companies/${runtime.company}/drivers/${selected.id}`, {
+        method: "PATCH",
+        body: JSON.stringify({
+          version: selected.version,
+          name: form.get("name"),
+          phone: form.get("phone"),
+          email: form.get("email") || null,
+          status: form.get("status"),
+          availability: form.get("availability"),
+          access_status: form.get("access_status"),
+          user_id: form.get("user_id") || null,
+          vehicle: selected.vehicle,
+          license: selected.license,
+        }),
+      });
+      updateDriver(driver);
+      setNotice("Perfil actualizado.");
+    } catch (problem) {
+      setError(problem.message || "No se pudo guardar el perfil.");
+    } finally {
+      setSaving(false);
+    }
+  };
+  const toggleNode = async (nodeId, active) => {
+    setSaving(true);
+    setError("");
+    try {
+      const driver = await call(runtime, `/v1/companies/${runtime.company}/nodes/${nodeId}/drivers/${selected.id}`, { method: "PUT", body: JSON.stringify({ active }) });
+      updateDriver(driver);
+      setNotice(active ? "Nodo asignado." : "Nodo desasignado.");
+    } catch (problem) {
+      setError(problem.message || "No se pudo cambiar la asignación.");
+    } finally {
+      setSaving(false);
+    }
+  };
+  return (
+    <section className="catalog-ui drivers-catalog">
+      <Toast message={error} tone="error" onClose={() => setError("")} />
+      <Toast message={!error && notice} tone="success" onClose={() => setNotice("")} />
+      {selected ? <DriverDetail runtime={runtime} driver={selected} nodes={nodes} routes={driverRoutes} saving={saving} onSave={save} onToggleNode={toggleNode} /> : <DriverList items={items} loading={loading} error={error} refresh={load} />}
+    </section>
+  );
 }

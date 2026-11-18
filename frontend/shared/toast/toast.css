@@ -1,0 +1,7 @@
+@import '../ui/design-tokens.css';
+.shared-toast{position:fixed;z-index:1200;top:82px;right:24px;display:flex;width:min(420px,calc(100vw - 32px));box-sizing:border-box;align-items:flex-start;justify-content:space-between;gap:16px;padding:14px 16px;border:1px solid;border-radius:12px;background:var(--uon-surface);box-shadow:0 12px 30px rgba(16,24,40,.18);font-family:var(--mastererp-font-family,var(--uon-font-ui));font-size:13px;line-height:1.45}
+.shared-toast-error{border-color:#f3b8b2;background:var(--uon-error-surface);color:var(--uon-error)}
+.shared-toast-success{border-color:#a9dfc5;background:var(--uon-success-surface);color:var(--uon-success)}
+.shared-toast-info{border-color:#b8d8f6;background:var(--uon-information-surface);color:var(--uon-information)}
+.shared-toast button{width:24px;height:24px;flex:0 0 24px;padding:0;border:0;background:transparent;color:inherit;font-size:20px;line-height:20px;cursor:pointer}
+@media(max-width:620px){.shared-toast{top:72px;right:16px;left:16px;width:auto}}

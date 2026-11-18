@@ -89,6 +89,16 @@ transición conserva actor, fecha, detalle y correlación. Se admiten parciales
 sin superar cantidades entregadas ni ya autorizadas. Solicitud desde Storefront
 queda fuera de esta etapa y podrá ser una opción posterior por empresa o tienda.
 
+La ficha calcula la cantidad todavía retornable por línea descontando todos los
+expedientes no rechazados. Oculta «Nueva devolución» cuando no queda ninguna
+unidad disponible y, en devoluciones parciales, limita cada campo al remanente.
+El backend conserva la misma regla como autoridad y responde
+`invalid_transition` ante una carrera o un cliente desactualizado.
+
+Pedidos, Rutas, Mi ruta y Repartidores usan la notificación flotante compartida.
+Los mensajes permanecen visibles hasta que el usuario los cierre, no dependen
+del scroll y traducen códigos técnicos conocidos a instrucciones legibles.
+
 ## Errores y validación
 
 - `400 invalid_request`: datos incompletos o fuera de formato.
