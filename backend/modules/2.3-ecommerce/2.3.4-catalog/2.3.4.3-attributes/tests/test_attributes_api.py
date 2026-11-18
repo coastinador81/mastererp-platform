@@ -3,7 +3,7 @@ from unittest.mock import Mock
 from attributes_api.handler import HttpError,_request
 def event(method='GET',code=None,body=None):return {'requestContext':{'http':{'method':method}},'pathParameters':{'attribute_code':code} if code else {},'body':json.dumps(body or {}),'headers':{}}
 class TestAttributes(unittest.TestCase):
- def test_list(self):r=Mock();r.list.return_value=[];self.assertEqual(_request(event(),r),(200,{'items':[]}))
+ def test_list(self):r=Mock();r.list.return_value={'items':[],'total':0};self.assertEqual(_request(event(),r),(200,r.list.return_value))
  def test_create_requires_key(self):
   with self.assertRaises(HttpError):_request(event('POST',body={'code':'color','name':'Color','type':'SELECT'}),Mock())
  def test_update_requires_change(self):

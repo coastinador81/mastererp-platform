@@ -12,9 +12,9 @@ class ProductsApiTests(unittest.TestCase):
                 "headers": {"Idempotency-Key": "product-key"}, "body": json.dumps(body or {})}
 
     def test_list_does_not_mix_inventory(self):
-        repo = Mock(); repo.list.return_value = [{"id": "one"}]
+        repo = Mock(); repo.list.return_value = {"items": [{"id": "one"}], "total": 1, "limit": 50, "offset": 0}
         status, result = _request(self.event(), repo)
-        self.assertEqual((status, result), (200, {"items": [{"id": "one"}]}))
+        self.assertEqual((status, result), (200, repo.list.return_value))
 
     def test_create_requires_server_fields_and_idempotency(self):
         with self.assertRaises(HttpError):

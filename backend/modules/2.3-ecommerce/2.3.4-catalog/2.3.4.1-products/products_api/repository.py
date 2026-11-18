@@ -5,9 +5,9 @@ class ProductsRepository:
     def __init__(self, connection):
         self.connection = connection
 
-    def list(self, status: str | None, search: str | None, limit: int) -> list[dict[str, Any]]:
+    def list(self, status: str | None, search: str | None, limit: int, offset: int = 0) -> dict[str, Any]:
         return self.connection.execute(
-            "SELECT catalogo.productos_leer(NULL,%s,%s,%s) AS value", (status, search, limit)
+            "SELECT catalogo.productos_pagina(%s,%s,%s,%s) AS value", (status, search, limit, offset)
         ).fetchone()["value"]
 
     def get(self, product_id: str) -> dict[str, Any]:

@@ -8,7 +8,10 @@ def _request(e,r):
  m=e.get('requestContext',{}).get('http',{}).get('method','GET').upper();id=(e.get('pathParameters')or{}).get('supplier_id')
  if id:UUID(id)
  if m=='GET'and id:return 200,r.get(id)
- if m=='GET':q=e.get('queryStringParameters')or{};return 200,{'items':r.list(q.get('status'),int(q.get('limit',100)))}
+ if m=='GET':
+  q=e.get('queryStringParameters')or{};limit=int(q.get('limit',25));offset=int(q.get('offset',0))
+  if not 1<=limit<=100 or offset<0:raise HttpError(400,'Invalid pagination',code='invalid_request')
+  return 200,r.list(q.get('status'),q.get('search'),limit,offset)
  p=parse_body(e)
  if m=='POST'and not id:
   key=_h(e,'idempotency-key')

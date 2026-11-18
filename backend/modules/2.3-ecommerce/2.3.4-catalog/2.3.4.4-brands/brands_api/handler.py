@@ -7,7 +7,10 @@ def _h(e,n):return {k.lower():v for k,v in(e.get('headers')or{}).items()}.get(n.
 def _request(e,r):
  m=e.get('requestContext',{}).get('http',{}).get('method','GET').upper();slug=(e.get('pathParameters')or{}).get('brand_slug')
  if m=='GET' and slug:return 200,r.get(slug)
- if m=='GET':q=e.get('queryStringParameters')or{};return 200,{'items':r.list(q.get('status'),int(q.get('limit',100)))}
+ if m=='GET':
+  q=e.get('queryStringParameters')or{};limit=int(q.get('limit',25));offset=int(q.get('offset',0))
+  if not 1<=limit<=100 or offset<0:raise HttpError(400,'Invalid pagination',code='invalid_request')
+  return 200,r.list(q.get('status'),q.get('search'),limit,offset)
  p=parse_body(e)
  if m=='POST' and not slug:
   key=_h(e,'idempotency-key')

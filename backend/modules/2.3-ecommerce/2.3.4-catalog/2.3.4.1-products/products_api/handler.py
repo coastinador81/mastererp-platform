@@ -65,9 +65,10 @@ def _request(event: dict[str, Any], repository: ProductsRepository, media: Produ
     if method == "GET":
         query = event.get("queryStringParameters") or {}
         limit = int(query.get("limit", 50))
-        if not 1 <= limit <= 100:
-            raise HttpError(400, "limit must be between 1 and 100", code="invalid_request")
-        return 200, {"items": repository.list(query.get("status"), query.get("search"), limit)}
+        offset = int(query.get("offset", 0))
+        if not 1 <= limit <= 100 or offset < 0:
+            raise HttpError(400, "Invalid pagination", code="invalid_request")
+        return 200, repository.list(query.get("status"), query.get("search"), limit, offset)
     if method == "POST" and not product_id:
         payload = parse_body(event)
         _validate_product_attributes(payload)

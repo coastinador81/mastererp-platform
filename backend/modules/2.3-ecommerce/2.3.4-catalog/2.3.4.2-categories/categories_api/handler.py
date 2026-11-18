@@ -13,9 +13,9 @@ def _request(event,repo):
     http=event.get('requestContext',{}).get('http',{});method=http.get('method',event.get('httpMethod','GET')).upper();slug=(event.get('pathParameters') or {}).get('category_slug')
     if method=='GET' and slug:return 200,repo.get(slug)
     if method=='GET':
-        query=event.get('queryStringParameters') or {};limit=int(query.get('limit',100))
-        if not 1<=limit<=100:raise HttpError(400,'Invalid limit',code='invalid_request')
-        return 200,{'items':repo.list(query.get('status'),limit)}
+        query=event.get('queryStringParameters') or {};limit=int(query.get('limit',25));offset=int(query.get('offset',0))
+        if not 1<=limit<=100 or offset<0:raise HttpError(400,'Invalid pagination',code='invalid_request')
+        return 200,repo.list(query.get('status'),query.get('search'),limit,offset)
     payload=parse_body(event)
     if method=='POST' and not slug:
         key=_header(event,'idempotency-key')

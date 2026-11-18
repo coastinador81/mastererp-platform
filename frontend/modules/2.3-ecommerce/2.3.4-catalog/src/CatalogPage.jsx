@@ -15,6 +15,16 @@ function locationFor(route) {
   if (action === 'view') {try {return {mode: 'view', id: decodeURIComponent(id)};} catch {return {mode: 'invalid'};}}
   return {mode: 'list'};
 }
+async function loadCatalogOptions(runtime, path, signal) {
+  const items = [];
+  for (let offset = 0; ; offset += 100) {
+    const separator = path.includes('?') ? '&' : '?';
+    const data = await catalogRequest(runtime, `${path}${separator}limit=100&offset=${offset}`, {signal});
+    if (!Array.isArray(data?.items)) throw new Error('invalid_catalog_options');
+    items.push(...data.items);
+    if (items.length >= Number(data.total ?? data.items.length) || data.items.length < 100) return items;
+  }
+}
 export default function CatalogPage({runtime, route}) {
   // Context changes unmount all drafts, pending responses and local previews.
   return <CatalogSession key={`${route}:${runtime.api}:${runtime.tenant}:${runtime.company}:${(runtime.permissions || []).join(',')}`} runtime={runtime} route={route}/>;
@@ -22,10 +32,10 @@ export default function CatalogPage({runtime, route}) {
 function CatalogSession({runtime, route}) {
   const definition = definitions[route], writable = runtime.permissions?.includes(`catalog.${route}.write`) === true;
   const [location, setLocation] = useState(() => locationFor(route));
-  const [items, setItems] = useState([]), [record, setRecord] = useState(null), [loading, setLoading] = useState(true), [busy, setBusy] = useState(false), [error, setError] = useState(''), [notice, setNotice] = useState('');
+  const [items, setItems] = useState([]), [total, setTotal] = useState(0), [record, setRecord] = useState(null), [loading, setLoading] = useState(true), [busy, setBusy] = useState(false), [error, setError] = useState(''), [notice, setNotice] = useState('');
   const [categoryOptions, setCategoryOptions] = useState([]), [brandOptions, setBrandOptions] = useState([]), [supplierOptions, setSupplierOptions] = useState([]), [attributeOptions, setAttributeOptions] = useState([]);
   const [confirmation, setConfirmation] = useState(null);
-  const [query, setQuery] = useState({search: '', status: ''}), [revision, setRevision] = useState(0);
+  const [query, setQuery] = useState({search: '', status: '', offset: 0}), [revision, setRevision] = useState(0);
   const alive = useRef(true), lock = useRef(false), idempotency = useRef(null), runtimeRef = useRef(runtime);
   runtimeRef.current = runtime;
   useEffect(() => {alive.current = true; return () => {alive.current = false;};}, []);
@@ -34,21 +44,21 @@ function CatalogSession({runtime, route}) {
     const controller = new AbortController(); let active = true;
     setError(''); setLoading(true);
     if (location.mode === 'new' || location.mode === 'invalid') {setLoading(false); return () => controller.abort();}
-    const params = new URLSearchParams({limit: '100'});
-    if (route === 'products') {if (query.search) params.set('search', query.search); if (query.status) params.set('status', query.status);}
+    const params = new URLSearchParams({limit: '15', offset: String(query.offset)});
+    if (query.search) params.set('search', query.search); if (query.status) params.set('status', query.status);
     const path = location.mode === 'view' ? `${definition.path}/${encodeURIComponent(location.id)}` : `${definition.path}?${params}`;
     catalogRequest(runtimeRef.current, path, {signal: controller.signal}).then(data => {
       if (!active) return;
       if (location.mode === 'view') {if (!data || !data[definition.key]) throw new Error('Registro no disponible.'); setRecord(data);}
-      else {if (!Array.isArray(data.items)) throw new Error('Respuesta no válida.'); setItems(data.items);}
-    }).catch(() => {if (active) {setError('No se pudo cargar la información. Verifica tu acceso o intenta actualizar.'); setItems([]); setRecord(null);}}).finally(() => {if (active) setLoading(false);});
+      else {if (!Array.isArray(data.items)) throw new Error('Respuesta no válida.'); setItems(data.items); setTotal(Number(data.total ?? data.items.length));}
+    }).catch(() => {if (active) {setError('No se pudo cargar la información. Verifica tu acceso o intenta actualizar.'); setItems([]); setTotal(0); setRecord(null);}}).finally(() => {if (active) setLoading(false);});
     return () => {active = false; controller.abort();};
   }, [definition, location, query, revision, route]);
   useEffect(() => {
     if (!['products', 'categories'].includes(route) || location.mode === 'list') return;
     const controller = new AbortController();
-    catalogRequest(runtimeRef.current, '/v1/catalog/categories?limit=100', {signal: controller.signal})
-      .then(data => {if (Array.isArray(data?.items)) setCategoryOptions(data.items);})
+    loadCatalogOptions(runtimeRef.current, '/v1/catalog/categories', controller.signal)
+      .then(setCategoryOptions)
       .catch(() => {if (!controller.signal.aborted) setNotice('No se pudieron cargar las categorías disponibles.');});
     return () => controller.abort();
   }, [location.mode, route, revision]);
@@ -56,13 +66,13 @@ function CatalogSession({runtime, route}) {
     if (route !== 'products' || location.mode === 'list') return;
     const controller = new AbortController();
     Promise.allSettled([
-      catalogRequest(runtimeRef.current, '/v1/catalog/brands?limit=100', {signal: controller.signal}),
-      catalogRequest(runtimeRef.current, '/v1/catalog/suppliers?limit=100', {signal: controller.signal}),
-      catalogRequest(runtimeRef.current, '/v1/catalog/attributes?limit=100', {signal: controller.signal}),
+      loadCatalogOptions(runtimeRef.current, '/v1/catalog/brands', controller.signal),
+      loadCatalogOptions(runtimeRef.current, '/v1/catalog/suppliers', controller.signal),
+      loadCatalogOptions(runtimeRef.current, '/v1/catalog/attributes', controller.signal),
     ]).then(([brands, suppliers, attributes]) => {
-      if (brands.status === 'fulfilled' && Array.isArray(brands.value?.items)) setBrandOptions(brands.value.items.filter(item => item.status === 'ACTIVE'));
-      if (suppliers.status === 'fulfilled' && Array.isArray(suppliers.value?.items)) setSupplierOptions(suppliers.value.items.filter(item => item.status === 'ACTIVE'));
-      if (attributes.status === 'fulfilled' && Array.isArray(attributes.value?.items)) setAttributeOptions(attributes.value.items.filter(item => item.status === 'ACTIVE'));
+      if (brands.status === 'fulfilled') setBrandOptions(brands.value.filter(item => item.status === 'ACTIVE'));
+      if (suppliers.status === 'fulfilled') setSupplierOptions(suppliers.value.filter(item => item.status === 'ACTIVE'));
+      if (attributes.status === 'fulfilled') setAttributeOptions(attributes.value.filter(item => item.status === 'ACTIVE'));
       if (brands.status === 'rejected' || suppliers.status === 'rejected' || attributes.status === 'rejected') setNotice('Algunas opciones del producto no pudieron cargarse.');
     });
     return () => controller.abort();
@@ -116,7 +126,7 @@ function CatalogSession({runtime, route}) {
   }
   return <section className="catalog-ui" aria-label={definition.title}>
     <Toast message={error} tone="error" onClose={() => setError('')}/><Toast message={!error && notice} tone="success" onClose={() => setNotice('')}/>
-    {location.mode === 'list' ? <CatalogListPage {...{definition, route, items, loading, busy, writable, refresh, publish, download, error}} searchRemote={route === 'products' ? (search, status) => setQuery({search, status}) : null}/>
+    {location.mode === 'list' ? <CatalogListPage {...{definition, route, items, total, loading, busy, writable, refresh, publish, download, error}} serverOffset={query.offset} searchRemote={(search, status, page = 1) => setQuery({search, status, offset: (page - 1) * 15})}/>
       : loading ? <LoadingState label="Cargando ficha…"/>
       : location.mode === 'invalid' || (location.mode === 'view' && !record) ? <a href={catalogHref(route)}>Volver a {definition.title.toLowerCase()}</a>
       : <CatalogEditorPage key={`${location.mode}:${record?.[definition.key] || 'new'}:${record?.version || ''}`} {...{definition, route, record, writable, busy, save, categoryOptions, brandOptions, supplierOptions, attributeOptions, uploadProductImage}} notify={setNotice}/>}
