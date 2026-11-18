@@ -61,6 +61,8 @@
 .catalog-ui .cat-tabs {display:flex;gap:20px;padding:0 24px;border-bottom:1px solid #e8edf3;overflow:auto}
 .catalog-ui.catalog-ui .cat-tabs button {padding:18px 0;border:0;border-radius:0;border-bottom:2px solid transparent;background:transparent}
 .catalog-ui.catalog-ui .cat-tabs button[aria-selected=true] {color:#1766b1;border-bottom-color:#0875de}
+.catalog-ui.catalog-ui .cat-tabs button:hover:not(:disabled) {background:transparent;color:#1766b1;border-color:transparent;border-bottom-color:#9bc5ed}
+.catalog-ui.catalog-ui .cat-tabs button[aria-selected=true]:hover:not(:disabled) {color:#1766b1;border-bottom-color:#0875de}
 .catalog-ui [hidden] {display:none!important}
 .catalog-ui .cat-form-section {padding:24px}
 .catalog-ui .cat-fields {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}

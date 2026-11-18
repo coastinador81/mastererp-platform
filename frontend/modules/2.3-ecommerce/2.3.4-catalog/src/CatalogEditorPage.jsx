@@ -10,8 +10,8 @@ export function CatalogFormSection({title, description, children}) {
   return <section className="cat-form-section"><h2>{title}</h2>{description && <p>{description}</p>}<div className="cat-fields">{children}</div></section>;
 }
 const dateText = value => value && !Number.isNaN(Date.parse(value)) ? new Date(value).toLocaleString('es') : 'No disponible';
-export function CatalogPublishPanel({record, status, setStatus, disabled, canSetStatus, remove}) {
-  return <div className="cat-editor-side"><section className="cat-surface"><h2 className="cat-panel-title">Publicación</h2><div className="cat-panel-body"><label className="cat-switch-row"><span>Visible / activo<small>Estado del registro en el catálogo</small></span><input type="checkbox" role="switch" checked={status === 'ACTIVE'} disabled={disabled || !canSetStatus} onChange={e => setStatus(e.target.checked ? 'ACTIVE' : 'INACTIVE')}/></label>{!canSetStatus && <p>Los nuevos registros se crean activos. Puedes cambiar su estado después de guardarlos.</p>}<dl><dt>Estado</dt><dd><CatalogStatusBadge status={status}/></dd><dt>Creado</dt><dd>{dateText(record?.created_at)}</dd><dt>Actualizado</dt><dd>{dateText(record?.updated_at)}</dd></dl></div></section>{record && !disabled && <section className="cat-surface cat-danger"><h2>Eliminar registro</h2><p>Simulación local: la eliminación aún no está disponible. No se borrarán datos.</p><button type="button" onClick={remove}>Probar eliminación</button></section>}</div>;
+export function CatalogPublishPanel({record, status, setStatus, disabled, canSetStatus}) {
+  return <div className="cat-editor-side"><section className="cat-surface"><h2 className="cat-panel-title">Publicación</h2><div className="cat-panel-body"><label className="cat-switch-row"><span>Visible / activo<small>Estado del registro en el catálogo</small></span><input type="checkbox" role="switch" checked={status === 'ACTIVE'} disabled={disabled || !canSetStatus} onChange={e => setStatus(e.target.checked ? 'ACTIVE' : 'INACTIVE')}/></label>{!canSetStatus && <p>Los nuevos registros se crean activos. Puedes cambiar su estado después de guardarlos.</p>}<dl><dt>Estado</dt><dd><CatalogStatusBadge status={status}/></dd><dt>Creado</dt><dd>{dateText(record?.created_at)}</dd><dt>Actualizado</dt><dd>{dateText(record?.updated_at)}</dd></dl></div></section></div>;
 }
 
 export default function CatalogEditorPage({definition, route, record, writable, busy, save, notify}) {
@@ -32,7 +32,7 @@ export default function CatalogEditorPage({definition, route, record, writable, 
   }, [dirty]);
   const back = e => {if (dirty && !window.confirm('¿Descartar los cambios sin guardar?')) e.preventDefault();};
   const field = (key, label, props = {}) => <label key={key} className={props.wide ? 'cat-full' : undefined}>{label}<input name={key} value={draft[key] ?? ''} disabled={disabled} onChange={e => update(key, props.type === 'number' ? (e.target.value === '' ? '' : Number(e.target.value)) : e.target.value)} {...Object.fromEntries(Object.entries(props).filter(([name]) => name !== 'wide'))}/></label>;
-  const tabs = [['general', 'Información general'], ['organization', 'Organización'], ...(route === 'products' ? [['price', 'Precio'], ['images', 'Imágenes']] : [])];
+  const tabs = [['general', 'Información general'], ...(route === 'products' ? [['organization', 'Clasificación'], ['price', 'Precio'], ['images', 'Imágenes']] : [])];
   async function submit(event) {
     event.preventDefault();
     if (!draft.name.trim() || (route === 'products' && !(Number(draft.price) > 0))) {notify('Completa el nombre y un precio mayor que cero.'); setTab(!draft.name.trim() ? 'general' : 'price'); return;}
@@ -51,18 +51,16 @@ export default function CatalogEditorPage({definition, route, record, writable, 
           {route === 'brands' && <>{field('website_url', 'Sitio web', {type: 'url'})}{field('logo_url', 'URL del logotipo', {type: 'url'})}</>}
           {route === 'suppliers' && <>{['email', 'phone'].map(name => <label key={name}>{name === 'email' ? 'Correo de contacto' : 'Teléfono'}<input type={name === 'email' ? 'email' : 'tel'} disabled={disabled} value={draft.contact?.[name] || ''} onChange={e => update('contact', {...draft.contact, [name]: e.target.value})}/></label>)}<label>Plazo de pago (días)<input type="number" min="0" disabled={disabled} value={draft.terms?.payment_days ?? ''} onChange={e => update('terms', {...draft.terms, payment_days: Number(e.target.value)})}/></label></>}
           {route === 'attributes' && <><label>Tipo<select value={draft.type} disabled={disabled || Boolean(record)} onChange={e => update('type', e.target.value)}>{['TEXT', 'NUMBER', 'BOOLEAN', 'SELECT', 'MULTISELECT'].map(type => <option key={type}>{type}</option>)}</select></label>{field('unit', 'Unidad')}<label className="cat-switch-row">Obligatorio<input type="checkbox" role="switch" checked={Boolean(draft.required)} disabled={disabled} onChange={e => update('required', e.target.checked)}/></label><label className="cat-full">Valores (uno por línea)<textarea value={(draft.options || []).join('\n')} disabled={disabled} onChange={e => update('options', e.target.value.split('\n'))}/></label></>}
+          {route === 'attributes' && field('sort_order', 'Orden de visualización', {type: 'number', min: 0})}
+          {route === 'categories' && <>{field('parent_slug', 'Categoría padre (referencia)')}{field('sort_order', 'Orden de visualización', {type: 'number', min: 0})}{field('image_url', 'URL de imagen', {type: 'url', wide: true})}</>}
         </CatalogFormSection>}
-        {key === 'organization' && <CatalogFormSection title="Organización" description="Clasificación del registro dentro del catálogo.">
-          {route === 'products' && field('category_ref', 'Categoría principal (referencia)')}
-          {route === 'categories' && <>{field('parent_slug', 'Categoría padre (referencia)')}{field('sort_order', 'Orden', {type: 'number', min: 0})}{field('image_url', 'URL de imagen', {type: 'url', wide: true})}</>}
-          {route === 'attributes' && <>{field('sort_order', 'Orden', {type: 'number', min: 0})}<label className="cat-full">Categorías aplicables (una referencia por línea)<textarea value={(draft.category_slugs || []).join('\n')} disabled={disabled} onChange={e => update('category_slugs', e.target.value.split('\n'))}/></label></>}
-          {['brands', 'suppliers'].includes(route) && <p>La clasificación de esta entidad se gestiona mediante sus relaciones con los productos.</p>}
-          <div className="cat-local cat-full"><strong>Vista previa local · no se guarda</strong><label>Etiquetas<input disabled={disabled} placeholder="Separadas por comas"/></label></div>
+        {key === 'organization' && <CatalogFormSection title="Clasificación" description="Ubica el producto en la categoría principal que verá el cliente.">
+          {field('category_ref', 'Categoría principal (referencia)')}
         </CatalogFormSection>}
         {key === 'price' && <CatalogFormSection title="Precio" description="Gestiona el precio de venta del producto en el catálogo.">{field('price', 'Precio de venta *', {type: 'number', min: 0.000001, step: 0.000001})}<div className="cat-full"><h2>Inventario</h2><p>Las existencias, los movimientos y las alertas se gestionan en el módulo de Inventario, con sus permisos correspondientes.</p>{inventoryUrl && <a className="cat-detail-link" href={inventoryUrl} target="_blank" rel="noopener noreferrer">Abrir Inventario (nueva pestaña)</a>}</div></CatalogFormSection>}
         {key === 'images' && <CatalogFormSection title="Imágenes" description="Revisa la imagen principal y previsualiza otras fotografías del producto."><CatalogImageGallery value={draft.image_url} onChange={value => update('image_url', value)} disabled={disabled}/></CatalogFormSection>}
       </div>)}
       <div className="cat-editor-footer"><a href={catalogHref(route)} onClick={back}>Cancelar</a>{writable && <button className="cat-primary" disabled={busy}>Guardar {definition.singular}</button>}</div>
-    </div><CatalogPublishPanel record={record} status={draft.status} setStatus={value => update('status', value)} disabled={disabled} canSetStatus={canSetStatus} remove={() => {if (window.confirm('Simulación: ¿confirmas la prueba de eliminación? El registro real se conservará.')) notify('Prueba confirmada. No se eliminó ningún registro; la eliminación real sigue pendiente.');}}/></div>
+    </div><CatalogPublishPanel record={record} status={draft.status} setStatus={value => update('status', value)} disabled={disabled} canSetStatus={canSetStatus}/></div>
   </form>;
 }

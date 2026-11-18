@@ -2,6 +2,8 @@ import React, {useEffect, useRef, useState} from 'react';
 import CatalogListPage from './CatalogListPage.jsx';
 import CatalogEditorPage from './CatalogEditorPage.jsx';
 import LoadingState from '../../../../shared/loading-state/LoadingState.jsx';
+import Toast from '../../../../shared/toast/Toast.jsx';
+import ActionDialog from '../../../../shared/dialog/ActionDialog.jsx';
 import {catalogHref, catalogRequest, legacyCatalogRoutes, definitions, exportCsv, payloadFor} from './catalogModel.mjs';
 import './catalog.css';
 
@@ -21,6 +23,7 @@ function CatalogSession({runtime, route}) {
   const definition = definitions[route], writable = runtime.permissions?.includes(`catalog.${route}.write`) === true;
   const [location, setLocation] = useState(() => locationFor(route));
   const [items, setItems] = useState([]), [record, setRecord] = useState(null), [loading, setLoading] = useState(true), [busy, setBusy] = useState(false), [error, setError] = useState(''), [notice, setNotice] = useState('');
+  const [confirmation, setConfirmation] = useState(null);
   const [query, setQuery] = useState({search: '', status: ''}), [revision, setRevision] = useState(0);
   const alive = useRef(true), lock = useRef(false), idempotency = useRef(null), runtimeRef = useRef(runtime);
   runtimeRef.current = runtime;
@@ -59,7 +62,11 @@ function CatalogSession({runtime, route}) {
     finally {lock.current = false; if (alive.current) setBusy(false);}
   }
   async function publish(selected) {
-    if (!writable || !selected.length || lock.current || !window.confirm(`¿Activar ${selected.length} registros en el catálogo?`)) return;
+    if (!writable || !selected.length || lock.current) return;
+    setConfirmation({kind: 'publish', selected});
+  }
+  async function confirmPublish(selected) {
+    setConfirmation(null);
     lock.current = true; setBusy(true); setError(''); let completed = 0;
     try {
       for (const item of selected) {
@@ -78,10 +85,11 @@ function CatalogSession({runtime, route}) {
     setNotice(`Exportados ${selected.length} registros seleccionados.`);
   }
   return <section className="catalog-ui" aria-label={definition.title}>
-    {notice && <p className="cat-notice" role="status">{notice}</p>}{error && <div className="cat-error" role="alert"><p>{error}</p><button type="button" disabled={busy} onClick={refresh}>Actualizar</button></div>}
+    <Toast message={error} tone="error" onClose={() => setError('')}/><Toast message={!error && notice} tone="success" onClose={() => setNotice('')}/>
     {location.mode === 'list' ? <CatalogListPage {...{definition, route, items, loading, busy, writable, refresh, publish, download, error}} searchRemote={route === 'products' ? (search, status) => setQuery({search, status}) : null}/>
       : loading ? <LoadingState label="Cargando ficha…"/>
       : location.mode === 'invalid' || (location.mode === 'view' && !record) ? <a href={catalogHref(route)}>Volver a {definition.title.toLowerCase()}</a>
       : <CatalogEditorPage key={`${location.mode}:${record?.[definition.key] || 'new'}:${record?.version || ''}`} {...{definition, route, record, writable, busy, save}} notify={setNotice}/>}
+    <ActionDialog open={confirmation?.kind === 'publish'} title="Publicar selección" description={`Se activarán ${confirmation?.selected?.length || 0} registros en el catálogo.`} confirmLabel="Publicar" busy={busy} onCancel={() => setConfirmation(null)} onConfirm={() => confirmPublish(confirmation.selected)}/>
   </section>;
 }
