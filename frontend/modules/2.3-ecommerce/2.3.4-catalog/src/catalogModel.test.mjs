@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {catalogHref, catalogRequest, cellText, csvCell, definitions, exportCsv, filterRecords, payloadFor} from './catalogModel.mjs';
+import {catalogHref, catalogRequest, cellText, csvCell, definitions, exportCsv, filterRecords, generateProductVariants, payloadFor} from './catalogModel.mjs';
 
 test('links preserve independent and legacy catalog entrypoints', () => {
   assert.equal(catalogHref('products', 'a/b', 'view', '#/products'), '#/products/a%2Fb/view');
@@ -49,4 +49,11 @@ test('requests preserve runtime authentication and tenant isolation', async () =
 });
 test('backend failures propagate without synthetic success', async () => {
   await assert.rejects(catalogRequest({api: 'https://example.test', tenant: 'a', request: async () => {throw Error('403');}}, '/v1/products'), /403/);
+});
+test('variant generation combines selected attribute values and preserves edits', () => {
+  const attributes = [{code: 'color', options: ['Rojo', 'Azul']}, {code: 'size', options: ['S', 'M']}];
+  const initial = generateProductVariants(['color', 'size'], attributes);
+  assert.equal(initial.length, 4);
+  const edited = [{...initial[0], sku: 'SKU-1'}];
+  assert.equal(generateProductVariants(['color', 'size'], attributes, edited)[0].sku, 'SKU-1');
 });

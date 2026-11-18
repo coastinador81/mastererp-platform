@@ -24,6 +24,14 @@ class ProductsApiTests(unittest.TestCase):
         repo = Mock(); repo.create.return_value = {"id": "one"}
         self.assertEqual(_request(self.event("POST", body={"name": "Product", "price": 2}), repo), (201, {"id": "one"}))
 
+    def test_duplicate_variant_skus_are_rejected(self):
+        body = {"name": "Product", "price": 2, "attributes": {"_catalog": {"attribute_codes": ["color"], "variants": [
+            {"key": "color:red", "values": {"color": "Red"}, "sku": "SAME"},
+            {"key": "color:blue", "values": {"color": "Blue"}, "sku": "same"},
+        ]}}}
+        with self.assertRaises(HttpError):
+            _request(self.event("POST", body=body), Mock())
+
     def test_update_requires_version(self):
         with self.assertRaises(HttpError):
             _request(self.event("PATCH", "20000000-0000-0000-0000-000000000001", {"name": "New"}), Mock())

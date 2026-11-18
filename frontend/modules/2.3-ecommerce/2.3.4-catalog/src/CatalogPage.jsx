@@ -23,7 +23,7 @@ function CatalogSession({runtime, route}) {
   const definition = definitions[route], writable = runtime.permissions?.includes(`catalog.${route}.write`) === true;
   const [location, setLocation] = useState(() => locationFor(route));
   const [items, setItems] = useState([]), [record, setRecord] = useState(null), [loading, setLoading] = useState(true), [busy, setBusy] = useState(false), [error, setError] = useState(''), [notice, setNotice] = useState('');
-  const [categoryOptions, setCategoryOptions] = useState([]), [brandOptions, setBrandOptions] = useState([]), [supplierOptions, setSupplierOptions] = useState([]);
+  const [categoryOptions, setCategoryOptions] = useState([]), [brandOptions, setBrandOptions] = useState([]), [supplierOptions, setSupplierOptions] = useState([]), [attributeOptions, setAttributeOptions] = useState([]);
   const [confirmation, setConfirmation] = useState(null);
   const [query, setQuery] = useState({search: '', status: ''}), [revision, setRevision] = useState(0);
   const alive = useRef(true), lock = useRef(false), idempotency = useRef(null), runtimeRef = useRef(runtime);
@@ -58,10 +58,12 @@ function CatalogSession({runtime, route}) {
     Promise.allSettled([
       catalogRequest(runtimeRef.current, '/v1/catalog/brands?limit=100', {signal: controller.signal}),
       catalogRequest(runtimeRef.current, '/v1/catalog/suppliers?limit=100', {signal: controller.signal}),
-    ]).then(([brands, suppliers]) => {
+      catalogRequest(runtimeRef.current, '/v1/catalog/attributes?limit=100', {signal: controller.signal}),
+    ]).then(([brands, suppliers, attributes]) => {
       if (brands.status === 'fulfilled' && Array.isArray(brands.value?.items)) setBrandOptions(brands.value.items.filter(item => item.status === 'ACTIVE'));
       if (suppliers.status === 'fulfilled' && Array.isArray(suppliers.value?.items)) setSupplierOptions(suppliers.value.items.filter(item => item.status === 'ACTIVE'));
-      if (brands.status === 'rejected' || suppliers.status === 'rejected') setNotice('Algunas opciones comerciales no pudieron cargarse.');
+      if (attributes.status === 'fulfilled' && Array.isArray(attributes.value?.items)) setAttributeOptions(attributes.value.items.filter(item => item.status === 'ACTIVE'));
+      if (brands.status === 'rejected' || suppliers.status === 'rejected' || attributes.status === 'rejected') setNotice('Algunas opciones del producto no pudieron cargarse.');
     });
     return () => controller.abort();
   }, [location.mode, route, revision]);
@@ -117,7 +119,7 @@ function CatalogSession({runtime, route}) {
     {location.mode === 'list' ? <CatalogListPage {...{definition, route, items, loading, busy, writable, refresh, publish, download, error}} searchRemote={route === 'products' ? (search, status) => setQuery({search, status}) : null}/>
       : loading ? <LoadingState label="Cargando ficha…"/>
       : location.mode === 'invalid' || (location.mode === 'view' && !record) ? <a href={catalogHref(route)}>Volver a {definition.title.toLowerCase()}</a>
-      : <CatalogEditorPage key={`${location.mode}:${record?.[definition.key] || 'new'}:${record?.version || ''}`} {...{definition, route, record, writable, busy, save, categoryOptions, brandOptions, supplierOptions, uploadProductImage}} notify={setNotice}/>}
+      : <CatalogEditorPage key={`${location.mode}:${record?.[definition.key] || 'new'}:${record?.version || ''}`} {...{definition, route, record, writable, busy, save, categoryOptions, brandOptions, supplierOptions, attributeOptions, uploadProductImage}} notify={setNotice}/>}
     <ActionDialog open={confirmation?.kind === 'publish'} title="Publicar selección" description={`Se activarán ${confirmation?.selected?.length || 0} registros en el catálogo.`} confirmLabel="Publicar" busy={busy} onCancel={() => setConfirmation(null)} onConfirm={() => confirmPublish(confirmation.selected)}/>
   </section>;
 }

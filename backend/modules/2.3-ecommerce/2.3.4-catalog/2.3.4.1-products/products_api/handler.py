@@ -19,6 +19,31 @@ def _claims(event: dict[str, Any]) -> dict[str, Any]:
     return claims
 
 
+def _validate_product_attributes(payload: dict[str, Any]) -> None:
+    attributes = payload.get("attributes")
+    if attributes is None:
+        return
+    if not isinstance(attributes, dict):
+        raise HttpError(400, "attributes must be an object", code="invalid_request")
+    catalog = attributes.get("_catalog")
+    if catalog is None:
+        return
+    if not isinstance(catalog, dict) or not isinstance(catalog.get("attribute_codes", []), list) or not isinstance(catalog.get("variants", []), list):
+        raise HttpError(400, "Invalid product variants", code="invalid_request")
+    variants = catalog.get("variants", [])
+    if len(variants) > 200:
+        raise HttpError(400, "A product supports up to 200 variants", code="invalid_request")
+    skus: set[str] = set()
+    for variant in variants:
+        if not isinstance(variant, dict) or not isinstance(variant.get("key"), str) or not isinstance(variant.get("values"), dict):
+            raise HttpError(400, "Invalid product variant", code="invalid_request")
+        sku = str(variant.get("sku") or "").strip().casefold()
+        if sku and sku in skus:
+            raise HttpError(400, "Variant SKUs must be unique", code="invalid_request")
+        if sku:
+            skus.add(sku)
+
+
 def _request(event: dict[str, Any], repository: ProductsRepository, media: ProductMedia | None = None) -> tuple[int, Any]:
     http = event.get("requestContext", {}).get("http", {})
     method = http.get("method", event.get("httpMethod", "GET")).upper()
@@ -45,12 +70,14 @@ def _request(event: dict[str, Any], repository: ProductsRepository, media: Produ
         return 200, {"items": repository.list(query.get("status"), query.get("search"), limit)}
     if method == "POST" and not product_id:
         payload = parse_body(event)
+        _validate_product_attributes(payload)
         key = _header(event, "idempotency-key")
         if not {"name", "price"} <= payload.keys() or not key or not 1 <= len(key) <= 128:
             raise HttpError(400, "name, price and Idempotency-Key are required", code="invalid_request")
         return 201, repository.create(payload, key)
     if method == "PATCH" and product_id:
         payload = parse_body(event)
+        _validate_product_attributes(payload)
         if "version" not in payload or len(payload) < 2:
             raise HttpError(400, "version and at least one change are required", code="invalid_request")
         return 200, repository.update(product_id, payload)

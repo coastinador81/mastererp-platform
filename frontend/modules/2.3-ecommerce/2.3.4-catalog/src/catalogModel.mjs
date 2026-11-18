@@ -24,6 +24,18 @@ export function payloadFor(route, draft, record) {
   if (route === 'attributes') payload.type = draft.type;
   return payload;
 }
+export function generateProductVariants(selectedCodes, definitions, existing = []) {
+  const selected = selectedCodes.map(code => definitions.find(item => item.code === code)).filter(Boolean);
+  if (!selected.length) return [];
+  if (selected.some(item => !Array.isArray(item.options) || !item.options.filter(Boolean).length)) throw new Error('missing_values');
+  const combinations = selected.reduce((rows, attribute) => rows.flatMap(row => attribute.options.filter(Boolean).map(value => ({...row, [attribute.code]: value}))), [{}]);
+  if (combinations.length > 200) throw new Error('too_many_variants');
+  return combinations.map(values => {
+    const key = selected.map(item => `${item.code}:${values[item.code]}`).join('|');
+    const previous = existing.find(item => item.key === key);
+    return previous ? {...previous, values, key} : {key, values, sku: '', price_delta: 0, active: true};
+  });
+}
 export function filterRecords(items, query, status, definition) {
   const term = query.trim().toLocaleLowerCase();
   return items.filter(item => (!status || item.status === status) && `${item.name} ${item[definition.reference] || ''}`.toLocaleLowerCase().includes(term));
