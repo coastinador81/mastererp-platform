@@ -2,7 +2,7 @@ import json
 import unittest
 from unittest.mock import Mock
 
-from orders_api.handler import HttpError, _request, _sql_error, _verified_claims
+from orders_api.handler import HttpError, _operation, _request, _sql_error, _verified_claims
 
 
 class OrdersApiTests(unittest.TestCase):
@@ -17,6 +17,13 @@ class OrdersApiTests(unittest.TestCase):
         repo = Mock(); repo.list.return_value = {"items": [{"id": "one"}], "next_cursor": None}
         status, result = _request(self.event(), repo)
         self.assertEqual((status, result), (200, {"items": [{"id": "one"}], "next_cursor": None}))
+
+    def test_list_uses_read_operation(self):
+        self.assertEqual(_operation(self.event("GET")), "operations.orders.read")
+
+    def test_return_receipt_uses_inventory_operation(self):
+        path = "/v1/companies/c/orders/o/returns/r/receipt"
+        self.assertEqual(_operation(self.event("POST", path=path)), "catalog.inventory.returns.receive")
 
     def test_bulk_transition_is_one_repository_command(self):
         order_id = "20000000-0000-0000-0000-000000000001"

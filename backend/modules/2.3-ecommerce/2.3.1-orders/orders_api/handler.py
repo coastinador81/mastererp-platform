@@ -159,6 +159,30 @@ def _sql_error(error: Exception) -> HttpError:
     return HttpError(status, "Order request could not be completed", code=code)
 
 
+def _operation(event: dict[str, Any]) -> str:
+    request = event.get("requestContext", {}).get("http", {})
+    path = request.get("path", "")
+    if request.get("method", "GET") == "GET":
+        return "operations.orders.read"
+    if path.endswith("/notes"):
+        return "operations.orders.notes.create"
+    if path.endswith("/address-corrections"):
+        return "operations.orders.address.correct"
+    if path.endswith("/returns"):
+        return "operations.returns.request"
+    if path.endswith("/decision"):
+        return "operations.returns.authorize"
+    if path.endswith("/receipt"):
+        return "catalog.inventory.returns.receive"
+    if path.endswith("/settlement"):
+        return "administration.returns.settle"
+    if path.endswith("/bulk-transitions"):
+        return "operations.orders.transition"
+    if not (event.get("pathParameters") or {}).get("order_id"):
+        return "operations.orders.create"
+    return "operations.orders.transition"
+
+
 def lambda_handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
     from tenant_security.db import db_connection
 
@@ -169,10 +193,7 @@ def lambda_handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
         if not tenant_id:
             raise HttpError(400, "X-Tenant-Id is required", code="invalid_request")
         UUID(tenant_id)
-        request = event.get("requestContext", {}).get("http", {})
-        operation = "operations.orders.notes.create" if path.endswith("/notes") else "operations.orders.address.correct" if path.endswith("/address-corrections") else "operations.returns.request" if path.endswith("/returns") and request.get("method") == "POST" else "operations.returns.authorize" if path.endswith("/decision") else "catalog.inventory.returns.receive" if path.endswith("/receipt") else "administration.returns.settle" if path.endswith("/settlement") else "operations.orders.transition" if path.endswith("/bulk-transitions") else "operations.orders.create" if request.get("method") == "POST" and not (event.get("pathParameters") or {}).get("order_id") else "operations.orders.transition"
-        if request.get("method", "GET") == "GET":
-            operation = "operations.orders.read"
+        operation = _operation(event)
         with db_connection(tenant_id=tenant_id, correlation_id=correlation_id, operation=operation) as connection:
             auth = resolve_auth(event, connection, verified_claims=claims)
             connection.execute("SELECT set_config('app.current_user_id',%s,true)", (str(auth.user_id),))
