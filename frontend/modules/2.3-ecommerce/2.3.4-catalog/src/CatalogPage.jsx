@@ -31,6 +31,7 @@ export default function CatalogPage({runtime, route}) {
 }
 function CatalogSession({runtime, route}) {
   const definition = definitions[route], writable = runtime.permissions?.includes(`catalog.${route}.write`) === true;
+  const canCreateAttributes = runtime.permissions?.includes('catalog.attributes.create') === true || runtime.permissions?.includes('catalog.attributes.write') === true;
   const [location, setLocation] = useState(() => locationFor(route));
   const [items, setItems] = useState([]), [total, setTotal] = useState(0), [record, setRecord] = useState(null), [loading, setLoading] = useState(true), [busy, setBusy] = useState(false), [error, setError] = useState(''), [notice, setNotice] = useState('');
   const [categoryOptions, setCategoryOptions] = useState([]), [brandOptions, setBrandOptions] = useState([]), [supplierOptions, setSupplierOptions] = useState([]), [attributeOptions, setAttributeOptions] = useState([]);
@@ -84,6 +85,20 @@ function CatalogSession({runtime, route}) {
     const response = await fetch(ticket.upload.url, {method: 'POST', body: form}); if (!response.ok) throw new Error('upload_failed');
     return {id: ticket.id, key: ticket.key, name: ticket.name, url: ticket.url, content_type: ticket.content_type};
   }
+  async function createVariantAttribute(preset) {
+    if (!canCreateAttributes || busy) return false;
+    setBusy(true); setError('');
+    try {
+      const attribute = await catalogRequest(runtime, '/v1/catalog/attributes', {method: 'POST', headers: {'Idempotency-Key': crypto.randomUUID()}, body: JSON.stringify({...preset, type: 'SELECT', required: false, sort_order: 0, category_slugs: []})});
+      if (!attribute?.code) throw new Error('invalid_attribute_response');
+      setAttributeOptions(current => [...current.filter(item => item.code !== attribute.code), attribute]);
+      setNotice(`Atributo ${attribute.name} creado. Ya puedes seleccionarlo para generar variantes.`);
+      return true;
+    } catch {
+      setError('No se pudo crear el atributo. Puede que ya exista o que no tengas permiso; revísalo desde Atributos.');
+      return false;
+    } finally { setBusy(false); }
+  }
   async function save(draft) {
     if (!writable || lock.current) return false;
     lock.current = true; setBusy(true); setError('');
@@ -131,7 +146,11 @@ function CatalogSession({runtime, route}) {
     {location.mode === 'list' ? <CatalogListPage {...{definition, route, items, total, loading, busy, writable, refresh, publish, download, error}} serverOffset={query.offset} searchRemote={(search, status, page = 1) => setQuery({search, status, offset: (page - 1) * 15})}/>
       : loading ? <LoadingState label="Cargando ficha…"/>
       : location.mode === 'invalid' || (location.mode === 'view' && !record) ? <a href={catalogHref(route)}>Volver a {definition.title.toLowerCase()}</a>
-      : <CatalogEditorPage key={`${location.mode}:${record?.[definition.key] || 'new'}:${record?.version || ''}`} {...{definition, route, record, writable, busy, save, categoryOptions, brandOptions, supplierOptions, attributeOptions, uploadProductImage}} notify={setNotice}/>}
+      : <CatalogEditorPage
+          key={`${location.mode}:${record?.[definition.key] || 'new'}:${record?.version || ''}`}
+          {...{definition, route, record, writable, busy, save, categoryOptions, brandOptions, supplierOptions, attributeOptions, uploadProductImage, createVariantAttribute, canCreateAttributes}}
+          notify={setNotice}
+        />}
     <ActionDialog open={confirmation?.kind === 'publish'} title="Publicar selección" description={`Se activarán ${confirmation?.selected?.length || 0} registros en el catálogo.`} confirmLabel="Publicar" busy={busy} onCancel={() => setConfirmation(null)} onConfirm={() => confirmPublish(confirmation.selected)}/>
   </section>;
 }
