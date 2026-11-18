@@ -171,6 +171,8 @@ export default function OrderReturns({ order, records = [], permissions = [], no
   const canRequest = permissions.includes("operations.returns.write") && order.status === "DELIVERED" && available.length > 0;
   const canAuthorize = permissions.includes("operations.returns.authorize");
   const canReceive = permissions.includes("catalog.inventory.returns.receive");
+  const payment = order.payment_snapshot || {};
+  const hasFinancialRefund = payment.status === "REFUNDED" || Boolean(payment.refunded_at || payment.refund_reference || payment.credit_note_number);
   async function decide(record, decision) {
     const detail = window.prompt(decision === "AUTHORIZED" ? "Motivo de la autorización" : "Motivo del rechazo");
     if (!detail?.trim()) return;
@@ -196,8 +198,25 @@ export default function OrderReturns({ order, records = [], permissions = [], no
   return (
     <OrderAccordion className="order-returns" title="Devoluciones y reembolsos" description="Expedientes coordinados con Inventario y Finanzas." actions={action}>
       {requesting ? <RequestForm items={available} submit={requestReturn} cancel={() => setRequesting(false)} /> : null}
+      {hasFinancialRefund ? (
+        <article className="return-case return-financial-refund">
+          <header>
+            <div>
+              <strong>Reembolso financiero</strong>
+              <small>{payment.refunded_at ? dateTime(payment.refunded_at) : "Registrado por Finanzas"}</small>
+            </div>
+            <StatusBadge status="REFUNDED">Reembolsado</StatusBadge>
+          </header>
+          <p>Pago devuelto por Finanzas tras la cancelación del pedido.</p>
+          <dl>
+            <div><dt>Método</dt><dd>{payment.refund_method === "cash" ? "Efectivo" : payment.refund_method || "Registrado en Finanzas"}</dd></div>
+            <div><dt>Referencia</dt><dd>{payment.refund_reference || "Sin referencia"}</dd></div>
+            <div><dt>Nota de crédito</dt><dd>{payment.credit_note_number || "Sin nota vinculada"}</dd></div>
+          </dl>
+        </article>
+      ) : null}
       {!records.length && !requesting ? (
-        <p className="od-section-empty">Este pedido no tiene devoluciones registradas.</p>
+        <p className="od-section-empty">{hasFinancialRefund ? "No hay devoluciones físicas registradas para este pedido." : "Este pedido no tiene devoluciones ni reembolsos registrados."}</p>
       ) : (
         records.map((record) => (
           <article className="return-case" key={record.id}>
