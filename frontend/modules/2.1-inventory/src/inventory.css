@@ -228,3 +228,4 @@ body{margin:0}.inventory-app *{box-sizing:border-box}.inventory-app button,.inve
 .inventory-low-glare .inventory-receipt-access select,.inventory-low-glare .inventory-receipt-primary,.inventory-low-glare .inventory-receipt-access>button,.inventory-low-glare .inventory-receipt-refresh{background:#303332;border-color:#4a4d4a;color:var(--inventory-title)}
 .inventory-low-glare .inventory-receipt-primary{background:#3d514e;border-color:#637c76}.inventory-low-glare .inventory-receipt-validation{background:#403a2e;border-color:#6b5a3e;color:#dbc99f}
 @media(max-width:700px){.inventory-receipt-access{align-items:stretch;flex-direction:column}.inventory-receipt-access label,.inventory-receipt-access select{width:100%;min-width:0}.inventory-receipt-logout{margin-left:0!important}}
+.inventory-access-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}

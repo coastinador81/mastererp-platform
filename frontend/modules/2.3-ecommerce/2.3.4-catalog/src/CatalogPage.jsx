@@ -34,7 +34,7 @@ function CatalogSession({runtime, route}) {
   const canCreateAttributes = runtime.permissions?.includes('catalog.attributes.create') === true || runtime.permissions?.includes('catalog.attributes.write') === true;
   const [location, setLocation] = useState(() => locationFor(route));
   const [items, setItems] = useState([]), [total, setTotal] = useState(0), [record, setRecord] = useState(null), [loading, setLoading] = useState(true), [busy, setBusy] = useState(false), [error, setError] = useState(''), [notice, setNotice] = useState('');
-  const [categoryOptions, setCategoryOptions] = useState([]), [brandOptions, setBrandOptions] = useState([]), [supplierOptions, setSupplierOptions] = useState([]), [attributeOptions, setAttributeOptions] = useState([]);
+  const [categoryOptions, setCategoryOptions] = useState([]), [brandOptions, setBrandOptions] = useState([]), [supplierOptions, setSupplierOptions] = useState([]), [attributeOptions, setAttributeOptions] = useState([]), [allAttributeOptions, setAllAttributeOptions] = useState([]);
   const [confirmation, setConfirmation] = useState(null);
   const [query, setQuery] = useState({search: '', status: '', offset: 0}), [revision, setRevision] = useState(0);
   const alive = useRef(true), lock = useRef(false), idempotency = useRef(null), runtimeRef = useRef(runtime);
@@ -73,7 +73,7 @@ function CatalogSession({runtime, route}) {
     ]).then(([brands, suppliers, attributes]) => {
       if (brands.status === 'fulfilled') setBrandOptions(brands.value.filter(item => item.status === 'ACTIVE'));
       if (suppliers.status === 'fulfilled') setSupplierOptions(suppliers.value.filter(item => item.status === 'ACTIVE'));
-      if (attributes.status === 'fulfilled') setAttributeOptions(attributes.value.filter(item => item.status === 'ACTIVE'));
+      if (attributes.status === 'fulfilled') {setAllAttributeOptions(attributes.value); setAttributeOptions(attributes.value.filter(item => item.status === 'ACTIVE'));}
       if (brands.status === 'rejected' || suppliers.status === 'rejected' || attributes.status === 'rejected') setNotice('Algunas opciones del producto no pudieron cargarse.');
     });
     return () => controller.abort();
@@ -89,13 +89,17 @@ function CatalogSession({runtime, route}) {
     if (!canCreateAttributes || busy) return false;
     setBusy(true); setError('');
     try {
-      const attribute = await catalogRequest(runtime, '/v1/catalog/attributes', {method: 'POST', headers: {'Idempotency-Key': crypto.randomUUID()}, body: JSON.stringify({...preset, type: 'SELECT', required: false, sort_order: 0, category_slugs: []})});
+      const existing = allAttributeOptions.find(item => item.code === preset.code);
+      const attribute = existing?.status === 'INACTIVE'
+        ? await catalogRequest(runtime, `/v1/catalog/attributes/${encodeURIComponent(existing.code)}`, {method: 'PATCH', body: JSON.stringify({version: existing.version, status: 'ACTIVE'})})
+        : existing || await catalogRequest(runtime, '/v1/catalog/attributes', {method: 'POST', headers: {'Idempotency-Key': crypto.randomUUID()}, body: JSON.stringify({...preset, type: 'SELECT', required: false, sort_order: 0, category_slugs: []})});
       if (!attribute?.code) throw new Error('invalid_attribute_response');
       setAttributeOptions(current => [...current.filter(item => item.code !== attribute.code), attribute]);
-      setNotice(`Atributo ${attribute.name} creado. Ya puedes seleccionarlo para generar variantes.`);
-      return true;
-    } catch {
-      setError('No se pudo crear el atributo. Puede que ya exista o que no tengas permiso; revísalo desde Atributos.');
+      setAllAttributeOptions(current => [...current.filter(item => item.code !== attribute.code), attribute]);
+      setNotice(existing ? `Atributo ${attribute.name} disponible. Ya puedes seleccionarlo.` : `Atributo ${attribute.name} creado. Ya puedes seleccionarlo para generar variantes.`);
+      return attribute;
+    } catch (createError) {
+      setError(createError?.status === 403 ? 'No tienes permiso para crear o activar atributos.' : 'No se pudo preparar el atributo. Actualiza la ficha e inténtalo nuevamente.');
       return false;
     } finally { setBusy(false); }
   }
