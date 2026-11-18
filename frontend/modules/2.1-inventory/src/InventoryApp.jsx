@@ -221,7 +221,7 @@ function ProductDetailScreen({product,nodes,scope,setScope,selectedNodeId,setSel
   const available=nodeStates.reduce((sum,item)=>sum+item.available,0);
   const value=physical*product.unitCost;
   const rotationQuantity=product.sales.filter(sale=>nodes.some(node=>node.id===sale.nodeId)&&(!dateFrom||sale.date>=dateFrom)&&(!dateTo||sale.date<=dateTo)).reduce((sum,sale)=>sum+sale.quantity,0);
-  const averageInventory=stockByNode.reduce((sum,item)=>sum+(item.averageInventory??item.physical),0);
+  const averageInventory=nodeStates.reduce((sum,item)=>sum+(item.averageInventory??item.physical),0);
   const turnover=averageInventory>0?rotationQuantity/averageInventory:0;
   const rangeDays=getInventoryRangeDays(product.sales.filter(sale=>nodes.some(node=>node.id===sale.nodeId)),dateFrom,dateTo);
   const dailyAverage=rangeDays>0?rotationQuantity/rangeDays:0;
