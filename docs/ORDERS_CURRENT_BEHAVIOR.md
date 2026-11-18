@@ -69,6 +69,11 @@ La primera etapa es exclusivamente administrativa:
 5. Finanzas procesa el reembolso y genera o vincula la nota de crédito.
 6. El expediente se completa solo cuando ambas referencias financieras existen.
 
+La interfaz administrativa implementa los pasos 1 a 4. Tras la recepción
+muestra «Pendiente de Finanzas» y no permite escribir identificadores libres.
+El paso 5 depende del contrato financiero real de factura/nota de crédito; el
+endpoint de coordinación permanece protegido por `administration.returns.settle`.
+
 Estados: `REQUESTED`, `AUTHORIZED`, `REJECTED`, `RECEIVED`, `COMPLETED`. Cada
 transición conserva actor, fecha, detalle y correlación. Se admiten parciales
 sin superar cantidades entregadas ni ya autorizadas. Solicitud desde Storefront

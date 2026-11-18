@@ -46,11 +46,13 @@ jobs:
         run: |
           set -euo pipefail
           test "$(aws sts get-caller-identity --query Account --output text)" = 277352717693
-          python scripts/deploy_orders_dev.py --artifact /tmp/mastererp-dev-orders.zip --source-commit "$GITHUB_SHA" --plan /tmp/orders-plan.json --add-address-correction-route --profile ""
+          python scripts/deploy_orders_dev.py --artifact /tmp/mastererp-dev-orders.zip --source-commit "$GITHUB_SHA" --plan /tmp/orders-plan.json --add-returns-routes --profile ""
       - name: Execute guarded Orders change set
         run: python scripts/deploy_orders_dev.py --plan /tmp/orders-plan.json --execute --profile ""
       - name: Verify protected route
         run: |
           set -euo pipefail
           status=$(curl -sS -o /tmp/orders-address-response -w '%{http_code}' -X POST -H 'Content-Type: application/json' -H 'X-Tenant-Id: 00000000-0000-0000-0000-000000000000' -d '{}' 'https://qx8nmypdhi.execute-api.us-west-1.amazonaws.com/v1/companies/00000000-0000-0000-0000-000000000000/orders/00000000-0000-0000-0000-000000000000/address-corrections')
+          test "$status" = 401
+          status=$(curl -sS -o /tmp/orders-returns-response -w '%{http_code}' -H 'X-Tenant-Id: 00000000-0000-0000-0000-000000000000' 'https://qx8nmypdhi.execute-api.us-west-1.amazonaws.com/v1/companies/00000000-0000-0000-0000-000000000000/orders/00000000-0000-0000-0000-000000000000/returns')
           test "$status" = 401

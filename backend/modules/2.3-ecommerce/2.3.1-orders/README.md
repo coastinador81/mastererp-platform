@@ -8,10 +8,12 @@ repositorio sobre funciones PostgreSQL controladas, adapter HTTP para API
 Gateway v2 y entrada/paquete reproducible de Lambda.
 El comportamiento transversal vigente está descrito en
 [`docs/ORDERS_CURRENT_BEHAVIOR.md`](../../../../docs/ORDERS_CURRENT_BEHAVIOR.md).
-La primera etapa de devoluciones será administrativa: Pedidos coordina el
+La primera etapa de devoluciones es administrativa: Pedidos coordina el
 expediente, Inventario conserva movimientos y Finanzas los reembolsos y notas
-de crédito. Un contrato candidato de datos no acredita endpoints ni
-disponibilidad hasta completar integración y smoke DEV.
+de crédito. El adapter expone lectura, solicitud, decisión, recepción y
+liquidación mediante rutas JWT; cada función reautoriza tenant, empresa,
+permiso y nodo cuando corresponde. La liquidación no debe exponerse en UI hasta
+que Finanzas proporcione referencias verificables de sus documentos reales.
 
 
 ## Contrato y estado de esta capa

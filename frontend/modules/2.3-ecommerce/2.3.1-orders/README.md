@@ -32,9 +32,11 @@ dirección y coordenadas de un pedido elegible mediante el contrato backend; la
 interfaz no geocodifica ni inventa coordenadas y no altera la libreta del cliente.
 El comportamiento vigente, sus propietarios y límites está documentado en
 [`docs/ORDERS_CURRENT_BEHAVIOR.md`](../../../../docs/ORDERS_CURRENT_BEHAVIOR.md).
-El flujo de devoluciones acordado será administrativo y separará solicitud,
-autorización, recepción, reintegro, reembolso y nota de crédito. No se presenta
-como disponible hasta conectar y validar su API en DEV.
+El flujo de devoluciones administrativo muestra expedientes reales, permite
+solicitar, autorizar o rechazar y registrar la recepción con reintegro selectivo
+según permisos. Una devolución recibida permanece explícitamente pendiente de
+Finanzas; la UI no acepta referencias libres para simular un reembolso o una
+nota de crédito.
 
 
 ## Contrato y estado de esta capa

@@ -1,4 +1,4 @@
-"""Publish Orders code and its reviewed address-correction route through its DEV stack."""
+"""Publish Orders code and its reviewed protected routes through its DEV stack."""
 import argparse
 import hashlib
 import json
@@ -23,6 +23,7 @@ def main():
     parser.add_argument("--add-notes-route", action="store_true")
     parser.add_argument("--add-bulk-route", action="store_true")
     parser.add_argument("--add-address-correction-route", action="store_true")
+    parser.add_argument("--add-returns-routes", action="store_true")
     parser.add_argument("--profile", default="andrea_madriz_mastererp")
     args = parser.parse_args()
     session = boto3.Session(profile_name=args.profile or None, region_name="us-west-1")
@@ -65,6 +66,14 @@ def main():
             expected.add("POST /v1/companies/{company_id}/orders/bulk-transitions")
         if plan.get("add_address_correction_route"):
             expected.add("POST /v1/companies/{company_id}/orders/{order_id}/address-corrections")
+        if plan.get("add_returns_routes"):
+            expected.update({
+                "GET /v1/companies/{company_id}/orders/{order_id}/returns",
+                "POST /v1/companies/{company_id}/orders/{order_id}/returns",
+                "POST /v1/companies/{company_id}/orders/{order_id}/returns/{return_id}/decision",
+                "POST /v1/companies/{company_id}/orders/{order_id}/returns/{return_id}/receipt",
+                "POST /v1/companies/{company_id}/orders/{order_id}/returns/{return_id}/settlement",
+            })
         added = set(after) - set(before)
         assert added == expected
         for key in added:
@@ -87,7 +96,7 @@ def main():
         s3.upload_file(str(args.artifact), params["ArtifactBucket"], key)
         name = "orders-sales-" + str(int(time.time()))
         change_args = {}
-        if args.add_notes_route or args.add_bulk_route or args.add_address_correction_route:
+        if args.add_notes_route or args.add_bulk_route or args.add_address_correction_route or args.add_returns_routes:
             template = cfn.get_template(StackName=STACK, TemplateStage="Original")["TemplateBody"]
             source = {"Resources": {"OrdersAddressCorrectionRoute": {
                 "Type": "AWS::ApiGatewayV2::Route", "Properties": {
@@ -96,9 +105,23 @@ def main():
                     "AuthorizationType": "JWT", "AuthorizerId": {"Ref": "AdminJwtAuthorizerId"},
                     "Target": {"Fn::Join": ["/", ["integrations", {"Ref": "OrdersIntegration"}]]}
                 }}}}
+            return_routes = {
+                "OrderReturnsListRoute": "GET /v1/companies/{company_id}/orders/{order_id}/returns",
+                "OrderReturnsCreateRoute": "POST /v1/companies/{company_id}/orders/{order_id}/returns",
+                "OrderReturnsDecisionRoute": "POST /v1/companies/{company_id}/orders/{order_id}/returns/{return_id}/decision",
+                "OrderReturnsReceiptRoute": "POST /v1/companies/{company_id}/orders/{order_id}/returns/{return_id}/receipt",
+                "OrderReturnsSettlementRoute": "POST /v1/companies/{company_id}/orders/{order_id}/returns/{return_id}/settlement",
+            }
+            for logical_id,route_key in return_routes.items():
+                source["Resources"][logical_id] = {"Type":"AWS::ApiGatewayV2::Route","Properties":{
+                    "ApiId":{"Ref":"ExistingAdminApiId"},"RouteKey":route_key,"AuthorizationType":"JWT",
+                    "AuthorizerId":{"Ref":"AdminJwtAuthorizerId"},
+                    "Target":{"Fn::Join":["/",["integrations",{"Ref":"OrdersIntegration"}]]}}}
             additions = (["OrdersNotesRoute"] if args.add_notes_route else []) + (["OrdersBulkTransitionRoute"] if args.add_bulk_route else [])
             if args.add_address_correction_route:
                 additions.append("OrdersAddressCorrectionRoute")
+            if args.add_returns_routes:
+                additions.extend(return_routes)
             for logical_id in additions:
                 assert logical_id not in template["Resources"]
                 template["Resources"][logical_id] = source["Resources"][logical_id]
@@ -118,6 +141,7 @@ def main():
                 "add_notes_route": args.add_notes_route,
                 "add_bulk_route": args.add_bulk_route,
                 "add_address_correction_route": args.add_address_correction_route,
+                "add_returns_routes": args.add_returns_routes,
                 "configuration_sha256": hashlib.sha256(json.dumps(config(), sort_keys=True).encode()).hexdigest()}
         args.plan.parent.mkdir(parents=True, exist_ok=True)
         args.plan.write_text(json.dumps(plan, indent=2) + "\n", encoding="utf-8")
@@ -136,6 +160,9 @@ def main():
         allowed.add("OrdersBulkTransitionRoute")
     if plan.get("add_address_correction_route"):
         allowed.add("OrdersAddressCorrectionRoute")
+    if plan.get("add_returns_routes"):
+        allowed.update({"OrderReturnsListRoute","OrderReturnsCreateRoute","OrderReturnsDecisionRoute",
+                        "OrderReturnsReceiptRoute","OrderReturnsSettlementRoute"})
     assert set(by_id) <= allowed and "OrdersFunction" in by_id
     resource = by_id["OrdersFunction"]
     assert resource["LogicalResourceId"] == "OrdersFunction" and resource["Action"] == "Modify"
@@ -156,6 +183,11 @@ def main():
     if plan.get("add_address_correction_route"):
         address = by_id.get("OrdersAddressCorrectionRoute")
         assert address and address["Action"] == "Add" and address.get("Replacement", "False") == "False"
+    if plan.get("add_returns_routes"):
+        for logical_id in ("OrderReturnsListRoute","OrderReturnsCreateRoute","OrderReturnsDecisionRoute",
+                           "OrderReturnsReceiptRoute","OrderReturnsSettlementRoute"):
+            route=by_id.get(logical_id)
+            assert route and route["Action"] == "Add" and route.get("Replacement", "False") == "False"
     print(json.dumps({"stack": STACK, "changes": [{"LogicalResourceId": r["LogicalResourceId"],
                       "Action": r["Action"], "Replacement": r.get("Replacement", "False")} for r in by_id.values()],
                       "source_commit": plan["source_commit"], "artifact_sha256": plan["artifact_sha256"]}))
@@ -164,10 +196,13 @@ def main():
         cfn.get_waiter("stack_update_complete").wait(StackName=STACK, WaiterConfig={"Delay": 5, "MaxAttempts": 120})
         current_resources = resources()
         assert {key: current_resources[key] for key in plan["physical_ids_before"]} == plan["physical_ids_before"]
-        if plan.get("add_notes_route") or plan.get("add_bulk_route") or plan.get("add_address_correction_route"):
+        if plan.get("add_notes_route") or plan.get("add_bulk_route") or plan.get("add_address_correction_route") or plan.get("add_returns_routes"):
             if plan.get("add_notes_route"): assert "OrdersNotesRoute" in current_resources
             if plan.get("add_bulk_route"): assert "OrdersBulkTransitionRoute" in current_resources
             if plan.get("add_address_correction_route"): assert "OrdersAddressCorrectionRoute" in current_resources
+            if plan.get("add_returns_routes"):
+                assert all(key in current_resources for key in ("OrderReturnsListRoute","OrderReturnsCreateRoute",
+                    "OrderReturnsDecisionRoute","OrderReturnsReceiptRoute","OrderReturnsSettlementRoute"))
             assert_api_after(plan)
         else:
             assert api_state(plan["api_id"], plan["physical_ids_before"]["OrdersIntegration"]) == plan["api_before"]

@@ -7,6 +7,7 @@ import StatusBadge from '../../../../shared/status-badge/StatusBadge.jsx';
 import './order-detail.css';
 import {OrderInvoicePreview, OrderNotesPreview} from './OrderDemoActions.jsx';
 import DeliveryReceipt from './DeliveryReceipt.jsx';
+import OrderReturns from './OrderReturns.jsx';
 
 const fieldLabels={name:'Nombre',email:'Correo',phone:'Teléfono',document:'Documento',company:'Empresa',recipient:'Recibe',address:'Dirección',address_line_1:'Dirección',address_line_2:'Complemento',city:'Ciudad',state:'Estado',postal_code:'Código postal',country:'País',reference:'Referencia',transaction_id:'Transacción',bank:'Banco'};
 function SnapshotFields({value,exclude=[]}){const fields=Object.entries(value||{}).filter(([key,item])=>!exclude.includes(key)&&!/(^id$|_id$|uuid|customer.?id)/i.test(key)&&item!=null&&item!==''&&typeof item!=='object'&&!/^[0-9a-f]{8}-[0-9a-f-]{27}$/i.test(String(item)));return fields.length?<dl className="snapshot-fields">{fields.map(([key,item])=><div key={key}><dt>{fieldLabels[key]||key.replaceAll('_',' ')}</dt><dd>{String(item)}</dd></div>)}</dl>:null}
@@ -69,7 +70,7 @@ function CopyAddress({ address }) {
   return <><button type="button" className="od-button secondary full" disabled={!address} onClick={copy}>{copied === 'Dirección copiada' ? <><FinanceIcon name="check"/>Dirección copiada</> : 'Copiar dirección'}</button><span className="od-copy-feedback" role="status">{copied === 'Dirección copiada' ? '' : copied}</span></>;
 }
 
-export default function OrderDetail({ order, companyProfile, writable, transition, addNote, correctAddress, canCorrectAddress, close, nodeName, canOpenCustomer }) {
+export default function OrderDetail({ order, companyProfile, writable, transition, addNote, correctAddress, canCorrectAddress, requestReturn, decideReturn, receiveReturn, permissions, nodes, close, nodeName, canOpenCustomer }) {
   const delivery = order.delivery_snapshot || {}, customer = order.customer_snapshot || {}, payment = order.payment_snapshot || {};
   const paymentReady=['VALIDATED','PENDING_COLLECTION'].includes(payment.status),next=(NEXT[order.status]||[]).filter(value=>value!=='CANCELLED'&&(value!=='CONFIRMED'||paymentReady)),handoff=HANDOFF[order.status],address=delivery.address||delivery.address_line_1||'';
   const handoffHref=handoff?.route==='routes'&&order.route_ref?detailHref('routes',order.route_ref):handoff?.detail?detailHref(handoff.route,order.id):handoff?listHref(handoff.route):'';
@@ -89,6 +90,7 @@ export default function OrderDetail({ order, companyProfile, writable, transitio
           <div className="od-totals"><span>Subtotal <b>{money(order.subtotal,order.currency)}</b></span><span>Entrega <b>{money(order.delivery_fee,order.currency)}</b></span><span>Total <b>{money(order.total,order.currency)}</b></span></div>
         </section>
         <DeliveryAttempts order={order} companyProfile={companyProfile} attempts={order.delivery_attempts}/>
+        <OrderReturns order={order} records={order.returns||[]} permissions={permissions} nodes={nodes} requestReturn={requestReturn} decideReturn={decideReturn} receiveReturn={receiveReturn}/>
         <OrderHistory history={order.history} attempts={order.delivery_attempts} payment={payment}/>
         <OrderNotesPreview key={order.id} notes={order.notes||[]} writable={writable} addNote={addNote}/>
         {writable&&(NEXT[order.status]||[]).includes('CANCELLED')?<div className="od-cancel"><button type="button" className="od-button danger" onClick={()=>transition('CANCELLED')}>Cancelar pedido</button></div>:null}
