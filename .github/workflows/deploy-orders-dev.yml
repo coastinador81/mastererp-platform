@@ -46,7 +46,7 @@ jobs:
         run: |
           set -euo pipefail
           test "$(aws sts get-caller-identity --query Account --output text)" = 277352717693
-          python scripts/deploy_orders_dev.py --artifact /tmp/mastererp-dev-orders.zip --source-commit "$GITHUB_SHA" --plan /tmp/orders-plan.json --add-returns-routes --profile ""
+          python scripts/deploy_orders_dev.py --artifact /tmp/mastererp-dev-orders.zip --source-commit "$GITHUB_SHA" --plan /tmp/orders-plan.json --profile ""
       - name: Execute guarded Orders change set
         run: python scripts/deploy_orders_dev.py --plan /tmp/orders-plan.json --execute --profile ""
       - name: Verify protected route
