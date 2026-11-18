@@ -19,6 +19,10 @@ cuando aplica, nodo o sucursal. La interfaz nunca concede permisos.
 El checkout resuelve tienda, identidad, productos, precios, dirección y pago en
 backend. La creación requiere una reserva opaca de Inventario e idempotencia.
 Los snapshots son históricos: cambios posteriores del cliente no los reescriben.
+Todo pedido nuevo completa el snapshot del cliente, dentro del mismo tenant y
+empresa, con nombre, correo y teléfono disponibles al momento de crearlo. Si un
+dato no existe, la ficha lo indica explícitamente sin consultar ni mezclar otro
+cliente o empresa.
 
 Los pagos electrónicos permanecen pendientes hasta que Finanzas los valida. La
 confirmación crea o vincula la venta mediante su contrato financiero. El flujo
@@ -34,8 +38,14 @@ completa cuando todas sus paradas están cerradas.
 
 La ficha consulta evidencia de Rutas: resultado, ruta, parada, fecha, repartidor,
 motivo, observaciones, coordenadas, precisión y distancia disponibles. El
-historial consolida eventos persistidos por Pedidos, Finanzas, Preparación y
-Rutas con actor, fecha y referencias. El navegador no fabrica eventos.
+historial consolida eventos persistidos por Pedidos, Finanzas, Preparación,
+Rutas y Devoluciones con actor, fecha y referencias. El navegador no fabrica
+eventos.
+
+En la ficha, el contenido operativo aparece en el orden Productos, Historial,
+Devoluciones e Intentos de entrega. Los tres últimos usan el mismo componente
+de acordeón, cerrado inicialmente, con cabecera, relleno y estados vacíos
+consistentes para evitar una página innecesariamente extensa.
 
 ## Dirección, notas y cancelación
 
