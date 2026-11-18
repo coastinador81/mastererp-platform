@@ -95,7 +95,7 @@ function RouteHistory({ routes, query, setQuery, openId, setOpenId }) {
               open = openId === route.id;
             return (
               <article key={route.id}>
-                <button type="button" onClick={() => setOpenId(open ? "" : route.id)} aria-expanded={open}>
+                <button type="button" className="secondary driver-history-toggle" onClick={() => setOpenId(open ? "" : route.id)} aria-expanded={open}>
                   <span>
                     <strong>Ruta #{route.id.slice(-6).toUpperCase()}</strong>
                     <small>
