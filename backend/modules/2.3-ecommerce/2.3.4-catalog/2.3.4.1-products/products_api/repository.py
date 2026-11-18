@@ -15,6 +15,15 @@ class ProductsRepository:
             "SELECT catalogo.productos_leer(%s,NULL,NULL,1) AS value", (product_id,)
         ).fetchone()["value"]
 
+    def require_write(self) -> None:
+        allowed = self.connection.execute(
+            "SELECT plataforma.has_current_tenant_capability('erp.catalog','catalog.products.write') AS allowed"
+        ).fetchone()["allowed"]
+        if allowed is not True:
+            error = PermissionError("Product media write denied")
+            error.sqlstate = "42501"
+            raise error
+
     def create(self, payload: dict[str, Any], idempotency_key: str) -> dict[str, Any]:
         return self.connection.execute(
             """SELECT catalogo.producto_crear(%s,%s,%s,%s,%s,%s,%s,%s,%s) AS value""",

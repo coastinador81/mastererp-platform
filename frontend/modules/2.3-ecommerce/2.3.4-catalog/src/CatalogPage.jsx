@@ -53,6 +53,12 @@ function CatalogSession({runtime, route}) {
     return () => controller.abort();
   }, [location.mode, route, revision]);
   const refresh = () => setRevision(value => value + 1);
+  async function uploadProductImage(productId, file) {
+    const ticket = await catalogRequest(runtime, `${definition.path}/${encodeURIComponent(productId)}/images/upload-request`, {method: 'POST', body: JSON.stringify({filename: file.name, content_type: file.type, size: file.size})});
+    const form = new FormData(); Object.entries(ticket.upload.fields).forEach(([key, value]) => form.append(key, value)); form.append('file', file);
+    const response = await fetch(ticket.upload.url, {method: 'POST', body: form}); if (!response.ok) throw new Error('upload_failed');
+    return {id: ticket.id, key: ticket.key, name: ticket.name, url: ticket.url, content_type: ticket.content_type};
+  }
   async function save(draft) {
     if (!writable || lock.current) return false;
     lock.current = true; setBusy(true); setError('');
@@ -98,7 +104,7 @@ function CatalogSession({runtime, route}) {
     {location.mode === 'list' ? <CatalogListPage {...{definition, route, items, loading, busy, writable, refresh, publish, download, error}} searchRemote={route === 'products' ? (search, status) => setQuery({search, status}) : null}/>
       : loading ? <LoadingState label="Cargando ficha…"/>
       : location.mode === 'invalid' || (location.mode === 'view' && !record) ? <a href={catalogHref(route)}>Volver a {definition.title.toLowerCase()}</a>
-      : <CatalogEditorPage key={`${location.mode}:${record?.[definition.key] || 'new'}:${record?.version || ''}`} {...{definition, route, record, writable, busy, save, categoryOptions}} notify={setNotice}/>}
+      : <CatalogEditorPage key={`${location.mode}:${record?.[definition.key] || 'new'}:${record?.version || ''}`} {...{definition, route, record, writable, busy, save, categoryOptions, uploadProductImage}} notify={setNotice}/>}
     <ActionDialog open={confirmation?.kind === 'publish'} title="Publicar selección" description={`Se activarán ${confirmation?.selected?.length || 0} registros en el catálogo.`} confirmLabel="Publicar" busy={busy} onCancel={() => setConfirmation(null)} onConfirm={() => confirmPublish(confirmation.selected)}/>
   </section>;
 }

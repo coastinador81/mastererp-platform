@@ -5,6 +5,7 @@ from tenant_security.auth import resolve_auth
 from tenant_security.http import HttpError, api_response, parse_body
 
 from .repository import ProductsRepository
+from .media import ProductMedia
 
 
 def _header(event: dict[str, Any], name: str) -> str | None:
@@ -18,12 +19,22 @@ def _claims(event: dict[str, Any]) -> dict[str, Any]:
     return claims
 
 
-def _request(event: dict[str, Any], repository: ProductsRepository) -> tuple[int, Any]:
+def _request(event: dict[str, Any], repository: ProductsRepository, media: ProductMedia | None = None) -> tuple[int, Any]:
     http = event.get("requestContext", {}).get("http", {})
     method = http.get("method", event.get("httpMethod", "GET")).upper()
     product_id = (event.get("pathParameters") or {}).get("product_id")
     if product_id:
         UUID(product_id)
+    path = http.get("path", event.get("rawPath", ""))
+    if method == "POST" and product_id and path.endswith("/images/upload-request"):
+        repository.require_write()
+        repository.get(product_id)
+        if media is None:
+            raise HttpError(503, "Product media is not configured", code="media_unavailable")
+        try:
+            return 201, media.upload_request(product_id, parse_body(event))
+        except ValueError:
+            raise HttpError(400, "Use a JPG, PNG or WebP image up to 5 MB", code="invalid_image")
     if method == "GET" and product_id:
         return 200, repository.get(product_id)
     if method == "GET":
@@ -65,11 +76,12 @@ def lambda_handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
             raise HttpError(400, "X-Tenant-Id is required", code="invalid_request")
         UUID(tenant_id)
         method = event.get("requestContext", {}).get("http", {}).get("method", "GET").upper()
-        operation = "catalog.products.read" if method == "GET" else "catalog.products.create" if method == "POST" else "catalog.products.update"
+        product_id = (event.get("pathParameters") or {}).get("product_id")
+        operation = "catalog.products.read" if method == "GET" else "catalog.products.update" if product_id else "catalog.products.create"
         with db_connection(tenant_id=tenant_id, correlation_id=correlation_id, operation=operation) as connection:
             auth = resolve_auth(event, connection, verified_claims=claims)
             connection.execute("SELECT set_config('app.current_user_id',%s,true)", (str(auth.user_id),))
-            status, body = _request(event, ProductsRepository(connection))
+            status, body = _request(event, ProductsRepository(connection), ProductMedia(tenant_id) if product_id and method == "POST" else None)
         return api_response(status, body)
     except HttpError as error:
         return api_response(error.status, {"error": {"code": error.code, "message": error.message}, "correlation_id": correlation_id})

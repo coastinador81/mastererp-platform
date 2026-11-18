@@ -28,6 +28,14 @@ class ProductsApiTests(unittest.TestCase):
         with self.assertRaises(HttpError):
             _request(self.event("PATCH", "20000000-0000-0000-0000-000000000001", {"name": "New"}), Mock())
 
+    def test_image_upload_request_is_scoped_to_existing_product(self):
+        repo = Mock(); media = Mock(); media.upload_request.return_value = {"id": "image"}
+        event = self.event("POST", "20000000-0000-0000-0000-000000000001", {"filename": "a.jpg", "content_type": "image/jpeg", "size": 10})
+        event["requestContext"]["http"]["path"] = "/v1/products/20000000-0000-0000-0000-000000000001/images/upload-request"
+        self.assertEqual(_request(event, repo, media), (201, {"id": "image"}))
+        repo.require_write.assert_called_once()
+        repo.get.assert_called_once()
+
     def test_gateway_claims_fail_closed(self):
         with self.assertRaises(HttpError):
             _claims({})
