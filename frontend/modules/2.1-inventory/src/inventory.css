@@ -217,3 +217,14 @@ body{margin:0}.inventory-app *{box-sizing:border-box}.inventory-app button,.inve
 .inventory-low-glare .inventory-eye-toggle[aria-pressed=true]{background:#3b4140;border-color:#555b57;color:#c2c8bc}
 .inventory-low-glare .inventory-app a:focus-visible,.inventory-low-glare .inventory-app button:focus-visible,.inventory-low-glare .inventory-app summary:focus-visible{outline-color:#aab9b3}
 @media(max-width:800px){.inventory-eye-toggle{font-size:0!important;padding:6px 9px!important}.inventory-eye-toggle span{font-size:17px}}
+
+.inventory-receipt-access{display:flex;align-items:flex-end;flex-wrap:wrap;gap:14px;padding:16px;margin:0 0 18px;border:1px solid var(--inventory-border);border-radius:12px;background:var(--inventory-bg)}
+.inventory-receipt-access p{flex:1 1 300px;margin:0}.inventory-receipt-access label{display:grid;gap:6px;min-width:210px;color:var(--inventory-muted);font-size:12px}
+.inventory-receipt-access select{min-width:210px;height:40px;padding:8px 10px;border:1px solid var(--inventory-border);border-radius:8px;background:var(--inventory-surface);color:var(--inventory-title)}
+.inventory-receipt-context{align-self:center;color:var(--inventory-title);font-size:13px}.inventory-receipt-primary,.inventory-receipt-access>button,.inventory-receipt-refresh{min-height:40px;padding:8px 13px;border:1px solid var(--inventory-border);border-radius:8px;background:var(--inventory-surface);color:var(--inventory-blue);font-size:13px}
+.inventory-receipt-primary{border-color:var(--inventory-blue);background:var(--inventory-blue);color:#fff}.inventory-receipt-logout{margin-left:auto!important}.inventory-receipt-refresh:disabled{opacity:.55;cursor:wait}
+.inventory-receipt-detail{margin-top:22px;padding-top:20px;border-top:1px solid var(--inventory-border)}.inventory-receipt-detail h3{margin:0 0 8px;font-size:16px;font-weight:500;color:var(--inventory-title)}
+.inventory-receipt-validation{margin-top:16px;padding:14px 16px;border:1px solid #ead8b4;border-radius:10px;background:#fff9ec;color:#795411;font-size:13px}.inventory-receipt-validation ul{margin:8px 0 0;padding-left:20px;line-height:1.7}
+.inventory-low-glare .inventory-receipt-access select,.inventory-low-glare .inventory-receipt-primary,.inventory-low-glare .inventory-receipt-access>button,.inventory-low-glare .inventory-receipt-refresh{background:#303332;border-color:#4a4d4a;color:var(--inventory-title)}
+.inventory-low-glare .inventory-receipt-primary{background:#3d514e;border-color:#637c76}.inventory-low-glare .inventory-receipt-validation{background:#403a2e;border-color:#6b5a3e;color:#dbc99f}
+@media(max-width:700px){.inventory-receipt-access{align-items:stretch;flex-direction:column}.inventory-receipt-access label,.inventory-receipt-access select{width:100%;min-width:0}.inventory-receipt-logout{margin-left:0!important}}

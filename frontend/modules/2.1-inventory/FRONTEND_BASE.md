@@ -1,6 +1,6 @@
 # Base frontend de Inventario DEV
 
-Propietario: 2.1 Inventario, aplicación independiente. Entrada objetivo: https://inventario-dev.uonify.com. Esta entrega es únicamente base visual pública, sin datos personales, sesión simulada, llamadas API ni operaciones reales. No sustituye el componente funcional existente 2.1.1-inventory/src/Inventory.jsx ni su contrato.
+Propietario: 2.1 Inventario, aplicación independiente. Entrada objetivo: https://inventario-dev.uonify.com. El resto de pantallas conserva su base visual y datos mock. Recepciones pendientes reutiliza la sesión Cognito compartida y consulta en solo lectura las órdenes de compra autorizadas de Finanzas; no sustituye el componente funcional existente 2.1.1-inventory/src/Inventory.jsx ni su contrato.
 
 ## Menú y navegación
 
@@ -19,7 +19,7 @@ Decisión del propietario de esta entrega: Nodos es una capacidad opcional de Ec
 
 Al integrar servicios, Nodos activado permitirá Ecommerce e Inventario multinodo según permisos y contexto autorizado. Preparación pertenece a Ecommerce. Almacenes y ubicaciones internas quedan fuera de alcance. No se trasladan carpetas históricas 2.1.2-nodes/2.1.3-preparation en esta tarea ni se cambian contratos API/SQL por una decisión de menú; la transición organizativa queda pendiente y explícita.
 
-Maestro de productos reutilizado de Catálogo. Recepciones referenciará órdenes de Finanzas sin duplicar documentos ni generar deuda. Reglas, permisos y contratos pendientes antes de implementar operaciones.
+Maestro de productos reutilizado de Catálogo. Recepciones Pendientes consulta órdenes de Finanzas en modo lectura, con sesión Cognito y permisos de Compras existentes. El usuario selecciona espacio y empresa autorizados. La API no registra recepciones ni afecta existencias; Recibidas permanece vacía hasta que exista el flujo de registro. Las órdenes sin líneas vinculables o sin validación completa se muestran como “Requiere validación”.
 
 ## Build y publicación
 
@@ -27,7 +27,7 @@ Desde esta carpeta: `npm ci`, `npm run dev -- --port 5182 --strictPort`, `npm ru
 
 Pipeline preparado: `.github/workflows/publish-inventory-dev.yml`, rama dev, OIDC con rol exclusivo. Variables no secretas INVENTORY_DEV_BUCKET e INVENTORY_DEV_DISTRIBUTION_ID provienen de outputs del stack mastererp-dev-inventory-frontend. Artefacto dist; assets inmutables y entrada no-cache, invalidación CloudFront. No incluye APIs ni callback Cognito. El rol no tiene acceso a otros buckets/distribuciones. Publicar el workflow requiere commit/push explícitos; el bootstrap inicial puede publicar el mismo artefacto con AWS CLI, documentado en Infrastructure.
 
-Ver `docs/UX_UI_STANDARD.md` y `docs/FRONTEND_ARCHITECTURE.md` desde la raíz. La base visual no acredita inventario funcional, multinodo, autenticación ni autorización.
+Ver `docs/UX_UI_STANDARD.md` y `docs/FRONTEND_ARCHITECTURE.md` desde la raíz. La mayoría de pantallas conserva datos mock; Recepciones pendientes usa Cognito y autorización de lectura para consultar Finanzas. La vista no ejecuta operaciones de inventario.
 
 ## Verificación de esta entrega
 

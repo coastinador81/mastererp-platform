@@ -19,6 +19,17 @@ Capa: backend. Dependencias: contexto autenticado, tenant y contratos del padre 
 Estado verificable: pruebas unitarias del adapter, ZIP determinista y pruebas
 SQL de stock, reserva, consumo e insuficiencia.
 
+## Recepciones de órdenes de compra
+
+`mastererp-dev-inventory-receipts` añade lectura y validación de órdenes mediante
+la función controlada `administracion.purchase_read`, propiedad de Finanzas.
+Expone listado y detalle, omitiendo importes en su respuesta. Requiere la
+capacidad vigente `erp.finance / administration.purchases.read`. No registra
+recepciones ni modifica existencias. El contrato de Compras DEV entrega
+borradores sin aprobación/emisión ni producto de Catálogo por línea; por ello
+la validación los marca como no aptos para recibir hasta que Finanzas publique
+esos datos y se implemente el seguimiento de recepciones.
+
 Validaciones: estructura local mediante `scripts/validate_structure.py`, E2E
 Storefront y consistencia Pedido–Reserva. Los escritores legacy del corte están
 retirados reversiblemente; el retiro físico requiere autorización separada.
