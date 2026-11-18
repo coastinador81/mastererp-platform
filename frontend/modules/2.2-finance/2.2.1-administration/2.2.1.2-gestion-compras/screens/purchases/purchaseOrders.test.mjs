@@ -1,0 +1,14 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {loadOrderDirectory,readOrder,matchesOrder} from './purchaseOrders.mjs';
+const company='company-a',tenant='tenant-a',endpoint='https://example.invalid/ordenes';
+const row=(id,extra={})=>({id,company_id:company,clase:'orden_compra',fecha:'2026-11-18',proveedor:'Empaques Rio Claro',numero:'PRUEBA-OC-'+id,moneda:'USD',total:'1234567890123456.78',estado:'borrador',...extra});
+const options={endpoint,tenant,company,isCurrent:()=>true};
+test('reads all authorized keyset pages, not only the first page',async()=>{let calls=0;const items=await loadOrderDirectory({...options,request:async(url,init)=>{assert.equal(init.headers['X-MasterERP-Tenant-Id'],tenant);assert.equal(new URL(url).searchParams.get('company_id'),company);calls++;return {data:{items:[row(String(calls))],next_cursor:calls<3?String(calls):null}};}});assert.equal(items.length,3);assert.equal(calls,3);});
+test('does not expose partial data after a failed later page',async()=>{let calls=0;await assert.rejects(loadOrderDirectory({...options,request:async()=>{if(++calls===2)throw Error('failed');return {data:{items:[row('1')],next_cursor:'1'}};}}));});
+test('rejects cross-company records and wrong document kind',async()=>{for(const extra of [{company_id:'other-company'},{clase:'factura_proveedor'}])await assert.rejects(loadOrderDirectory({...options,request:async()=>({data:{items:[row('1',extra)],next_cursor:null}})}),/invalid_order_response/);});
+test('rejects a repeated pagination cursor',async()=>{await assert.rejects(loadOrderDirectory({...options,request:async()=>({data:{items:[row('1')],next_cursor:'1'}})}),/order_directory_incomplete/);});
+test('suppresses responses from an obsolete company/context',async()=>{let live=true;const result=await loadOrderDirectory({...options,isCurrent:()=>live,request:async()=>{live=false;return {data:{items:[row('1')],next_cursor:null}};}});assert.equal(result,null);});
+test('reads a persisted detail and preserves decimal strings',async()=>{const result=await readOrder({...options,id:'order-1',request:async()=>({data:row('order-1',{lineas:[{descripcion:'Producto',cantidad:'1',precio_unitario:'1234567890123456.78',total:'1234567890123456.78'}]})})});assert.equal(result.total,'1234567890123456.78');});
+test('rejects mismatched detail identity and missing lines',async()=>{await assert.rejects(readOrder({...options,id:'order-1',request:async()=>({data:row('other',{lineas:[]})})}),/invalid_order_response/);});
+test('combines live directory filters without inventing API search fields',()=>{const filters={from:'2026-11-01',to:'2026-11-30',currency:'USD',status:'borrador',search:'río'};assert.equal(matchesOrder(row('1'),filters),true);assert.equal(matchesOrder(row('1',{moneda:'VES'}),filters),false);assert.equal(matchesOrder(row('1',{fecha:'2026-10-01'}),filters),false);});

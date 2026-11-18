@@ -6,7 +6,7 @@ const itemIcons={clientes:'clients',proveedores:'supplier',
  Cotizaciones:'quote',Ventas:'sales',Facturación:'document'};
 const devDesign=import.meta.env.DEV||import.meta.env.MODE==='dev';
 const designViews=['resumen-compras','sugerencias-compras'];
-const previewViews=['resumen-compras','solicitudes-compra','sugerencias-compras','ordenes-compra'];
+const previewViews=['resumen-compras','solicitudes-compra','sugerencias-compras'];
 const groups = [
   ['2.2.1.1', 'Gestión comercial', [['Clientes','clientes'],['Cotizaciones'],['Ventas','ventas'],['Facturación']]],
   ['2.2.1.2', 'Gestión de compras', [['Proveedores','proveedores'],['Compras','solicitudes-compra'],['Órdenes de compra','ordenes-compra'],['Facturas de proveedores','facturas-proveedores']]],
@@ -16,7 +16,7 @@ const groups = [
 ];
 export default function FinanceNavigation({allowed,path,navigate,permissions=[],previewOnly=false,onClose}) {
   useEffect(()=>{const close=e=>{if(e.key==='Escape'&&!e.defaultPrevented&&document.querySelector('.finance-app .integrated-nav:is(.is-open,:focus-within)')){onClose?.();document.querySelector('.finance-app .menu-toggle')?.focus();}};const media=matchMedia('(max-width:800px)');const reset=()=>onClose?.();document.addEventListener('keydown',close);media.addEventListener('change',reset);return()=>{document.removeEventListener('keydown',close);media.removeEventListener('change',reset);};},[onClose]);
-  const canOpen=route=>previewOnly?[...previewViews,'clientes','proveedores','ventas','facturas-proveedores'].includes(route):(devDesign&&designViews.includes(route))||allowed&&permissions.includes(route==='ventas'?'administration.read':route==='cobros'?'administration.receipts.validate':['clientes','proveedores'].includes(route)?'administration.parties.read':'administration.purchases.read');
+  const canOpen=route=>previewOnly?[...previewViews,'ordenes-compra','clientes','proveedores','ventas','facturas-proveedores'].includes(route):(devDesign&&designViews.includes(route))||allowed&&permissions.includes(route==='ventas'?'administration.read':route==='cobros'?'administration.receipts.validate':['clientes','proveedores'].includes(route)?'administration.parties.read':'administration.purchases.read');
   return <nav className="finance-navigation" aria-label="Administración">
     <p className="nav-caption">FINANZAS</p>
     {allowed ? <a href="/" title="Resumen" aria-current={path==='/modulos/finanzas'?'page':undefined}><FinanceIcon name="summary"/><span className="finance-nav-label">Resumen</span></a> : null}
@@ -28,6 +28,6 @@ export default function FinanceNavigation({allowed,path,navigate,permissions=[],
         <span className="finance-nav-pending" aria-disabled="true"><FinanceIcon name={itemIcons[route]||itemIcons[label]||'document'}/><span>{label}</span><small>{previewOnly?'Vista previa':route?'Sin acceso':'Pendiente'}</small></span>}</li>)}</ul>
     </details>;})}
     </div></details>
-    {previewOnly&&<div className="finance-nav-group finance-real-links"><p className="nav-caption">OPERACIONES CON DATOS REALES</p><a className="subnav" href="/?vista=solicitudes-compra&datos=reales"><FinanceIcon name="document"/><span>Compras registradas</span></a><a className="subnav" href="/?vista=ordenes-compra&datos=reales"><FinanceIcon name="order"/><span>Ordenes registradas</span></a></div>}
+    {previewOnly&&<div className="finance-nav-group finance-real-links"><p className="nav-caption">OPERACIONES CON DATOS REALES</p><a className="subnav" href="/?vista=solicitudes-compra&datos=reales"><FinanceIcon name="document"/><span>Compras registradas</span></a></div>}
   </nav>;
 }

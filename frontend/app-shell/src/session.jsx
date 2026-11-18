@@ -55,7 +55,7 @@ export function WorkspaceProvider({children}) {
       try {
         if(window.location.pathname==='/auth/callback') {await completeLogin(config);await discover();window.dispatchEvent(new HashChangeEvent('hashchange'));}
         else if(await restoreSession(config)) await discover();
-        else if(standalone) await login(config,{prompt:'none'});
+        else if(standalone) {rememberFinanceRoute();await login(config,{prompt:'none'});}
       } catch {end('No se pudo validar el acceso. Vuelve a intentarlo.');}
       finally {setAuthenticating(false);}
     })();
@@ -89,13 +89,16 @@ export function WorkspaceProvider({children}) {
     } finally {if(epoch===generation.current)setLoading(false);}
   };
   useEffect(()=>{if(context?.tenant_id!==tenant)refresh();},[tenant,signedIn,context?.tenant_id]);
-  const beginLogin = () => {
-    if(authenticating)return Promise.resolve();
-    setAuthenticating(true);setError('');
+  function rememberFinanceRoute() {
     if(window.location.origin==='https://finanzas-dev.uonify.com'&&financeUrl(workspacePath(window.location,true))&&financeUrl(workspacePath(window.location,true))!=='/'){
       // Only a logical, non-sensitive route is retained by the existing one-use PKCE transaction.
       window.history.replaceState(null,'','/#'+workspacePath(window.location,true));
     }
+  }
+  const beginLogin = () => {
+    if(authenticating)return Promise.resolve();
+    setAuthenticating(true);setError('');
+    rememberFinanceRoute();
     return login(config).catch(error=>{setAuthenticating(false);throw error;});
   };
   const denied = () => {invalidate();sessionStorage.removeItem('mastererp.dev.selection');setContext(null);setCompany('');setError('Acceso denegado. Tus permisos o el módulo pueden haber cambiado.');};

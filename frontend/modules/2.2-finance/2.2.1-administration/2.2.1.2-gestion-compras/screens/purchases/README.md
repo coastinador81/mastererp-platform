@@ -31,3 +31,7 @@ Desarrolladores e IA deben consultar el [patrón común de tres pasos](../../../
 El resumen local incorpora filtros por nodo, fecha desde/hasta y moneda (Bs. por defecto, USD o EUR; sin opción Todas las monedas). Los nodos son ejemplos identificados únicamente en la vista de diseño. Los filtros cambian el ámbito visual, no consultan APIs ni calculan/convierten importes; las definiciones de fecha de corte, agregación y tasas se decidirán antes de conectar datos.
 
 Resumen es la primera entrada de Gestión de compras en la revisión local. Compras queda libre del resumen y conserva sus CRUD y contratos existentes. Es una demostración visual y no modifica backend. La publicación usa la entrada /?demo=compras&vista=resumen-compras.
+
+## Ordenes conectadas
+
+`PurchaseOrders.jsx` lista y consulta los borradores reales de la empresa activa mediante mastererp-dev-adm-compras; `purchaseOrders.mjs` valida y recorre las paginas autorizadas antes de filtrar. Los enlaces antiguos de demostracion para ordenes tambien entran por la sesion real, sin filas ficticias de respaldo. Crear/editar reutiliza Purchases.jsx. Nodo y entrega requieren ampliar el contrato; no se inventan datos. Ver el contrato y procedimiento de pruebas enlazados arriba.
