@@ -85,7 +85,6 @@
   outline-offset: 3px;
 }
 .finance-app button {
-  background: var(--finance-primary);
   border-radius: var(--finance-radius-small);
   padding: var(--finance-space-2) var(--finance-space-4);
   font-size: var(--finance-font-body);
