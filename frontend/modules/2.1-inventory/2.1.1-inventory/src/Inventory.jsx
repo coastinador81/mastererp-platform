@@ -14,9 +14,11 @@ export default function Inventory({ runtime }) {
   const [nodes, setNodes] = useState([]),
     [node, setNode] = useState(""),
     [items, setItems] = useState([]),
+    [query, setQuery] = useState(""),
     [selected, setSelected] = useState(null),
     [error, setError] = useState(""),
-    write = runtime.permissions.includes("catalog.inventory.write");
+    write = runtime.permissions.includes("catalog.inventory.write"),
+    visible = items.filter(item => `${item.product_name} ${item.product_code}`.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()));
   const load = useCallback(
     async (id = node) => {
       if (!id) return;
@@ -102,9 +104,13 @@ export default function Inventory({ runtime }) {
           {error}
         </p>
       )}
+      <label className="inventory-search">
+        Buscar producto o referencia
+        <input type="search" value={query} onChange={event => setQuery(event.target.value)} placeholder="Nombre o PRD-…" />
+      </label>
       <div className="layout">
         <div className="list">
-          {items.map((i) => (
+          {visible.map((i) => (
             <a className="inventory-row" key={i.product_id} href={`#/inventory/${encodeURIComponent(i.product_id)}/view`}>
               <span>
                 <strong>{i.product_name}</strong>
@@ -116,6 +122,7 @@ export default function Inventory({ runtime }) {
               </span>
             </a>
           ))}
+          {!visible.length && <p>No encontramos productos para este nodo.</p>}
         </div>
         <aside className="panel operation-detail prestashop-detail">
           {selected && <a className="quiet detail-back" href="#/inventory">← Volver a inventario</a>}
