@@ -131,6 +131,15 @@ venta/Finanzas, parada/ruta, disponibilidad del repartidor, historial y
 reintento. Ninguna etapa puede resolverse mediante escrituras directas o
 dejando efectos parciales.
 
+El cierre financiero de una cancelación pagada usa una ficha propia en
+Tesorería/Cobros. El comando requiere cuenta o caja de la misma moneda, monto
+total, fecha, método, referencia e idempotencia. Registra una operación de tipo
+`pago` y un movimiento de salida append-only. Para no fabricar documentos
+fiscales, sólo permite vincular una nota de crédito de cliente previamente
+emitida y sellada por Finanzas o su proveedor fiscal, compatible con el mismo
+tenant, empresa, cliente, pedido, moneda y monto. Al confirmar, Cobros cambia a
+`REFUNDED` y Pedidos recibe el evento `ORDER_REFUNDED`.
+
 Política aprobada e implementada en el candidato local `066`:
 
 - `PENDING`, incluido pago pendiente o rechazado: cancelar, liberar reserva y
