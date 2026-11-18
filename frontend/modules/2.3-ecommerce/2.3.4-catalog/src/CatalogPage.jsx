@@ -94,7 +94,9 @@ function CatalogSession({runtime, route}) {
       const saved = await catalogRequest(runtime, record ? `${definition.path}/${encodeURIComponent(record[definition.key])}` : definition.path, {method: record ? 'PATCH' : 'POST', body, headers: record ? {} : {'Idempotency-Key': idempotency.current.key}});
       if (!alive.current) return false;
       if (!saved?.[definition.key]) throw new Error('Respuesta de guardado incompleta.');
-      setNotice('Registro guardado. Las vistas previas locales no se envían al catálogo.');
+      setNotice(route === 'products'
+        ? 'Producto guardado. Para verlo en Storefront debe estar activo y tener existencias disponibles con ventas habilitadas en el nodo de la tienda.'
+        : 'Registro guardado correctamente.');
       setRecord(saved); idempotency.current = null;
       if (!record) window.location.hash = catalogHref(route, saved[definition.key]);
       return true;
