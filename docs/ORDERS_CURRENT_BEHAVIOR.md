@@ -137,6 +137,9 @@ Política aprobada e implementada en el candidato local `066`:
   no crear efectos financieros nuevos.
 - `CONFIRMED`: cancelar antes de preparación, liberar reserva y coordinar la
   anulación de la venta sin exigir al operador permisos internos de Finanzas.
+  La validación original del cobro se conserva como historial. Cobros muestra
+  el efecto posterior como `Reembolso pendiente` (`REFUND_REQUIRED`) y no lo
+  presenta como reembolsado hasta que Finanzas registre el egreso real.
 - `PREPARING`: cancelar preparación y pedido en la misma transacción, liberar
   la reserva todavía no consumida y conservar el avance en auditoría.
 - `READY`: sólo cancelar con reversión explícita de las unidades preparadas al
