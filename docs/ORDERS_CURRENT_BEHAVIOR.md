@@ -99,6 +99,57 @@ Pedidos, Rutas, Mi ruta y Repartidores usan la notificación flotante compartida
 Los mensajes permanecen visibles hasta que el usuario los cierre, no dependen
 del scroll y traducen códigos técnicos conocidos a instrucciones legibles.
 
+### Cierre funcional del punto 8
+
+El alcance de Pedidos quedó validado funcionalmente en DEV el 18 de noviembre
+de 2026: solicitud, autorización, recepción, condición, reintegro apto a
+Inventario, expediente, historial y bloqueo de cantidades ya comprometidas.
+La prueba real terminó correctamente en `RECEIVED` y mostró «Pendiente de
+Finanzas». Esto cierra el punto 8 dentro de Pedidos.
+
+`COMPLETED` no se simula desde Ecommerce. Finanzas debe crear o vincular el
+egreso y la nota de crédito reales del mismo `tenant_id`, empresa, cliente,
+pedido y devolución. Esa conciliación es una dependencia financiera separada,
+no un pendiente de la recepción gestionada por Pedidos.
+
+## Punto 9: cancelaciones por etapa
+
+Estado auditado al iniciar el punto 9:
+
+| Etapa solicitada | Estado actual | Resultado vigente |
+| --- | --- | --- |
+| Pago pendiente | Pedido `PENDING` | Cancelación coordinada disponible. |
+| Pago rechazado | Pedido `PENDING` con pago `REJECTED` | Usa el mismo contrato; falta prueba específica. |
+| Confirmado | `CONFIRMED` | Disponible antes de preparación; coordina reserva y venta. |
+| Preparación | `PREPARING` | El dominio la enumera, pero PostgreSQL la rechaza. |
+| Listo | `READY` | No existe cancelación coordinada. |
+| En ruta | `OUT_FOR_DELIVERY` | No existe cancelación coordinada con parada, ruta y conductor. |
+
+El punto 9 no está cerrado. La matriz debe definir y probar por etapa: permiso,
+motivo, versión, idempotencia, efectos en reserva/Inventario, preparación,
+venta/Finanzas, parada/ruta, disponibilidad del repartidor, historial y
+reintento. Ninguna etapa puede resolverse mediante escrituras directas o
+dejando efectos parciales.
+
+Política aprobada e implementada en el candidato local `066`:
+
+- `PENDING`, incluido pago pendiente o rechazado: cancelar, liberar reserva y
+  no crear efectos financieros nuevos.
+- `CONFIRMED`: cancelar antes de preparación, liberar reserva y coordinar la
+  anulación de la venta sin exigir al operador permisos internos de Finanzas.
+- `PREPARING`: cancelar preparación y pedido en la misma transacción, liberar
+  la reserva todavía no consumida y conservar el avance en auditoría.
+- `READY`: sólo cancelar con reversión explícita de las unidades preparadas al
+  nodo original y movimiento de Inventario trazable.
+- `OUT_FOR_DELIVERY`: no cancelar administrativamente mientras la mercancía
+  siga en ruta. Debe cerrarse la parada como no entregada y registrarse la
+  devolución física antes de reintegrar existencias o cancelar definitivamente.
+
+La UI local sólo ofrece `CANCELLED` hasta `READY`. PostgreSQL conserva la
+autoridad y vuelve a comprobar estado, versión y efectos coordinados. El punto 9
+seguirá abierto hasta aplicar el candidato mediante workflow y ejecutar la
+matriz funcional autenticada en DEV.
+
 ## Errores y validación
 
 - `400 invalid_request`: datos incompletos o fuera de formato.

@@ -43,6 +43,18 @@ Las notas internas se persisten de forma idempotente mediante
 `POST /v1/companies/{company_id}/orders/{order_id}/notes`. La cancelación previa
 al despacho coordina pedido, reserva de inventario y venta vinculada en una sola
 transacción; si alguna autorización o precondición falla, no deja efectos parciales.
+
+El contrato administrativo de devoluciones está publicado y validado en DEV
+hasta `RECEIVED`: lectura, solicitud idempotente, autorización/rechazo y
+recepción con reintegro selectivo. El adapter nunca completa el expediente con
+referencias libres; `COMPLETED` exige los registros reales que genera Finanzas.
+La disponibilidad restante se vuelve a validar en PostgreSQL aunque la UI ya
+oculte líneas agotadas.
+
+Para el punto 9, esta capa enruta `CANCELLED` al comando coordinado SQL. El
+estado actual comprobado sólo cubre `PENDING` y `CONFIRMED`; no debe anunciar
+cancelación desde `PREPARING`, `READY` u `OUT_FOR_DELIVERY` hasta que la matriz
+de efectos propietarios exista en datos y tenga pruebas integradas.
 La lectura y escritura de notas tipa explícitamente los UUID en el adapter para
 resolver las firmas PostgreSQL controladas sin depender de parámetros `unknown`.
 El listado expone filtros y paginación keyset mediante `next_cursor`. Las

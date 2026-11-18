@@ -37,6 +37,15 @@ solicitar, autorizar o rechazar y registrar la recepción con reintegro selectiv
 según permisos. Una devolución recibida permanece explícitamente pendiente de
 Finanzas; la UI no acepta referencias libres para simular un reembolso o una
 nota de crédito.
+El alcance de Pedidos de este flujo fue validado en DEV hasta `RECEIVED`: una
+prueba real confirmó solicitud, decisión, recepción, movimiento de Inventario,
+historial y bloqueo de una segunda devolución sin unidades disponibles. El
+cierre monetario y fiscal continúa bajo responsabilidad de Finanzas.
+
+El punto 9, cancelaciones por etapa, está en auditoría. El contrato publicado
+cubre `PENDING` y `CONFIRMED`; todavía no acredita coordinación completa para
+`PREPARING`, `READY` ni `OUT_FOR_DELIVERY`. La interfaz no debe habilitar esas
+etapas hasta que el backend coordine sus efectos propietarios.
 
 
 ## Contrato y estado de esta capa

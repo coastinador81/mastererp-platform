@@ -1,6 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {eventReasonLabel,operationalHistory,returnableItems} from './orderView.js';
+import {NEXT,eventReasonLabel,operationalHistory,returnableItems} from './orderView.js';
+
+test('offers cancellation before dispatch but not while goods are in route',()=>{
+  assert.ok(NEXT.PENDING.includes('CANCELLED'));
+  assert.ok(NEXT.CONFIRMED.includes('CANCELLED'));
+  assert.ok(NEXT.PREPARING.includes('CANCELLED'));
+  assert.ok(NEXT.READY.includes('CANCELLED'));
+  assert.equal(NEXT.OUT_FOR_DELIVERY,undefined);
+});
 
 test('translates internal order event codes for users',()=>{
   assert.equal(eventReasonLabel('STOREFRONT_CHECKOUT'),'Pedido realizado en la tienda');

@@ -9,7 +9,7 @@ export const STATUS = {
 };
 
 // Manual order actions; Preparación and Rutas own the later stages.
-export const NEXT = { PENDING: ['CONFIRMED', 'CANCELLED'], CONFIRMED: ['CANCELLED'] };
+export const NEXT = { PENDING: ['CONFIRMED', 'CANCELLED'], CONFIRMED: ['CANCELLED'], PREPARING: ['CANCELLED'], READY: ['CANCELLED'] };
 export const HANDOFF = {
   CONFIRMED: { title: 'Siguiente paso: iniciar la preparación', note: 'La preparación se inicia desde el módulo Preparación.', route: 'preparation', label: 'Ir a preparación', detail: true },
   PREPARING: { title: 'Pedido en preparación', note: 'Marca los productos y completa la preparación para dejarlo listo.', route: 'preparation', label: 'Continuar en preparación', detail: true },

@@ -69,6 +69,7 @@ TRANSITIONS: dict[tuple[OrderStatus, OrderStatus], TransitionRule] = {
     (OrderStatus.CONFIRMED, OrderStatus.CANCELLED): TransitionRule(TransitionOwner.ORDERS),
     (OrderStatus.PREPARING, OrderStatus.READY): TransitionRule(TransitionOwner.PREPARATION),
     (OrderStatus.PREPARING, OrderStatus.CANCELLED): TransitionRule(TransitionOwner.ORDERS),
+    (OrderStatus.READY, OrderStatus.CANCELLED): TransitionRule(TransitionOwner.ORDERS),
     (OrderStatus.READY, OrderStatus.OUT_FOR_DELIVERY): TransitionRule(TransitionOwner.ROUTES),
     (OrderStatus.OUT_FOR_DELIVERY, OrderStatus.DELIVERED): TransitionRule(TransitionOwner.DELIVERY),
 }

@@ -62,6 +62,8 @@ class OrdersDomainTests(unittest.TestCase):
     def test_each_transition_has_one_owner(self):
         accepted = (
             ("PENDING", "CANCELLED", TransitionOwner.ORDERS),
+            ("PREPARING", "CANCELLED", TransitionOwner.ORDERS),
+            ("READY", "CANCELLED", TransitionOwner.ORDERS),
             ("CONFIRMED", "PREPARING", TransitionOwner.PREPARATION),
             ("PREPARING", "READY", TransitionOwner.PREPARATION),
             ("READY", "OUT_FOR_DELIVERY", TransitionOwner.ROUTES),
