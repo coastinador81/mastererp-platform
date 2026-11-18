@@ -5,3 +5,5 @@ export function paymentExchange(payment = {}) {
     source: String(payment.exchangeRateSource || ''),
   };
 }
+
+export const withFinancialTrace=row=>row.order_status==='CANCELLED'&&row.payment?.status==='VALIDATED'?{...row,financial_status:'REFUND_REQUIRED'}:row;

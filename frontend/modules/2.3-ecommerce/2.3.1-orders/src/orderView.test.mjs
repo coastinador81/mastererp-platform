@@ -13,6 +13,7 @@ test('offers cancellation before dispatch but not while goods are in route',()=>
 test('translates internal order event codes for users',()=>{
   assert.equal(eventReasonLabel('STOREFRONT_CHECKOUT'),'Pedido realizado en la tienda');
   assert.equal(eventReasonLabel('PAYMENT_VALIDATED'),'Pago validado');
+  assert.equal(eventReasonLabel('Manual operation'),'Pedido cancelado manualmente');
   assert.equal(eventReasonLabel('PREPARATION_STARTED'),'Preparación iniciada');
   assert.equal(eventReasonLabel('ROUTE_STARTED'),'Ruta iniciada');
 });
