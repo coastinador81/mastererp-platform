@@ -7,10 +7,10 @@ export function OrderInvoicePreview({order}) {
   function download() {
     const text = ['VISTA PREVIA — NO ES UNA FACTURA FISCAL', 'Documento de demostración generado localmente. No acredita pago.', `Pedido: ${order.number}`, '', ...order.items.map(item => `${item.product_name || 'Producto'} · ${item.quantity} · ${money(item.subtotal, order.currency)}`), '', `Subtotal: ${money(order.subtotal, order.currency)}`, `Entrega: ${money(order.delivery_fee, order.currency)}`, `Total: ${money(order.total, order.currency)}`].join('\n');
     const url = URL.createObjectURL(new Blob([text], {type: 'text/plain;charset=utf-8'}));
-    const anchor = document.createElement('a'); anchor.href = url; anchor.download = `pedido-${String(order.number).replace(/[^a-zA-Z0-9_-]/g, '')}-demo.txt`; anchor.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+    const anchor = document.createElement('a'); anchor.href = url; anchor.download = `pedido-${String(order.number).replace(/[^a-zA-Z0-9_-]/g, '')}.txt`; anchor.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
     setMessage('Vista previa descargada. La factura fiscal aún no está conectada.');
   }
-  return <div><button type="button" className="od-button secondary" onClick={download}>Descargar factura (demo)</button>{message && <small role="status">{message}</small>}</div>;
+  return <div><button type="button" className="od-button secondary" onClick={download}>Descargar factura</button>{message && <small role="status">{message}</small>}</div>;
 }
 export function OrderNotesPreview({notes,writable,addNote}) {
   const [draft,setDraft]=useState(''),[saving,setSaving]=useState(false);

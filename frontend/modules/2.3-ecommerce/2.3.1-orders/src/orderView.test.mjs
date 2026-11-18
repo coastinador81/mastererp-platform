@@ -25,3 +25,13 @@ test('consolidates historical route attempts without duplicating delivery events
   assert.equal(result[1].source,'routes');
   assert.equal(result[1].detail,'Cliente ausente');
 });
+
+test('includes return lifecycle events in the consolidated order history',()=>{
+  const returns=[{id:'return-1',history:[
+    {id:'event-1',status:'REQUESTED',detail:'Producto defectuoso',created_at:'2026-11-17T10:00:00Z'},
+    {id:'event-2',status:'RECEIVED',detail:'Recepción física verificada',created_at:'2026-11-17T12:00:00Z'},
+  ]}];
+  const result=operationalHistory([],[],returns);
+  assert.deepEqual(result.map(event=>event.reason),['RETURN_REQUESTED','RETURN_RECEIVED']);
+  assert.equal(eventReasonLabel(result[1].reason),'Devolución recibida e inventario registrado');
+});

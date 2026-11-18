@@ -17,6 +17,16 @@
 .ecommerce-app .figma-order-detail .od-button.danger{border-color:#f3c4bf;background:var(--uon-surface);color:var(--uon-error)}
 .ecommerce-app .figma-order-detail .od-button.danger:hover:not(:disabled){background:var(--uon-error-surface)}
 .ecommerce-app .figma-order-detail .od-button.full{width:100%;margin:0}
+.ecommerce-app .figma-order-detail .od-accordion>summary{display:flex;min-height:64px;box-sizing:border-box;align-items:center;justify-content:space-between;gap:16px;padding:16px 20px;cursor:pointer;list-style:none}
+.ecommerce-app .figma-order-detail .od-accordion>summary::-webkit-details-marker{display:none}
+.ecommerce-app .figma-order-detail .od-accordion>summary>span:first-child{display:grid;gap:5px}
+.ecommerce-app .figma-order-detail .od-accordion>summary strong{color:var(--uon-neutral-900);font-size:16px}
+.ecommerce-app .figma-order-detail .od-accordion>summary small{color:var(--uon-neutral-600);font-size:11px;font-weight:400}
+.ecommerce-app .figma-order-detail .od-accordion-controls{display:flex;align-items:center;gap:12px}
+.ecommerce-app .figma-order-detail .od-accordion-controls i{color:var(--uon-neutral-600);font-size:18px;font-style:normal;transition:transform var(--uon-motion-fast) var(--uon-motion-easing)}
+.ecommerce-app .figma-order-detail .od-accordion[open] .od-accordion-controls i{transform:rotate(180deg)}
+.ecommerce-app .figma-order-detail .od-accordion-content{border-top:1px solid var(--uon-border)}
+.ecommerce-app .figma-order-detail .od-section-empty{margin:0;padding:18px 20px;color:var(--uon-neutral-600);font-size:13px}
 .ecommerce-app .figma-order-detail a.od-button{text-decoration:none}.ecommerce-app .figma-order-detail .od-button svg{width:15px;height:15px}.ecommerce-app .figma-order-detail .od-button:disabled{cursor:not-allowed;opacity:.55}
 .ecommerce-app .figma-order-detail .od-copy-feedback{display:block;margin-top:6px;color:var(--uon-error);font-size:11px}.ecommerce-app .figma-order-detail .od-copy-feedback:empty{display:none}
 .ecommerce-app .figma-order-detail .od-layout{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(270px,.65fr);align-items:start;gap:18px}
