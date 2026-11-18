@@ -5,5 +5,8 @@
 .workspace-card .workspace-card-options button:hover :is(span,svg),.workspace-card .workspace-card-options button.active :is(span,svg){color:inherit!important}
 .workspace-card .workspace-card-body:hover{border-color:#cfd8e4!important;background:#fff!important;color:#25334a!important}
 .workspace-card .workspace-card-body:hover :is(strong,small,.workspace-card-chevron){color:inherit!important}
+.finance-app .workspace-card .workspace-card-option,.finance-app .workspace-card .workspace-card-option:hover:not(:disabled),.finance-app .workspace-card .workspace-card-option.active:not(:disabled){background:#fff!important;color:#475569!important}
+.finance-app .workspace-card .workspace-card-option:hover:not(:disabled){background:#f4f7fb!important;color:#263651!important}
+.finance-app .workspace-card .workspace-card-option.active:not(:disabled){color:#0876dc!important;font-weight:600}
 .integrated-nav:not(:hover,:focus-within,.is-open) .workspace-card-menu{overflow:hidden;border-radius:11px}
 .integrated-nav:not(:hover,:focus-within,.is-open) .workspace-card-body{width:46px;max-width:46px;margin:0 auto;padding:6px!important;border-color:transparent!important;background:transparent!important}
