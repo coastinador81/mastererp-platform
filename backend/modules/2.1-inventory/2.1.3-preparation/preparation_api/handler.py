@@ -10,7 +10,12 @@ def _request(e,r):
  if line:UUID(line)
  path=h.get('path','')
  if m=='GET'and order:return 200,r.get(company,order)
- if m=='GET':q=e.get('queryStringParameters')or{};return 200,{'items':r.list(company,q.get('status'),int(q.get('limit',50)))}
+ if m=='GET':
+  q=e.get('queryStringParameters')or{}
+  try:limit=int(q.get('limit',50));offset=int(q.get('offset',0))
+  except(ValueError,TypeError):raise HttpError(400,'limit or offset is invalid',code='invalid_request')from None
+  if not 1<=limit<=100 or offset<0:raise HttpError(400,'limit or offset is invalid',code='invalid_request')
+  return 200,r.list(company,q.get('status'),q.get('query'),limit,offset)
  body=parse_body(e)
  if m=='POST'and path.endswith('/start'):
   if not{'node_id','order_version'}<=body.keys():raise HttpError(400,'node_id and order_version required',code='invalid_request')

@@ -7,7 +7,11 @@ C='10000000-0000-0000-0000-000000000001'
 class T(unittest.TestCase):
  def test_missing_identity(self):
   with patch.dict('sys.modules',{'tenant_security.db':SimpleNamespace(db_connection=None)}):self.assertEqual(lambda_handler({'requestContext':{'http':{'method':'GET'}}},None)['statusCode'],401)
- def test_list(self):r=Mock();r.list.return_value=[];self.assertEqual(_request({'requestContext':{'http':{'method':'GET'}},'pathParameters':{'company_id':C}},r),(200,{'items':[]}))
+ def test_list(self):
+  r=Mock();r.list.return_value={'items':[],'total':0,'next_offset':None}
+  event={'requestContext':{'http':{'method':'GET'}},'pathParameters':{'company_id':C},'queryStringParameters':{'query':'ABC','limit':'25','offset':'50'}}
+  self.assertEqual(_request(event,r),(200,{'items':[],'total':0,'next_offset':None}))
+  r.list.assert_called_once_with(C,None,'ABC',25,50)
  def test_driver_route(self):
   r=Mock();r.driver_route.return_value={'driver_id':C,'route':None};e={'requestContext':{'http':{'method':'GET','path':'/v1/companies/x/driver-route'}},'pathParameters':{'company_id':C}}
   self.assertEqual(_request(e,r),(200,{'driver_id':C,'route':None}))

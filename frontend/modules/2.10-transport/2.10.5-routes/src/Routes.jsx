@@ -6,6 +6,7 @@ import StatusBadge from "../../../../shared/status-badge/StatusBadge.jsx";
 import LoadingState from "../../../../shared/loading-state/LoadingState.jsx";
 import Toast from "../../../../shared/toast/Toast.jsx";
 import { newestRoutes, nodeWorkingHours, readyOrdersForNode, routeDurationLabel, routePayload, routeProgress, routeTimeLabel, shiftRouteTime } from "./routePlanning.mjs";
+import { collectCursorPages } from "../../../2.3-ecommerce/src/operationPages.mjs";
 
 const call = (runtime, path, options = {}) =>
   runtime.request(runtime.api + path, {
@@ -282,7 +283,10 @@ export default function Routes({ runtime }) {
     [error, setError] = useState(""),
     [notice, setNotice] = useState(""),
     [showStops, setShowStops] = useState(false),
-    [creating, setCreating] = useState(false);
+    [creating, setCreating] = useState(false),
+    [query,setQuery]=useState(""),
+    [offset,setOffset]=useState(0),
+    [total,setTotal]=useState(0);
   const writable = runtime.permissions.includes("operations.routes.write"),
     canPlan = writable && runtime.permissions.includes("operations.orders.read") && runtime.permissions.includes("operations.nodes.read"),
     canReadDrivers = runtime.permissions.includes("transport.drivers.read");
@@ -290,12 +294,14 @@ export default function Routes({ runtime }) {
     setLoading(true);
     try {
       const requested = detailFromHash("routes"),
-        [listed, orderRows, nodeRows, driverRows, requestedRoute] = await Promise.all([call(runtime, `/v1/companies/${runtime.company}/routes?limit=100`).then((value) => value.items), canPlan ? call(runtime, `/v1/companies/${runtime.company}/orders?status=READY&limit=100`).then((value) => value.items) : [], canPlan ? call(runtime, `/v1/companies/${runtime.company}/nodes`).then((value) => value.items) : [], canReadDrivers ? call(runtime, `/v1/companies/${runtime.company}/drivers`).then((value) => value.items) : [], requested ? call(runtime, `/v1/companies/${runtime.company}/routes/${requested}`) : null]),
+        [directory, orderRows, nodeRows, driverRows, requestedRoute] = await Promise.all([call(runtime, `/v1/companies/${runtime.company}/routes?limit=25&offset=${offset}${query.trim()?`&query=${encodeURIComponent(query.trim())}`:""}`), canPlan ? collectCursorPages((cursor,limit)=>call(runtime,`/v1/companies/${runtime.company}/orders?status=READY&limit=${limit}${cursor?`&cursor=${encodeURIComponent(cursor)}`:""}`)) : [], canPlan ? call(runtime, `/v1/companies/${runtime.company}/nodes`).then((value) => value.items) : [], canReadDrivers ? call(runtime, `/v1/companies/${runtime.company}/drivers`).then((value) => value.items) : [], requested ? call(runtime, `/v1/companies/${runtime.company}/routes/${requested}`) : null]),
+        listed=directory.items,
         rows = newestRoutes(requestedRoute && !listed.some((item) => item.id === requestedRoute.id) ? [requestedRoute, ...listed] : listed);
       setItems(rows);
       setOrders(orderRows);
       setNodes(nodeRows);
       setDrivers(driverRows);
+      setTotal(Number(directory.total||listed.length));
       setSelected((current) => rows.find((item) => item.id === (requested || current?.id)) || rows[0] || null);
       setError("");
     } catch (problem) {
@@ -303,7 +309,7 @@ export default function Routes({ runtime }) {
     } finally {
       setLoading(false);
     }
-  }, [runtime, canPlan, canReadDrivers]);
+  }, [runtime, canPlan, canReadDrivers,offset,query]);
   useEffect(() => {
     if (runtime.company) void load();
   }, [runtime.company, load]);
@@ -389,6 +395,7 @@ export default function Routes({ runtime }) {
               </p>
             </div>
           </header>
+          <label className="route-search"><span className="sr-only">Buscar rutas</span><input type="search" value={query} placeholder="Buscar ruta, pedido o cliente" onChange={event=>{setQuery(event.target.value);setOffset(0);}}/></label>
           {items.map((route) => {
             const progress = routeProgress(route.stops);
             return (
@@ -425,6 +432,7 @@ export default function Routes({ runtime }) {
             );
           })}
           {loading ? <LoadingState label="Cargando rutas…" /> : !items.length && <p className="table-message">No hay rutas planificadas.</p>}
+          <div className="operation-pagination"><span>Mostrando {items.length} de {total}</span><button type="button" className="secondary" disabled={offset===0||loading} onClick={()=>setOffset(value=>Math.max(0,value-25))}>Anterior</button><button type="button" className="secondary" disabled={offset+items.length>=total||loading} onClick={()=>setOffset(value=>value+25)}>Siguiente</button></div>
         </div>
         <aside className="panel operation-detail route-detail">
           {creating ? (

@@ -5,6 +5,8 @@ import FinanceIcon from "../../../2.2-finance/src/FinanceIcon.jsx";
 import StatusBadge from "../../../../shared/status-badge/StatusBadge.jsx";
 import LoadingState from "../../../../shared/loading-state/LoadingState.jsx";
 import { localDateKey, operationalOrdersByNode } from "./nodeUsage.mjs";
+import Toast from "../../../../shared/toast/Toast.jsx";
+import {collectCursorPages,collectOffsetPages} from "../../../2.3-ecommerce/src/operationPages.mjs";
 const call = (r, p, o = {}) =>
   r.request(r.api + p, {
     ...o,
@@ -20,13 +22,14 @@ export default function Nodes({ runtime }) {
     [usage, setUsage] = useState({}),
     [loading, setLoading] = useState(true),
     [error, setError] = useState(""),
+    [notice,setNotice]=useState(""),
     write = runtime.permissions.includes("operations.nodes.write");
   const load = useCallback(async () => {
     setLoading(true);
     try {
       const rows = (await call(runtime, `/v1/companies/${runtime.company}/nodes`)).items;
       const canReadOrders=runtime.permissions.includes("operations.orders.read"),canReadPreparation=runtime.permissions.includes("operations.preparation.read"),canReadRoutes=runtime.permissions.includes("operations.routes.read");
-      const [orders,preparations,routes]=await Promise.all([canReadOrders?call(runtime,`/v1/companies/${runtime.company}/orders?limit=100`).then(value=>value.items):[],canReadPreparation?call(runtime,`/v1/companies/${runtime.company}/preparations`).then(value=>value.items):[],canReadRoutes?call(runtime,`/v1/companies/${runtime.company}/routes?limit=100`).then(value=>value.items):[]]);
+      const [orders,preparations,routes]=await Promise.all([canReadOrders?collectCursorPages((cursor,limit)=>call(runtime,`/v1/companies/${runtime.company}/orders?limit=${limit}${cursor?`&cursor=${encodeURIComponent(cursor)}`:""}`)):[],canReadPreparation?collectOffsetPages((offset,limit)=>call(runtime,`/v1/companies/${runtime.company}/preparations?limit=${limit}&offset=${offset}`)):[],canReadRoutes?collectOffsetPages((offset,limit)=>call(runtime,`/v1/companies/${runtime.company}/routes?limit=${limit}&offset=${offset}`)):[]]);
       setUsage(operationalOrdersByNode({orders,preparations,routes,today:localDateKey()}));
       const requested = detailFromHash("nodes");
       setItems(rows);
@@ -61,12 +64,15 @@ export default function Nodes({ runtime }) {
         },
       );
       await load();
+      setNotice("Nodo actualizado correctamente.");
     } catch (x) {
       setError(x.message);
     }
   }
   return (
     <section className={`canonical-module nodes-module operation-directory ${selected ? "detail-open" : "list-open"}`}>
+      <Toast message={error} tone="error" onClose={()=>setError("")}/>
+      <Toast message={!error&&notice} tone="success" onClose={()=>setNotice("")}/>
       <div className="page-heading">
         <div>
           <nav className="supplier-breadcrumb"><span>E-commerce</span><span>/</span><span className="current">Operaciones</span></nav>
@@ -75,7 +81,6 @@ export default function Nodes({ runtime }) {
         </div>
         <button disabled={loading} onClick={load}>{loading ? "Actualizando…" : "Actualizar"}</button>
       </div>
-      {error && <p className="error" role="alert">No se pudieron cargar los nodos. Intenta nuevamente.</p>}
       <div className="operation-master-detail">
         <div className="panel operation-list">
           <header><div><h2>Ubicaciones operativas</h2><p>{items.length} nodos activos</p></div></header>

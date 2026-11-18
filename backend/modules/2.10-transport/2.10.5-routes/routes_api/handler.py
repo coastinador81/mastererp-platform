@@ -18,7 +18,12 @@ def _request(e,r):
  if m=='GET'and path.endswith('/driver-route'):return 200,r.driver_route(company)
  if m=='POST'and path.endswith('/driver-route/start'):return 200,r.start_driver_route(company)
  if m=='GET'and rid:return 200,r.get(company,rid)
- if m=='GET':q=e.get('queryStringParameters')or{};return 200,{'items':r.list(company,q.get('status'),int(q.get('limit',50)))}
+ if m=='GET':
+  q=e.get('queryStringParameters')or{}
+  try:limit=int(q.get('limit',50));offset=int(q.get('offset',0))
+  except(ValueError,TypeError):raise HttpError(400,'limit or offset is invalid',code='invalid_request')from None
+  if not 1<=limit<=100 or offset<0:raise HttpError(400,'limit or offset is invalid',code='invalid_request')
+  return 200,r.list(company,q.get('status'),q.get('query'),limit,offset)
  b=parse_body(e)
  if m=='POST'and not rid:
   key=_h(e,'idempotency-key')

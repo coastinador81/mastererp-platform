@@ -3,7 +3,8 @@
 Objetivo específico: Organizar preparación operativa de pedidos.
 
 Responsabilidad: Preparación, dentro de Inventario.
-Estado: interfaz manual candidata implementada; no integrada al app-shell.
+Estado: interfaz integrada en Operaciones de E-commerce y utilizada en DEV para
+iniciar, marcar líneas y completar preparaciones reales.
 
 Permite consultar preparación, marcar o reabrir líneas con motivo y completar
 el pedido. Obtiene el access token exclusivamente de
@@ -16,9 +17,12 @@ Código: 2.1.3. Nombre/ruta: `2.1.3-preparation`. Objetivo y alcance: los descri
 
 Capa: frontend. Dependencias: contexto autenticado, tenant y contratos del padre cuando correspondan; contratos adicionales pendientes de definición. Exclusiones: lógica y recursos de otros módulos; conectores técnicos fuera de Digital Sales. APIs/eventos/MCP: no declarar disponibles por existir esta carpeta; revisar implementación y contrato antes de consumir. Propuestas sin contrato confirmado permanecen pendientes.
 
-Estado verificable: build Vite local aprobado. Integración Uonify y smoke DEV pendientes.
+Estado verificable: flujo funcional DEV y build Vite aprobados. El candidato
+local añade lectura completa paginada, búsqueda, navegación por páginas,
+notificaciones compartidas y diálogos accesibles; requiere publicación y smoke.
 
-Validaciones: estructura local mediante scripts/validate_structure.py. Pendientes: contratos específicos, responsable nominal y pruebas funcionales antes de habilitar esta capacidad.
+Validaciones: pruebas del adapter y build de E-commerce. Pendientes: matriz de
+cancelación, conflicto concurrente y prueba de volumen superior a 100 registros.
 
 <!-- ux-ui-standard:start -->
 ## UX/UI común

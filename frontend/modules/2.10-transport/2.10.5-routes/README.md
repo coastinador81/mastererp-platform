@@ -29,9 +29,12 @@ Código: 2.10.5. Nombre/ruta: `2.10.5-routes`. Objetivo y alcance: los descritos
 
 Capa: frontend. Dependencias: contexto autenticado, tenant y contratos del padre cuando correspondan; contratos adicionales pendientes de definición. Exclusiones: lógica y recursos de otros módulos; conectores técnicos fuera de Digital Sales. APIs/eventos/MCP: no declarar disponibles por existir esta carpeta; revisar implementación y contrato antes de consumir. Propuestas sin contrato confirmado permanecen pendientes.
 
-Estado verificable: build Vite local aprobado. Integración Uonify y smoke DEV pendientes.
+Estado verificable: planificación, asignación, inicio, entrega fallida/exitosa,
+cierre de ruta e historial de conductor utilizados en DEV. El candidato local
+añade búsqueda y paginación completa; requiere publicación y smoke de volumen.
 
-Validaciones: estructura local mediante scripts/validate_structure.py. Pendientes: contratos específicos, responsable nominal y pruebas funcionales antes de habilitar esta capacidad.
+Validaciones: pruebas del adapter y build de E-commerce. Pendientes: bloqueo E2E
+de cancelación durante ruta, retorno físico y prueba con más de 100 rutas.
 
 <!-- ux-ui-standard:start -->
 ## UX/UI común
