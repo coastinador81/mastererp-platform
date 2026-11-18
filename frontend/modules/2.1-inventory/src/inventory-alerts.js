@@ -43,14 +43,20 @@ export function getNodeStatusTags(lots,reserved,minimum,settings=MOCK_INVENTORY_
  return tags.length?tags:[{label:'Normal',tone:'good'}];
 }
 
-export function getProductSummaryStatus(nodeStates) {
- const attentionNodeCount=nodeStates.filter(node=>node.statusTags.some(tag=>tag.label!=='Normal')).length;
+export function getInventorySummaryStatus(itemStates, countLabel = 'nodos') {
+ const attentionCount=itemStates.filter(item=>item.statusTags.some(tag=>tag.label!=='Normal')).length;
  return {
-  label:attentionNodeCount?'Requiere atención':'Normal',
-  tone:attentionNodeCount?'warning':'good',
-  attentionNodeCount,
-  nodeCount:nodeStates.length,
+  label:attentionCount?'Requiere atención':'Normal',
+  tone:attentionCount?'warning':'good',
+  attentionCount,
+  itemCount:itemStates.length,
+  countLabel,
  };
+}
+
+export function getProductSummaryStatus(nodeStates) {
+ const summary=getInventorySummaryStatus(nodeStates);
+ return {...summary,attentionNodeCount:summary.attentionCount,nodeCount:summary.itemCount};
 }
 
 export function matchesInventoryAlertFilter(tags,selectedStatus) {
