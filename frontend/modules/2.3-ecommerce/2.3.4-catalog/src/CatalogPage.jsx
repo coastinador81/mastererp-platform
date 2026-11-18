@@ -23,6 +23,7 @@ function CatalogSession({runtime, route}) {
   const definition = definitions[route], writable = runtime.permissions?.includes(`catalog.${route}.write`) === true;
   const [location, setLocation] = useState(() => locationFor(route));
   const [items, setItems] = useState([]), [record, setRecord] = useState(null), [loading, setLoading] = useState(true), [busy, setBusy] = useState(false), [error, setError] = useState(''), [notice, setNotice] = useState('');
+  const [categoryOptions, setCategoryOptions] = useState([]);
   const [confirmation, setConfirmation] = useState(null);
   const [query, setQuery] = useState({search: '', status: ''}), [revision, setRevision] = useState(0);
   const alive = useRef(true), lock = useRef(false), idempotency = useRef(null), runtimeRef = useRef(runtime);
@@ -43,6 +44,14 @@ function CatalogSession({runtime, route}) {
     }).catch(() => {if (active) {setError('No se pudo cargar la información. Verifica tu acceso o intenta actualizar.'); setItems([]); setRecord(null);}}).finally(() => {if (active) setLoading(false);});
     return () => {active = false; controller.abort();};
   }, [definition, location, query, revision, route]);
+  useEffect(() => {
+    if (!['products', 'categories'].includes(route) || location.mode === 'list') return;
+    const controller = new AbortController();
+    catalogRequest(runtimeRef.current, '/v1/catalog/categories?limit=100', {signal: controller.signal})
+      .then(data => {if (Array.isArray(data?.items)) setCategoryOptions(data.items);})
+      .catch(() => {if (!controller.signal.aborted) setNotice('No se pudieron cargar las categorías disponibles.');});
+    return () => controller.abort();
+  }, [location.mode, route, revision]);
   const refresh = () => setRevision(value => value + 1);
   async function save(draft) {
     if (!writable || lock.current) return false;
@@ -89,7 +98,7 @@ function CatalogSession({runtime, route}) {
     {location.mode === 'list' ? <CatalogListPage {...{definition, route, items, loading, busy, writable, refresh, publish, download, error}} searchRemote={route === 'products' ? (search, status) => setQuery({search, status}) : null}/>
       : loading ? <LoadingState label="Cargando ficha…"/>
       : location.mode === 'invalid' || (location.mode === 'view' && !record) ? <a href={catalogHref(route)}>Volver a {definition.title.toLowerCase()}</a>
-      : <CatalogEditorPage key={`${location.mode}:${record?.[definition.key] || 'new'}:${record?.version || ''}`} {...{definition, route, record, writable, busy, save}} notify={setNotice}/>}
+      : <CatalogEditorPage key={`${location.mode}:${record?.[definition.key] || 'new'}:${record?.version || ''}`} {...{definition, route, record, writable, busy, save, categoryOptions}} notify={setNotice}/>}
     <ActionDialog open={confirmation?.kind === 'publish'} title="Publicar selección" description={`Se activarán ${confirmation?.selected?.length || 0} registros en el catálogo.`} confirmLabel="Publicar" busy={busy} onCancel={() => setConfirmation(null)} onConfirm={() => confirmPublish(confirmation.selected)}/>
   </section>;
 }

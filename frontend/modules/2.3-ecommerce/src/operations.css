@@ -101,7 +101,9 @@
 .finance-app.ecommerce-app .ops-quick>div>button:hover:not(:disabled){background:#f8fbff;color:#25344d}
 .finance-app.ecommerce-app .integrated-nav :is(a,summary){transition:background-color .16s,color .16s}
 .finance-app.ecommerce-app .integrated-nav :is(a,summary):hover{background:#f4f7fb;color:#263651}
-.finance-app.ecommerce-app .integrated-nav a[aria-current=page]{background:#edf6ff;color:#0876dc;font-weight:600}
+.finance-app.ecommerce-app .integrated-nav a[aria-current=page]{background:#f4f7fb;color:#0876dc;font-weight:600}
+.finance-app.ecommerce-app .integrated-nav{box-sizing:border-box}
+.finance-app.ecommerce-app .finance-nav-group,.finance-app.ecommerce-app .administration-nav-children{max-width:100%;box-sizing:border-box;overflow:hidden}
 .ecommerce-app .preparation-row>.status-badge{justify-self:start}
 .ecommerce-app .orders-directory-table .order-clickable-row td{cursor:pointer}
 .ecommerce-app .route-detail .route-stops{margin:0 20px 16px;border:1px solid #e7ebf1;border-radius:9px;overflow:hidden}.ecommerce-app .route-detail .route-stops article{padding:12px 14px;border-bottom:1px solid #edf0f4}.ecommerce-app .route-detail .route-stops article:last-child{border-bottom:0}.ecommerce-app .route-detail .route-stops a{color:#0871db;text-decoration:none}.ecommerce-app .route-detail .route-stops a:hover{text-decoration:underline}.ecommerce-app .route-detail .route-stops-toggle{display:flex;width:calc(100% - 40px);justify-content:center;margin:0 20px 20px}

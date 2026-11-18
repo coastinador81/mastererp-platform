@@ -91,12 +91,16 @@
 @media(max-width:1000px) {.catalog-ui .cat-editor-layout{grid-template-columns:minmax(0,1fr)}.catalog-ui .cat-editor-side{grid-template-columns:repeat(2,minmax(0,1fr))}.catalog-ui .cat-toolbar{flex-wrap:wrap}.catalog-ui .cat-search{flex-basis:100%}}
 @media(max-width:600px) {.catalog-ui.catalog-ui{padding:12px 0 24px}.catalog-ui .cat-heading{align-items:flex-start;flex-direction:column;gap:16px}.catalog-ui .cat-metrics{grid-template-columns:1fr}.catalog-ui .cat-metrics>div{padding:14px 20px}.catalog-ui .cat-metrics>div+div{border-left:0;border-top:1px solid #e8edf3}.catalog-ui .cat-fields,.catalog-ui .cat-editor-side{grid-template-columns:1fr}.catalog-ui .cat-form-section{padding:20px}.catalog-ui .cat-tabs{padding:0 20px}.catalog-ui .cat-pagination{align-items:flex-start;flex-direction:column}.catalog-ui.catalog-ui button,.catalog-ui.catalog-ui .cat-actions a{min-height:44px}.catalog-ui .cat-toolbar select{max-width:none;flex:1}.catalog-ui .cat-bulk span{flex-basis:100%}.catalog-ui .cat-actions{flex-wrap:wrap}}
 .catalog-ui.catalog-ui .cat-gallery { display: grid; gap: 20px; }
-.catalog-ui.catalog-ui .cat-gallery-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(min(100%,200px),1fr)); gap: 16px; }
-.catalog-ui.catalog-ui .cat-gallery figure { margin: 0; padding: 12px; border: 1px solid #e8edf3; border-radius: 10px; min-width: 0; }
-.catalog-ui.catalog-ui .cat-gallery-cover { background: #f6f8fc; }
+.catalog-ui.catalog-ui .cat-gallery-heading {display:flex;align-items:center;justify-content:space-between;gap:16px}
+.catalog-ui.catalog-ui .cat-gallery-heading>div {display:grid;gap:4px}.catalog-ui.catalog-ui .cat-gallery-heading span {color:#667085;font-size:12px}
+.catalog-ui.catalog-ui .cat-gallery-add {display:inline-flex;min-height:40px;align-items:center;padding:9px 14px;border:1px solid #0875de;border-radius:7px;background:#0875de;color:#fff;cursor:pointer}.catalog-ui.catalog-ui .cat-gallery-add input{position:absolute;width:1px!important;height:1px;opacity:0;pointer-events:none}
+.catalog-ui.catalog-ui .cat-gallery-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(min(100%,180px),1fr)); gap: 16px; }
+.catalog-ui.catalog-ui .cat-gallery-card {position:relative;display:grid!important;width:100%!important;min-width:0;gap:10px;padding:10px!important;border:1px solid #dce4ef!important;border-radius:10px!important;background:#fff!important;text-align:left;white-space:normal!important;overflow:hidden}
+.catalog-ui.catalog-ui .cat-gallery-card.is-cover {border-color:#0875de!important;box-shadow:0 0 0 2px #dcedff}.catalog-ui.catalog-ui .cat-gallery-card:hover:not(:disabled){background:#fff!important;border-color:#8dbce8!important}
 .catalog-ui.catalog-ui .cat-gallery-preview { aspect-ratio: 1; display: grid; place-items: center; background: white; border-radius: 6px; overflow: hidden; color: #667085; text-align: center; }
 .catalog-ui.catalog-ui .cat-gallery-preview img { width: 100%; height: 100%; object-fit: contain; }
-.catalog-ui.catalog-ui .cat-gallery figcaption { display: grid; gap: 6px; margin: 12px 0; overflow-wrap: anywhere; }
-.catalog-ui.catalog-ui .cat-gallery figcaption span { font-size: 12px; color: #667085; }
-.catalog-ui.catalog-ui .cat-gallery summary { cursor: pointer; padding: 10px 0; color: #1769aa; }
-.catalog-ui.catalog-ui .cat-gallery summary:focus-visible { outline: 2px solid #1685eb; outline-offset: 2px; }
+.catalog-ui.catalog-ui .cat-gallery-meta{display:grid;gap:3px;min-width:0;overflow-wrap:anywhere}.catalog-ui.catalog-ui .cat-gallery-meta small{color:#667085}
+.catalog-ui.catalog-ui .cat-cover-badge{position:absolute;top:18px;left:18px;padding:4px 8px;border-radius:999px;background:#0875de;color:#fff!important;font-size:11px!important;font-weight:600}
+.catalog-ui.catalog-ui .cat-gallery-empty{grid-column:1/-1;display:grid;min-height:180px;place-content:center;gap:6px;border:1px dashed #b8c6d8;border-radius:10px;text-align:center}.catalog-ui.catalog-ui .cat-gallery-empty span,.catalog-ui.catalog-ui .cat-gallery-pending{color:#667085;font-size:12px}
+.catalog-ui.catalog-ui .cat-gallery-remove{justify-self:start;color:#a32323}.catalog-ui.catalog-ui .cat-gallery-pending{margin:0}
+@media(max-width:600px){.catalog-ui.catalog-ui .cat-gallery-heading{align-items:stretch;flex-direction:column}.catalog-ui.catalog-ui .cat-gallery-add{justify-content:center}}
