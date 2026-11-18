@@ -44,11 +44,11 @@ def request(event, connection):
         row = connection.execute("SELECT administracion.pagos_pendientes_leer(%s,%s) AS value", (company_id, limit)).fetchone()
         return 200, {"items": row["value"]}
     if method == "GET" and path.endswith("/refund-accounts"):
-        row = connection.execute("SELECT administracion.cuentas_reembolso_leer(%s) AS value", (company_id,)).fetchone()
+        row = connection.execute("SELECT administracion.cuentas_reembolso_leer(%s::uuid) AS value", (company_id,)).fetchone()
         return 200, {"items": row["value"]}
     if method == "GET" and path.endswith("/credit-notes"):
         order_id = params.get("order_id"); UUID(order_id)
-        row = connection.execute("SELECT administracion.notas_credito_reembolso_leer(%s,%s) AS value", (company_id, order_id)).fetchone()
+        row = connection.execute("SELECT administracion.notas_credito_reembolso_leer(%s::uuid,%s::uuid) AS value", (company_id, order_id)).fetchone()
         return 200, {"items": row["value"]}
     if method == "POST" and path.endswith("/review"):
         order_id = params.get("order_id"); UUID(order_id)
