@@ -1,4 +1,4 @@
-export type Category = { slug: string; name: string };
+export type Category = { slug: string; name: string; image_url?: string };
 
 export type Product = {
   id: string;

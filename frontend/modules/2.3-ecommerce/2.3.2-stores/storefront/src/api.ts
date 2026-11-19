@@ -3,6 +3,12 @@ import { assertStorefrontContext, storefrontConfig } from './config';
 import { fetchWithTimeout } from './request-timeout.mjs';
 import type { CartLine, CustomerAddress, CustomerOrder, CustomerPaymentMethod, CustomerProfile, PayerDetails, PaymentMethod, StorefrontCatalog } from './types';
 
+export type AssistantReply = {
+  conversation_id: string;
+  message: string;
+  product_ids?: string[];
+};
+
 const portalUrl = (path: string) => `${storefrontConfig.api}${path}?domain=${encodeURIComponent(storefrontConfig.domain)}`;
 const portalOptions = (options: RequestInit = {}) => ({ ...options, headers: { 'X-Tenant-Id': storefrontConfig.tenant, ...options.headers } });
 
@@ -13,6 +19,30 @@ export async function loadCatalog(nodeId?: string): Promise<StorefrontCatalog> {
   const body = await response.json();
   if (!response.ok) throw new Error(body.error?.message || 'No se pudo abrir la tienda.');
   return body as StorefrontCatalog;
+}
+
+const assistantPath = process.env.EXPO_PUBLIC_STOREFRONT_ASSISTANT_PATH?.trim() || '';
+export const assistantConfigured = Boolean(assistantPath);
+
+export async function sendAssistantMessage(message: string, conversationId?: string, nodeId?: string): Promise<AssistantReply> {
+  assertStorefrontContext();
+  if (!assistantPath) throw new Error('assistant_not_configured');
+  const path = assistantPath.startsWith('/') ? assistantPath : `/${assistantPath}`;
+  const response = await fetchWithTimeout(fetch, `${storefrontConfig.api}${path}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-Tenant-Id': storefrontConfig.tenant },
+    body: JSON.stringify({
+      domain: storefrontConfig.domain,
+      message,
+      conversation_id: conversationId || undefined,
+      node_id: nodeId || undefined,
+    }),
+  });
+  const body = await response.json().catch(() => ({})) as Partial<AssistantReply> & { error?: { message?: string } };
+  if (!response.ok || typeof body.message !== 'string' || typeof body.conversation_id !== 'string') {
+    throw new Error(body.error?.message || 'assistant_unavailable');
+  }
+  return body as AssistantReply;
 }
 
 export const loadProfile = () => authorizedIdentityFetch(portalUrl('/v1/storefront/me'), portalOptions()) as Promise<CustomerProfile>;

@@ -1,6 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { colors, radii, spacing } from '../theme';
+import { colors } from '../theme';
 import type { PaymentMethod, StoreConfiguration } from '../types';
 
 type Props = {
@@ -46,7 +46,7 @@ export function PaymentMethods({ configuration, method, onMethod }: Props) {
       const enabled = configured(option.id, configuration);
       const selected = method === option.id;
       return <Pressable key={option.id} disabled={!enabled} onPress={() => onMethod(option.id)} style={[styles.option, selected && styles.selected, !enabled && styles.disabled]}>
-        <Ionicons name={option.icon} size={25} color={selected ? colors.primary : colors.muted} />
+        <View style={[styles.icon, selected && styles.iconSelected]}><Ionicons name={option.icon} size={22} color={selected ? colors.primaryDark : colors.muted} /></View>
         <View style={styles.copy}><Text style={styles.title}>{option.title}</Text><Text style={styles.hint}>{enabled ? option.hint : 'No configurado por esta tienda.'}</Text></View>
         <Ionicons name={selected ? 'radio-button-on' : 'radio-button-off'} size={22} color={selected ? colors.primary : colors.muted} />
       </Pressable>;
@@ -55,5 +55,5 @@ export function PaymentMethods({ configuration, method, onMethod }: Props) {
 }
 
 const styles = StyleSheet.create({
-  wrap: { gap: spacing.sm }, option: { minHeight: 72, flexDirection: 'row', alignItems: 'center', gap: spacing.md, padding: spacing.md, borderWidth: 1, borderColor: colors.line, borderRadius: radii.md, backgroundColor: colors.surface }, selected: { borderWidth: 2, borderColor: colors.primary, backgroundColor: colors.primarySoft }, disabled: { opacity: 0.48 }, copy: { flex: 1 }, title: { color: colors.ink, fontWeight: '900' }, hint: { marginTop: 3, color: colors.muted, fontSize: 11 },
+  wrap: { gap: 10 }, option: { minHeight: 76, flexDirection: 'row', alignItems: 'center', gap: 12, padding: 12, borderWidth: 1, borderColor: '#e4e9e5', borderRadius: 16, backgroundColor: colors.surface }, selected: { borderColor: colors.primary, backgroundColor: '#f2f7f1' }, disabled: { opacity: 0.48 }, icon: { width: 42, height: 42, alignItems: 'center', justifyContent: 'center', borderRadius: 13, backgroundColor: '#f3f5f3' }, iconSelected: { backgroundColor: '#e1efdf' }, copy: { flex: 1 }, title: { color: colors.ink, fontSize: 13, fontWeight: '900' }, hint: { marginTop: 3, color: colors.muted, fontSize: 10 },
 });

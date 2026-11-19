@@ -1,4 +1,4 @@
-/// <reference types="expo/types" />
+declare module '*.css';
 
 declare module '../../../../../shared/auth/cognito.mjs' {
   export const authorizedIdentityFetch: (url: string, options?: RequestInit) => Promise<unknown>;
@@ -8,7 +8,7 @@ declare module '../../../../../shared/auth/cognito.mjs' {
   export const sessionExpiresAt: () => number;
 }
 
-declare module './src/request-timeout.mjs' {
+declare module './request-timeout.mjs' {
   export const STOREFRONT_REQUEST_TIMEOUT_MS: number;
   export function fetchWithTimeout(
     fetcher: typeof fetch,
@@ -18,7 +18,7 @@ declare module './src/request-timeout.mjs' {
   ): Promise<Response>;
 }
 
-declare module './src/storefront-context.mjs' {
+declare module './storefront-context.mjs' {
   export function resolveStorefrontContext(input: {
     browserDomain: string;
     configuredDomain: string;

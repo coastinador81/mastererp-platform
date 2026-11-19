@@ -1,36 +1,53 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-import { colors, radii, spacing } from '../theme';
-
-const suggestions = ['Frutas y verduras', 'Proteínas', 'Despensa'];
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { assistantConfigured, sendAssistantMessage } from '../api';
+import { colors, spacing } from '../theme';
+import { useStore } from '../store/StoreProvider';
 
 export function ShoppingAssistant() {
   const router = useRouter();
+  const { catalog, selectedNode } = useStore();
   const [query, setQuery] = useState('');
+  const [conversationId, setConversationId] = useState<string>();
+  const [reply, setReply] = useState('');
+  const [error, setError] = useState('');
+  const [sending, setSending] = useState(false);
   const search = (value = query) => {
     const normalized = value.trim();
     router.push({ pathname: '/catalog', params: normalized ? { q: normalized } : undefined });
   };
+  const send = async (value = query) => {
+    const normalized = value.trim();
+    if (!normalized || sending) return;
+    if (!assistantConfigured) return search(normalized);
+    setSending(true); setError(''); setReply('');
+    try {
+      const result = await sendAssistantMessage(normalized, conversationId, selectedNode || undefined);
+      setConversationId(result.conversation_id);
+      setReply(result.message);
+      setQuery('');
+    } catch {
+      setError('El asistente no está disponible en este momento. Puedes buscar directamente en el catálogo.');
+    } finally { setSending(false); }
+  };
   return <View style={styles.root} accessibilityLabel="Asistente de compra">
-    <View style={styles.userMessage}><Text style={styles.userCopy}>Necesito hacer un mercado para la semana para dos personas</Text><View style={styles.userAvatar}><Ionicons name="person" size={20} color={colors.primary} /></View></View>
-    <View style={styles.assistantMessage}><View style={styles.assistantAvatar}><Ionicons name="sparkles" size={22} color={colors.primary} /></View><View style={styles.assistantBody}>
-      <Text style={styles.assistantCopy}><Text style={styles.strong}>¡Claro!</Text> ¿Qué te gustaría incluir?</Text>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.suggestions}>{suggestions.map(item => <Pressable key={item} style={styles.chip} onPress={() => search(item)}><Text style={styles.chipText}>{item}</Text></Pressable>)}</ScrollView>
-    </View></View>
-    <View style={styles.composer}><Pressable style={styles.add} onPress={() => router.push('/catalog')} accessibilityLabel="Ver categorías"><Ionicons name="add" size={22} color={colors.ink} /></Pressable>
-      <View style={styles.field}><TextInput value={query} onChangeText={setQuery} onSubmitEditing={() => search()} placeholder="Escribe qué necesitas..." placeholderTextColor={colors.muted} style={styles.input} returnKeyType="search" /><Ionicons name="mic-outline" size={20} color={colors.muted} /></View>
-      <Pressable style={styles.send} onPress={() => search()} accessibilityLabel="Buscar"><Ionicons name="send" size={17} color={colors.surface} /></Pressable>
+    <View style={styles.heading}><View style={styles.icon}><Ionicons name="sparkles" size={20} color="#8ee2b4" /></View><View style={styles.headingCopy}><Text style={styles.eyebrow}>ASISTENTE CON IA</Text><Text style={styles.title}>¿Qué necesitas resolver hoy?</Text></View></View>
+    <Text style={styles.description}>Cuéntame qué quieres cocinar, tu presupuesto o para cuántas personas compras.</Text>
+    <View style={styles.composer}>
+      <TextInput value={query} onChangeText={setQuery} onSubmitEditing={() => void send()} editable={!sending} placeholder="Ej. “Cena saludable para 4”" placeholderTextColor="#7a847e" style={styles.input} returnKeyType="send" />
+      <Pressable disabled={!query.trim() || sending} style={[styles.send, (!query.trim() || sending) && styles.sendDisabled]} onPress={() => void send()} accessibilityLabel={assistantConfigured ? 'Enviar al asistente' : 'Buscar en el catálogo'}><Ionicons name={sending ? 'hourglass-outline' : 'send'} size={17} color={colors.surface} /></Pressable>
     </View>
+    {reply ? <View style={styles.reply}><Ionicons name="sparkles" size={15} color="#8ee2b4" /><Text style={styles.replyText}>{reply}</Text></View> : null}
+    {error ? <View style={styles.reply}><Text style={styles.errorText}>{error}</Text><Pressable onPress={() => search(query)}><Text style={styles.searchLink}>Buscar</Text></Pressable></View> : null}
+    {!assistantConfigured ? <Text style={styles.pending}>La búsqueda inteligente se habilitará cuando el servicio esté configurado.</Text> : null}
+    <View style={styles.suggestions}>{catalog?.categories.slice(0, 2).map(category => <Pressable key={category.slug} style={styles.suggestion} onPress={() => void send(category.name)}><Ionicons name="basket-outline" size={15} color="#d9e6df" /><Text style={styles.suggestionText}>{category.name}</Text></Pressable>)}</View>
   </View>;
 }
 
 const styles = StyleSheet.create({
-  root: { marginTop: spacing.md }, userMessage: { flexDirection: 'row', alignItems: 'center', gap: 13, padding: 15, borderWidth: 1, borderColor: '#1a9b4a2e', borderRadius: radii.lg, backgroundColor: colors.primarySoft },
-  userCopy: { flex: 1, color: colors.ink, fontSize: 14, lineHeight: 20 }, userAvatar: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center', borderRadius: 20, backgroundColor: '#d4edda' },
-  assistantMessage: { flexDirection: 'row', gap: 14, marginTop: 12, padding: spacing.md, borderWidth: 1, borderColor: colors.line, borderRadius: radii.lg, backgroundColor: colors.surface },
-  assistantAvatar: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center', borderRadius: 22, backgroundColor: colors.primarySoft }, assistantBody: { flex: 1, minWidth: 0 }, assistantCopy: { marginBottom: 14, color: colors.ink, fontSize: 14 }, strong: { fontWeight: '900' },
-  suggestions: { gap: 8 }, chip: { minHeight: 38, paddingHorizontal: 17, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: '#1a9b4a33', borderRadius: radii.pill, backgroundColor: colors.primarySoft }, chipText: { color: colors.primaryDark, fontSize: 12, fontWeight: '800' },
-  composer: { flexDirection: 'row', alignItems: 'center', gap: 9, marginTop: 12, padding: 8, borderRadius: radii.lg, backgroundColor: colors.surface }, add: { width: 42, height: 42, alignItems: 'center', justifyContent: 'center', borderRadius: 21, backgroundColor: colors.canvas }, field: { flex: 1, minWidth: 0, height: 44, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 14, borderWidth: 1, borderColor: colors.line, borderRadius: 22, backgroundColor: '#fbfcfd' }, input: { flex: 1, color: colors.ink, outlineStyle: 'none' } as never, send: { width: 42, height: 42, alignItems: 'center', justifyContent: 'center', borderRadius: 21, backgroundColor: colors.primary },
+  root: { marginTop: spacing.md, padding: 20, borderRadius: 24, backgroundColor: '#0d2b1e', shadowColor: '#083920', shadowOpacity: 0.14, shadowRadius: 18, shadowOffset: { width: 0, height: 10 } },
+  heading: { flexDirection: 'row', alignItems: 'flex-start', gap: 12 }, icon: { width: 38, height: 38, alignItems: 'center', justifyContent: 'center', borderRadius: 12, backgroundColor: '#64e09a21' }, headingCopy: { flex: 1 }, eyebrow: { color: '#8ee2b4', fontSize: 10, fontWeight: '800', letterSpacing: 1.2 }, title: { marginTop: 2, color: colors.surface, fontSize: 20, lineHeight: 24, fontWeight: '800' },
+  description: { marginTop: 13, color: '#b8c9bf', fontSize: 12, lineHeight: 19 }, composer: { height: 48, marginTop: 13, flexDirection: 'row', alignItems: 'center', gap: 8, paddingLeft: 14, paddingRight: 7, borderRadius: 14, backgroundColor: colors.surface }, input: { flex: 1, color: '#17201b', fontSize: 12, outlineStyle: 'none' } as never, send: { width: 35, height: 35, alignItems: 'center', justifyContent: 'center', borderRadius: 10, backgroundColor: colors.primary }, sendDisabled: { opacity: .45 }, reply: { marginTop: 12, flexDirection: 'row', alignItems: 'flex-start', gap: 8, padding: 12, borderRadius: 13, backgroundColor: '#ffffff10' }, replyText: { flex: 1, color: '#e6f2eb', fontSize: 11, lineHeight: 17 }, errorText: { flex: 1, color: '#f4c7c7', fontSize: 10, lineHeight: 16 }, searchLink: { color: '#8ee2b4', fontSize: 10, fontWeight: '900' }, pending: { marginTop: 9, color: '#8fa198', fontSize: 9, lineHeight: 14 }, suggestions: { marginTop: 10, flexDirection: 'row', gap: 8 }, suggestion: { minHeight: 34, flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 10, borderWidth: 1, borderColor: '#345143', borderRadius: 999 }, suggestionText: { color: '#d9e6df', fontSize: 10 },
 });

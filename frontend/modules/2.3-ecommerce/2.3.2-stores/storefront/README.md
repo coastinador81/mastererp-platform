@@ -45,3 +45,32 @@ Hosting DEV: https://tienda-dev.uonify.com
 La exportación web usa `npm run build` y genera `dist/`. Android/iOS comparten
 los componentes React Native; el flujo Cognito universal y su almacenamiento
 seguro nativo forman parte de la siguiente entrega antes de distribuir binarios.
+
+## Modernización visual móvil
+
+Home, Header, Cuenta pública y Explorar adoptan progresivamente la composición
+documentada en `Mobile actual/Modernizar una aplicación`, manteniendo Expo,
+Expo Router, Cognito y los contratos reales del Storefront. El prototipo se usa
+solo como referencia visual: no se copian sus fixtures, rutas hash, catálogo,
+ubicación, pagos ni comportamiento simulado. La primera etapa conserva el nodo,
+la identidad de tienda, las categorías, los productos, el carrito y las acciones
+de inicio de sesión y registro provenientes de la implementación canónica.
+
+Validación local de esta etapa: viewport web de 390 × 844 px, `typecheck`,
+`lint`, pruebas unitarias y exportación web local.
+
+## Contrato pendiente del asistente de compra
+
+El frontend queda preparado para conectar el asistente exclusivamente a través
+de la API de MasterERP. La ruta se activa con
+`EXPO_PUBLIC_STOREFRONT_ASSISTANT_PATH`; sin esa variable, el compositor conserva
+la búsqueda normal del catálogo y no simula respuestas ni consulta proveedores
+externos.
+
+La propuesta de integración envía `domain`, `message`, `conversation_id` y
+`node_id`, además de `X-Tenant-Id`. Espera una respuesta con
+`conversation_id`, `message` y opcionalmente `product_ids`. El backend pendiente
+debe resolver y volver a autorizar tenant, empresa, tienda y nodo, consultar las
+APIs canónicas de Catálogo e Inventario y limitar cualquier herramienta de
+Pedidos al usuario autenticado. Esta preparación frontend no acredita que el
+endpoint, el agente ni su infraestructura estén implementados o desplegados.
