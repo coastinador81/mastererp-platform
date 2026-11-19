@@ -18,6 +18,12 @@ export function CatalogToolbar({definition, query, status, onQuery, onStatus, re
 export function CatalogBulkActions({count, writable, busy, publish, download, clear}) {
   return <div className="cat-bulk"><span>{count} seleccionados</span>{writable && <button disabled={!count || busy} onClick={publish}>Publicar selección</button>}<button disabled={!count || busy} onClick={download}>Exportar selección</button><button disabled={!count || busy} onClick={clear}>Limpiar selección</button></div>;
 }
+function ProductThumbnail({item, icon}) {
+  const [failed, setFailed] = useState(false);
+  const image = item.image_url || item.attributes?._media?.images?.find(entry => entry.cover)?.url || item.attributes?._media?.images?.[0]?.url;
+  useEffect(() => setFailed(false), [image]);
+  return <span className={`cat-icon cat-product-thumbnail ${image && !failed ? 'has-image' : ''}`}>{image && !failed ? <img src={image} alt="" loading="lazy" onError={() => setFailed(true)}/> : <FinanceIcon name={icon}/>}</span>;
+}
 export function CatalogTable({definition, route, rows, selection, setSelection, busy}) {
   const checkbox = useRef(null);
   const all = rows.length > 0 && rows.every(item => selection.has(item[definition.key]));
@@ -26,7 +32,7 @@ export function CatalogTable({definition, route, rows, selection, setSelection, 
   return <div className="cat-table-scroll" role="region" aria-label={`Tabla de ${definition.title.toLowerCase()}`} tabIndex={0}><table className="cat-table"><thead><tr><th><input ref={checkbox} type="checkbox" aria-label="Seleccionar esta página" checked={all} disabled={busy || !rows.length} onChange={e => {const checked = e.target.checked; setSelection(current => {const next = new Set(current); rows.forEach(item => checked ? next.add(item[definition.key]) : next.delete(item[definition.key])); return next;});}}/></th><th>{route === 'products' ? 'Producto' : 'Nombre'}</th><th>Referencia</th>{definition.columns.map(([key, label]) => <th key={key}>{label}</th>)}<th>Estado</th><th>Acción</th></tr></thead>
     <tbody>{rows.map(item => {const id = item[definition.key], href = catalogHref(route, id); return <tr key={id} onClick={e => {if (busy || e.target.closest('a,button,input,select') || e.ctrlKey || e.metaKey || e.shiftKey || window.getSelection()?.toString()) return; window.location.hash = href;}}>
       <td><input type="checkbox" aria-label={`Seleccionar ${item.name}`} checked={selection.has(id)} disabled={busy} onChange={e => toggle(id, e.target.checked)}/></td>
-      <td><div className="cat-name"><span className="cat-icon"><FinanceIcon name={definition.icon}/></span><a href={href}>{item.name}</a></div></td><td>{item[definition.reference] || '—'}</td>{definition.columns.map(([field]) => <td key={field}>{cellText(item, field)}</td>)}<td><CatalogStatusBadge status={item.status}/></td><td><a className="cat-detail-link" href={href}>Ver detalle</a></td></tr>;})}</tbody></table></div>;
+      <td><div className="cat-name">{route === 'products' ? <ProductThumbnail item={item} icon={definition.icon}/> : <span className="cat-icon"><FinanceIcon name={definition.icon}/></span>}<a href={href}>{item.name}</a></div></td><td>{item[definition.reference] || '—'}</td>{definition.columns.map(([field]) => <td key={field}>{cellText(item, field)}</td>)}<td><CatalogStatusBadge status={item.status}/></td><td><a className="cat-detail-link" href={href}>Ver detalle</a></td></tr>;})}</tbody></table></div>;
 }
 export default function CatalogListPage({definition, route, items, total = items.length, loading, busy, writable, refresh, publish, download, searchRemote, serverOffset = 0, error}) {
   const [query, setQuery] = useState(''), [status, setStatus] = useState(''), [page, setPage] = useState(1), [selection, setSelection] = useState(new Set());

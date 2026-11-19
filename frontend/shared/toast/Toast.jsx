@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useEffect}from'react';
 import './toast.css';
 import{readableMessage}from'./toastMessage.mjs';
 
@@ -8,7 +8,12 @@ const presentation={
   info:{title:'Información',symbol:'i'},
 };
 
-export default function Toast({message,tone='error',onClose}){
+export default function Toast({message,tone='error',onClose,duration=10000}){
+  useEffect(()=>{
+    if(!message||!onClose||duration<=0)return undefined;
+    const timer=window.setTimeout(onClose,duration);
+    return()=>window.clearTimeout(timer);
+  },[message,onClose,duration]);
   if(!message)return null;
   const view=presentation[tone]||presentation.info;
   return <div className={`shared-toast shared-toast-${tone}`} role={tone==='error'?'alert':'status'} aria-live={tone==='error'?'assertive':'polite'}>
