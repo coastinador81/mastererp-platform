@@ -232,6 +232,10 @@ class EcommerceApiTest(unittest.TestCase):
             "_exchange_rate": {"rate": "914.0218", "source": "BCV", "effectiveDate": "2026-11-16"},
         }, "key")
         declaration = connection.execute.call_args_list[1].args[1][1]
+        self.assertEqual(
+            connection.execute.call_args_list[1].args[0],
+            "SELECT ventas_digitales.pago_declaracion_registrar(%s::uuid,%s::jsonb)",
+        )
         self.assertEqual(declaration["exchangeRate"], "914.0218")
         self.assertEqual(declaration["exchangeRateEffectiveDate"], "2026-11-16")
         self.assertEqual(declaration["exchangeRateSource"], "BCV")

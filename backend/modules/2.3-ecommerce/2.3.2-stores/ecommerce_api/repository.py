@@ -57,7 +57,10 @@ class EcommerceRepository:
                            "amountUSD": str(total), "amountVES": str((total * Decimal(rate["rate"])).quantize(Decimal("0.01"))),
                            "exchangeRate": rate["rate"], "exchangeRateSource": rate["source"],
                            "exchangeRateEffectiveDate": rate["effectiveDate"]}
-            self.connection.execute("SELECT ventas_digitales.pago_declaracion_registrar(%s,%s)", (result["id"], declaration))
+            self.connection.execute(
+                "SELECT ventas_digitales.pago_declaracion_registrar(%s::uuid,%s::jsonb)",
+                (result["id"], declaration),
+            )
         return result
 
     def customer_read(self, claims, domain, section, item_id=None, limit=25):
