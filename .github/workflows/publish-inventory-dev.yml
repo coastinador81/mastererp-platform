@@ -10,6 +10,7 @@ on:
       - 'frontend/modules/2.1-inventory/vite.config.js'
       - 'frontend/modules/2.1-inventory/package*.json'
       - 'frontend/modules/2.1-inventory/.env.dev'
+      - 'frontend/modules/2.1-inventory/2.1.1-inventory/src/**'
       - 'frontend/shared/module-launcher/**'
       - 'frontend/modules/2.2-finance/src/UonifyChatLink.jsx'
       - 'frontend/modules/2.2-finance/src/FinanceIcon.jsx'
