@@ -7,6 +7,7 @@ export function CatalogFormSection({title, description, children}) {
   return <section className="cat-form-section"><h2>{title}</h2>{description && <p>{description}</p>}<div className="cat-fields">{children}</div></section>;
 }
 const dateText = value => value && !Number.isNaN(Date.parse(value)) ? new Date(value).toLocaleString('es') : 'No disponible';
+const slugFromName = value => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('es').trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 const variantPresets = [
   {code: 'color', name: 'Color', options: ['Negro', 'Blanco', 'Azul', 'Rojo']},
   {code: 'talla', name: 'Talla', options: ['XS', 'S', 'M', 'L', 'XL']},
@@ -24,7 +25,7 @@ export default function CatalogEditorPage({definition, route, record, writable, 
   const [tab, setTab] = useState('general'), [dirty, setDirty] = useState(false);
   const disabled = !writable || busy;
   const canSetStatus = Boolean(record) || route === 'products';
-  const update = (key, value) => {setDraft(current => ({...current, [key]: value})); setDirty(true);};
+  const update = (key, value) => {setDraft(current => ({...current, [key]: value, ...(key === 'name' && route === 'brands' && !record ? {slug: slugFromName(value)} : {})})); setDirty(true);};
   const supplierRelation = id => (draft.suppliers || []).find(item => item.id === id);
   const toggleSupplier = supplier => update('suppliers', supplierRelation(supplier.id) ? (draft.suppliers || []).filter(item => item.id !== supplier.id) : [...(draft.suppliers || []), {id: supplier.id, supplier_code: '', cost: null, lead_days: null, preferred: !(draft.suppliers || []).length}]);
   const changeSupplier = (id, changes) => update('suppliers', (draft.suppliers || []).map(item => item.id === id ? {...item, ...changes} : changes.preferred ? {...item, preferred: false} : item));
@@ -61,7 +62,7 @@ export default function CatalogEditorPage({definition, route, record, writable, 
       {tabs.map(([key]) => <div key={key} role="tabpanel" id={`cat-panel-${key}`} aria-labelledby={`cat-tab-${key}`} hidden={tab !== key}>
         {key === 'general' && <CatalogFormSection title="Información general" description="Identidad y datos principales del registro.">
           {field('name', 'Nombre *', {required: true, maxLength: route === 'attributes' ? 160 : 200, wide: true})}
-          {field(definition.reference, 'Referencia', {readOnly: Boolean(record) || route === 'products', disabled: route === 'products', placeholder: route === 'products' ? 'Generada automáticamente al guardar' : undefined, required: route !== 'products', pattern: definition.reference === 'slug' ? '[a-z0-9]+(?:-[a-z0-9]+)*' : route === 'attributes' ? '[a-z][a-z0-9_]{0,79}' : undefined})}
+          {field(definition.reference, 'Referencia', {readOnly: Boolean(record) || ['products', 'brands'].includes(route), disabled: ['products', 'brands'].includes(route), placeholder: ['products', 'brands'].includes(route) ? 'Generada automáticamente desde el nombre' : undefined, required: route !== 'products', pattern: definition.reference === 'slug' ? '[a-z0-9]+(?:-[a-z0-9]+)*' : route === 'attributes' ? '[a-z][a-z0-9_]{0,79}' : undefined})}
           <label>Estado<select value={draft.status} disabled={disabled || !canSetStatus} onChange={e => update('status', e.target.value)}>{definition.statuses.map(status => <option key={status} value={status}>{statusLabels[status]}</option>)}</select></label>
           {definition.fields.includes('description') && <label className="cat-full">Descripción<textarea maxLength={2000} value={draft.description || ''} disabled={disabled} onChange={e => update('description', e.target.value)}/></label>}
           {route === 'brands' && <>{field('website_url', 'Sitio web', {type: 'url'})}{field('logo_url', 'URL del logotipo', {type: 'url'})}</>}
