@@ -20,7 +20,7 @@ import BcvRateBadge from './BcvRateBadge.jsx';
 const routeLabels = {
   summary: 'Resumen de Ecommerce',
   orders: 'Pedidos',
-  payments: 'Métodos de pago',
+  payments: 'Configuración de tienda',
   preparation: 'Preparacion',
   routes: 'Rutas',
   nodes: 'Nodos',

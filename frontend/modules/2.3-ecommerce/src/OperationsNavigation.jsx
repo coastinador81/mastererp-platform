@@ -6,7 +6,7 @@ import WorkspaceCard from '../../../shared/workspace/WorkspaceCard.jsx';
 const operations = [
   ['summary', 'Resumen', 'summary'], ['orders', 'Pedidos', 'order'],
   ['preparation', 'Preparación', 'document'], ['routes', 'Rutas', 'route'],
-  ['nodes', 'Nodos', 'location'], ['payments', 'Métodos de pago', 'invoice'],
+  ['nodes', 'Nodos', 'location'], ['payments', 'Configuración de tienda', 'invoice'],
 ];
 const catalog = [
   ['products', 'Productos', 'package'], ['categories', 'Categorías', 'order'],
