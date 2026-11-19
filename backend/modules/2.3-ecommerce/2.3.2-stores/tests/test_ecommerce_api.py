@@ -1,9 +1,10 @@
 import unittest
+from datetime import datetime, timezone
 from types import SimpleNamespace
 from unittest.mock import Mock
 from unittest.mock import patch
 
-from ecommerce_api.handler import HttpError, _checkout, _claim, _customer_portal, _request, _validate_payment_configuration, _verified_profile, lambda_handler
+from ecommerce_api.handler import HttpError, _checkout, _claim, _customer_portal, _declared_exchange_rate, _request, _validate_payment_configuration, _verified_profile, lambda_handler
 
 
 class EcommerceApiTest(unittest.TestCase):
@@ -102,6 +103,13 @@ class EcommerceApiTest(unittest.TestCase):
             '"delivery":{"address":"QA Street","latitude":10.48,"longitude":-66.9},"delivery_method":"realtime",'
             '"payment_method":"mobile","payment_reference":"12345678"}')}
         self.assertEqual(_checkout(event, repository, claims)[0], 201)
+
+    def test_recent_declared_bcv_rate_is_strictly_validated(self):
+        today = datetime.now(timezone.utc).date().isoformat()
+        self.assertEqual(_declared_exchange_rate({"rate": 916.6477, "source": "bcv.today", "effectiveDate": today}),
+                         {"rate": "916.6477", "source": "bcv.today", "effectiveDate": today})
+        self.assertIsNone(_declared_exchange_rate({"rate": 916.6477, "source": "other", "effectiveDate": today}))
+        self.assertIsNone(_declared_exchange_rate({"rate": -1, "source": "bcv.today", "effectiveDate": today}))
 
     @patch("ecommerce_api.handler._verified_profile")
     @patch("ecommerce_api.handler.current_rate", return_value={"rate":"914.0218","source":"bcv.today","effectiveDate":"2026-11-16"})

@@ -3,6 +3,7 @@ import json
 import os
 import re
 import secrets
+from decimal import Decimal, InvalidOperation
 from datetime import datetime, timedelta, timezone
 from typing import Any
 from uuid import UUID, uuid4
@@ -166,13 +167,30 @@ def _checkout(event, repository, claims):
         raise HttpError(400, "Valid payment method is required", code="invalid_request")
     payer = _payer(method, payload.get("payer"))
     profile = _verified_profile(claims)
-    rate = current_rate() if method in ("mobile", "transfer") else None
+    rate = current_rate(timeout=5, attempts=2) if method in ("mobile", "transfer") else None
+    if method in ("mobile", "transfer") and not rate:
+        rate = _declared_exchange_rate(payload.get("exchange_rate"))
     if method in ("mobile", "transfer") and not rate:
         raise HttpError(503, "Current exchange rate is unavailable", code="exchange_rate_unavailable")
     order = repository.checkout(profile, {**payload, "_payer": payer, "_exchange_rate": rate}, key)
     if payer:
         repository.save_payment_method(profile, payload["domain"], method, payer)
     return 201, order
+
+
+def _declared_exchange_rate(value):
+    """Accept recent BCV evidence already shown to the customer; Finance still reviews the payment."""
+    if not isinstance(value, dict) or value.get("source") != "bcv.today":
+        return None
+    try:
+        rate = Decimal(str(value.get("rate")))
+        effective = datetime.fromisoformat(str(value.get("effectiveDate"))).date()
+    except (InvalidOperation, ValueError, TypeError):
+        return None
+    today = datetime.now(timezone.utc).date()
+    if rate <= 0 or rate >= Decimal("1000000000000") or not today - timedelta(days=7) <= effective <= today + timedelta(days=1):
+        return None
+    return {"rate": str(rate), "source": "bcv.today", "effectiveDate": effective.isoformat()}
 
 
 def _payer(method, payer):
