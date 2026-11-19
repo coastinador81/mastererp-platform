@@ -5,9 +5,14 @@ import Parties from '../2.2.1-administration/screens/parties/Parties.jsx';
 import Sales from '../2.2.1-administration/2.2.1.1-gestion-comercial/2.2.1.1.3-ventas/screens/list/Sales.jsx';
 import PaymentReviews from '../2.2.1-administration/2.2.1.4-tesoreria/2.2.1.4.1-cobros/PaymentReviews.jsx';
 import PaymentDetail from '../2.2.1-administration/2.2.1.4-tesoreria/2.2.1.4.1-cobros/PaymentDetail.jsx';
+import FinanceConfiguration from './FinanceConfiguration.jsx';
 export default function Finance({workspace,path,navigate}) {
   const allowed=workspace.context?.modules.includes('erp.finance')&&workspace.context?.permissions.some(p=>['administration.parties.read','administration.purchases.read','administration.read'].includes(p));
   if(!allowed)return <div className="notice" role="alert">No tienes acceso a Finanzas en este espacio.</div>;
+  if(path==='/modulos/finanzas/configuracion'){
+    if(!workspace.context?.companies?.length)return <p className="notice" role="status">No hay empresas activas autorizadas para este módulo.</p>;
+    return <FinanceConfiguration key={`${workspace.tenant}:${workspace.company || 'none'}`} workspace={workspace}/>;
+  }
   if(!workspace.context.companies.length)return <p className="notice" role="status">No hay empresas activas autorizadas para este módulo.</p>;
   if(!workspace.company)return <div className="notice" role="status">Selecciona una empresa para trabajar con Finanzas.</div>;
   if(/^\/modulos\/finanzas\/administracion\/ventas(?:\/.*)?$/.test(path))return <Sales key={workspace.tenant+':'+workspace.company+':'+path} workspace={workspace} path={path} navigate={navigate}/>;
@@ -22,5 +27,6 @@ export default function Finance({workspace,path,navigate}) {
   return <section><p className="eyebrow">Módulo habilitado</p><h1>Finanzas</h1><p>Administración financiera de tu empresa.</p><h2>Administración</h2><div className="cards">
     {workspace.context.permissions.includes('administration.parties.read')&&<><a className="panel module-card" href="#/modulos/finanzas/administracion/clientes"><h3>Clientes</h3><p>Consulta y administra terceros por empresa.</p></a>
     <a className="panel module-card" href="#/modulos/finanzas/administracion/proveedores"><h3>Proveedores</h3><p>Reutiliza el maestro de terceros y sus roles.</p></a></>}{workspace.context.permissions.includes('administration.read')&&<a className="panel module-card" href="#/modulos/finanzas/administracion/ventas"><h3>Ventas</h3><p>Consulta ventas registradas y sus pedidos de origen.</p></a>}</div>
+    <h2>Configuración</h2><div className="cards"><a className="panel module-card" href="#/modulos/finanzas/configuracion"><h3>Configuración</h3><p>IVA de venta y costo, tipo de cambio del dólar y del euro.</p></a></div>
     </section>;
 }

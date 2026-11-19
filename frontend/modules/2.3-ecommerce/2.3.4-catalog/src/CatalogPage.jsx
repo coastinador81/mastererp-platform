@@ -5,6 +5,8 @@ import LoadingState from '../../../../shared/loading-state/LoadingState.jsx';
 import Toast from '../../../../shared/toast/Toast.jsx';
 import ActionDialog from '../../../../shared/dialog/ActionDialog.jsx';
 import {catalogHref, catalogRequest, legacyCatalogRoutes, definitions, exportCsv, payloadFor} from './catalogModel.mjs';
+import {financeTaxConfigEvent, loadFinanceConfig, readFinanceConfig} from '../../../../shared/finance-tax-config.mjs';
+import {catalogFinancePricingConfig} from './productPricingFinance.mjs';
 import './catalog.css';
 
 function locationFor(route) {
@@ -36,10 +38,24 @@ function CatalogSession({runtime, route}) {
   const [items, setItems] = useState([]), [total, setTotal] = useState(0), [record, setRecord] = useState(null), [loading, setLoading] = useState(true), [busy, setBusy] = useState(false), [error, setError] = useState(''), [notice, setNotice] = useState('');
   const [categoryOptions, setCategoryOptions] = useState([]), [brandOptions, setBrandOptions] = useState([]), [supplierOptions, setSupplierOptions] = useState([]), [attributeOptions, setAttributeOptions] = useState([]), [allAttributeOptions, setAllAttributeOptions] = useState([]);
   const [confirmation, setConfirmation] = useState(null);
+  const [financePricingConfig, setFinancePricingConfig] = useState(() => readFinanceConfig(runtime.tenant));
   const [query, setQuery] = useState({search: '', status: '', offset: 0}), [revision, setRevision] = useState(0);
   const alive = useRef(true), lock = useRef(false), idempotency = useRef(null), runtimeRef = useRef(runtime);
   runtimeRef.current = runtime;
   useEffect(() => {alive.current = true; return () => {alive.current = false;};}, []);
+  useEffect(() => {
+    let active = true;
+    loadFinanceConfig(runtimeRef.current).then(config => { if (active) setFinancePricingConfig(config); });
+    return () => { active = false; };
+  }, [runtime.tenant, runtime.company, runtime.api]);
+  useEffect(() => {
+    const refresh = event => {
+      if (event?.detail?.tenant && event.detail.tenant !== runtime.tenant) return;
+      setFinancePricingConfig(readFinanceConfig(runtime.tenant));
+    };
+    window.addEventListener(financeTaxConfigEvent, refresh);
+    return () => window.removeEventListener(financeTaxConfigEvent, refresh);
+  }, [runtime.tenant]);
   useEffect(() => {const change = () => {setLocation(locationFor(route)); setRecord(null); setError(''); setLoading(true);}; window.addEventListener('hashchange', change); return () => window.removeEventListener('hashchange', change);}, [route]);
   useEffect(() => {
     const controller = new AbortController(); let active = true;
@@ -147,14 +163,15 @@ function CatalogSession({runtime, route}) {
   }
   return <section className="catalog-ui" aria-label={definition.title}>
     <Toast message={error} tone="error" onClose={() => setError('')}/><Toast message={!error && notice} tone="success" onClose={() => setNotice('')}/>
-    {location.mode === 'list' ? <CatalogListPage {...{definition, route, items, total, loading, busy, writable, refresh, publish, download, error}} serverOffset={query.offset} searchRemote={(search, status, page = 1) => setQuery({search, status, offset: (page - 1) * 15})}/>
+    {location.mode === 'list' ? <CatalogListPage {...{definition, route, items, total, loading, busy, writable, refresh, publish, download, error, onPublishRow: item => publish([item]), onDeleteRow: item => setConfirmation({kind: 'delete', item})}} serverOffset={query.offset} searchRemote={(search, status, page = 1) => setQuery({search, status, offset: (page - 1) * 15})}/>
       : loading ? <LoadingState label="Cargando ficha…"/>
       : location.mode === 'invalid' || (location.mode === 'view' && !record) ? <a href={catalogHref(route)}>Volver a {definition.title.toLowerCase()}</a>
       : <CatalogEditorPage
           key={`${location.mode}:${record?.[definition.key] || 'new'}:${record?.version || ''}`}
-          {...{definition, route, record, writable, busy, save, categoryOptions, brandOptions, supplierOptions, attributeOptions, uploadProductImage, createVariantAttribute, canCreateAttributes}}
+          {...{definition, route, record, writable, busy, save, categoryOptions, brandOptions, supplierOptions, attributeOptions, uploadProductImage, createVariantAttribute, canCreateAttributes, financePricingConfig: route === 'products' ? catalogFinancePricingConfig(financePricingConfig) : undefined}}
           notify={setNotice}
         />}
-    <ActionDialog open={confirmation?.kind === 'publish'} title="Publicar selección" description={`Se activarán ${confirmation?.selected?.length || 0} registros en el catálogo.`} confirmLabel="Publicar" busy={busy} onCancel={() => setConfirmation(null)} onConfirm={() => confirmPublish(confirmation.selected)}/>
+    <ActionDialog open={confirmation?.kind === 'publish'} title="Publicar selección" description={`Se activarán ${confirmation?.selected?.length || 0} registros en el catálogo.`} confirmLabel="Publicar" busy={busy} onCancel={() => setConfirmation(null)} onConfirm={() => confirmPublish(confirmation?.selected)}/>
+    <ActionDialog open={confirmation?.kind === 'delete'} title="Eliminar producto" description={`${confirmation?.item?.name || 'Este producto'} no se puede eliminar de forma permanente: el catálogo DEV no expone DELETE. Puedes inactivarlo o descontinuarlo desde Editar.`} confirmLabel="Ir a editar" busy={busy} onCancel={() => setConfirmation(null)} onConfirm={() => {const item = confirmation?.item; setConfirmation(null); if (item) window.location.hash = catalogHref(route, item[definition.key]);}}/>
   </section>;
 }

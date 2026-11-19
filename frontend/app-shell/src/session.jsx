@@ -17,8 +17,8 @@ const origin = allowedOrigins.includes(browserOrigin) ? browserOrigin
   : 'https://dev.uonify.com';
 const standalone = viteLoopback || !primaryOrigins.includes(origin);
 export const config = {...baseConfig,
-  apiUrl: standalone && !viteLoopback ? origin : baseConfig.apiUrl,
-  adminApiUrl: standalone && !viteLoopback ? origin : baseConfig.adminApiUrl,
+  apiUrl: viteLoopback ? browserOrigin : standalone ? origin : baseConfig.apiUrl,
+  adminApiUrl: viteLoopback ? browserOrigin : standalone ? origin : baseConfig.adminApiUrl,
   callbackUrl: origin + '/auth/callback',
   logoutUrl: origin + '/'};
 export function WorkspaceProvider({children}) {

@@ -1,9 +1,11 @@
 import React,{useEffect} from 'react';
 import FinanceIcon from './FinanceIcon.jsx';
 import {ChevronDownIcon} from '../../0-uonify/components/ShellIcons.tsx';
-const itemIcons={clientes:'clients',proveedores:'supplier',
+const itemIcons={clientes:'clients',proveedores:'supplier',configuracion:'settings',
  'Sugerencias de compras':'summary','Resumen':'summary','Compras':'document','Órdenes de compra':'order','Facturas de proveedores':'invoice',
  Cotizaciones:'quote',Ventas:'sales',Facturación:'document'};
+const configPath='/modulos/finanzas/configuracion';
+const configHref='/?vista=configuracion';
 const devDesign=import.meta.env.DEV||import.meta.env.MODE==='dev';
 const designViews=['resumen-compras','sugerencias-compras'];
 const previewViews=['resumen-compras','solicitudes-compra','sugerencias-compras'];
@@ -14,10 +16,17 @@ const groups = [
   ['2.2.1.4', 'Tesorería', [['Cobros','cobros'],['Pagos'],['Caja'],['Bancos'],['Transferencias'],['Conciliación']]],
   ['2.2.1.5', 'Gastos y fondos menores', [['Gastos operativos'],['Caja chica'],['Anticipos y rendiciones']]],
 ];
-export default function FinanceNavigation({allowed,path,navigate,permissions=[],previewOnly=false,onClose}) {
+export default function FinanceNavigation({allowed,path,navigate,permissions=[],previewOnly=false,onClose,configurationNav=false}) {
   useEffect(()=>{const close=e=>{if(e.key==='Escape'&&!e.defaultPrevented&&document.querySelector('.finance-app .integrated-nav:is(.is-open,:focus-within)')){onClose?.();document.querySelector('.finance-app .menu-toggle')?.focus();}};const media=matchMedia('(max-width:800px)');const reset=()=>onClose?.();document.addEventListener('keydown',close);media.addEventListener('change',reset);return()=>{document.removeEventListener('keydown',close);media.removeEventListener('change',reset);};},[onClose]);
-  const canOpen=route=>previewOnly?[...previewViews,'ordenes-compra','clientes','proveedores','ventas','facturas-proveedores'].includes(route):(devDesign&&designViews.includes(route))||allowed&&permissions.includes(route==='ventas'?'administration.read':route==='cobros'?'administration.receipts.validate':['clientes','proveedores'].includes(route)?'administration.parties.read':'administration.purchases.read');
-  return <nav className="finance-navigation" aria-label="Administración">
+  const canOpen=route=>{
+    if(route==='configuracion')return configurationNav||!previewOnly;
+    if(previewOnly)return [...previewViews,'ordenes-compra','clientes','proveedores','ventas','facturas-proveedores'].includes(route);
+    return (devDesign&&designViews.includes(route))||allowed&&permissions.includes(route==='ventas'?'administration.read':route==='cobros'?'administration.receipts.validate':['clientes','proveedores'].includes(route)?'administration.parties.read':'administration.purchases.read');
+  };
+  const showConfiguration=configurationNav||!previewOnly;
+  const openConfig=event=>{if(previewOnly){return;}if(navigate&&!event.ctrlKey&&!event.metaKey&&!event.shiftKey&&!event.altKey){event.preventDefault();navigate(configPath);onClose?.();}};
+  const configClick=event=>{if(previewOnly){event.preventDefault();window.location.assign(configHref);return;}openConfig(event);};
+  return <nav className="finance-navigation" aria-label="Finanzas">
     <p className="nav-caption">FINANZAS</p>
     {allowed ? <a href="/" title="Resumen" aria-current={path==='/modulos/finanzas'?'page':undefined}><FinanceIcon name="summary"/><span className="finance-nav-label">Resumen</span></a> : null}
     <details className="administration-nav" open><summary className="administration-nav-title" title="Administración"><FinanceIcon name="document"/><span className="finance-nav-label">Administración</span><ChevronDownIcon className="finance-disclosure-icon"/></summary><div className="administration-nav-children">
@@ -27,7 +36,9 @@ export default function FinanceNavigation({allowed,path,navigate,permissions=[],
         <a className="subnav" href={'/?'+((previewOnly&&previewViews.includes(route))||(devDesign&&designViews.includes(route))?'demo=compras&':'')+'vista='+route} onClick={e=>{if(navigate&&!(devDesign&&!previewOnly&&designViews.includes(route))&&!e.ctrlKey&&!e.metaKey&&!e.shiftKey&&!e.altKey){e.preventDefault();navigate('/modulos/finanzas/administracion/'+route);}}} aria-current={path.includes('/administracion/'+route)?'page':undefined}><FinanceIcon name={itemIcons[route]||itemIcons[label]||'document'}/><span>{label}</span></a>:
         <span className="finance-nav-pending" aria-disabled="true"><FinanceIcon name={itemIcons[route]||itemIcons[label]||'document'}/><span>{label}</span><small>{previewOnly?'Vista previa':route?'Sin acceso':'Pendiente'}</small></span>}</li>)}</ul>
     </details>;})}
+    {showConfiguration ? <a className="finance-administration-config" href={previewOnly?configHref:navigate?configHref:'#'+configPath} title="IVA, dólar y euro" onClick={configClick} aria-current={path===configPath?'page':undefined}><FinanceIcon name="settings"/><span className="finance-nav-label">Configuración</span></a> : null}
     </div></details>
+    {showConfiguration ? <a className="finance-rail-config" href={previewOnly?configHref:navigate?configHref:'#'+configPath} title="Configuración: IVA, dólar y euro" onClick={configClick} aria-current={path===configPath?'page':undefined}><FinanceIcon name="settings"/><span className="finance-nav-label">Configuración</span></a> : null}
     {previewOnly&&<div className="finance-nav-group finance-real-links"><p className="nav-caption">OPERACIONES CON DATOS REALES</p><a className="subnav" href="/?vista=solicitudes-compra&datos=reales"><FinanceIcon name="document"/><span>Compras registradas</span></a></div>}
   </nav>;
 }

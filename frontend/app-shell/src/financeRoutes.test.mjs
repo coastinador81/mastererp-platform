@@ -10,3 +10,10 @@ test('purchase views preserve list/create/detail/edit on reload',()=>{for(const 
 test('every Finance query view can survive the existing PKCE hash-only return contract',()=>{for(const view of ['clientes','proveedores','solicitudes-compra','ordenes-compra','facturas-proveedores']){const original=new URL('/?vista='+view+'&id='+id,'https://finanzas-dev.uonify.com');const logical=workspacePath(original,true);assert.notEqual(financeUrl(logical),'/');const callback=new URL('/#'+logical,original.origin);assert.equal(financeUrl(workspacePath(callback,true)),original.pathname+original.search);}});
 
 test('sales read-only list and detail survive reload and PKCE',()=>{for(const tail of ['', '/'+id]){const path='/modulos/finanzas/administracion/ventas'+tail;const url=financeUrl(path);assert.equal(workspacePath(new URL(url,'https://finanzas-dev.uonify.com'),true),path);assert.ok(!url.includes('#'));}assert.equal(financeUrl('/modulos/finanzas/administracion/ventas/nuevo'),null);assert.equal(financeUrl('/modulos/finanzas/administracion/ventas/'+id+'/editar'),null);});
+test('configuration query wins over stale hash routes',()=>{
+ const path='/modulos/finanzas/configuracion';
+ const url=financeUrl(path);
+ assert.equal(url,'/?vista=configuracion');
+ assert.equal(workspacePath(new URL('/?vista=configuracion#/modulos/finanzas','https://127.0.0.1:5187'),true),path);
+ assert.equal(workspacePath(new URL(url,'https://127.0.0.1:5187'),true),path);
+});
