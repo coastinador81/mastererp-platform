@@ -50,7 +50,7 @@ class EcommerceRepository:
             (claims["iss"], claims["sub"], payload["domain"], payload["items"],
              payload["delivery"], payload["delivery_method"], payment, idempotency_key, payload["node_id"]),
         ).fetchone()["value"]
-        if payload["payment_method"] in ("mobile", "transfer"):
+        if payload["payment_method"] in ("mobile", "transfer") and payload.get("_exchange_rate"):
             rate = payload["_exchange_rate"]
             total = Decimal(str(result["total"]))
             declaration = {"payer": payload["_payer"], "paymentDate": rate["effectiveDate"],

@@ -170,8 +170,6 @@ def _checkout(event, repository, claims):
     rate = current_rate(timeout=5, attempts=2) if method in ("mobile", "transfer") else None
     if method in ("mobile", "transfer") and not rate:
         rate = _declared_exchange_rate(payload.get("exchange_rate"))
-    if method in ("mobile", "transfer") and not rate:
-        raise HttpError(503, "Current exchange rate is unavailable", code="exchange_rate_unavailable")
     order = repository.checkout(profile, {**payload, "_payer": payer, "_exchange_rate": rate}, key)
     if payer:
         repository.save_payment_method(profile, payload["domain"], method, payer)

@@ -112,6 +112,21 @@ class EcommerceApiTest(unittest.TestCase):
         self.assertIsNone(_declared_exchange_rate({"rate": -1, "source": "bcv.today", "effectiveDate": today}))
 
     @patch("ecommerce_api.handler._verified_profile")
+    @patch("ecommerce_api.handler.current_rate", return_value=None)
+    def test_paid_reference_is_not_blocked_when_bcv_provider_is_unavailable(self, _rate, verify):
+        claims = {"iss": "issuer", "sub": "subject"}
+        verify.return_value = claims
+        repository = Mock()
+        repository.checkout.return_value = {"id": "order-1"}
+        event = {"headers": {"Idempotency-Key": "checkout-bcv-outage"}, "body": (
+            '{"domain":"shop.example.invalid","node_id":"00000000-0000-0000-0000-000000000010",'
+            '"items":[{"product_id":"p","quantity":1}],"delivery":{"address":"QA Street","latitude":10.48,"longitude":-66.9},'
+            '"delivery_method":"realtime","payment_method":"mobile","payment_reference":"12345678",'
+            '"payer":{"bankCode":"0102","document":"V12345678","phone":"04121234567"}}')}
+        self.assertEqual(_checkout(event, repository, claims), (201, {"id": "order-1"}))
+        self.assertIsNone(repository.checkout.call_args.args[1]["_exchange_rate"])
+
+    @patch("ecommerce_api.handler._verified_profile")
     @patch("ecommerce_api.handler.current_rate", return_value={"rate":"914.0218","source":"bcv.today","effectiveDate":"2026-11-16"})
     def test_checkout_remembers_validated_payer_after_order(self, _rate, verify):
         claims = {"iss": "issuer", "sub": "subject"}
