@@ -54,8 +54,8 @@ export function StoreHeader() {
 }
 
 const styles = StyleSheet.create({
-  shell: { backgroundColor: colors.surface, borderBottomWidth: 1, borderBottomColor: colors.line },
-  header: { width: '100%', maxWidth: contentWidth, minHeight: 76, alignSelf: 'center', paddingHorizontal: spacing.md, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.md },
+  shell: { position: 'relative', zIndex: 1000, elevation: 20, overflow: 'visible', backgroundColor: colors.surface, borderBottomWidth: 1, borderBottomColor: colors.line },
+  header: { position: 'relative', zIndex: 1001, width: '100%', maxWidth: contentWidth, minHeight: 76, alignSelf: 'center', overflow: 'visible', paddingHorizontal: spacing.md, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.md },
   brand: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.sm, minWidth: 0 },
   brandCopy: { flexShrink: 1, minWidth: 0 },
   mark: { width: 39, height: 39, flexShrink: 0, borderRadius: 13, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.primary },
@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
   active: { color: colors.primary },
   actions: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: spacing.sm },
   actionsCompact: { flexGrow: 0, flexShrink: 0, flexBasis: 'auto' },
-  nodeWrap:{position:'relative',zIndex:30},nodeButton:{maxWidth:210,minHeight:43,flexDirection:'row',alignItems:'center',gap:6,paddingHorizontal:11,borderWidth:1,borderColor:colors.line,borderRadius:12,backgroundColor:colors.surface},nodeText:{maxWidth:140,color:colors.ink,fontSize:12,fontWeight:'800'},nodeMenu:{position:'absolute',top:48,right:0,minWidth:210,padding:6,borderWidth:1,borderColor:colors.line,borderRadius:12,backgroundColor:colors.surface,boxShadow:'0 10px 25px rgba(16,24,40,.14)'},nodeOption:{paddingHorizontal:11,paddingVertical:10,borderRadius:8},nodeSelected:{backgroundColor:colors.primarySoft},nodeOptionText:{color:colors.ink,fontSize:12,fontWeight:'700'},nodeSelectedText:{color:colors.primaryDark},
+  nodeWrap:{position:'relative',zIndex:1002,elevation:21,overflow:'visible'},nodeButton:{maxWidth:210,minHeight:43,flexDirection:'row',alignItems:'center',gap:6,paddingHorizontal:11,borderWidth:1,borderColor:colors.line,borderRadius:12,backgroundColor:colors.surface},nodeText:{maxWidth:140,color:colors.ink,fontSize:12,fontWeight:'800'},nodeMenu:{position:'absolute',zIndex:1003,elevation:22,top:48,right:0,minWidth:210,padding:6,borderWidth:1,borderColor:colors.line,borderRadius:12,backgroundColor:colors.surface,boxShadow:'0 10px 25px rgba(16,24,40,.14)'},nodeOption:{paddingHorizontal:11,paddingVertical:10,borderRadius:8},nodeSelected:{backgroundColor:colors.primarySoft},nodeOptionText:{color:colors.ink,fontSize:12,fontWeight:'700'},nodeSelectedText:{color:colors.primaryDark},
   cart: { width: 43, height: 43, alignItems: 'center', justifyContent: 'center', borderRadius: 14, backgroundColor: colors.primary },
   badge: { position: 'absolute', top: -5, right: -5, minWidth: 20, height: 20, paddingHorizontal: 4, alignItems: 'center', justifyContent: 'center', borderRadius: 10, backgroundColor: colors.accent, borderWidth: 2, borderColor: colors.surface },
   badgeText: { color: colors.ink, fontSize: 10, fontWeight: '900' },
