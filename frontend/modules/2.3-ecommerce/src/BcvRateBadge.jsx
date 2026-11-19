@@ -1,10 +1,14 @@
 import React, {useEffect, useState} from 'react';
 import {formatBcvRate, millisecondsUntilNextBcvRefresh} from './bcv-rate.mjs';
 
-export default function BcvRateBadge({runtime}) {
+export default function BcvRateBadge({runtime, enabled = true}) {
   const [rate, setRate] = useState(null);
 
   useEffect(() => {
+    if (!enabled || !runtime.tenant) {
+      setRate(null);
+      return undefined;
+    }
     let active = true;
     let timer;
     const load = async () => {
@@ -18,8 +22,9 @@ export default function BcvRateBadge({runtime}) {
     };
     void load();
     return () => { active = false; window.clearTimeout(timer); };
-  }, [runtime.api,runtime.request,runtime.tenant]);
+  }, [enabled,runtime.api,runtime.request,runtime.tenant]);
 
+  if (!enabled) return null;
   if (!rate) return <span className="bcv-rate-badge is-unavailable" title="Tasa BCV no disponible">BCV --</span>;
   const formatted = formatBcvRate(rate.rate);
   return (

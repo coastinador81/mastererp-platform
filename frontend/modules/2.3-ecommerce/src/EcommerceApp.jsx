@@ -91,7 +91,7 @@ export default function EcommerceApp() {
       contextLabel={routeLabels[route]}
       contextKey={[workspace.signedIn, workspace.tenant, workspace.company].join(':')}
       navigation={<OperationsNavigation context={workspace.context} route={route} navigate={navigate} />}
-      headerActions={<BcvRateBadge runtime={runtime} />}
+      headerActions={<BcvRateBadge runtime={runtime} enabled={workspace.signedIn && Boolean(workspace.tenant)} />}
       environmentLabel="Uonify Commerce · Entorno de desarrollo"
       error={workspace.error}
     >
