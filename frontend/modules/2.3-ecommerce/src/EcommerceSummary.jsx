@@ -9,19 +9,23 @@ import{collectCursorPages,collectOffsetPages}from'./operationPages.mjs';
 
 const call=(runtime,path)=>runtime.request(runtime.api+path,{headers:{'X-Tenant-Id':runtime.tenant,'Content-Type':'application/json'}});
 const endpoints={orders:'orders',preparation:'preparations',routes:'routes'};
+const summaryCache=new Map(),SUMMARY_CACHE_MS=120000;
 
 export default function EcommerceSummary(props){
   const {runtime,context}=props;
   return <SummarySession key={`${runtime.api}:${runtime.tenant}:${runtime.company}:${Object.keys(endpoints).map(route=>canOpenOperationsRoute(context,route)).join(':')}`} {...props}/>;
 }
 function SummarySession({context,runtime,navigate}){
-  const[data,setData]=useState({orders:[],preparation:[],routes:[]}),[loading,setLoading]=useState(true),[error,setError]=useState(''),[failed,setFailed]=useState([]),[updated,setUpdated]=useState(null);
+  const cacheKey=`${runtime.tenant}:${runtime.company}`,cached=summaryCache.get(cacheKey);
+  const[data,setData]=useState(cached?.data||{orders:[],preparation:[],routes:[]}),[loading,setLoading]=useState(!cached),[error,setError]=useState(cached?.error||''),[failed,setFailed]=useState(cached?.failed||[]),[updated,setUpdated]=useState(cached?new Date(cached.updated):null);
   const refs=useRef({context,runtime}),active=useRef(false),pending=useRef(false);
   refs.current={context,runtime};
-  const load=useCallback(async()=>{
+  const load=useCallback(async(force=false)=>{
     if(pending.current)return;
     const {runtime,context}=refs.current;
     if(!runtime.company){setLoading(false);setError('Selecciona una empresa para consultar su operación.');return;}
+    const available=summaryCache.get(`${runtime.tenant}:${runtime.company}`);
+    if(!force&&available&&Date.now()-available.updated<SUMMARY_CACHE_MS){setData(available.data);setFailed(available.failed);setError(available.error);setUpdated(new Date(available.updated));setLoading(false);return;}
     pending.current=true;setLoading(true);setError('');
     try{
       const settled=await Promise.allSettled(Object.entries(endpoints).map(async([route,path])=>{
@@ -33,19 +37,20 @@ function SummarySession({context,runtime,navigate}){
       if(active.current){
         const next={orders:[],preparation:[],routes:[]},failed=[];
         settled.forEach((result,index)=>{const route=Object.keys(endpoints)[index];if(result.status==='fulfilled')next[result.value[0]]=result.value[1];else failed.push(route);});
-        setData(next);setFailed(failed);setUpdated(new Date());setError(failed.length?`No se pudo actualizar: ${failed.map(value=>({orders:'Pedidos',preparation:'Preparación',routes:'Rutas'}[value])).join(', ')}. Los demás datos sí están actualizados.`:'');
+        const error=failed.length?`No se pudo actualizar: ${failed.map(value=>({orders:'Pedidos',preparation:'Preparación',routes:'Rutas'}[value])).join(', ')}. Los demás datos sí están actualizados.`:'',updated=Date.now();
+        summaryCache.set(`${runtime.tenant}:${runtime.company}`,{data:next,failed,error,updated});setData(next);setFailed(failed);setUpdated(new Date(updated));setError(error);
       }
     }catch{if(active.current)setError('No pudimos actualizar el resumen. Intenta de nuevo.');}
     finally{pending.current=false;if(active.current)setLoading(false);}
   },[]);
-  useEffect(()=>{active.current=true;void load();const refresh=()=>{if(document.visibilityState==='visible')void load();};window.addEventListener('focus',refresh);return()=>{active.current=false;window.removeEventListener('focus',refresh);};},[load]);
+  useEffect(()=>{active.current=true;void load();return()=>{active.current=false;};},[load]);
   const orders=data.orders,summary=summarizeOperations(data),available=!loading&&updated;
   const value=(route,result)=>!canOpenOperationsRoute(context,route)?'Sin acceso':failed.includes(route)?'No disponible':available?result:'—';
   const counts=useMemo(()=>Object.fromEntries(Object.keys(STATUS).map(status=>[status,orders.filter(order=>order.status===status).length])),[orders]);
   const metrics=[['Pedidos de hoy',value('orders',summary.todayCount),'Recibidos desde la medianoche','order','blue'],['En preparación',value('preparation',summary.preparing),'Pedidos que se están preparando ahora','document','orange'],['En reparto',value('orders',summary.delivering),failed.includes('routes')?'Rutas no disponibles':available&&canOpenOperationsRoute(context,'routes')?`${summary.activeRoutes} ${summary.activeRoutes===1?'ruta activa':'rutas activas'}`:'Pedidos en camino al cliente','sales','violet'],['Importe de pedidos de hoy',value('orders',summary.amounts.map(([currency,total])=>money(total,currency)).join(' · ')||'Sin importe'),'Sin cancelados · aún no son cobros confirmados','summary','green']];
   const flow=[['CONFIRMED','Confirmados','blue'],['PREPARING','En preparación','violet'],['OUT_FOR_DELIVERY','En ruta','orange'],['DELIVERED','Entregados','green']],total=flow.reduce((sum,[key])=>sum+(counts[key]||0),0);
   const visible=[['orders','order','Gestionar pedidos','Revisa y actualiza el estado de cada pedido'],['preparation','document','Preparar productos','Organiza los pedidos antes del despacho'],['routes','sales','Planificar rutas','Consulta y organiza las entregas'],['nodes','supplier','Configurar nodos','Administra ubicaciones y capacidades']].filter(([route])=>canOpenOperationsRoute(context,route));
-  return <section className="ops-modern ops-summary"><div className="ops-page-heading"><div><nav>E-commerce <span>/</span> Operaciones</nav><h1>Resumen de operaciones</h1><p>Estado actual de pedidos, preparación, rutas y nodos.</p></div><button className="ops-button secondary" onClick={()=>void load()} disabled={loading}><span aria-hidden="true">↻</span>{loading?'Actualizando…':'Actualizar'}</button></div>
+  return <section className="ops-modern ops-summary"><div className="ops-page-heading"><div><nav>E-commerce <span>/</span> Operaciones</nav><h1>Resumen de operaciones</h1><p>Estado actual de pedidos, preparación, rutas y nodos.</p></div><button className="ops-button secondary" onClick={()=>void load(true)} disabled={loading}><span aria-hidden="true">↻</span>{loading?'Actualizando…':'Actualizar'}</button></div>
     {error?<p className="notice error" role="alert">{error}</p>:null}{updated&&!error&&!loading?<p>Actualizado a las {updated.toLocaleTimeString('es')}.</p>:null}<div className="ops-metrics">{metrics.map(([label,value,meta,icon,tone])=><article key={label}><span className={`ops-metric-icon ${tone}`}><FinanceIcon name={icon}/></span><div><small>{label}</small><strong>{value}</strong><em>{meta}</em></div></article>)}</div>
     {loading?<LoadingState label="Actualizando resumen…"/>:null}
     {available&&!failed.includes('orders')&&canOpenOperationsRoute(context,'orders')?<>
