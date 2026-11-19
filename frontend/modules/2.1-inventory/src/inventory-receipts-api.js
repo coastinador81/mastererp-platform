@@ -7,19 +7,21 @@ import {
   logout,
   restoreSession,
 } from '../../../shared/auth/cognito.mjs';
+import baseAuthConfig from '../../0-uonify/auth-config.json';
 
-const API_URL = (import.meta.env.VITE_INVENTORY_API_URL || '').replace(/\/$/, '');
+const IDENTITY_API_URL = (import.meta.env.VITE_IDENTITY_API_URL || baseAuthConfig.apiUrl || '').replace(/\/$/, '');
+const INVENTORY_API_URL = (import.meta.env.VITE_INVENTORY_API_URL || baseAuthConfig.adminApiUrl || '').replace(/\/$/, '');
 const RETURN_KEY = 'mastererp.inventory.return';
 const SELECTION_KEY = 'mastererp.inventory.selection';
 
 function authConfig() {
   return {
-    clientId: import.meta.env.VITE_COGNITO_CLIENT_ID || '',
-    loginBaseUrl: import.meta.env.VITE_COGNITO_LOGIN_URL || '',
+    clientId: import.meta.env.VITE_COGNITO_CLIENT_ID || baseAuthConfig.clientId,
+    loginBaseUrl: import.meta.env.VITE_COGNITO_LOGIN_URL || baseAuthConfig.loginBaseUrl,
     callbackUrl: `${window.location.origin}/`,
     logoutUrl: `${window.location.origin}/`,
-    apiUrl: API_URL,
-    scopes: ['openid', 'email', 'mastererp-dev/identity.spaces.read'],
+    apiUrl: IDENTITY_API_URL,
+    scopes: baseAuthConfig.scopes,
   };
 }
 
@@ -46,7 +48,7 @@ function savedSelection() {
 
 async function tenantContext(tenantId, signal) {
   const query = new URLSearchParams({ tenant_id: tenantId });
-  const response = await authorizedFetch(`${API_URL}/v1/uonify/spaces?${query}`, { signal });
+  const response = await authorizedFetch(`${IDENTITY_API_URL}/v1/uonify/spaces?${query}`, { signal });
   const context = response.context;
   if (context?.tenant_id !== tenantId || !Array.isArray(context.companies)) {
     throw new Error('No se pudo validar el espacio y sus empresas.');
@@ -105,7 +107,7 @@ export function endInventorySession() {
 }
 
 function purchasePath(companyId, purchaseOrderId = '') {
-  const base = `${API_URL}/v1/companies/${encodeURIComponent(companyId)}/inventory/receipts/orders`;
+  const base = `${INVENTORY_API_URL}/v1/companies/${encodeURIComponent(companyId)}/inventory/receipts/orders`;
   return purchaseOrderId ? `${base}/${encodeURIComponent(purchaseOrderId)}` : base;
 }
 
