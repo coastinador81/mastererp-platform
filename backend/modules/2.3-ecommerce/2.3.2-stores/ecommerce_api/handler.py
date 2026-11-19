@@ -57,6 +57,25 @@ def _validate_custom_methods(methods):
             raise HttpError(400, "Invalid custom payment method", code="invalid_request")
         ids.add(item["id"])
 
+def _validate_company_profile(profile):
+    if profile is None:
+        return
+    allowed = {"legal_name", "trade_name", "tax_identifier", "address", "phone", "email", "logo_url", "primary_color"}
+    if not isinstance(profile, dict) or set(profile) != allowed:
+        raise HttpError(400, "Invalid company fiscal profile", code="invalid_request")
+    limits = {"legal_name": 250, "trade_name": 250, "tax_identifier": 100, "address": 500,
+              "phone": 40, "email": 254, "logo_url": 1000, "primary_color": 7}
+    if not isinstance(profile["legal_name"], str) or not profile["legal_name"].strip():
+        raise HttpError(400, "Company legal name is required", code="invalid_request")
+    if any(not isinstance(value, str) or len(value.strip()) > limits[key] for key, value in profile.items()):
+        raise HttpError(400, "Invalid company fiscal profile", code="invalid_request")
+    if profile["email"].strip() and not re.fullmatch(r"[^\s@]+@[^\s@]+\.[^\s@]+", profile["email"].strip()):
+        raise HttpError(400, "Invalid company email", code="invalid_request")
+    if profile["logo_url"].strip() and not re.fullmatch(r"https://[^\s]+", profile["logo_url"].strip()):
+        raise HttpError(400, "Invalid company logo URL", code="invalid_request")
+    if profile["primary_color"].strip() and not re.fullmatch(r"#[0-9A-Fa-f]{6}", profile["primary_color"].strip()):
+        raise HttpError(400, "Invalid company color", code="invalid_request")
+
 
 def _header(event, name):
     return {k.lower(): v for k, v in (event.get("headers") or {}).items()}.get(name.lower())
@@ -121,6 +140,7 @@ def _request(event, repository, public=False):
         if "version" not in payload or "changes" not in payload:
             raise HttpError(400, "version and changes are required", code="invalid_request")
         _validate_payment_configuration(payload["changes"])
+        _validate_company_profile(payload.get("company_profile"))
         return 200, repository.configure(company_id, store_id, payload)
     raise HttpError(404, "Route not found", code="not_found")
 

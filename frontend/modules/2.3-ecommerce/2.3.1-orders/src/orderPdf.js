@@ -4,6 +4,7 @@ const value=(source,...keys)=>keys.map(key=>source?.[key]).find(item=>item!=null
 const invoiceMoney=(amount,currency)=>new Intl.NumberFormat('es-VE',{style:'currency',currency:currency||'USD'}).format(Number(amount||0));
 const invoiceDate=date=>date?new Intl.DateTimeFormat('es-VE',{dateStyle:'short'}).format(new Date(date)):'No registrada';
 const paymentMethod=method=>({mobile:'Pago móvil',bank_transfer:'Transferencia bancaria',transfer:'Transferencia bancaria',cash:'Efectivo',card:'Tarjeta'})[String(method||'').toLowerCase()]||method||'No registrado';
+const paymentStatus=status=>({pending_verification:'Pendiente de verificación',validated:'Validado',validado:'Validado',paid:'Pagado',pagado:'Pagado',rejected:'Rechazado',refunded:'Reembolsado'})[String(status||'').toLowerCase()]||status||'Pendiente';
 const readableAddress=address=>{
   if(!address)return '';
   if(typeof address==='string')return address;
@@ -96,7 +97,7 @@ export async function createInvoicePdf({order,companyProfile}){
   [value(customer,'name','nombre')||'Cliente no registrado',value(customer,'document','tax_id','numero_identificacion'),value(customer,'email','correo'),value(customer,'phone','telefono')].filter(Boolean).forEach((line,index)=>pdf.text(String(line),customerX,customerY+6+(index*5)));
 
   y=Math.max(y+13,72);pdf.setTextColor(color);pdf.setFont('helvetica','normal');pdf.setFontSize(20);pdf.text(`Factura ${order.number}`,margin,y);y+=11;
-  const facts=[['Fecha de factura',invoiceDate(order.created_at)],['Referencia',order.number],['Moneda',order.currency||'USD'],['Estado del pago',payment.status||'Pendiente']];
+  const facts=[['Fecha de factura',invoiceDate(order.created_at)],['Referencia',order.number],['Moneda',order.currency||'USD'],['Estado del pago',paymentStatus(payment.status)]];
   const factWidth=44.5;
   facts.forEach(([label,detail],index)=>{const x=margin+(index*factWidth);pdf.setFont('helvetica','bold');pdf.setFontSize(8);pdf.setTextColor(color);pdf.text(label,x,y);pdf.setFont('helvetica','normal');pdf.setTextColor('#28323f');pdf.text(pdf.splitTextToSize(String(detail),factWidth-3),x,y+5);});
   y+=17;
@@ -122,14 +123,16 @@ export async function createInvoicePdf({order,companyProfile}){
   pdf.setFontSize(8.5);pdf.setFont('helvetica','bold');pdf.setTextColor(color);pdf.text('Información de pago',margin,y);
   pdf.setFont('helvetica','normal');pdf.setTextColor('#28323f');y+=6;
   pdf.text('Términos de pago: Pago inmediato',margin,y);y+=5;
-  pdf.text(`Referencia de pago: ${payment.reference||order.number}`,margin,y);
+  pdf.text(`Referencia de pago: ${payment.reference||order.number}`,margin,y);y+=5;
+  pdf.text(`Método: ${paymentMethod(payment.method)}`,margin,y);
+  if(paidAt)pdf.text(`Fecha del pago: ${invoiceDate(paidAt)}`,margin,y+5);
   if(paid){
-    pdf.text(`Pagado${paidAt?` el ${invoiceDate(paidAt)}`:''} usando ${paymentMethod(payment.method)}`,right,y-5,{align:'right'});
-    pdf.setFont('helvetica','bold');pdf.text(`Cantidad por pagar: ${invoiceMoney(0,order.currency)}`,right,y,{align:'right'});
+    pdf.text(`Pagado${paidAt?` el ${invoiceDate(paidAt)}`:''} usando ${paymentMethod(payment.method)}`,right,y-10,{align:'right'});
+    pdf.setFont('helvetica','bold');pdf.text(`Cantidad por pagar: ${invoiceMoney(0,order.currency)}`,right,y-5,{align:'right'});
   }else{
-    pdf.setFont('helvetica','bold');pdf.text(`Cantidad por pagar: ${invoiceMoney(order.total,order.currency)}`,right,y,{align:'right'});
+    pdf.setFont('helvetica','bold');pdf.text(`Cantidad por pagar: ${invoiceMoney(order.total,order.currency)}`,right,y-5,{align:'right'});
   }
-  y+=12;pdf.setTextColor('#6b7280');pdf.setFont('helvetica','normal');pdf.setFontSize(8);pdf.text(pdf.splitTextToSize('Documento emitido con los datos fiscales configurados para la empresa. La validez fiscal depende de la factura o nota de crédito emitida y vinculada por Finanzas.',178),margin,y);
+  y+=15;pdf.setTextColor('#6b7280');pdf.setFont('helvetica','normal');pdf.setFontSize(8);pdf.text(pdf.splitTextToSize('Documento emitido con los datos fiscales configurados para la empresa. La validez fiscal depende de la factura o nota de crédito emitida y vinculada por Finanzas.',178),margin,y);
 
   const year=new Date().getFullYear();
   const pages=pdf.getNumberOfPages();for(let index=1;index<=pages;index++){

@@ -13,6 +13,7 @@
 .payment-config-detail .node-form-heading p { margin: 6px 0 0; color: var(--finance-muted,#667085); }
 .payment-config-detail fieldset { display: grid; gap: 10px; padding: 0; margin: 0; border: 0; min-width: 0; }
 .payment-config-detail legend { margin-bottom: 12px; font-size: 16px; }
+.payment-fieldset-help { margin: -6px 0 4px; color: var(--finance-muted,#667085); }
 .payment-config-detail .ops-switch-row { padding: 14px 0; border-bottom: 1px solid var(--finance-border,#e8edf3); gap: 16px; }
 .payment-config-detail .ops-switch { flex-shrink: 0; }
 .payment-config-detail .ops-switch input:focus-visible+i { outline: 2px solid #3b82f6; outline-offset: 3px; }
@@ -20,6 +21,7 @@
 .payment-fields { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; }
 .payment-fields label { display: grid; gap: 6px; color: var(--finance-text,#4b5563); }
 .payment-fields input { width: 100%; min-width: 0; box-sizing: border-box; min-height: 44px; padding: 0 12px; border: 1px solid var(--finance-border,#e8edf3); border-radius: 8px; }
+.payment-fields input[type="color"] { padding: 5px; cursor: pointer; }
 .payment-accordion { border: 1px solid var(--finance-border,#e8edf3); border-radius: 10px; background: #fff; }
 .payment-accordion summary { display: grid; grid-template-columns: minmax(0,1fr) auto 18px; align-items: center; gap: 12px; padding: 14px 16px; cursor: pointer; list-style: none; }
 .payment-accordion summary::-webkit-details-marker { display: none; }

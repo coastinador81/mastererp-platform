@@ -5,16 +5,30 @@ class EcommerceRepository:
         self.connection = connection
 
     def list(self, company_id, limit):
-        return self.connection.execute("SELECT ventas_digitales.tiendas_leer(%s,NULL,%s) value", (company_id, limit)).fetchone()["value"]
+        stores = self.connection.execute("SELECT ventas_digitales.tiendas_leer(%s,NULL,%s) value", (company_id, limit)).fetchone()["value"]
+        profile = self.company_profile(company_id)
+        return [{**store, "company_profile": profile} for store in stores]
 
     def get(self, company_id, store_id):
-        return self.connection.execute("SELECT ventas_digitales.tiendas_leer(%s,%s,1) value", (company_id, store_id)).fetchone()["value"]
+        store = self.connection.execute("SELECT ventas_digitales.tiendas_leer(%s,%s,1) value", (company_id, store_id)).fetchone()["value"]
+        return {**store, "company_profile": self.company_profile(company_id)}
+
+    def company_profile(self, company_id):
+        return self.connection.execute(
+            "SELECT organizacion.company_fiscal_profile_read(%s) value", (company_id,)
+        ).fetchone()["value"]
 
     def configure(self, company_id, store_id, payload):
-        return self.connection.execute(
+        if payload.get("company_profile") is not None:
+            self.connection.execute(
+                "SELECT organizacion.company_fiscal_profile_update(%s,%s) value",
+                (company_id, payload["company_profile"]),
+            )
+        store = self.connection.execute(
             "SELECT ventas_digitales.tienda_configurar(%s,%s,%s,%s,%s,%s,%s) value",
             (company_id, store_id, payload.get("node_id"), payload.get("domain"), payload.get("name"), payload.get("version"), payload.get("changes", {})),
         ).fetchone()["value"]
+        return {**store, "company_profile": self.company_profile(company_id)}
 
     def public_catalog(self, domain, limit, node_id=None):
         catalog = self.connection.execute("SELECT ventas_digitales.catalogo_publico(%s,%s,%s) value", (domain, limit, node_id)).fetchone()["value"]

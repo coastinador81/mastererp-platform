@@ -4,7 +4,7 @@ from types import SimpleNamespace
 from unittest.mock import Mock
 from unittest.mock import patch
 
-from ecommerce_api.handler import HttpError, _checkout, _claim, _customer_portal, _declared_exchange_rate, _request, _validate_payment_configuration, _verified_profile, lambda_handler
+from ecommerce_api.handler import HttpError, _checkout, _claim, _customer_portal, _declared_exchange_rate, _request, _validate_company_profile, _validate_payment_configuration, _verified_profile, lambda_handler
 from ecommerce_api.repository import EcommerceRepository
 
 
@@ -63,6 +63,16 @@ class EcommerceApiTest(unittest.TestCase):
             "mobilePayment": {"document": "invalid", "phone": "123", "bankCode": "1"}}}}
         with self.assertRaises(HttpError):
             _validate_payment_configuration(invalid)
+
+    def test_company_fiscal_profile_is_exact_and_validated(self):
+        valid = {"legal_name": "Empresa C.A.", "trade_name": "Empresa", "tax_identifier": "J-123",
+                 "address": "Caracas", "phone": "0212-0000000", "email": "facturas@example.com",
+                 "logo_url": "https://example.com/logo.png", "primary_color": "#0758b3"}
+        self.assertIsNone(_validate_company_profile(valid))
+        with self.assertRaises(HttpError):
+            _validate_company_profile({**valid, "secret": "no"})
+        with self.assertRaises(HttpError):
+            _validate_company_profile({**valid, "logo_url": "http://example.com/logo.png"})
 
     @patch("ecommerce_api.handler.secrets.token_urlsafe", return_value="x" * 43)
     def test_admin_invitation_returns_raw_token_once(self, _token):

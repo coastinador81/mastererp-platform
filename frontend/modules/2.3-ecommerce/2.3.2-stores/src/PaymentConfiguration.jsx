@@ -35,13 +35,17 @@ function PaymentSession({runtime}) {
     const form=new FormData(event.currentTarget),cash=form.has('cash'),mobile=form.has('mobile'),transfer=form.has('transfer'),posDelivery=form.has('posDelivery'),posPickup=form.has('posPickup');
     const storeName=value(form,'storeName');
     if(storeName.length<2||storeName.length>120)return setError('El nombre de la tienda debe tener entre 2 y 120 caracteres.');
+    const companyProfile={legal_name:value(form,'legalName'),trade_name:value(form,'tradeName'),tax_identifier:value(form,'taxIdentifier'),address:value(form,'fiscalAddress'),phone:value(form,'companyPhone'),email:value(form,'companyEmail'),logo_url:value(form,'companyLogo'),primary_color:value(form,'companyColor')};
+    if(companyProfile.legal_name.length<2||companyProfile.legal_name.length>250)return setError('La razón social debe tener entre 2 y 250 caracteres.');
+    if(companyProfile.email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(companyProfile.email))return setError('Indica un correo válido para la empresa.');
+    if(companyProfile.logo_url&&!/^https:\/\//.test(companyProfile.logo_url))return setError('El logo debe usar una dirección HTTPS.');
     const customMethods=JSON.parse(value(form,'customMethods')||'[]').map(item=>({id:item.id,name:item.name.trim(),instructions:item.instructions.trim(),enabled:item.enabled}));
     if(mobile&&(!value(form,'mobileDocument')||!value(form,'mobilePhone')||!value(form,'mobileBankCode')))return setError('Completa documento, teléfono y código bancario del pago móvil.');
     if(transfer&&(!value(form,'transferDocument')||!value(form,'transferAccount')||!value(form,'transferBankCode')))return setError('Completa documento, cuenta y código bancario de la transferencia.');
     if(customMethods.some(item=>item.name.length<2||item.name.length>60||!item.instructions||item.instructions.length>500))return setError('Cada método agregado necesita un nombre (2 a 60 caracteres) e instrucciones para el comprador (hasta 500).');
     const configuration={...(selected.configuration||{}),payments:{...(selected.configuration?.payments||{}),efectivo:cash,'al-recibir':cash,'pago-movil':mobile,transferencia:transfer,'punto-venta-entrega':posDelivery,'punto-venta-retiro':posPickup},paymentDetails:{...(selected.configuration?.paymentDetails||{}),customMethods,mobilePayment:mobile?{document:value(form,'mobileDocument'),phone:value(form,'mobilePhone'),bankCode:value(form,'mobileBankCode'),bankName:value(form,'mobileBankName'),accountHolder:value(form,'mobileHolder')}:null,bankTransfer:transfer?{document:value(form,'transferDocument'),bankCode:value(form,'transferBankCode'),bankName:value(form,'transferBankName'),accountNumber:value(form,'transferAccount'),accountHolder:value(form,'transferHolder')}:null}};
     lock.current=true;setSaving(true);setError('');setMessage('');
-    try{const saved=await call(runtime,`/v1/companies/${runtime.company}/stores/${selected.id}`,{method:'PATCH',body:JSON.stringify({version:selected.version,name:storeName,changes:{configuration}})});if(!saved?.id||!saved.version)throw new Error('Invalid store response');if(alive.current){setStores(rows=>rows.map(store=>store.id===saved.id?saved:store));setSelected(saved);setDirty(false);setMessage('Configuración de la tienda guardada.');}}
+    try{const saved=await call(runtime,`/v1/companies/${runtime.company}/stores/${selected.id}`,{method:'PATCH',body:JSON.stringify({version:selected.version,name:storeName,changes:{configuration},company_profile:companyProfile})});if(!saved?.id||!saved.version)throw new Error('Invalid store response');if(alive.current){setStores(rows=>rows.map(store=>store.id===saved.id?saved:store));setSelected(saved);setDirty(false);setMessage('Configuración y datos fiscales guardados.');}await runtime.refresh?.(true);}
     catch{if(alive.current)setError('No se pudo guardar. Revisa los datos y tus permisos. Si la tienda cambió, actualiza antes de reintentar.');}
     finally{lock.current=false;if(alive.current)setSaving(false);}
   }
@@ -57,6 +61,7 @@ const initialFlags=flags=>({cash:flags.efectivo!==false&&flags['al-recibir']!==f
 const initialCustom=config=>Array.isArray(config.paymentDetails?.customMethods)?config.paymentDetails.customMethods:[];
 function PaymentForm({store,writable,saving,onSubmit,onChange,onReset}){
   const config=store.configuration||{},mobile=config.paymentDetails?.mobilePayment||{},transfer=config.paymentDetails?.bankTransfer||{};
+  const company=store.company_profile||{};
   const [active,setActive]=useState(()=>initialFlags(config.payments||{})),[custom,setCustom]=useState(()=>initialCustom(config)),[added,setAdded]=useState('');
   const toggle=key=>event=>setActive(current=>({...current,[key]:event.target.checked}));
   const changeCustom=(id,patch)=>{setCustom(rows=>rows.map(row=>row.id===id?{...row,...patch}:row));onChange();};
@@ -64,6 +69,13 @@ function PaymentForm({store,writable,saving,onSubmit,onChange,onReset}){
   const reset=event=>{onReset(event);if(!event.defaultPrevented){setActive(initialFlags(config.payments||{}));setCustom(initialCustom(config));}};
   return <form onSubmit={onSubmit} onChange={onChange} onReset={reset}><header className="node-form-heading"><div><small>CONFIGURACIÓN DE TIENDA</small><h2>{store.name}</h2><p>{store.domain}</p></div><StatusBadge status={store.status}>{storeStatus(store.status)}</StatusBadge></header>
     <fieldset disabled={!writable||saving}><legend>Identidad visible</legend><div className="payment-fields"><label className="payment-field-wide">Nombre de la tienda<input name="storeName" defaultValue={store.name} minLength={2} maxLength={120} required/><small>Se muestra en la cabecera del Storefront.</small></label></div></fieldset>
+    <fieldset disabled={!writable||saving}><legend>Datos fiscales y documentos</legend><p className="payment-fieldset-help">Información legal de la empresa activa. Se utiliza en facturas y comprobantes, sin duplicarse por tienda.</p><div className="payment-fields">
+      <Field name="legalName" label="Razón social *" defaultValue={company.legal_name} required maxLength={250}/><Field name="tradeName" label="Nombre comercial" defaultValue={company.trade_name} maxLength={250}/>
+      <Field name="taxIdentifier" label="RIF" defaultValue={company.tax_identifier} maxLength={100}/><Field name="companyPhone" label="Teléfono" defaultValue={company.phone} maxLength={40}/>
+      <label className="payment-field-wide">Dirección fiscal<textarea name="fiscalAddress" defaultValue={company.address||''} maxLength={500} rows={3}/></label>
+      <Field name="companyEmail" label="Correo" defaultValue={company.email} type="email" maxLength={254}/><Field name="companyColor" label="Color corporativo" defaultValue={company.primary_color||'#0758b3'} type="color"/>
+      <label className="payment-field-wide">Logo de la empresa<input name="companyLogo" type="url" defaultValue={company.logo_url||''} maxLength={1000} placeholder="https://…"/><small>Usa una imagen HTTPS accesible públicamente para incluirla en el PDF.</small></label>
+    </div></fieldset>
     <fieldset disabled={!writable||saving}><legend>Métodos de pago</legend>
       <Accordion title="Pago al recibir" detail="Efectivo durante la entrega." active={active.cash}><PaymentToggle name="cash" title="Activar pago al recibir" detail="El comprador paga en efectivo cuando recibe su pedido." checked={active.cash} onChange={toggle('cash')}/></Accordion>
       <Accordion title="Punto de venta" detail="Pago con tarjeta en el punto de venta." active={active.posDelivery||active.posPickup}><PaymentToggle name="posDelivery" title="Pago al entregar" detail="Se cobra con el punto de venta al entregar el pedido." checked={active.posDelivery} onChange={toggle('posDelivery')}/><PaymentToggle name="posPickup" title="Pago al retirar" detail="Se cobra cuando el cliente retira en tienda. El comprador lo verá cuando la tienda ofrezca retiro." checked={active.posPickup} onChange={toggle('posPickup')}/></Accordion>
@@ -76,4 +88,4 @@ function PaymentForm({store,writable,saving,onSubmit,onChange,onReset}){
 }
 function Accordion({title,detail,active,defaultOpen=false,children}){return <details className="payment-accordion" open={defaultOpen}><summary><span className="payment-accordion-title"><strong>{title}</strong><small>{detail}</small></span><StatusBadge status={active?'ACTIVE':'INACTIVE'}>{active?'Activo':'Inactivo'}</StatusBadge><span className="payment-accordion-chevron" aria-hidden="true">›</span></summary><div className="payment-accordion-body">{children}</div></details>;}
 function PaymentToggle({name,title,detail,checked,onChange}){return <label className="ops-switch-row"><span><strong>{title}</strong><small>{detail}</small></span><span className="ops-switch"><input type="checkbox" role="switch" name={name} checked={checked} onChange={onChange}/><i aria-hidden="true"/></span></label>;}
-function Field({name,label,defaultValue}){return <label>{label}<input name={name} defaultValue={defaultValue||''}/></label>;}
+function Field({name,label,defaultValue,...props}){return <label>{label}<input name={name} defaultValue={defaultValue||''} {...props}/></label>;}

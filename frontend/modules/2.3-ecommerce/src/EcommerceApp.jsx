@@ -57,6 +57,7 @@ export default function EcommerceApp() {
     companyProfile: workspace.context?.companies?.find(company => company.id === workspace.company) || null,
     permissions,
     request: workspace.request,
+    refresh: workspace.refresh,
   }), [workspace.tenant, workspace.company, workspace.context?.companies, permissions, workspace.request]);
 
   const navigate = value => { window.location.hash = `/${value}`; };
