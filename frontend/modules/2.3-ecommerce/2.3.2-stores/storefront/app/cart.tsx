@@ -10,9 +10,12 @@ const money = (value: number) => new Intl.NumberFormat('es-VE', { style: 'curren
 
 export default function CartPage() {
   const router = useRouter();
-  const { cart, setQuantity } = useStore();
+  const { cart, catalog, setQuantity } = useStore();
   const priceOf = cartLinePrice;
   const subtotal = cart.reduce((total, line) => total + priceOf(line) * line.quantity, 0);
+  const configuredDeliveryFee = Number(catalog?.store.configuration?.deliveryFee || 0);
+  const deliveryFee = Number.isFinite(configuredDeliveryFee) ? configuredDeliveryFee : 0;
+  const total = subtotal + deliveryFee;
   return (
     <Screen>
       <View style={styles.heading}><Text style={styles.eyebrow}>TU SELECCIÓN</Text><Text style={styles.title}>Mi carrito</Text><Text style={styles.subtitle}>{cart.length ? 'Revisa las cantidades antes de continuar.' : 'Aún no agregaste productos.'}</Text></View>
@@ -24,7 +27,7 @@ export default function CartPage() {
           <View style={styles.quantity}><Pressable style={styles.quantityButton} onPress={() => setQuantity(lineKey, quantity - 1)}><Ionicons name="remove" size={17} color={colors.primaryDark} /></Pressable><Text style={styles.quantityText}>{quantity}</Text><Pressable style={styles.quantityButton} onPress={() => setQuantity(lineKey, quantity + 1)}><Ionicons name="add" size={17} color={colors.primaryDark} /></Pressable></View>
           <Text style={styles.lineTotal}>{money(unitPrice * quantity)}</Text>
         </View>;})}</View>
-        <View style={styles.summary}><Text style={styles.summaryTitle}>Resumen</Text><View style={styles.row}><Text style={styles.label}>Productos</Text><Text style={styles.value}>{money(subtotal)}</Text></View><View style={styles.row}><Text style={styles.label}>Entrega</Text><Text style={styles.pending}>Se calcula al confirmar</Text></View><View style={styles.divider} /><View style={styles.row}><Text style={styles.totalLabel}>Subtotal</Text><Text style={styles.total}>{money(subtotal)}</Text></View><Pressable style={styles.primary} onPress={() => router.push('/checkout')}><Text style={styles.primaryText}>Continuar al checkout</Text><Ionicons name="arrow-forward" size={19} color={colors.surface} /></Pressable><Text style={styles.secure}>Precios e inventario se validarán al confirmar.</Text></View>
+        <View style={styles.summary}><Text style={styles.summaryTitle}>Resumen</Text><View style={styles.row}><Text style={styles.label}>Productos</Text><Text style={styles.value}>{money(subtotal)}</Text></View><View style={styles.row}><Text style={styles.label}>Entrega</Text><Text style={styles.value}>{money(deliveryFee)}</Text></View><View style={styles.divider} /><View style={styles.row}><Text style={styles.totalLabel}>Total</Text><Text style={styles.total}>{money(total)}</Text></View><Pressable style={styles.primary} onPress={() => router.push('/checkout')}><Text style={styles.primaryText}>Continuar al checkout</Text><Ionicons name="arrow-forward" size={19} color={colors.surface} /></Pressable><Text style={styles.secure}>Tarifa correspondiente al nodo seleccionado. Precios e inventario se validarán al confirmar.</Text></View>
       </View>}
     </Screen>
   );
