@@ -3,6 +3,12 @@ const brandColor=value=>/^#[0-9a-f]{6}$/i.test(value||'')?value:'#0758b3';
 const value=(source,...keys)=>keys.map(key=>source?.[key]).find(item=>item!=null&&item!=='');
 const invoiceMoney=(amount,currency)=>new Intl.NumberFormat('es-VE',{style:'currency',currency:currency||'USD'}).format(Number(amount||0));
 const invoiceDate=date=>date?new Intl.DateTimeFormat('es-VE',{dateStyle:'short'}).format(new Date(date)):'No registrada';
+const paymentMethod=method=>({mobile:'Pago móvil',bank_transfer:'Transferencia bancaria',transfer:'Transferencia bancaria',cash:'Efectivo',card:'Tarjeta'})[String(method||'').toLowerCase()]||method||'No registrado';
+const readableAddress=address=>{
+  if(!address)return '';
+  if(typeof address==='string')return address;
+  return ['line1','line2','street','direccion','city','ciudad','municipality','municipio','state','region','postal_code','codigo_postal','country','pais'].map(key=>address[key]).filter(Boolean).filter((item,index,items)=>items.indexOf(item)===index).join(', ');
+};
 
 async function logoData(companyProfile){
   const source=value(companyProfile,'logoUrl','logo_url','logo');
@@ -70,7 +76,7 @@ export async function createInvoicePdf({order,companyProfile}){
   const company=value(companyProfile,'legalName','legal_name','name')||'Empresa';
   const color=brandColor(value(companyProfile,'primaryColor','primary_color'));
   const taxId=value(companyProfile,'taxId','tax_id','rif','document','numero_identificacion');
-  const address=value(companyProfile,'fiscalAddress','fiscal_address','address','direccion_fiscal');
+  const address=readableAddress(value(companyProfile,'fiscalAddress','fiscal_address','address','direccion_fiscal','direccion'));
   const phone=value(companyProfile,'phone','telefono'),email=value(companyProfile,'email','correo');
   const customer=order.customer_snapshot||{},payment=order.payment_snapshot||{};
   const logo=await logoData(companyProfile),margin=16,right=194;
@@ -82,7 +88,7 @@ export async function createInvoicePdf({order,companyProfile}){
   pdf.setTextColor(color);pdf.setFont('helvetica','bold');pdf.setFontSize(22);pdf.text(company,nameX,y+5);
   pdf.setDrawColor(color);pdf.setLineWidth(.7);pdf.line(margin,y+11,right,y+11);
   pdf.setTextColor('#28323f');pdf.setFont('helvetica','normal');pdf.setFontSize(8.5);y+=17;
-  [address,taxId&&`RIF: ${taxId}`,[phone,email].filter(Boolean).join(' · ')].filter(Boolean).forEach(line=>{pdf.text(pdf.splitTextToSize(String(line),82),margin,y);y+=5;});
+  [address&&`Dirección: ${address}`,taxId&&`RIF: ${taxId}`,phone&&`Teléfono: ${phone}`,email&&`Correo: ${email}`].filter(Boolean).forEach(line=>{pdf.text(pdf.splitTextToSize(String(line),88),margin,y);y+=5;});
 
   const customerX=112,customerY=39;
   pdf.setFont('helvetica','bold');pdf.setTextColor(color);pdf.text('FACTURAR A',customerX,customerY);
@@ -106,17 +112,29 @@ export async function createInvoicePdf({order,companyProfile}){
     pdf.text(String(item.quantity??0),119,y+4,{align:'right'});pdf.text(invoiceMoney(item.unit_price,order.currency),149,y+4,{align:'right'});pdf.text('—',169,y+4,{align:'right'});pdf.text(invoiceMoney(item.subtotal,order.currency),right,y+4,{align:'right'});
     pdf.setDrawColor('#e2e6ea');pdf.line(margin,y+height,right,y+height);y+=height;
   });
-  y+=5;if(y>226)page();
+  y+=5;if(y>218)page();
   const totalsX=126;
   [['Subtotal',invoiceMoney(order.subtotal,order.currency)],['Entrega',invoiceMoney(order.delivery_fee,order.currency)]].forEach(([label,amount])=>{pdf.setFont('helvetica','normal');pdf.setTextColor('#4b5563');pdf.text(label,totalsX,y);pdf.text(amount,right,y,{align:'right'});y+=7;});
   pdf.setDrawColor(color);pdf.setLineWidth(.5);pdf.line(totalsX,y-3,right,y-3);pdf.setFont('helvetica','bold');pdf.setFontSize(11);pdf.setTextColor(color);pdf.text('Total',totalsX,y+3);pdf.setTextColor('#202833');pdf.text(invoiceMoney(order.total,order.currency),right,y+3,{align:'right'});y+=15;
 
+  const paidAt=value(payment,'reviewed_at','paid_at','payment_date','date');
+  const paid=Boolean(paidAt)||['validated','validado','paid','pagado','refunded','reembolsado'].includes(String(payment.status||'').toLowerCase());
   pdf.setFontSize(8.5);pdf.setFont('helvetica','bold');pdf.setTextColor(color);pdf.text('Información de pago',margin,y);
-  pdf.setFont('helvetica','normal');pdf.setTextColor('#28323f');y+=5;
-  const paymentLines=[payment.method&&`Método: ${payment.method}`,payment.reference&&`Referencia: ${payment.reference}`].filter(Boolean);
-  pdf.text(paymentLines.length?paymentLines:'Sin información de pago registrada',margin,y);
-  y+=12;pdf.setTextColor('#6b7280');pdf.setFontSize(8);pdf.text(pdf.splitTextToSize('Documento generado desde los datos del pedido. La validez fiscal depende de la factura o nota de crédito emitida y vinculada por Finanzas.',178),margin,y);
+  pdf.setFont('helvetica','normal');pdf.setTextColor('#28323f');y+=6;
+  pdf.text('Términos de pago: Pago inmediato',margin,y);y+=5;
+  pdf.text(`Referencia de pago: ${payment.reference||order.number}`,margin,y);
+  if(paid){
+    pdf.text(`Pagado${paidAt?` el ${invoiceDate(paidAt)}`:''} usando ${paymentMethod(payment.method)}`,right,y-5,{align:'right'});
+    pdf.setFont('helvetica','bold');pdf.text(`Cantidad por pagar: ${invoiceMoney(0,order.currency)}`,right,y,{align:'right'});
+  }else{
+    pdf.setFont('helvetica','bold');pdf.text(`Cantidad por pagar: ${invoiceMoney(order.total,order.currency)}`,right,y,{align:'right'});
+  }
+  y+=12;pdf.setTextColor('#6b7280');pdf.setFont('helvetica','normal');pdf.setFontSize(8);pdf.text(pdf.splitTextToSize('Documento emitido con los datos fiscales configurados para la empresa. La validez fiscal depende de la factura o nota de crédito emitida y vinculada por Finanzas.',178),margin,y);
 
-  const pages=pdf.getNumberOfPages();for(let index=1;index<=pages;index++){pdf.setPage(index);pdf.setDrawColor('#cfd5dc');pdf.line(margin,282,right,282);pdf.setFontSize(8);pdf.setTextColor('#6b7280');pdf.text(`${company} · Generado por MasterERP`,margin,288);pdf.text(`Página ${index} / ${pages}`,right,288,{align:'right'});}
+  const year=new Date().getFullYear();
+  const pages=pdf.getNumberOfPages();for(let index=1;index<=pages;index++){
+    pdf.setPage(index);pdf.setDrawColor('#cfd5dc');pdf.line(margin,280,right,280);pdf.setFontSize(8);pdf.setTextColor('#4b5563');pdf.setFont('helvetica','bold');pdf.text('Gracias por su compra.',105,285,{align:'center'});
+    pdf.setFont('helvetica','normal');pdf.setTextColor('#6b7280');pdf.text(`© ${year} ${company}`,margin,290);pdf.text(`Página ${index} / ${pages}`,right,290,{align:'right'});
+  }
   pdf.save(`${safeFilename(`factura-${order.number}`)}.pdf`);
 }
