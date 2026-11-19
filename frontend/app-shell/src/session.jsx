@@ -9,9 +9,18 @@ export const useWorkspace = () => useContext(SessionContext);
 // dev.uonify.com es la entrada canónica; app-dev.uonify.com sigue como alias de transición (misma app, no standalone).
 const primaryOrigins = ['https://dev.uonify.com', 'https://app-dev.uonify.com'];
 const allowedOrigins = [...primaryOrigins, 'https://finanzas-dev.uonify.com', 'https://ecom-dev.uonify.com', 'https://transporte-dev.uonify.com'];
-const origin = allowedOrigins.includes(window.location.origin) ? window.location.origin : 'https://dev.uonify.com';
-const standalone = !primaryOrigins.includes(origin);
-export const config = {...baseConfig, apiUrl:standalone?origin:baseConfig.apiUrl, adminApiUrl:standalone?origin:baseConfig.adminApiUrl, callbackUrl:origin + '/auth/callback', logoutUrl:origin + '/'};
+const loopbackHost = /^(localhost|127\.0\.0\.1|\[::1\])$/i;
+const viteLoopback = import.meta.env.DEV && loopbackHost.test(window.location.hostname);
+const browserOrigin = window.location.origin;
+const origin = allowedOrigins.includes(browserOrigin) ? browserOrigin
+  : viteLoopback ? browserOrigin
+  : 'https://dev.uonify.com';
+const standalone = viteLoopback || !primaryOrigins.includes(origin);
+export const config = {...baseConfig,
+  apiUrl: standalone && !viteLoopback ? origin : baseConfig.apiUrl,
+  adminApiUrl: standalone && !viteLoopback ? origin : baseConfig.adminApiUrl,
+  callbackUrl: origin + '/auth/callback',
+  logoutUrl: origin + '/'};
 export function WorkspaceProvider({children}) {
   const [signedIn,setSignedIn] = useState(false), [spaces,setSpaces] = useState([]);
   const [tenant,setTenant] = useState(''), [company,setCompany] = useState(''), [context,setContext] = useState(null);
