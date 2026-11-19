@@ -1,32 +1,24 @@
 import React, {useEffect, useState} from 'react';
-import {BCV_RATE_URL, formatBcvRate, millisecondsUntilNextBcvRefresh, parseBcvRate} from './bcv-rate.mjs';
+import {formatBcvRate, millisecondsUntilNextBcvRefresh} from './bcv-rate.mjs';
 
-export default function BcvRateBadge() {
+export default function BcvRateBadge({runtime}) {
   const [rate, setRate] = useState(null);
 
   useEffect(() => {
     let active = true;
-    let controller;
     let timer;
     const load = async () => {
-      controller?.abort();
-      controller = new AbortController();
       try {
-        const response = await fetch(BCV_RATE_URL, {
-          headers: {Accept: 'application/json'},
-          signal: controller.signal,
-        });
-        if (!response.ok) throw new Error(`BCV ${response.status}`);
-        const next = parseBcvRate(await response.json());
+        const next=await runtime.request(`${runtime.api}/v1/exchange-rates/current`,{headers:{'X-Tenant-Id':runtime.tenant}});
         if (active) setRate(next);
-      } catch (error) {
-        if (active && error.name !== 'AbortError') setRate(null);
+      } catch {
+        if (active) setRate(null);
       }
       if (active) timer = window.setTimeout(load, millisecondsUntilNextBcvRefresh());
     };
     void load();
-    return () => { active = false; controller?.abort(); window.clearTimeout(timer); };
-  }, []);
+    return () => { active = false; window.clearTimeout(timer); };
+  }, [runtime.api,runtime.request,runtime.tenant]);
 
   if (!rate) return <span className="bcv-rate-badge is-unavailable" title="Tasa BCV no disponible">BCV --</span>;
   const formatted = formatBcvRate(rate.rate);

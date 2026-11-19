@@ -1,16 +1,24 @@
 import React, {useState} from 'react';
-import {money} from './orderView.js';
+import {dateTime, money, paymentMethodLabel} from './orderView.js';
+import {createOrderPdf} from './orderPdf.js';
 
 // Invoice remains an explicit preview. Notes use the authorized Orders API.
-export function OrderInvoicePreview({order}) {
-  const [message, setMessage] = useState('');
-  function download() {
-    const text = ['COMPROBANTE INFORMATIVO — NO ES UNA FACTURA FISCAL', 'Documento generado desde los datos del pedido. No acredita pago.', `Pedido: ${order.number}`, '', ...order.items.map(item => `${item.product_name || 'Producto'} · ${item.quantity} · ${money(item.subtotal, order.currency)}`), '', `Subtotal: ${money(order.subtotal, order.currency)}`, `Entrega: ${money(order.delivery_fee, order.currency)}`, `Total: ${money(order.total, order.currency)}`].join('\n');
-    const url = URL.createObjectURL(new Blob([text], {type: 'text/plain;charset=utf-8'}));
-    const anchor = document.createElement('a'); anchor.href = url; anchor.download = `pedido-${String(order.number).replace(/[^a-zA-Z0-9_-]/g, '')}.txt`; anchor.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
-    setMessage('Comprobante descargado. La factura fiscal aún no está conectada.');
+export function OrderInvoicePreview({order,companyProfile}) {
+  const [message,setMessage]=useState(''),[working,setWorking]=useState(false);
+  async function download(){
+    setWorking(true);setMessage('');
+    try{
+      const customer=order.customer_snapshot||{},payment=order.payment_snapshot||{};
+      const {line,heading,total,note,finish}=await createOrderPdf({companyProfile,title:'Factura del pedido',kicker:'E-COMMERCE · DOCUMENTO DEL PEDIDO',metadata:{subject:`Detalle del pedido ${order.number}`}});
+      line('Pedido',order.number);line('Fecha',dateTime(order.created_at));line('Cliente',customer.name||'No registrado');line('Documento',customer.document||'No registrado');
+      heading('Productos');for(const item of order.items||[])line(`${item.quantity} × ${item.product_name||'Producto'}`,`${money(item.unit_price,order.currency)} · ${money(item.subtotal,order.currency)}`);
+      heading('Totales');line('Subtotal',money(order.subtotal,order.currency));line('Entrega',money(order.delivery_fee,order.currency));total(`TOTAL  ${money(order.total,order.currency)}`);
+      heading('Pago');line('Método',paymentMethodLabel(payment.method,payment));line('Estado',payment.status||'No registrado');if(payment.reference)line('Referencia',payment.reference);
+      note('Documento generado desde los datos registrados del pedido. La condición fiscal depende de la factura o nota emitida y vinculada por Finanzas.');
+      finish(`factura-${order.number}`);setMessage('Factura PDF descargada.');
+    }catch{setMessage('No se pudo generar el PDF. Inténtalo nuevamente.');}finally{setWorking(false);}
   }
-  return <div><button type="button" className="od-button secondary" onClick={download}>Descargar factura</button>{message && <small role="status">{message}</small>}</div>;
+  return <div><button type="button" className="od-button secondary" disabled={working} onClick={download}>{working?'Generando PDF…':'Descargar factura'}</button>{message&&<small role="status">{message}</small>}</div>;
 }
 export function OrderNotesPreview({notes,writable,addNote}) {
   const [draft,setDraft]=useState(''),[saving,setSaving]=useState(false);

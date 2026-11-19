@@ -5,6 +5,7 @@ from unittest.mock import Mock
 from unittest.mock import patch
 
 from ecommerce_api.handler import HttpError, _checkout, _claim, _customer_portal, _declared_exchange_rate, _request, _validate_payment_configuration, _verified_profile, lambda_handler
+from ecommerce_api.repository import EcommerceRepository
 
 
 class EcommerceApiTest(unittest.TestCase):
@@ -15,12 +16,38 @@ class EcommerceApiTest(unittest.TestCase):
         with patch.dict("sys.modules", {"tenant_security.db": SimpleNamespace(db_connection=None)}):
             self.assertEqual(lambda_handler(event, None)["statusCode"], 401)
 
+    def test_scheduled_rate_is_validated_and_persisted_without_browser_identity(self):
+        today = datetime.now(timezone.utc).date().isoformat()
+        connection = Mock()
+        connection.execute.return_value.fetchone.return_value = {"value": {
+            "base": "USD", "quote": "VES", "rate": "916.64770000",
+            "source": "bcv.today", "effectiveDate": today}}
+        manager = Mock()
+        manager.__enter__ = Mock(return_value=connection)
+        manager.__exit__ = Mock(return_value=False)
+        event = {"source": "mastererp.exchange-rates", "detail-type": "ExchangeRateRefresh",
+                 "detail": {"rate": "916.6477", "source": "bcv.today", "effectiveDate": today}}
+        with patch.dict("sys.modules", {"tenant_security.db": SimpleNamespace(db_connection=Mock(return_value=manager))}):
+            response = lambda_handler(event, None)
+        self.assertEqual(response["statusCode"], 200)
+        self.assertIn("catalogo.tasa_cambio_guardar", connection.execute.call_args.args[0])
+
     def test_public_catalog_uses_host(self):
         repository = Mock()
         repository.public_catalog.return_value = {"products": []}
         event = {"headers": {"host": "shop.example.test"}, "requestContext": {"http": {"method": "GET"}}}
         self.assertEqual(_request(event, repository, public=True), (200, {"products": []}))
         repository.public_catalog.assert_called_once_with("shop.example.test", 100, None)
+
+    def test_public_catalog_projects_the_canonical_database_rate(self):
+        connection = Mock()
+        connection.execute.side_effect = [
+            Mock(fetchone=Mock(return_value={"value": {"store": {"configuration": {}}, "products": []}})),
+            Mock(fetchone=Mock(return_value={"value": {"base": "USD", "quote": "VES", "rate": 916.6477,
+                                                       "source": "bcv.today", "effectiveDate": "2026-11-18"}})),
+        ]
+        catalog = EcommerceRepository(connection).public_catalog("shop.example.test", 100)
+        self.assertEqual(catalog["store"]["configuration"]["exchangeRate"]["rate"], 916.6477)
 
     def test_create_requires_store_identity(self):
         event = {"requestContext": {"http": {"method": "POST"}}, "pathParameters": {"company_id": "00000000-0000-0000-0000-000000000001"}, "body": "{}"}
@@ -71,6 +98,7 @@ class EcommerceApiTest(unittest.TestCase):
         verify.return_value = claims
         repository = Mock()
         repository.checkout.return_value = {"id": "order-1"}
+        repository.published_exchange_rate.return_value = {"rate": 916.6477, "source": "bcv.today", "effectiveDate": datetime.now(timezone.utc).date().isoformat()}
         event = {"headers": {"Idempotency-Key": "checkout-1"}, "body": (
             '{"domain":"shop.example.invalid","node_id":"00000000-0000-0000-0000-000000000010","items":[{"product_id":"p","quantity":1}],'
             '"delivery":{"address":"QA Street","latitude":10.48,"longitude":-66.9},"delivery_method":"realtime","payment_method":"cash"}')}
@@ -92,17 +120,19 @@ class EcommerceApiTest(unittest.TestCase):
         self.assertEqual(raised.exception.code, "invalid_delivery_address")
 
     @patch("ecommerce_api.handler._verified_profile")
-    @patch("ecommerce_api.handler.current_rate", return_value={"rate":"914.0218","source":"bcv.today","effectiveDate":"2026-11-16"})
-    def test_checkout_accepts_tenant_bank_payment_reference(self, _rate, verify):
+    def test_checkout_accepts_published_tenant_bank_rate(self, verify):
         claims = {"iss": "issuer", "sub": "subject"}
         verify.return_value = claims
         repository = Mock()
         repository.checkout.return_value = {"id": "order-1"}
+        repository.published_exchange_rate.return_value = {"rate": 916.6477, "source": "bcv.today", "effectiveDate": datetime.now(timezone.utc).date().isoformat()}
         event = {"headers": {"Idempotency-Key": "checkout-mobile"}, "body": (
             '{"domain":"shop.example.invalid","node_id":"00000000-0000-0000-0000-000000000010","items":[{"product_id":"p","quantity":1}],'
             '"delivery":{"address":"QA Street","latitude":10.48,"longitude":-66.9},"delivery_method":"realtime",'
-            '"payment_method":"mobile","payment_reference":"12345678"}')}
+            '"payment_method":"mobile","payment_reference":"12345678",'
+            '"exchange_rate":{"rate":1,"source":"bcv.today","effectiveDate":"2026-11-18"}}')}
         self.assertEqual(_checkout(event, repository, claims)[0], 201)
+        self.assertEqual(repository.checkout.call_args.args[1]["_exchange_rate"]["rate"], "916.6477")
 
     def test_recent_declared_bcv_rate_is_strictly_validated(self):
         today = datetime.now(timezone.utc).date().isoformat()
@@ -112,28 +142,29 @@ class EcommerceApiTest(unittest.TestCase):
         self.assertIsNone(_declared_exchange_rate({"rate": -1, "source": "bcv.today", "effectiveDate": today}))
 
     @patch("ecommerce_api.handler._verified_profile")
-    @patch("ecommerce_api.handler.current_rate", return_value=None)
-    def test_paid_reference_is_not_blocked_when_bcv_provider_is_unavailable(self, _rate, verify):
+    def test_bank_checkout_requires_published_server_rate(self, verify):
         claims = {"iss": "issuer", "sub": "subject"}
         verify.return_value = claims
         repository = Mock()
         repository.checkout.return_value = {"id": "order-1"}
+        repository.published_exchange_rate.return_value = None
         event = {"headers": {"Idempotency-Key": "checkout-bcv-outage"}, "body": (
             '{"domain":"shop.example.invalid","node_id":"00000000-0000-0000-0000-000000000010",'
             '"items":[{"product_id":"p","quantity":1}],"delivery":{"address":"QA Street","latitude":10.48,"longitude":-66.9},'
             '"delivery_method":"realtime","payment_method":"mobile","payment_reference":"12345678",'
             '"payer":{"bankCode":"0102","document":"V12345678","phone":"04121234567"}}')}
-        self.assertEqual(_checkout(event, repository, claims), (201, {"id": "order-1"}))
-        self.assertIsNone(repository.checkout.call_args.args[1]["_exchange_rate"])
-        _rate.assert_not_called()
+        with self.assertRaises(HttpError) as raised:
+            _checkout(event, repository, claims)
+        self.assertEqual(raised.exception.code, "exchange_rate_unavailable")
+        repository.checkout.assert_not_called()
 
     @patch("ecommerce_api.handler._verified_profile")
-    @patch("ecommerce_api.handler.current_rate", return_value={"rate":"914.0218","source":"bcv.today","effectiveDate":"2026-11-16"})
-    def test_checkout_remembers_validated_payer_after_order(self, _rate, verify):
+    def test_checkout_remembers_validated_payer_after_order(self, verify):
         claims = {"iss": "issuer", "sub": "subject"}
         verify.return_value = claims
         repository = Mock()
         repository.checkout.return_value = {"id": "order-1"}
+        repository.published_exchange_rate.return_value = {"rate": 916.6477, "source": "bcv.today", "effectiveDate": datetime.now(timezone.utc).date().isoformat()}
         event = {"headers": {"Idempotency-Key": "checkout-payer"}, "body": (
             '{"domain":"shop.example.invalid","node_id":"00000000-0000-0000-0000-000000000010","items":[{"product_id":"p","quantity":1}],'
             '"delivery":{"address":"QA Street","latitude":10.48,"longitude":-66.9},"delivery_method":"realtime","payment_method":"mobile",'

@@ -17,7 +17,24 @@ class EcommerceRepository:
         ).fetchone()["value"]
 
     def public_catalog(self, domain, limit, node_id=None):
-        return self.connection.execute("SELECT ventas_digitales.catalogo_publico(%s,%s,%s) value", (domain, limit, node_id)).fetchone()["value"]
+        catalog = self.connection.execute("SELECT ventas_digitales.catalogo_publico(%s,%s,%s) value", (domain, limit, node_id)).fetchone()["value"]
+        rate = self.current_exchange_rate()
+        if rate:
+            catalog.setdefault("store", {}).setdefault("configuration", {})["exchangeRate"] = rate
+        return catalog
+
+    def current_exchange_rate(self):
+        return self.connection.execute("SELECT catalogo.tasa_cambio_actual('USD','VES') value").fetchone()["value"]
+
+    def save_exchange_rate(self, rate):
+        return self.connection.execute(
+            "SELECT catalogo.tasa_cambio_guardar(%s,%s,%s,%s,%s) value",
+            ("USD", "VES", rate["rate"], rate["effectiveDate"], rate["source"]),
+        ).fetchone()["value"]
+
+    def published_exchange_rate(self, domain, node_id):
+        catalog = self.public_catalog(domain, 1, node_id)
+        return ((catalog.get("store") or {}).get("configuration") or {}).get("exchangeRate")
 
     def create_invitation(self, company_id, store_id, customer_id, token_hash, expires_at):
         return self.connection.execute(

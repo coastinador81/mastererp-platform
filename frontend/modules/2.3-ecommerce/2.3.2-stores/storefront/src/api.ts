@@ -1,7 +1,7 @@
 import { authorizedIdentityFetch } from '../../../../../shared/auth/cognito.mjs';
 import { assertStorefrontContext, storefrontConfig } from './config';
 import { fetchWithTimeout } from './request-timeout.mjs';
-import type { CartLine, CustomerAddress, CustomerOrder, CustomerPaymentMethod, CustomerProfile, PayerDetails, PaymentMethod, StoreConfiguration, StorefrontCatalog } from './types';
+import type { CartLine, CustomerAddress, CustomerOrder, CustomerPaymentMethod, CustomerProfile, PayerDetails, PaymentMethod, StorefrontCatalog } from './types';
 
 const portalUrl = (path: string) => `${storefrontConfig.api}${path}?domain=${encodeURIComponent(storefrontConfig.domain)}`;
 const portalOptions = (options: RequestInit = {}) => ({ ...options, headers: { 'X-Tenant-Id': storefrontConfig.tenant, ...options.headers } });
@@ -23,7 +23,7 @@ export const updateAddress = (address: CustomerAddress) => authorizedIdentityFet
 export const loadPaymentMethods = async () => (await authorizedIdentityFetch(portalUrl('/v1/storefront/me/payment-methods'), portalOptions()) as { items: CustomerPaymentMethod[] }).items;
 export const loadOrders = async () => (await authorizedIdentityFetch(portalUrl('/v1/storefront/orders'), portalOptions()) as { items: CustomerOrder[] }).items;
 export const loadOrder = (id: string) => authorizedIdentityFetch(portalUrl(`/v1/storefront/orders/${encodeURIComponent(id)}`), portalOptions()) as Promise<CustomerOrder>;
-export async function submitCheckout(lines: CartLine[], address: CustomerAddress, paymentMethod: PaymentMethod, paymentReference?: string, payer?: PayerDetails, nodeId?: string, exchangeRate?: StoreConfiguration['exchangeRate']) {
+export async function submitCheckout(lines: CartLine[], address: CustomerAddress, paymentMethod: PaymentMethod, paymentReference?: string, payer?: PayerDetails, nodeId?: string) {
   assertStorefrontContext();
   const storageKey = `mastererp.storefront.checkout-key:${storefrontConfig.tenant}:${storefrontConfig.domain}`;
   let key = sessionStorage.getItem(storageKey);
@@ -42,7 +42,6 @@ export async function submitCheckout(lines: CartLine[], address: CustomerAddress
     payment_method: paymentMethod.startsWith('custom:') ? 'custom' : paymentMethod,
     payment_method_id: paymentMethod.startsWith('custom:') ? paymentMethod.slice(7) : undefined,
     payment_reference: paymentReference || undefined,
-    exchange_rate: paymentMethod === 'mobile' || paymentMethod === 'transfer' ? exchangeRate : undefined,
   };
   window.dispatchEvent(new CustomEvent('mastererp:checkout', { detail }));
   const result = await authorizedIdentityFetch(`${storefrontConfig.api}/v1/storefront/checkout`, {

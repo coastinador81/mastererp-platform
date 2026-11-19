@@ -12,7 +12,6 @@ from tenant_security.auth import resolve_auth
 from tenant_security.http import HttpError, api_response, parse_body
 
 from .repository import EcommerceRepository
-from .exchange_rate import current_rate
 
 
 def _validate_payment_configuration(changes):
@@ -31,6 +30,8 @@ def _validate_payment_configuration(changes):
     _validate_custom_methods(details.get("customMethods", []))
     mobile = details.get("mobilePayment")
     transfer = details.get("bankTransfer")
+    if "exchangeRate" in configuration and _declared_exchange_rate(configuration["exchangeRate"]) is None:
+        raise HttpError(400, "Invalid published exchange rate", code="invalid_request")
     if payments.get("pago-movil") is True and (not isinstance(mobile, dict)
             or not re.fullmatch(r"[VEJG]-?\d{6,12}", str(mobile.get("document", "")), re.I)
             or not re.fullmatch(r"0\d{10}", str(mobile.get("phone", "")))
@@ -169,7 +170,9 @@ def _checkout(event, repository, claims):
     profile = _verified_profile(claims)
     # The checkout Lambda runs in a private network. Never block an already
     # reported payment while attempting an outbound BCV request here.
-    rate = _declared_exchange_rate(payload.get("exchange_rate")) if method in ("mobile", "transfer") else None
+    rate = _declared_exchange_rate(repository.published_exchange_rate(payload["domain"], payload["node_id"])) if method in ("mobile", "transfer") else None
+    if method in ("mobile", "transfer") and rate is None:
+        raise HttpError(409, "Published exchange rate is unavailable", code="exchange_rate_unavailable")
     order = repository.checkout(profile, {**payload, "_payer": payer, "_exchange_rate": rate}, key)
     if payer:
         repository.save_payment_method(profile, payload["domain"], method, payer)
@@ -252,6 +255,16 @@ def lambda_handler(event: dict[str, Any], context: Any):
     from tenant_security.db import db_connection
 
     correlation_id = _header(event, "x-correlation-id") or str(uuid4())
+    if event.get("source") == "mastererp.exchange-rates" and event.get("detail-type") == "ExchangeRateRefresh":
+        try:
+            rate = _declared_exchange_rate(event.get("detail"))
+            if rate is None:
+                raise HttpError(400, "Invalid scheduled exchange rate", code="invalid_exchange_rate")
+            with db_connection(correlation_id=correlation_id, operation="catalog.exchange_rates.refresh") as connection:
+                body = EcommerceRepository(connection).save_exchange_rate(rate)
+            return api_response(200, body)
+        except HttpError as error:
+            return api_response(error.status, {"error": {"code": error.code, "message": error.message}, "correlation_id": correlation_id})
     path = event.get("requestContext", {}).get("http", {}).get("path", "")
     public = path == "/v1/storefront/catalog"
     claim = path == "/v1/storefront/identity/claim"
@@ -266,8 +279,11 @@ def lambda_handler(event: dict[str, Any], context: Any):
         except ValueError:
             raise HttpError(400, "Valid X-Tenant-Id is required", code="invalid_request") from None
         method = event.get("requestContext", {}).get("http", {}).get("method")
+        exchange_rate_read = path == "/v1/exchange-rates/current" and method == "GET"
         if public:
             operation = "digital_sales.ecommerce.public.read"
+        elif exchange_rate_read:
+            operation = "catalog.exchange_rates.read"
         elif claim:
             operation = "digital_sales.storefront.identity.claim"
         elif registration:
@@ -285,7 +301,11 @@ def lambda_handler(event: dict[str, Any], context: Any):
                 auth = resolve_auth(event, connection, verified_claims=claims)
                 connection.execute("SELECT set_config('app.current_user_id',%s,true)", (str(auth.user_id),))
             repository = EcommerceRepository(connection)
-            if claim:
+            if exchange_rate_read:
+                status, body = 200, repository.current_exchange_rate()
+                if body is None:
+                    raise HttpError(503, "Exchange rate is unavailable", code="exchange_rate_unavailable")
+            elif claim:
                 status, body = _claim(event, repository, claims)
             elif registration:
                 status, body = _register(event, repository, claims)

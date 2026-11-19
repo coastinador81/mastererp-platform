@@ -32,7 +32,7 @@ jobs:
           python backend/modules/2.3-ecommerce/2.3.2-stores/lambdas/mastererp-dev-ecommerce/package.py /tmp/mastererp-dev-ecommerce.zip --dependencies /tmp/ecommerce-deps
           unzip -t /tmp/mastererp-dev-ecommerce.zip >/dev/null
           python -c "import zipfile,struct; z=zipfile.ZipFile('/tmp/mastererp-dev-ecommerce.zip'); libs=[n for n in z.namelist() if n.endswith('.so')]; assert libs and all(struct.unpack('<H',z.read(n)[18:20])[0]==183 for n in libs)"
-          python -c "import zipfile; z=zipfile.ZipFile('/tmp/mastererp-dev-ecommerce.zip'); assert {'ecommerce_api/exchange_rate.py','ecommerce_api/repository.py','jwt/__init__.py','psycopg/__init__.py','tenant_security/rds-us-west-1-bundle.pem'} <= set(z.namelist())"
+          python -c "import zipfile; z=zipfile.ZipFile('/tmp/mastererp-dev-ecommerce.zip'); names=set(z.namelist()); assert {'ecommerce_api/handler.py','ecommerce_api/repository.py','jwt/__init__.py','psycopg/__init__.py','tenant_security/rds-us-west-1-bundle.pem'} <= names and 'ecommerce_api/exchange_rate.py' not in names"
       - uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::277352717693:role/mastererp-dev-ecommerce-backend-github-role

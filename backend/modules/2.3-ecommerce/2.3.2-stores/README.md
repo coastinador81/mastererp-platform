@@ -10,6 +10,14 @@ configuración y módulos opcionales. Expone configuración administrativa con J
 y catálogo público de solo lectura limitado a una tienda `ACTIVE` cuyo dominio y
 tenant coinciden. Catálogo e Inventario conservan sus datos propietarios.
 
+La tasa USD/VES es canónica y persistida: el backend recibe exclusivamente la
+captura validada del recolector AWS programado, la guarda mediante
+`catalogo.tasa_cambio_guardar` y publica la lectura autenticada
+`GET /v1/exchange-rates/current`. El catálogo público incorpora esa misma tasa
+para Storefront y checkout la vuelve a leer del servidor antes de congelarla en
+el pedido. Ningún navegador consulta directamente al proveedor BCV ni puede
+declarar la tasa usada para calcular un pago.
+
 La transición de clientes usa invitaciones administrativas de un solo uso. El
 token se almacena únicamente como SHA-256 y la reclamación exige un ID token
 validado por API Gateway para el cliente Cognito exclusivo del Storefront. El

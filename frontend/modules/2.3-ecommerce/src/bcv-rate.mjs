@@ -1,14 +1,3 @@
-export const BCV_RATE_URL = 'https://bcv.today/api/v1/rate.json';
-
-export function parseBcvRate(payload) {
-  const rate = Number(payload?.USD);
-  if (!Number.isFinite(rate) || rate <= 0) return null;
-  return {
-    rate,
-    effectiveDate: String(payload?.effective_date || payload?.date || ''),
-  };
-}
-
 export function formatBcvRate(rate) {
   return new Intl.NumberFormat('es-VE', {
     minimumFractionDigits: 2,

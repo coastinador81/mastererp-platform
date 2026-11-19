@@ -81,7 +81,7 @@ export default function OrderDetail({ order, companyProfile, writable, transitio
   const financeUrl=MODULES.find(module=>module.id==='finance')?.href,customerUrl=canOpenCustomer&&financeUrl&&order.customer_id?`${financeUrl}#/modulos/finanzas/administracion/clientes/${encodeURIComponent(order.customer_id)}`:'';
   return <div className="figma-order-detail">
     <button type="button" className="od-back" onClick={close}><FinanceIcon name="arrow"/>Volver a pedidos</button>
-    <div className="od-header"><div><div className="od-breadcrumb">E-commerce <span>/</span> Pedidos <span>/</span> {order.number}</div><h1>Pedido {order.number}</h1><p>Creado el {dateTime(order.created_at)} · Última actualización {dateTime(order.updated_at)}</p></div><div className="od-header-actions"><button type="button" className="od-button secondary" onClick={()=>window.print()}>Imprimir</button><OrderInvoicePreview key={order.id} order={order}/></div></div>
+    <div className="od-header"><div><div className="od-breadcrumb">E-commerce <span>/</span> Pedidos <span>/</span> {order.number}</div><h1>Pedido {order.number}</h1><p>Creado el {dateTime(order.created_at)} · Última actualización {dateTime(order.updated_at)}</p></div><div className="od-header-actions"><button type="button" className="od-button secondary" onClick={()=>window.print()}>Imprimir</button><OrderInvoicePreview key={order.id} order={order} companyProfile={companyProfile}/></div></div>
     <div className="od-layout">
       <div className="od-main">
         <section className="od-card"><div className="od-status-heading"><div><span>ESTADO ACTUAL</span><StatusBadge status={order.status}>{statusLabel(order.status)}</StatusBadge></div><strong>{money(order.total,order.currency)}</strong></div>

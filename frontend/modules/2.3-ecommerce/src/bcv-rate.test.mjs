@@ -1,19 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import {formatBcvRate, millisecondsUntilNextBcvRefresh, parseBcvRate} from './bcv-rate.mjs';
-
-test('normaliza la tasa BCV válida y conserva su fecha valor', () => {
-  assert.deepEqual(parseBcvRate({USD: '52.7500', effective_date: '2026-11-16'}), {
-    rate: 52.75,
-    effectiveDate: '2026-11-16',
-  });
-});
-
-test('rechaza tasas ausentes, negativas o no numéricas', () => {
-  for (const value of [undefined, '', 0, -1, 'no-disponible']) {
-    assert.equal(parseBcvRate({USD: value}), null);
-  }
-});
+import {formatBcvRate, millisecondsUntilNextBcvRefresh} from './bcv-rate.mjs';
 
 test('presenta la tasa con precisión útil sin ceros innecesarios', () => {
   assert.equal(formatBcvRate(52.75), '52,75');

@@ -3,7 +3,6 @@ import { completeLoginIfNeeded, isAuthenticated } from '../auth';
 import { loadCatalog } from '../api';
 import { readCatalogCache, writeCatalogCache } from '../catalog-cache.mjs';
 import { storefrontScope } from '../config';
-import { loadCurrentExchangeRate } from '../exchange-rate.mjs';
 import {cartLineKey, type CartLine, type Product, type ProductVariant, type StorefrontCatalog} from '../types';
 
 type StoreState = {
@@ -29,10 +28,7 @@ const cachedCatalog = () => typeof localStorage === 'undefined'
   ? null
   : readCatalogCache(localStorage, storefrontScope()) as StorefrontCatalog | null;
 async function loadCatalogWithRate(nodeId?: string) {
-  const catalog = await loadCatalog(nodeId);
-  const exchangeRate = await loadCurrentExchangeRate().catch(() => null);
-  if (!exchangeRate) return catalog;
-  return {...catalog, store:{...catalog.store, configuration:{...catalog.store.configuration, exchangeRate}}};
+  return loadCatalog(nodeId);
 }
 function initialCart(): CartLine[] {
   if (typeof sessionStorage === 'undefined') return [];
