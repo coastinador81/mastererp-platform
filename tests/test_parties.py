@@ -56,6 +56,34 @@ class PartiesTests(unittest.TestCase):
             self.assertEqual(json.loads(response['body'])['data'],{'items':[{'id':ACTOR}],'next_cursor':ACTOR})
             connect.assert_called_once_with(write=False)
 
+    def test_supplier_code_proposal_is_read_only(self):
+        event = self.event()
+        event['rawPath'] = '/v1/administration/proveedores'
+        event['queryStringParameters']['proponer_codigo'] = '1'
+        with patch.object(parties, 'application_connection') as connect, patch.object(parties, '_set_actor', return_value=ACTOR):
+            conn = connect.return_value.__enter__.return_value
+            conn.run.side_effect = [[], [['PROV-0001']]]
+            result = parties.handle(event, None, role='proveedor', capability='proveedores')
+            self.assertEqual(result['statusCode'], 200)
+            self.assertEqual(json.loads(result['body'])['data'], {'codigo': 'PROV-0001'})
+            self.assertIn('proponer_codigo_proveedor', conn.run.call_args.args[0])
+            connect.assert_called_once_with(write=False)
+
+    def test_supplier_creation_accepts_no_code_and_returns_assigned_code(self):
+        event = self.event('POST')
+        event['rawPath'] = '/v1/administration/proveedores'
+        event['headers']['idempotency-key'] = 'supplier-create'
+        event['body'] = json.dumps({'company_id': COMPANY, 'nombre': 'Proveedor QA'})
+        for replayed, status in [(False, 201), (True, 200)]:
+            with patch.object(parties, 'application_connection') as connect, patch.object(parties, '_set_actor', return_value=ACTOR):
+                conn = connect.return_value.__enter__.return_value
+                conn.run.side_effect = [[], [[{'id': ACTOR, 'codigo': 'PROV-0001', 'replayed': replayed}]]]
+                result = parties.handle(event, None, role='proveedor', capability='proveedores')
+                self.assertEqual(result['statusCode'], status)
+                self.assertEqual(json.loads(result['body'])['data']['codigo'], 'PROV-0001')
+                self.assertIn('crear_proveedor_codigo_automatico', conn.run.call_args.args[0])
+                connect.assert_called_once_with(write=True)
+
     def test_full_supplier_details_are_forwarded_atomically(self):
         event=self.event('POST');event['rawPath']='/v1/administration/proveedores'
         event['headers']['idempotency-key']='qa-details'

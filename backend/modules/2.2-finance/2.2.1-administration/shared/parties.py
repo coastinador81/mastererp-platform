@@ -94,6 +94,7 @@ def handle(event, context, *, role, capability):
         if not match or method not in ('GET', 'POST', 'PATCH'):
             return response(404, {'error': 'route_not_found', 'correlation_id': correlation})
         third_id = uid(match[1]) if match[1] else None
+        propose_code = role == 'proveedor' and method == 'GET' and third_id is None and query.get('proponer_codigo') == '1'
         write = method != 'GET'
         body = {}
         if write:
@@ -107,7 +108,8 @@ def handle(event, context, *, role, capability):
                 raise ValueError()
             company = uid(body.get('company_id'))
         else:
-            if set(query) - {'company_id', 'limit', 'after'}:
+            allowed_query = {'company_id', 'proponer_codigo'} if propose_code else {'company_id', 'limit', 'after'}
+            if set(query) - allowed_query:
                 raise ValueError()
             company = uid(query.get('company_id'))
         details={k:body[k] for k in ('datos_generales','contactos','condiciones') if k in body}
@@ -126,7 +128,9 @@ def handle(event, context, *, role, capability):
             if third_id:
                 if 'codigo' in body or 'nombre' in body or 'datos_generales' in body or 'contactos' in body:
                     raise ValueError()
-            elif basic != {'company_id', 'codigo', 'nombre'}:
+            elif basic != {'company_id', 'codigo', 'nombre'} and not (
+                role == 'proveedor' and basic == {'company_id', 'nombre'}
+            ):
                 raise ValueError()
             operation = 'administration.' + role + '.create'
         elif method == 'PATCH':
@@ -154,12 +158,20 @@ def handle(event, context, *, role, capability):
                      "set_config('app.current_operation',:operation,true), "
                      "set_config('app.correlation_id',:correlation,true)",
                      tenant=tenant, company=company, operation=operation, correlation=correlation)
-            if method == 'GET':
+            if propose_code:
+                code = conn.run('SELECT administracion.proponer_codigo_proveedor(:company)', company=company)[0][0]
+                data, status = {'codigo': code}, 200
+            elif method == 'GET':
                 data = conn.run('SELECT administracion.parties_read_v2(:company,:role,:id,:limit,:after)',
                                 company=company, role=role, id=third_id, limit=limit+1, after=after)[0][0]
                 if not third_id:
                     data = {'items': data[:limit], 'next_cursor': data[limit-1]['id'] if len(data) > limit else None}
                 status = 200
+            elif role == 'proveedor' and method == 'POST' and third_id is None and 'codigo' not in body:
+                data = conn.run(
+                    'SELECT administracion.crear_proveedor_codigo_automatico(:company,:name,:key,CAST(:details AS jsonb))',
+                    company=company, name=body['nombre'], key=key, details=json.dumps(details))[0][0]
+                status = 200 if data['replayed'] else 201
             else:
                 data = conn.run('SELECT administracion.party_write_v2(:company,:role,:action,:id,:code,:name,:version,:key,CAST(:details AS jsonb),:profile_version,:catalog_version)',
                                 company=company, role=role, action='create' if method == 'POST' else 'update',

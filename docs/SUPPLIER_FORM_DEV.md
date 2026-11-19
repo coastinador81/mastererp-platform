@@ -4,6 +4,8 @@ La entrega sustituye el borrador sin conexión por el listado y formulario exist
 
 ## Recorrido y campos
 
+Al dar de alta un proveedor nuevo, el formulario muestra un código interno inhabilitado. Consulta la propuesta con `GET /v1/administration/proveedores?company_id=<uuid>&proponer_codigo=1`. Esta lectura no reserva el código. El formulario envía el alta sin `codigo` y la API devuelve el código definitivo asignado en PostgreSQL. Se usa la serie `PROV-0001` por tenant y se conservan los códigos previos. El enlace a una ficha existente reutiliza su código. El mismo proveedor queda disponible en Compras cuando está activo y asociado a la empresa.
+
 El menú Administración → Gestión de compras → Proveedores abre primero el listado real, con Crear proveedor. Incluye detalle, creación, edición, paginación y conflictos de versión. Las URLs de lista, crear, detalle y editar usan parámetros en la raíz; soportan recarga y atrás/adelante. PKCE conserva solo la ruta lógica mediante el contrato existente, sin tokens en la URL. La portada permanece en / y no vuelve el bloque promocional retirado.
 
 | Bloque | Campos |
@@ -16,7 +18,7 @@ El menú Administración → Gestión de compras → Proveedores abre primero el
 | Comerciales por empresa | Tipo de suministro (productos, servicios o ambos), moneda preferida, condición/medio de pago, plazo, descuento y plazo de pronto pago |
 | Observaciones | Notas internas |
 
-Solo código y nombre son obligatorios. El resto se completa progresivamente. No se validan identificaciones ante organismos fiscales ni se conceden créditos, calculan impuestos, ejecutan compras o transfieren fondos al registrar preferencias. No se imponen tasas ni descuentos predeterminados.
+Para un proveedor nuevo, el nombre es el único campo obligatorio que completa la persona. El resto se completa progresivamente. No se validan identificaciones ante organismos fiscales ni se conceden créditos, calculan impuestos, ejecutan compras o transfieren fondos al registrar preferencias. No se imponen tasas ni descuentos predeterminados.
 
 ## Modelo, autorización y alineación
 
