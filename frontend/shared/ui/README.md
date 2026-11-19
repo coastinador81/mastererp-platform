@@ -30,3 +30,7 @@ los alias `--finance-*` permanecen solo para una transición compatible.
 Los módulos no deben redefinir `.integrated-header`, `.brand`,
 `.context-controls` ni `.menu-toggle`; solo pueden estilizar las acciones que
 inyectan en el slot del componente.
+
+## Temas administrativos
+
+Finanzas y Ecommerce activan el tema compartido mediante application-theme.mjs y application-theme.css en sus entradas. ApplicationThemeToggle.jsx se presenta solo para esas aplicaciones en ApplicationHeader. El tema no se activa implicitamente en otros consumidores. Los cambios de layout de cabecera permanecen en application-header.css; los colores pertenecen a tokens de tema. Ver [contrato tecnico y validacion](../../../docs/ADMINISTRATIVE_THEMES.md).

@@ -3,7 +3,7 @@
 .finance-sales h1{font-size:28px;font-weight:500;color:var(--finance-title,#374151);margin:0 0 10px}
 .finance-sales h2{font-size:18px;font-weight:500;color:var(--finance-title,#374151);margin:0 0 16px;overflow-wrap:anywhere}
 .finance-sales p{color:var(--finance-muted,#667085)}
-.finance-sales .panel{display:block;background:#fff;border:1px solid var(--finance-border,#E8EDF3);border-radius:16px;padding:22px;min-height:0;height:auto;box-shadow:none;min-width:0}
+.finance-sales .panel{display:block;background:var(--uon-theme-surface,#fff);border:1px solid var(--finance-border,#E8EDF3);border-radius:16px;padding:22px;min-height:0;height:auto;box-shadow:none;min-width:0}
 .finance-sales .table-scroll{overflow-x:auto;max-width:100%;min-width:0}
 .finance-sales table{border-collapse:collapse;width:100%;min-width:760px;table-layout:auto}
 .finance-sales th,.finance-sales td{font:400 14px/1.5 Inter,sans-serif;color:var(--finance-muted,#667085);padding:15px 16px;text-align:left;border:0;border-bottom:1px solid var(--finance-border,#E8EDF3);letter-spacing:normal;text-transform:none;opacity:1}
@@ -14,19 +14,19 @@
 .finance-sales td a{color:inherit;font:inherit;text-decoration:none}
 .finance-sales td a:hover{text-decoration:underline}
 .finance-sales :is(a,button,input):focus-visible{outline:2px solid var(--finance-focus,#3B82F6);outline-offset:3px}
-.finance-sales .sales-search{display:flex;align-items:center;gap:12px;max-width:720px;border:1px solid var(--finance-control-border,#D8E2F0);border-radius:10px;padding:10px 14px;margin-bottom:20px;background:#fff;color:var(--finance-muted,#667085)}
+.finance-sales .sales-search{display:flex;align-items:center;gap:12px;max-width:720px;border:1px solid var(--finance-control-border,#D8E2F0);border-radius:10px;padding:10px 14px;margin-bottom:20px;background:var(--uon-theme-surface,#fff);color:var(--finance-muted,#667085)}
 .finance-sales .sales-search svg{width:20px;height:20px;flex-shrink:0}
 .finance-sales .sales-search input{border:0;outline:0;width:100%;min-width:0;background:transparent;font:inherit;color:var(--finance-text,#4B5563);padding:0}
 .finance-sales .sales-search:focus-within{outline:2px solid var(--finance-focus,#3B82F6);outline-offset:2px}
 .finance-sales .sales-pagination{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-top:20px;color:var(--finance-muted,#667085)}
 .finance-sales .sales-pagination>div{display:flex;gap:10px}
-.finance-sales button.secondary{font:inherit;background:#fff;color:var(--finance-text,#4B5563);border:1px solid var(--finance-control-border,#D8E2F0);border-radius:10px;padding:10px 16px;box-shadow:none;text-transform:none}
+.finance-sales button.secondary{font:inherit;background:var(--uon-theme-surface,#fff);color:var(--finance-text,#4B5563);border:1px solid var(--finance-control-border,#D8E2F0);border-radius:10px;padding:10px 16px;box-shadow:none;text-transform:none}
 .finance-sales button.secondary:hover:not(:disabled){background:var(--finance-row-hover,#F1F6FD)}
 .finance-sales button:disabled{cursor:default;color:var(--finance-muted);background:var(--finance-background)}
 .finance-sales .sales-empty{padding:24px 16px;margin:0}
 .finance-sales .sale-money{white-space:nowrap;text-align:right;font-family:var(--finance-mono,var(--finance-font))}
-.finance-sales .sale-badge{display:inline-block;font-size:12px;line-height:1.5;font-weight:400;border-radius:20px;padding:4px 10px;background:#EDF7F1;color:#356548;white-space:nowrap}
-.finance-sales .sale-badge.cancelled{background:#F1F3F6;color:#596273}
+.finance-sales .sale-badge{display:inline-block;font-size:12px;line-height:1.5;font-weight:400;border-radius:20px;padding:4px 10px;background:var(--uon-theme-raised,#EDF7F1);color:var(--uon-theme-text,#356548);white-space:nowrap}
+.finance-sales .sale-badge.cancelled{background:var(--uon-theme-raised,#F1F3F6);color:var(--uon-theme-muted,#596273)}
 .finance-sales .sales-back{display:inline-block;margin-bottom:20px;color:var(--finance-primary,#096BDC);text-decoration:none}
 .finance-sales .sales-summary-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:20px;margin-bottom:20px}
 .finance-sales .sale-number-state{display:flex;gap:16px;justify-content:space-between;align-items:start;flex-wrap:wrap}

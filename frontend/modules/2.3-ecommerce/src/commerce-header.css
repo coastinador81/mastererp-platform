@@ -1,13 +1,13 @@
 .ecommerce-app .commerce-header-menus{position:relative;display:flex;align-items:center;gap:8px}
 .ecommerce-app .commerce-header-menus .commerce-icon-button{width:40px;min-width:40px;height:40px;padding:8px;display:inline-flex;align-items:center;justify-content:center}
-.ecommerce-app .commerce-header-panel{position:absolute;z-index:1001;top:52px;right:0;width:300px;max-width:calc(100vw - 32px);padding:20px;background:#fff;border:1px solid #e8edf3;border-radius:12px;box-shadow:0 8px 24px #243b5314;font:14px/1.5 var(--mastererp-font-family);color:#4b5563}
+.ecommerce-app .commerce-header-panel{position:absolute;z-index:1001;top:52px;right:0;width:300px;max-width:calc(100vw - 32px);padding:20px;background:var(--uon-theme-surface,#fff);border:1px solid var(--uon-theme-border,#e8edf3);border-radius:12px;box-shadow:0 8px 24px #243b5314;font:14px/1.5 var(--mastererp-font-family);color:var(--uon-theme-muted,#4b5563)}
 .ecommerce-app .commerce-header-panel h2{font-size:16px;font-weight:500;margin:0 0 12px}
-.ecommerce-app .commerce-header-panel p{margin:0;color:#667085}
+.ecommerce-app .commerce-header-panel p{margin:0;color:var(--uon-theme-muted,#667085)}
 .ecommerce-app .commerce-header-panel dl{display:grid;gap:8px;margin:0 0 16px}
-.ecommerce-app .commerce-header-panel dt{font-size:12px;color:#667085}
+.ecommerce-app .commerce-header-panel dt{font-size:12px;color:var(--uon-theme-muted,#667085)}
 .ecommerce-app .commerce-header-panel dd{margin:0;overflow-wrap:anywhere}
 .ecommerce-app .commerce-header-panel a{color:#1766b1}
-.ecommerce-app.ecommerce-app .integrated-content{font-family:var(--mastererp-font-family);background:#f6f8fc}
+.ecommerce-app.ecommerce-app .integrated-content{font-family:var(--mastererp-font-family);background:var(--uon-theme-raised,#f6f8fc)}
 .ecommerce-app .od-header-actions{flex-wrap:wrap}
 @media(max-width:600px){.ecommerce-app .commerce-header-menus .commerce-notifications{display:none}}
 @media(max-width:600px){.ecommerce-app .commerce-header-panel{position:fixed;top:76px;right:16px}.ecommerce-app .commerce-header-menus{gap:2px}.ecommerce-app .commerce-header-menus .commerce-icon-button{width:36px;min-width:36px;height:44px;padding:6px}}

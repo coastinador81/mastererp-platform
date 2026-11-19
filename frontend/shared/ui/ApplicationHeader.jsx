@@ -2,6 +2,7 @@ import React from 'react';
 import ModuleLauncher from '../module-launcher/ModuleLauncher.jsx';
 import {ApplicationAssistantToggle} from './ApplicationAssistant.jsx';
 import UonifyChatLink from './UonifyChatLink.jsx';
+import ApplicationThemeToggle from './ApplicationThemeToggle.jsx';
 import './design-tokens.css';
 import './application-header.css';
 
@@ -37,6 +38,7 @@ export default function ApplicationHeader({
       </a>
       <div className="context-controls">
         {children}
+        {['finance','ecommerce'].includes(currentApp)&&<ApplicationThemeToggle/>}
         {displayAssistant && <ApplicationAssistantToggle />}
         {displayAssistant && <UonifyChatLink />}
         <ModuleLauncher currentApp={currentApp} />

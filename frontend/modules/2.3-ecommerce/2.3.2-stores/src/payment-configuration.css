@@ -2,8 +2,8 @@
 .payment-config-module .operation-list { align-self: start; }
 .payment-config-module .payment-store-name { min-width: 0; overflow-wrap: anywhere; }
 .ecommerce-app .payment-config-module .operation-list-item { display: grid; grid-template-columns: 38px minmax(0,1fr) auto; border-left: 3px solid transparent; }
-.ecommerce-app .payment-config-module .operation-list-item.selected { border-left-color: var(--finance-primary,#096bdc); background: #f7faff; }
-.ecommerce-app .payment-config-module .operation-list-item:hover { background: #f1f6fd; }
+.ecommerce-app .payment-config-module .operation-list-item.selected { border-left-color: var(--finance-primary,#096bdc); background: var(--uon-theme-raised,#f7faff); }
+.ecommerce-app .payment-config-module .operation-list-item:hover { background: var(--uon-theme-raised,#f1f6fd); }
 .payment-config-module .row-action { justify-items: end; }
 .payment-config-module .operation-empty { padding: 24px; color: var(--finance-muted,#667085); }
 .payment-config-module .operation-empty h2,.payment-config-module .operation-empty h3 { font-size: 18px; color: var(--finance-text,#4b5563); }
@@ -22,7 +22,7 @@
 .payment-fields label { display: grid; gap: 6px; color: var(--finance-text,#4b5563); }
 .payment-fields input { width: 100%; min-width: 0; box-sizing: border-box; min-height: 44px; padding: 0 12px; border: 1px solid var(--finance-border,#e8edf3); border-radius: 8px; }
 .payment-fields input[type="color"] { padding: 5px; cursor: pointer; }
-.payment-accordion { border: 1px solid var(--finance-border,#e8edf3); border-radius: 10px; background: #fff; }
+.payment-accordion { border: 1px solid var(--finance-border,#e8edf3); border-radius: 10px; background: var(--uon-theme-surface,#fff); }
 .payment-accordion summary { display: grid; grid-template-columns: minmax(0,1fr) auto 18px; align-items: center; gap: 12px; padding: 14px 16px; cursor: pointer; list-style: none; }
 .payment-accordion summary::-webkit-details-marker { display: none; }
 .payment-accordion summary:focus-visible { outline: 2px solid #3b82f6; outline-offset: 2px; border-radius: 10px; }

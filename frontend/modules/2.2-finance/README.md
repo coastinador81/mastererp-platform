@@ -100,3 +100,7 @@ Mecanismo: la hoja [src/uonify-theme.css](src/uonify-theme.css) ajusta los alias
 Mapeo (fase 1, solo color): azul de acción Azul 600 `#006AE1` (cumple AA como texto y como relleno; §12 «regla del 600»), aro de foco Azul Uonify `#0178F7`, titulares Tinta `#0A0B0D`, cuerpo y apoyo en Neutros del manual, error semántico `#B3261E`. El espaciado (retícula de 8), los radios (8/12) y la tipografía (Inter) del tema base ya cumplían el manual. En fases siguientes: datos técnicos en monoespaciada, iconos neutros y el panel de IA en aqua con el isotipo «ON».
 
 Alcance: fase 1, solo visual, en la Finanzas independiente (finanzas-dev). No cambia funcionalidad, APIs, rutas, permisos ni datos.
+
+## Tema claro, oscuro y automatico
+
+El selector de tema en la cabecera ofrece Automatico, Claro y Oscuro. Se aplica a pantallas, tablas, formularios, fichas, menus y panel Uony; conserva los contratos funcionales. La preferencia se guarda localmente por subdominio, no se presupone sincronizacion de preferencias ni sesion entre aplicaciones. Leer [la implementacion compartida y pruebas](../../../docs/ADMINISTRATIVE_THEMES.md) antes de ampliar estilos; no introducir superficies blancas o texto oscuro fijos en componentes nuevos.

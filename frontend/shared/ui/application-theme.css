@@ -1,0 +1,90 @@
+/* Opt-in administrative theme. Corporate manual sections 10–12 and 15:
+   depth #0A0B0D -> #14171E -> #2B2E35; light text, blue actions, aqua only for AI.
+   Legacy CSS consumes semantic variables with its exact original light fallback. */
+:root[data-uon-theme-scope="administration"][data-uon-theme="dark"] {
+ color-scheme:dark;
+ --uon-theme-canvas:#0a0b0d;
+ --uon-theme-surface:#14171e;
+ --uon-theme-raised:#2b2e35;
+ --uon-theme-field:#0a0b0d;
+ --uon-theme-border:#474a51;
+ --uon-theme-text:#f0f2f6;
+ --uon-theme-muted:#caccd1;
+ --uon-theme-link:#77c3ff;
+ --uon-theme-on-accent:#ffffff;
+ --uon-neutral-50:var(--uon-theme-canvas);
+ --uon-neutral-100:var(--uon-theme-raised);
+ --uon-neutral-200:var(--uon-theme-border);
+ --uon-neutral-300:#66696f;
+ --uon-neutral-500:#abaeb3;
+ --uon-neutral-600:var(--uon-theme-muted);
+ --uon-neutral-700:var(--uon-theme-text);
+ --uon-neutral-800:#f8fafe;
+ --uon-neutral-900:#ffffff;
+ --uon-surface:var(--uon-theme-surface);
+ --uon-information-surface:var(--uon-theme-raised);
+ --uon-information:var(--uon-theme-link);
+ --uon-ai-text:#53dbc9;
+ --uon-ai-surface:var(--uon-theme-raised);
+ --uon-success:#ffffff;
+ --uon-success-surface:#0f6b45;
+ --uon-warning:#ffffff;
+ --uon-warning-surface:#9a6100;
+ --uon-error:#ffffff;
+ --uon-error-surface:#b3261e;
+ /* Compatibility aliases consumed by existing screens; new code uses --uon-*. */
+ --finance-text:var(--uon-theme-text);
+ --finance-muted:var(--uon-theme-muted);
+ --finance-title:#f8fafe;
+ --finance-background:var(--uon-theme-canvas);
+ --finance-surface:var(--uon-theme-surface);
+ --finance-table-header:var(--uon-theme-raised);
+ --finance-border:var(--uon-theme-border);
+ --finance-control-border:#66696f;
+ --finance-selected:var(--uon-theme-raised);
+ --finance-row-hover:var(--uon-theme-raised);
+ --finance-row-focus:var(--uon-theme-raised);
+ --finance-focus:#77c3ff;
+ --finance-error-text:#ffffff;
+ --finance-error-surface:#b3261e;
+ --finance-error-border:#b3261e;
+ --finance-ai-text:#53dbc9;
+ --finance-ai-tint:var(--uon-theme-raised);
+ --finance-ai-line:#66696f;
+ --finance-shadow:none;
+ /* Existing web components receive references across their shadow roots. */
+ --inventory-rail-bg:var(--uon-theme-canvas);
+ --inventory-launcher-bg:var(--uon-theme-surface);
+ --inventory-launcher-text:var(--uon-theme-text);
+ --inventory-launcher-muted:var(--uon-theme-muted);
+ --inventory-launcher-border:var(--uon-theme-border);
+ --inventory-launcher-hover:var(--uon-theme-raised);
+ --inventory-launcher-current:var(--uon-theme-raised);
+ --inventory-launcher-accent:var(--uon-theme-link);
+ --inventory-launcher-icon-bg:var(--uon-theme-raised);
+ --uon-launcher-icon-surface:var(--uon-theme-raised);
+ --uon-launcher-icon-color:var(--uon-theme-link);
+}
+:root[data-uon-theme-scope="administration"][data-uon-theme="dark"] body {background:var(--uon-theme-canvas);color:var(--uon-theme-text)}
+:root[data-uon-theme-scope="administration"][data-uon-theme="dark"] :is(input,select,textarea){color-scheme:dark;accent-color:var(--uon-brand-blue)}
+:root[data-uon-theme-scope="administration"][data-uon-theme="dark"] :is(input,textarea)::placeholder {color:var(--uon-theme-muted);opacity:1}
+:root[data-uon-theme-scope="administration"][data-uon-theme="dark"] :is(a,.supplier-breadcrumb,.cat-back){color:var(--uon-theme-link)}
+:root[data-uon-theme-scope="administration"][data-uon-theme="dark"] :is(.cat-tabs button[aria-selected=true],.supplier-wizard-header li.current,.operation-tabs button.active){color:var(--uon-theme-link)}
+:root[data-uon-theme-scope="administration"][data-uon-theme="dark"] :is(.primary,.cat-primary,.supplier-create,.order-directory-create){background:var(--uon-action-blue);color:#ffffff}
+:root[data-uon-theme-scope="administration"][data-uon-theme="dark"] :is(.integrated-nav,.finance-service-rail,.application-header,.finance-assistant-panel){background:var(--uon-theme-surface);color:var(--uon-theme-text);border-color:var(--uon-theme-border)}
+:root[data-uon-theme-scope="administration"][data-uon-theme="dark"] :is(.brand,.application-header .brand){color:var(--uon-theme-text)}
+:root[data-uon-theme-scope="administration"][data-uon-theme="dark"] :is(.workspace-card-body,.workspace-card-options,.workspace-card-option){background:var(--uon-theme-surface)!important;color:var(--uon-theme-text)!important;border-color:var(--uon-theme-border)!important}
+:root[data-uon-theme-scope="administration"][data-uon-theme="dark"] :is(.workspace-card-body:hover,.workspace-card-option:hover,.workspace-card-option.active){background:var(--uon-theme-raised)!important;color:var(--uon-theme-link)!important}
+:root[data-uon-theme-scope="administration"][data-uon-theme="dark"] .workspace-card :is(strong,small,span){color:inherit}
+:root[data-uon-theme-scope="administration"][data-uon-theme="dark"] :is(.panel,.cat-surface,.action-dialog){box-shadow:none}
+:root[data-uon-theme-scope="administration"][data-uon-theme="dark"] :is(.status-badge-success,.status-badge.success,.notice.success,.bcv-rate-badge:not(.is-unavailable)){background:var(--uon-success-surface);color:var(--uon-success);border-color:var(--uon-success-surface)}
+:root[data-uon-theme-scope="administration"][data-uon-theme="dark"] :is(.status-badge-warning,.status-badge.warning,.notice.warning){background:var(--uon-warning-surface);color:var(--uon-warning);border-color:var(--uon-warning-surface)}
+:root[data-uon-theme-scope="administration"][data-uon-theme="dark"] :is(.notice.error,.toast.error,.status-badge-error,.status-badge.error){background:var(--uon-error-surface);color:var(--uon-error);border-color:var(--uon-error-surface)}
+:root[data-uon-theme-scope="administration"][data-uon-theme="dark"] :is(.notice.error,.notice.success,.notice.warning) :is(p,strong,span,a){color:inherit}
+:root[data-uon-theme-scope="administration"][data-uon-theme="dark"] :focus-visible {outline-color:#77c3ff}
+:root[data-uon-theme-scope="administration"][data-uon-theme="dark"] .status-badge-violet:not(#status-badge-guard){background:var(--uon-theme-raised);color:var(--uon-theme-link)}
+/* Keep existing document/PDF/receipt output printable instead of publishing dark paper. */
+@media print {
+ :root[data-uon-theme-scope="administration"][data-uon-theme="dark"] {color-scheme:light;--uon-theme-canvas:#ffffff;--uon-theme-surface:#ffffff;--uon-theme-raised:#f0f2f6;--uon-theme-field:#ffffff;--uon-theme-border:#caccd1;--uon-theme-text:#14171e;--uon-theme-muted:#474a51;--uon-theme-link:#006ae1;--finance-title:#14171e;--uon-neutral-50:#f8fafe;--uon-neutral-100:#f0f2f6;--uon-neutral-200:#e1e3e8;--uon-neutral-300:#caccd1;--uon-neutral-500:#898c92;--uon-neutral-600:#66696f;--uon-neutral-700:#474a51;--uon-neutral-800:#2b2e35;--uon-neutral-900:#14171e}
+ .application-theme-picker{display:none!important}
+}

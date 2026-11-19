@@ -7,6 +7,9 @@ import '../../../app-shell/src/shell.css';
 import '../../../shared/ui/admin-application.css';
 import './operations.css';
 import '../../../shared/ui/application-header.css';
+import {initializeApplicationTheme} from '../../../shared/ui/application-theme.mjs';
+import '../../../shared/ui/application-theme.css';
+initializeApplicationTheme();
 
 createRoot(document.getElementById('root')).render(
   <WorkspaceProvider><EcommerceApp /></WorkspaceProvider>,

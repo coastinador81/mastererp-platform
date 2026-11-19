@@ -14,3 +14,8 @@
 .integrated-app .application-header .menu-toggle::before{content:'';display:block;width:18px;height:14px;background:linear-gradient(currentColor,currentColor) top/100% 1.5px no-repeat,linear-gradient(currentColor,currentColor) center/100% 1.5px no-repeat,linear-gradient(currentColor,currentColor) bottom/100% 1.5px no-repeat}
 @media(max-width:800px){.integrated-app .application-header{padding:12px 16px;gap:12px}.integrated-app .application-header .brand{font-size:25px}.integrated-app .application-header .context-controls{gap:8px}}
 @media(max-width:380px){.integrated-app .application-header{padding:12px 8px;gap:6px}.integrated-app .application-header .brand{font-size:18px}.integrated-app .application-header .context-controls>button{padding:8px;font-size:12px}}
+
+/* Opt-in theme control: keep the canonical header usable on narrow screens. */
+@media(max-width:480px){:root[data-uon-theme-scope] .integrated-app .application-header .context-controls{gap:2px}:root[data-uon-theme-scope] .integrated-app .application-header .brand{font-size:18px}:root[data-uon-theme-scope] .integrated-app .application-header .finance-chat-home,:root[data-uon-theme-scope] .integrated-app .application-header mastererp-module-launcher,:root[data-uon-theme-scope] .integrated-app .application-header .finance-assistant-toggle{width:34px;height:36px;min-height:36px}:root[data-uon-theme-scope] .integrated-app .application-header .context-controls>button{padding:6px 8px;font-size:12px}}
+
+@media(max-width:480px){:root[data-uon-theme-scope] .integrated-app .application-header{gap:6px;padding:12px 8px}}

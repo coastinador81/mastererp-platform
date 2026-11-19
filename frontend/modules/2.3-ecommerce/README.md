@@ -73,3 +73,7 @@ pedir credenciales otra vez. Si Cognito no tiene una sesión válida, devuelve
 `login_required` y Ecommerce muestra el acceso normal. No se pasan tokens por
 URL, no se usan cookies amplias entre subdominios y las APIs siguen validando
 identidad, tenant, empresa, módulo y permisos en cada operación.
+
+## Tema claro, oscuro y automatico
+
+El selector de tema en la cabecera ofrece Automatico, Claro y Oscuro. Se aplica a pantallas, tablas, formularios, fichas, menus y panel Uony; conserva los contratos funcionales. La preferencia se guarda localmente por subdominio, no se presupone sincronizacion de preferencias ni sesion entre aplicaciones. Leer [la implementacion compartida y pruebas](../../../docs/ADMINISTRATIVE_THEMES.md) antes de ampliar estilos; no introducir superficies blancas o texto oscuro fijos en componentes nuevos.

@@ -42,7 +42,7 @@ jobs:
           cache: npm
           cache-dependency-path: frontend/modules/2.3-ecommerce/package-lock.json
       - run: npm ci
-      - run: node --test src/access.test.mjs ../../shared/auth/cognito.test.mjs
+      - run: node --test ../../shared/ui/application-theme.test.mjs src/access.test.mjs ../../shared/auth/cognito.test.mjs
       - run: npm run build
       - uses: aws-actions/configure-aws-credentials@v4
         with:

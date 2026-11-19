@@ -6,6 +6,6 @@
 .status-badge-success:not(#status-badge-guard){background:var(--uon-success-surface);color:var(--uon-success)}
 .status-badge-warning:not(#status-badge-guard){background:var(--uon-warning-surface);color:var(--uon-warning)}
 .status-badge-info:not(#status-badge-guard){background:var(--uon-information-surface);color:var(--uon-information)}
-.status-badge-violet:not(#status-badge-guard){background:#f0edff;color:#6a5acd}
+.status-badge-violet:not(#status-badge-guard){background:var(--uon-theme-raised,#f0edff);color:#6a5acd}
 .status-badge-danger:not(#status-badge-guard){background:var(--uon-error-surface);color:var(--uon-error)}
 .status-badge-neutral:not(#status-badge-guard){background:var(--uon-neutral-100);color:var(--uon-neutral-700)}
