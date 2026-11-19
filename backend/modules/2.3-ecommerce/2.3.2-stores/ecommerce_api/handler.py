@@ -167,9 +167,9 @@ def _checkout(event, repository, claims):
         raise HttpError(400, "Valid payment method is required", code="invalid_request")
     payer = _payer(method, payload.get("payer"))
     profile = _verified_profile(claims)
-    rate = current_rate(timeout=5, attempts=2) if method in ("mobile", "transfer") else None
-    if method in ("mobile", "transfer") and not rate:
-        rate = _declared_exchange_rate(payload.get("exchange_rate"))
+    # The checkout Lambda runs in a private network. Never block an already
+    # reported payment while attempting an outbound BCV request here.
+    rate = _declared_exchange_rate(payload.get("exchange_rate")) if method in ("mobile", "transfer") else None
     order = repository.checkout(profile, {**payload, "_payer": payer, "_exchange_rate": rate}, key)
     if payer:
         repository.save_payment_method(profile, payload["domain"], method, payer)

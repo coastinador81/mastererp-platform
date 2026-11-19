@@ -125,6 +125,7 @@ class EcommerceApiTest(unittest.TestCase):
             '"payer":{"bankCode":"0102","document":"V12345678","phone":"04121234567"}}')}
         self.assertEqual(_checkout(event, repository, claims), (201, {"id": "order-1"}))
         self.assertIsNone(repository.checkout.call_args.args[1]["_exchange_rate"])
+        _rate.assert_not_called()
 
     @patch("ecommerce_api.handler._verified_profile")
     @patch("ecommerce_api.handler.current_rate", return_value={"rate":"914.0218","source":"bcv.today","effectiveDate":"2026-11-16"})
