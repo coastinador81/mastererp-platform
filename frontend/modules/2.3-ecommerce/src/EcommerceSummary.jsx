@@ -9,7 +9,9 @@ import{collectCursorPages,collectOffsetPages}from'./operationPages.mjs';
 
 const call=(runtime,path)=>runtime.request(runtime.api+path,{headers:{'X-Tenant-Id':runtime.tenant,'Content-Type':'application/json'}});
 const endpoints={orders:'orders',preparation:'preparations',routes:'routes'};
-const summaryCache=new Map(),SUMMARY_CACHE_MS=120000;
+// This in-memory cache intentionally lasts until the browser reloads. Navigating
+// between modules must not make the dashboard look as if it is constantly polling.
+const summaryCache=new Map();
 
 export default function EcommerceSummary(props){
   const {runtime,context}=props;
@@ -25,7 +27,7 @@ function SummarySession({context,runtime,navigate}){
     const {runtime,context}=refs.current;
     if(!runtime.company){setLoading(false);setError('Selecciona una empresa para consultar su operación.');return;}
     const available=summaryCache.get(`${runtime.tenant}:${runtime.company}`);
-    if(!force&&available&&Date.now()-available.updated<SUMMARY_CACHE_MS){setData(available.data);setFailed(available.failed);setError(available.error);setUpdated(new Date(available.updated));setLoading(false);return;}
+    if(!force&&available){setData(available.data);setFailed(available.failed);setError(available.error);setUpdated(new Date(available.updated));setLoading(false);return;}
     pending.current=true;setLoading(true);setError('');
     try{
       const settled=await Promise.allSettled(Object.entries(endpoints).map(async([route,path])=>{

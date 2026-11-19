@@ -1,6 +1,5 @@
 import React, {useState} from 'react';
-import {dateTime, money, paymentMethodLabel} from './orderView.js';
-import {createOrderPdf} from './orderPdf.js';
+import {createInvoicePdf} from './orderPdf.js';
 
 // Invoice remains an explicit preview. Notes use the authorized Orders API.
 export function OrderInvoicePreview({order,companyProfile}) {
@@ -8,14 +7,7 @@ export function OrderInvoicePreview({order,companyProfile}) {
   async function download(){
     setWorking(true);setMessage('');
     try{
-      const customer=order.customer_snapshot||{},payment=order.payment_snapshot||{};
-      const {line,heading,total,note,finish}=await createOrderPdf({companyProfile,title:'Factura del pedido',kicker:'E-COMMERCE · DOCUMENTO DEL PEDIDO',metadata:{subject:`Detalle del pedido ${order.number}`}});
-      line('Pedido',order.number);line('Fecha',dateTime(order.created_at));line('Cliente',customer.name||'No registrado');line('Documento',customer.document||'No registrado');
-      heading('Productos');for(const item of order.items||[])line(`${item.quantity} × ${item.product_name||'Producto'}`,`${money(item.unit_price,order.currency)} · ${money(item.subtotal,order.currency)}`);
-      heading('Totales');line('Subtotal',money(order.subtotal,order.currency));line('Entrega',money(order.delivery_fee,order.currency));total(`TOTAL  ${money(order.total,order.currency)}`);
-      heading('Pago');line('Método',paymentMethodLabel(payment.method,payment));line('Estado',payment.status||'No registrado');if(payment.reference)line('Referencia',payment.reference);
-      note('Documento generado desde los datos registrados del pedido. La condición fiscal depende de la factura o nota emitida y vinculada por Finanzas.');
-      finish(`factura-${order.number}`);setMessage('Factura PDF descargada.');
+      await createInvoicePdf({order,companyProfile});setMessage('Factura PDF descargada.');
     }catch{setMessage('No se pudo generar el PDF. Inténtalo nuevamente.');}finally{setWorking(false);}
   }
   return <div><button type="button" className="od-button secondary" disabled={working} onClick={download}>{working?'Generando PDF…':'Descargar factura'}</button>{message&&<small role="status">{message}</small>}</div>;
