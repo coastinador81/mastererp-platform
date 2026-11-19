@@ -6,9 +6,9 @@ import type { CartLine, CustomerAddress, CustomerOrder, CustomerPaymentMethod, C
 const portalUrl = (path: string) => `${storefrontConfig.api}${path}?domain=${encodeURIComponent(storefrontConfig.domain)}`;
 const portalOptions = (options: RequestInit = {}) => ({ ...options, headers: { 'X-Tenant-Id': storefrontConfig.tenant, ...options.headers } });
 
-export async function loadCatalog(): Promise<StorefrontCatalog> {
+export async function loadCatalog(nodeId?: string): Promise<StorefrontCatalog> {
   assertStorefrontContext();
-  const url = `${storefrontConfig.api}/v1/storefront/catalog?domain=${encodeURIComponent(storefrontConfig.domain)}`;
+  const url = `${storefrontConfig.api}/v1/storefront/catalog?domain=${encodeURIComponent(storefrontConfig.domain)}${nodeId ? `&node_id=${encodeURIComponent(nodeId)}` : ''}`;
   const response = await fetchWithTimeout(fetch, url, { headers: { 'X-Tenant-Id': storefrontConfig.tenant } });
   const body = await response.json();
   if (!response.ok) throw new Error(body.error?.message || 'No se pudo abrir la tienda.');
@@ -23,7 +23,7 @@ export const updateAddress = (address: CustomerAddress) => authorizedIdentityFet
 export const loadPaymentMethods = async () => (await authorizedIdentityFetch(portalUrl('/v1/storefront/me/payment-methods'), portalOptions()) as { items: CustomerPaymentMethod[] }).items;
 export const loadOrders = async () => (await authorizedIdentityFetch(portalUrl('/v1/storefront/orders'), portalOptions()) as { items: CustomerOrder[] }).items;
 export const loadOrder = (id: string) => authorizedIdentityFetch(portalUrl(`/v1/storefront/orders/${encodeURIComponent(id)}`), portalOptions()) as Promise<CustomerOrder>;
-export async function submitCheckout(lines: CartLine[], address: CustomerAddress, paymentMethod: PaymentMethod, paymentReference?: string, payer?: PayerDetails) {
+export async function submitCheckout(lines: CartLine[], address: CustomerAddress, paymentMethod: PaymentMethod, paymentReference?: string, payer?: PayerDetails, nodeId?: string) {
   assertStorefrontContext();
   const storageKey = `mastererp.storefront.checkout-key:${storefrontConfig.tenant}:${storefrontConfig.domain}`;
   let key = sessionStorage.getItem(storageKey);
@@ -32,7 +32,8 @@ export async function submitCheckout(lines: CartLine[], address: CustomerAddress
     sessionStorage.setItem(storageKey, key);
   }
   const detail = {
-    items: lines.map(({ product, quantity }) => ({ product_id: product.id, quantity })),
+    items: lines.map(({ product, quantity, variant }) => ({ product_id: product.id, quantity, variant_key: variant?.key })),
+    node_id: nodeId,
     delivery: {
       address: address.address, label: address.label, zone: address.zone, unit: address.unit,
       reference: address.reference, latitude: address.latitude, longitude: address.longitude,

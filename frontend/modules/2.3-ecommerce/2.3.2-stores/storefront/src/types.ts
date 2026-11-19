@@ -10,10 +10,15 @@ export type Product = {
   price: number;
   offer_price?: number;
   available: number;
+  attributes?: { _catalog?: { variants?: ProductVariant[] } };
 };
+export type ProductVariant = { key: string; label?: string; sku?: string; price_delta?: number; active?: boolean; values?: Record<string, string> };
 
 export type StorefrontCatalog = {
   store: {
+    node_id: string;
+    default_node_id: string;
+    nodes: {id: string; name: string}[];
     name: string;
     modules?: string[];
     configuration?: StoreConfiguration;
@@ -48,7 +53,12 @@ export type StoreConfiguration = {
 export type PayerDetails = { bankCode: string; document: string; phone?: string; holder?: string };
 export type CustomerPaymentMethod = PayerDetails & { method: 'mobile' | 'transfer'; updatedAt: string };
 
-export type CartLine = { product: Product; quantity: number };
+export type CartLine = { product: Product; quantity: number; variant?: ProductVariant };
+export const cartLineKey = (line: Pick<CartLine, 'product' | 'variant'>) => `${line.product.id}:${line.variant?.key || ''}`;
+export const cartLinePrice = (line: Pick<CartLine, 'product' | 'variant'>) => {
+  const base = line.product.offer_price != null && line.product.offer_price < line.product.price ? line.product.offer_price : line.product.price;
+  return base + Number(line.variant?.price_delta || 0);
+};
 export type CustomerProfile = { id: string; name: string; code: string; phone: string; birthDate: string; photoUrl?: string };
 export type CustomerAddress = { id: string; label: string; address: string; zone: string; unit?: string; reference?: string; latitude: number; longitude: number; default: boolean; version: number };
 export type CustomerOrder = {

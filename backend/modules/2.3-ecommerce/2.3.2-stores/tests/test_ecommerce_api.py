@@ -7,6 +7,8 @@ from ecommerce_api.handler import HttpError, _checkout, _claim, _customer_portal
 
 
 class EcommerceApiTest(unittest.TestCase):
+    NODE_ID = "00000000-0000-0000-0000-000000000010"
+
     def test_missing_identity_is_rejected_before_tenant_parsing(self):
         event = {"requestContext": {"http": {"method": "GET", "path": "/v1/companies/x/stores"}}}
         with patch.dict("sys.modules", {"tenant_security.db": SimpleNamespace(db_connection=None)}):
@@ -17,7 +19,7 @@ class EcommerceApiTest(unittest.TestCase):
         repository.public_catalog.return_value = {"products": []}
         event = {"headers": {"host": "shop.example.test"}, "requestContext": {"http": {"method": "GET"}}}
         self.assertEqual(_request(event, repository, public=True), (200, {"products": []}))
-        repository.public_catalog.assert_called_once_with("shop.example.test", 100)
+        repository.public_catalog.assert_called_once_with("shop.example.test", 100, None)
 
     def test_create_requires_store_identity(self):
         event = {"requestContext": {"http": {"method": "POST"}}, "pathParameters": {"company_id": "00000000-0000-0000-0000-000000000001"}, "body": "{}"}
@@ -69,7 +71,7 @@ class EcommerceApiTest(unittest.TestCase):
         repository = Mock()
         repository.checkout.return_value = {"id": "order-1"}
         event = {"headers": {"Idempotency-Key": "checkout-1"}, "body": (
-            '{"domain":"shop.example.invalid","items":[{"product_id":"p","quantity":1}],'
+            '{"domain":"shop.example.invalid","node_id":"00000000-0000-0000-0000-000000000010","items":[{"product_id":"p","quantity":1}],'
             '"delivery":{"address":"QA Street","latitude":10.48,"longitude":-66.9},"delivery_method":"realtime","payment_method":"cash"}')}
         self.assertEqual(_checkout(event, repository, claims), (201, {"id": "order-1"}))
         repository.checkout.assert_called_once_with(claims, unittest.mock.ANY, "checkout-1")
@@ -82,7 +84,7 @@ class EcommerceApiTest(unittest.TestCase):
 
     def test_checkout_rejects_delivery_without_coordinates(self):
         event = {"headers": {"Idempotency-Key": "checkout-location"}, "body": (
-            '{"domain":"shop","items":[{}],"delivery":{"address":"QA Street"},'
+            '{"domain":"shop","node_id":"00000000-0000-0000-0000-000000000010","items":[{}],"delivery":{"address":"QA Street"},'
             '"delivery_method":"realtime","payment_method":"cash"}')}
         with self.assertRaises(HttpError) as raised:
             _checkout(event, Mock(), {})
@@ -96,7 +98,7 @@ class EcommerceApiTest(unittest.TestCase):
         repository = Mock()
         repository.checkout.return_value = {"id": "order-1"}
         event = {"headers": {"Idempotency-Key": "checkout-mobile"}, "body": (
-            '{"domain":"shop.example.invalid","items":[{"product_id":"p","quantity":1}],'
+            '{"domain":"shop.example.invalid","node_id":"00000000-0000-0000-0000-000000000010","items":[{"product_id":"p","quantity":1}],'
             '"delivery":{"address":"QA Street","latitude":10.48,"longitude":-66.9},"delivery_method":"realtime",'
             '"payment_method":"mobile","payment_reference":"12345678"}')}
         self.assertEqual(_checkout(event, repository, claims)[0], 201)
@@ -109,7 +111,7 @@ class EcommerceApiTest(unittest.TestCase):
         repository = Mock()
         repository.checkout.return_value = {"id": "order-1"}
         event = {"headers": {"Idempotency-Key": "checkout-payer"}, "body": (
-            '{"domain":"shop.example.invalid","items":[{"product_id":"p","quantity":1}],'
+            '{"domain":"shop.example.invalid","node_id":"00000000-0000-0000-0000-000000000010","items":[{"product_id":"p","quantity":1}],'
             '"delivery":{"address":"QA Street","latitude":10.48,"longitude":-66.9},"delivery_method":"realtime","payment_method":"mobile",'
             '"payment_reference":"12345678","payer":{"bankCode":"0102","document":"V12345678","phone":"04121234567"}}')}
         self.assertEqual(_checkout(event, repository, claims), (201, {"id": "order-1"}))
@@ -120,7 +122,7 @@ class EcommerceApiTest(unittest.TestCase):
     def test_checkout_rejects_invalid_payer_before_creating_order(self):
         repository = Mock()
         event = {"headers": {"Idempotency-Key": "checkout-payer"}, "body": (
-            '{"domain":"shop.example.invalid","items":[{}],"delivery":{"address":"QA Street","latitude":10.48,"longitude":-66.9},'
+            '{"domain":"shop.example.invalid","node_id":"00000000-0000-0000-0000-000000000010","items":[{}],"delivery":{"address":"QA Street","latitude":10.48,"longitude":-66.9},'
             '"delivery_method":"realtime","payment_method":"mobile","payment_reference":"12345678",'
             '"payer":{"bankCode":"0102","document":"V12345678"}}')}
         with self.assertRaises(HttpError):
@@ -133,7 +135,7 @@ class EcommerceApiTest(unittest.TestCase):
         repository = Mock()
         repository.checkout.return_value = {"id": "order-1"}
         event = {"headers": {"Idempotency-Key": "checkout-cash"}, "body": (
-            '{"domain":"shop.example.invalid","items":[{}],"delivery":{"address":"QA Street","latitude":10.48,"longitude":-66.9},'
+            '{"domain":"shop.example.invalid","node_id":"00000000-0000-0000-0000-000000000010","items":[{}],"delivery":{"address":"QA Street","latitude":10.48,"longitude":-66.9},'
             '"delivery_method":"realtime","payment_method":"cash","payer":{"bankCode":"x"}}')}
         self.assertEqual(_checkout(event, repository, {})[0], 201)
         repository.save_payment_method.assert_not_called()
@@ -171,7 +173,7 @@ class EcommerceApiTest(unittest.TestCase):
         verify.return_value = claims
         repository = Mock()
         repository.checkout.return_value = {"id": "order-1"}
-        base = ('{"domain":"shop.example.invalid","items":[{"product_id":"p","quantity":1}],'
+        base = ('{"domain":"shop.example.invalid","node_id":"00000000-0000-0000-0000-000000000010","items":[{"product_id":"p","quantity":1}],'
                 '"delivery":{"address":"QA Street","latitude":10.48,"longitude":-66.9},"delivery_method":"realtime",')
         pos = {"headers": {"Idempotency-Key": "checkout-pos"}, "body": base + '"payment_method":"pos"}'}
         self.assertEqual(_checkout(pos, repository, claims)[0], 201)
@@ -190,7 +192,7 @@ class EcommerceApiTest(unittest.TestCase):
         connection = Mock()
         connection.execute.return_value.fetchone.return_value = {"value": {"id": "order-1"}}
         EcommerceRepository(connection).checkout({"iss": "issuer", "sub": "subject"}, {
-            "domain": "shop", "items": [], "delivery": {}, "delivery_method": "realtime",
+            "domain": "shop", "node_id": self.NODE_ID, "items": [], "delivery": {}, "delivery_method": "realtime",
             "payment_method": "custom", "payment_method_id": "zelle", "payment_reference": "778899"}, "key")
         self.assertEqual(connection.execute.call_args.args[1][6],
                          {"method": "custom", "reference": "778899", "methodId": "zelle"})
@@ -200,7 +202,7 @@ class EcommerceApiTest(unittest.TestCase):
         connection = Mock()
         connection.execute.return_value.fetchone.return_value = {"value": {"id": "order-1", "total": "112.00"}}
         EcommerceRepository(connection).checkout({"iss": "issuer", "sub": "subject"}, {
-            "domain": "shop", "items": [], "delivery": {}, "delivery_method": "realtime",
+            "domain": "shop", "node_id": self.NODE_ID, "items": [], "delivery": {}, "delivery_method": "realtime",
             "payment_method": "mobile", "payment_reference": "54646546",
             "_payer": {"bankCode": "0102", "document": "V12345678", "phone": "04121234567"},
             "_exchange_rate": {"rate": "914.0218", "source": "BCV", "effectiveDate": "2026-11-16"},
@@ -213,7 +215,7 @@ class EcommerceApiTest(unittest.TestCase):
 
     def test_checkout_rejects_bank_payment_without_reference(self):
         event = {"headers": {"Idempotency-Key": "checkout-mobile"}, "body": (
-            '{"domain":"shop.example.invalid","items":[{}],"delivery":{"address":"QA Street","latitude":10.48,"longitude":-66.9},'
+            '{"domain":"shop.example.invalid","node_id":"00000000-0000-0000-0000-000000000010","items":[{}],"delivery":{"address":"QA Street","latitude":10.48,"longitude":-66.9},'
             '"delivery_method":"realtime","payment_method":"mobile"}')}
         with self.assertRaises(HttpError):
             _checkout(event, Mock(), {})

@@ -87,7 +87,10 @@ def _request(event, repository, public=False):
         domain = query.get("domain") or (_header(event, "host") or "").split(":")[0]
         if not domain:
             raise HttpError(400, "Store domain is required", code="invalid_request")
-        return 200, repository.public_catalog(domain, int(query.get("limit", 100)))
+        node_id = query.get("node_id")
+        if node_id:
+            UUID(node_id)
+        return 200, repository.public_catalog(domain, int(query.get("limit", 100)), node_id)
     UUID(company_id or "")
     if store_id:
         UUID(store_id)
@@ -145,6 +148,10 @@ def _checkout(event, repository, claims):
             or not payload["items"] or not isinstance(payload["delivery"], dict)):
         raise HttpError(400, "Checkout fields and Idempotency-Key are required", code="invalid_request")
     delivery = payload["delivery"]
+    try:
+        UUID(str(payload.get("node_id", "")))
+    except ValueError:
+        raise HttpError(400, "Valid store node is required", code="invalid_request") from None
     latitude, longitude = delivery.get("latitude"), delivery.get("longitude")
     if (not isinstance(delivery.get("address"), str) or not 5 <= len(delivery["address"].strip()) <= 500
             or isinstance(latitude, bool) or not isinstance(latitude, (int, float)) or not -90 <= latitude <= 90
