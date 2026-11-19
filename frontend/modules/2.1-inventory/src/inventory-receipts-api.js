@@ -9,7 +9,7 @@ import {
 } from '../../../shared/auth/cognito.mjs';
 import baseAuthConfig from '../../0-uonify/auth-config.json';
 
-const IDENTITY_API_URL = (import.meta.env.VITE_IDENTITY_API_URL || baseAuthConfig.apiUrl || '').replace(/\/$/, '');
+const IDENTITY_API_URL = (import.meta.env.DEV ? '/__identity' : (import.meta.env.VITE_IDENTITY_API_URL || baseAuthConfig.apiUrl || '')).replace(/\/$/, '');
 const INVENTORY_API_URL = (import.meta.env.VITE_INVENTORY_API_URL || baseAuthConfig.adminApiUrl || '').replace(/\/$/, '');
 const RETURN_KEY = 'mastererp.inventory.return';
 const SELECTION_KEY = 'mastererp.inventory.selection';
