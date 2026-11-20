@@ -1,0 +1,47 @@
+name: Deploy supplier Lambda DEV
+on:
+  push:
+    branches: [dev]
+    paths:
+      - '.github/workflows/deploy-finance-supplier-dev.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  id-token: write
+concurrency:
+  group: mastererp-dev-supplier-lambda
+  cancel-in-progress: false
+jobs:
+  deploy:
+    if: github.ref == 'refs/heads/dev'
+    runs-on: ubuntu-latest
+    env:
+      FUNCTION: arn:aws:lambda:us-west-1:277352717693:function:mastererp-dev-adm-proveedores
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -B tests/test_parties.py
+      - name: Package only the supplier Lambda
+        run: |
+          set -euo pipefail
+          pip install --no-compile --target /tmp/supplier-deps -r backend/modules/2.2-finance/2.2.1-administration/2.2.1.1-gestion-comercial/2.2.1.1.3-ventas/lambdas/mastererp-dev-adm-ventas/requirements-package.txt
+          python scripts/package_parties.py --dependencies /tmp/supplier-deps --output /tmp/supplier-package --capabilities proveedores
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::277352717693:role/mastererp-dev-finance-frontend-github-role
+          aws-region: us-west-1
+      - name: Verify permission without updating the function
+        run: |
+          set -euo pipefail
+          test "$(aws sts get-caller-identity --query Account --output text)" = 277352717693
+          aws lambda update-function-code --function-name "$FUNCTION" --zip-file fileb:///tmp/supplier-package/mastererp-dev-adm-proveedores.zip --dry-run --query FunctionArn --output text
+      - name: Update the supplier function and verify its code
+        run: |
+          set -euo pipefail
+          revision=$(aws lambda get-function-configuration --function-name "$FUNCTION" --query RevisionId --output text)
+          aws lambda update-function-code --function-name "$FUNCTION" --zip-file fileb:///tmp/supplier-package/mastererp-dev-adm-proveedores.zip --revision-id "$revision" --query FunctionArn --output text
+          aws lambda wait function-updated-v2 --function-name "$FUNCTION"
+          expected=$(openssl dgst -sha256 -binary /tmp/supplier-package/mastererp-dev-adm-proveedores.zip | openssl base64 -A)
+          test "$(aws lambda get-function-configuration --function-name "$FUNCTION" --query CodeSha256 --output text)" = "$expected"
