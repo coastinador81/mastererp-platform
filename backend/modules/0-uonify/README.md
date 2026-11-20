@@ -173,6 +173,22 @@ Ninguna fusión publica dev.uonify.com ni despliega su backend: la web se public
 
 - El roadmap vive fuera de los repos (D7): lo lleva el dueño y se pinta en el chat en cada hito. No se sube a git.
 - Cada README lleva solo reglas y el estado verificable de su carpeta: qué hay, con qué evidencia (commit, sha256 o ejecución de workflow) y qué falta, sin inflarlo (`AGENTS.md:46`). Una carpeta o un README no acreditan implementación.
+
+### 13. Tipos de código (arquitectura del dueño, 20-11-2026)
+
+Modelo del dueño, al estilo de Odoo, decidido el 20-11-2026: «primero el Estudio, con la arquitectura mínima dentro». El análisis y los pasos están en el roadmap (D-ARQUITECTURA-3-TIPOS-20261120).
+
+| Tipo | Qué es | Dónde corre | Regla |
+| --- | --- | --- | --- |
+| 1 | Código inteligente de Uonify: lógica de negocio, Uony, motor creativo, montaje | AWS de Uonify | Nunca sale de AWS ni llega al navegador. |
+| 2a | Artefacto cerrado de un módulo, que el cliente ejecuta en su Google Cloud (Cloud Run o Functions) y paga él | Proyecto de Google del cliente | Solo código de enlace sin valor propio: en el proyecto del cliente nada es secreto. Se instala con su sí y una credencial corta, y queda registrado qué versión corre en cada cliente. |
+| 2b | Código fuente que el cliente posee y personaliza bajo licencia | Repo del cliente | Solo para módulos cuyo valor aguante estar a la vista. Hoy no hay ninguno. |
+| 3 | API de un módulo para que otros lo usen | Donde vive su tipo 1 | Contrato versionado (`/v1/…`) con su esquema, en una carpeta técnica `contracts/` del módulo que la ofrece. Quien la consume prueba contra ese esquema. |
+
+- Invariante B: lo que corre fuera de AWS (un 2a, un 2b o el programa local de un conector) habla con el núcleo solo por API de red. Nunca empaqueta ni enlaza el núcleo ni `backend/shared`.
+- Cada módulo dice en su README qué baja al cliente: nada, datos, 2a, 2b o un programa en su ordenador. El Estudio solo baja datos, a su Google Cloud y a su Drive.
+- «Si el cliente lo modifica, pierde las actualizaciones y el soporte» es un principio de diseño. No se le promete al cliente mientras no existan licencia, sistema de versiones y partners.
+- Los datos del cliente viven en su Google, y en AWS solo hay referencias. Sin intermediarios: tecnología del fabricante, con la cuenta del cliente.
 <!-- uonify-reglas-comunes:end -->
 
 ## Esta capa: platform backend
@@ -185,7 +201,7 @@ Ninguna fusión publica dev.uonify.com ni despliega su backend: la web se public
 
 ### Lambda heredada `uonify-google-connection-handler`
 
-La escribió y la despliega el equipo; está aquí por la numeración (0 = Uonify), pero no forma parte de la app de dev.uonify.com: ni `0.2-app` ni la web aprobada llaman a `/v1/uonify`.
+La escribió y la despliega el equipo; está aquí por la numeración (0 = Uonify), pero no forma parte de la app de dev.uonify.com. Desde el 10-11-2026 (`5c4aaca`, decisión del dueño D-UONY-ERP-AGENTES-20261110), `0.2-app` la consulta en solo lectura con el token Cognito del usuario: `GET {agent_api}/v1/uonify/spaces` (`0.2-app/app/mastererp_api.py:86`).
 
 - Qué hace (`handler.py`, sin llamadas a Google):
   - `GET /v1/uonify/spaces` devuelve los espacios del usuario y, con `?tenant_id=`, su contexto. La llaman `frontend/app-shell/src/session.jsx` (al entrar y al cambiar de espacio) y `frontend/shared/auth/cognito.mjs`: de ella depende la entrada a las apps del equipo.
@@ -205,7 +221,7 @@ Nada. Ningún workflow vigila `backend/modules/0-uonify/**`: una fusión aquí s
 
 - Gemelas: cada carpeta numerada nueva bajo `backend/modules/0-uonify` entra en el mismo PR que su gemela de `frontend/modules/0-uonify`, porque el validador compara las dos listas (`scripts/validate_structure.py:32-33`).
 - Patrón: nuestro backend no sigue `lambdas/<nombre>/handler.py` (`docs/FOLDER_STANDARD.md:13`); es un servicio en contenedores (FastAPI y workers), dentro de la excepción D6.
-- Aislamiento: nuestro backend no usa Cognito, `backend/shared`, la API del equipo ni su RDS. Conectarlo a cualquiera de ellos lo decide el dueño con el arquitecto.
+- Aislamiento: nuestro backend no usa `backend/shared` ni la RDS del equipo. Desde el 10-11-2026 (`5c4aaca`, D-UONY-ERP-AGENTES-20261110), Uony lee ERP · Finanzas por red, en solo lectura y con el token Cognito del propio usuario: `GET {admin_api}/v1/administration/…` y `{agent_api}/v1/uonify/spaces` (`0.2-app/app/mastererp_api.py:1-14`). Es el patrón del tipo 3 (Reglas comunes, sección 13). Cualquier otra conexión la decide el dueño con el arquitecto.
 - Python (`docs/DEVELOPMENT_STANDARD.md:17-19`): snake_case, tipos en las interfaces públicas, errores tipados y saneados, transacciones explícitas, entradas validadas y SQL parametrizado. Un error de un servicio real nunca se convierte en un éxito simulado.
 - Secretos solo por el mecanismo del servidor (`docs/DEVELOPMENT_STANDARD.md:23`): ficheros montados que el código lee al arrancar; nunca en el código, en variables de entorno versionadas ni en logs.
 - Logs y auditoría con correlación y sin contenido sensible: ni prompts, ni respuestas, ni credenciales (`PROJECT.md:15`). En DEV van a CloudWatch de la cuenta compartida.

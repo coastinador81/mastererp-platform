@@ -13,7 +13,7 @@ Código: 0.2. Nombre/ruta: `0-uonify/0.2-app`. Propietario funcional: Uonify, cu
 
 Capa: backend. Gemelas: `frontend/modules/0-uonify/0.2-app` (web), infrastructure `modules/0-uonify/0.2-app` (host, compose y borde de DEV) y database `modules/0-uonify/0.2-app/migrations` (D4).
 
-Dependencias: PostgreSQL 17 y Redis 7.4 propios; Google (inicio de sesión OIDC, Drive, Google Cloud y Vertex AI); Stripe en modo de pruebas; Amazon SP-API (sin credenciales en DEV); Mailpit, que retiene el correo de DEV. Exclusiones: Cognito, `backend/shared` y cualquier otro recurso del equipo.
+Dependencias: PostgreSQL 17 y Redis 7.4 propios; Google (inicio de sesión OIDC, Drive, Google Cloud y Vertex AI); Stripe en modo de pruebas; Amazon SP-API (sin credenciales en DEV); Mailpit, que retiene el correo de DEV; y ERP · Finanzas de MasterERP en solo lectura, por su API y con el token Cognito del usuario (desde `5c4aaca`, 10-11-2026). Exclusiones: `backend/shared`, la RDS del equipo y cualquier otro recurso del equipo.
 
 APIs/eventos/MCP: HTTP bajo `https://dev.uonify.com/api/*` y voz por WebSocket en `/api/uony/live`, detrás de CloudFront y del nginx de la EC2. Sin OpenAPI público (`app/main.py:72`), eventos ni MCP.
 
