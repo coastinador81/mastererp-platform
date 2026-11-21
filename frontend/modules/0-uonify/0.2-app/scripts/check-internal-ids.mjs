@@ -23,14 +23,29 @@ const MAPA = /\.map$/i;
 const EXCEPCIONES = new URL('./internal-ids-allowlist.json', import.meta.url).pathname;
 const FECHA = /^\d{4}-\d{2}-\d{2}$/;
 const CUENTA_AWS = '277352717693';
+// almacen y cuenta devuelven el nombre entero (bucket, host o dominio), no solo el trozo que casa:
+// así una excepción tapa ese nombre y no cualquier otro bucket o dominio de la misma cuenta.
 const PATRONES = [
   ['sha256', /(?<![0-9a-fA-F])[0-9a-fA-F]{64}(?![0-9a-fA-F])/g],
-  ['almacen', /gs:\/\/|s3:\/\/|\bstorage\.(?:googleapis|cloud\.google)\.com\b|\bs3[.-](?:[a-z0-9-]+\.)?amazonaws\.com\b/g],
-  ['cuenta', new RegExp(`(?<!\\d)${CUENTA_AWS}(?!\\d)`, 'g')],
+  ['almacen', /\b(?:gs|s3):\/\/[A-Za-z0-9._-]*|\bstorage\.(?:googleapis|cloud\.google)\.com(?:\/[A-Za-z0-9._-]+)?|\b(?:[a-z0-9-]+\.)*s3[.-](?:[a-z0-9-]+\.)?amazonaws\.com\b/g],
   ['proyecto', /\buonify-[0-9a-f]{20,}\b/g],
   ['campo', /\b(?:planSha256|googleCloudProjectId|assistantNotes|[a-z][A-Za-z0-9]*(?:Usd|USD)|[A-Za-z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)*_(?:usd|USD))\b/g],
 ];
 const escapar = texto => texto.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const CUENTA = new RegExp(`(?<!\\d)${CUENTA_AWS}(?!\\d)`, 'g');
+const NOMBRE = /[A-Za-z0-9.-]/;
+
+/** El nombre entero (bucket, host o dominio) alrededor de cada aparición del número de cuenta. Se
+ * extiende a mano y no con una expresión regular con * delante, que sería cuadrática en tiras largas. */
+function nombresConCuenta(texto) {
+  return [...texto.matchAll(CUENTA)].map(m => {
+    let a = m.index;
+    while (a > 0 && NOMBRE.test(texto[a - 1])) a -= 1;
+    let b = m.index + CUENTA_AWS.length;
+    while (b < texto.length && NOMBRE.test(texto[b])) b += 1;
+    return texto.slice(a, b);
+  });
+}
 
 function argumentos(lista) {
   const salida = {};
@@ -85,11 +100,11 @@ export function hallazgos(dist, ids) {
       const veces = [...texto.matchAll(patron)].length;
       if (veces) cuenta.set(`modelo\u0000${id}`, veces);
     }
-    for (const [tipo, patron] of PATRONES) {
-      for (const m of texto.matchAll(patron)) {
-        const clave = `${tipo}\u0000${m[0]}`;
-        cuenta.set(clave, (cuenta.get(clave) ?? 0) + 1);
-      }
+    const valores = PATRONES.flatMap(([tipo, patron]) => [...texto.matchAll(patron)].map(m => [tipo, m[0]]));
+    valores.push(...nombresConCuenta(texto).map(nombre => ['cuenta', nombre]));
+    for (const [tipo, valor] of valores) {
+      const clave = `${tipo}\u0000${valor}`;
+      cuenta.set(clave, (cuenta.get(clave) ?? 0) + 1);
     }
     for (const [clave, veces] of cuenta) {
       const [tipo, valor] = clave.split('\u0000');
@@ -136,8 +151,8 @@ function probar(ids) {
     ['modelo', `fetch("/x",{body:JSON.stringify({model:"${ids[0]}"})})`, 1],
     ['modelo-borde', `const m="${ids[0]}-preview";`, 0],
     ['sha256', `const h="${'ab'.repeat(32)}";`, 1],
-    ['almacen', 'a="gs://b/o";b="https://storage.googleapis.com/b/o";c="s3://b/k";d="https://b.s3.eu-west-1.amazonaws.com/k";', 4],
-    ['cuenta', `const b="uonify-dev-web-${CUENTA_AWS}";`, 1],
+    ['almacen', 'a="gs://b/o";b="https://storage.googleapis.com/b/o";c="s3://b/k";d="https://b.s3.eu-west-1.amazonaws.com/k";e=`gs://${x}`;', 5],
+    ['cuenta', `const b="uonify-dev-web-${CUENTA_AWS}";const c="1${CUENTA_AWS}";`, 1],
     ['proyecto', 'const p="uonify-0123456789abcdef0123";', 1],
     ['campo', 'a.planSha256;b.googleCloudProjectId;c.spendLimitUsd;d.max_cost_usd;e.costUSD;f.COST_USD;g.assistantNotes', 7],
     ['limpio', 'const p={maxEur:"1,20 €",currency:"USD",motor:"Veo 3.1 Fast",total:12345678901};', 0],

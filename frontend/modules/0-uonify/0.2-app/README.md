@@ -51,9 +51,10 @@ Paso F1.3 del plan F1. `.github/workflows/uonify-web-ci.yml` comprueba, compila 
   - el número de la cuenta de AWS o un id de proyecto `uonify-<hex>`;
   - un campo interno (`planSha256`, `googleCloudProjectId`, `assistantNotes`, importes en dólares).
 
-  Falla también si publica mapas de código fuente, o si el lector del catálogo no puede leer algún miembro. Una excepción caducada falla; una sin uso, avisa; y cada hallazgo tapado sale como aviso informativo con su fichero. Hoy son 7:
+  Falla también si publica mapas de código fuente, o si el lector del catálogo no puede leer algún miembro. Una excepción caducada falla; una sin uso, avisa; y cada hallazgo tapado sale como aviso informativo con su fichero. Para el almacenamiento y la cuenta, el valor es el nombre entero (bucket, host o dominio), así que una excepción no tapa otros nombres de la misma cuenta. Hoy son 9:
   - `assistantNotes`, con fecha dura el 15-12-2026: es el paso 2b, y si no ha llegado, la CI cae.
-  - 3 hasta el 31-12-2026: el id crudo de Veo, que quita el contrato v1 del Estudio (C3), y los importes en dólares de la página Proveedores de la consola (`spentUsd` y `monthlyCapUsd`).
+  - 4 hasta el 31-12-2026: el id crudo de Veo, que quita el contrato v1 del Estudio (C3); los importes en dólares de la página Proveedores de la consola (`spentUsd` y `monthlyCapUsd`), y el host de S3 inventado de los mocks de A+.
+  - El dominio de Cognito del equipo para iniciar sesión, que lleva el número de la cuenta y el usuario ve al entrar. Se revisa cada seis meses.
   - Las 3 huellas públicas de los textos de consentimiento, que se revisan cada año.
 
   Es una red contra descuidos, no un cortafuegos: no ve lo que la API manda en ejecución (la fuga de `pim-video` con un id desconocido es de esas). El primer run (21-11-2026) mostró además que el build de producción emite como trozo descargable los datos simulados (MSW, `shared/mocks/browser.ts`) aunque no los ejecute: sacarlos va en su propio PR, con su puerta. El workflow ya tiene 498 líneas: lo que se añada va en `scripts/`.
