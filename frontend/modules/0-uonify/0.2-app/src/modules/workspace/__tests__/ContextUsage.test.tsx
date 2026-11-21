@@ -122,7 +122,7 @@ it('espera a terminar la respuesta y cuenta un chat nuevo sin crearlo', async ()
 it('abrir, cambiar, guardar y cerrar una ficha actualiza el contexto sin escribir ni esperar una respuesta', async () => {
   const post = vi.spyOn(api, 'post').mockResolvedValue(measurement()); preview();
   await screen.findByRole('button', { name: /25 % ocupado/ });
-  const product = { sku: 'A', revision: 1 } as PimProduct;
+  const product: PimProduct = { sku: 'A', name: 'A', revision: 1 };
   act(() => setActiveProduct(product)); expect(trigger()).toHaveAccessibleName(/midiendo/);
   await waitFor(() => expect(post).toHaveBeenCalledTimes(2)); expect(post.mock.calls[1][1]).toMatchObject({ productContext: { sku: 'A', revision: 1 } });
   act(() => setActiveProduct({ ...product, revision: 2 }));
@@ -151,7 +151,7 @@ it('Auto se vuelve a medir si cambia el catálogo disponible, aunque la preferen
 });
 it('recupera la ficha activada por un hermano antes de instalar la suscripción del compositor', async () => {
   const post = vi.spyOn(api, 'post').mockResolvedValue(measurement());
-  function Product() { useEffect(() => { setActiveProduct({ sku: 'MOUNT', revision: 4 } as PimProduct); }, []); return null; }
+  function Product() { useEffect(() => { setActiveProduct({ sku: 'MOUNT', name: 'MOUNT', revision: 4 }); }, []); return null; }
   render(<QueryClientProvider client={client}><Product /><Preview /></QueryClientProvider>);
   await screen.findByRole('button', { name: /25 % ocupado/ });
   expect(post).toHaveBeenCalledTimes(1); expect(post.mock.calls[0][1]).toMatchObject({ productContext: { sku: 'MOUNT', revision: 4 } });
