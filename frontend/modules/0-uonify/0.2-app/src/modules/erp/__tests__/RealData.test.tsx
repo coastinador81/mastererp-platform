@@ -42,7 +42,15 @@ function renderAt(path: string) {
 }
 
 const LAZY = { timeout: 4000 };
-const menu = () => screen.findByRole('complementary', { name: 'Menú de Finanzas' }, LAZY);
+/** La comprobación inicial (FinanceWorkspace la lanza al montar, con el estado en idle) desmonta y vuelve
+ * a montar la tarjeta de conexión: hasta que acaba, un texto encontrado puede quedarse fuera del documento
+ * o un clic caer en un botón que ya no está. Se espera a que termine: ni idle ni checking. */
+const checked = () => waitFor(() => expect(['idle', 'checking']).not.toContain(useMastererp.getState().status), LAZY);
+const menu = async () => {
+  await screen.findByRole('complementary', { name: 'Menú de Finanzas' }, LAZY);
+  await checked();
+  return screen.getByRole('complementary', { name: 'Menú de Finanzas' });
+};
 
 /** Conecta la simulación desde la tarjeta del menú, como haría la persona. */
 async function connect(user: ReturnType<typeof userEvent.setup>) {
