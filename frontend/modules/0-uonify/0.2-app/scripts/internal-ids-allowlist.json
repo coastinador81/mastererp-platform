@@ -1,0 +1,56 @@
+[
+  {
+    "valor": "veo-3.1-generate-001",
+    "motivo": "La API de vídeo de producto devuelve el id crudo y la web lo traduce a «Veo 3.1» (pim-video/model/constants.ts, MODELS); si no lo conoce, enseña el id. Sale también en los datos simulados de la consola (admin/mocks/fixtures/operations.ts), que el build de producción emite aunque no se ejecuten. Lo arreglan C3, con la etiqueta desde el servidor, y la salida de los mocks del build.",
+    "hasta": "2026-12-31",
+    "decidido": "CEO, 21-11-2026, paso 2 de la arquitectura"
+  },
+  {
+    "valor": "assistantNotes",
+    "motivo": "Indicaciones internas para Uony: viajan en los artículos semilla de la Ayuda (help/content/articles/*.ts, campo assistantNotes) y en el editor de la consola. El paso 2b las saca del paquete público. FECHA DURA, no se renueva sin revisión (REA, 21-11-2026): si 2b no ha llegado, la CI cae.",
+    "hasta": "2026-12-15",
+    "decidido": "CEO, 21-11-2026, paso 2 de la arquitectura, a petición de REA"
+  },
+  {
+    "valor": "spentUsd",
+    "motivo": "Gasto en dólares de cada proveedor de IA: la página Proveedores de la consola de administración (admin/components/providers/ProvidersPage.tsx) y sus datos simulados (admin/mocks/fixtures/operations.ts), que viajan en el paquete público. Pendiente: que el build de producción no emita los mocks y que la consola no vaya en el paquete público o hable en euros.",
+    "hasta": "2026-12-31",
+    "decidido": "CEO, 21-11-2026, paso 2 de la arquitectura (hallado en el primer run de la comprobación)"
+  },
+  {
+    "valor": "monthlyCapUsd",
+    "motivo": "Tope mensual en dólares de cada proveedor de IA, en la misma página Proveedores de la consola y en sus datos simulados. Mismo arreglo pendiente que spentUsd.",
+    "hasta": "2026-12-31",
+    "decidido": "CEO, 21-11-2026, paso 2 de la arquitectura (hallado en el primer run de la comprobación)"
+  },
+  {
+    "valor": "aplus-media.s3.amazonaws.com",
+    "motivo": "Host de S3 inventado de los datos simulados de A+ (pim-aplus/mocks/handlers.ts), que el build de producción emite con el resto de los mocks. Desaparece al sacar los mocks del build.",
+    "hasta": "2026-12-31",
+    "decidido": "CEO, 21-11-2026, paso 2 de la arquitectura (hallado en el tercer run)"
+  },
+  {
+    "valor": "mastererp-dev-uonify-277352717693.auth.us-west-1.amazoncognito.com",
+    "motivo": "Dominio de inicio de sesión de Cognito del equipo MasterERP para DEV (erp/api/live.ts, MASTERERP_LOGIN_ORIGIN): lleva el número de la cuenta de AWS. No es secreto (el usuario lo ve en la barra al entrar); solo lo quitaría un dominio propio en el Cognito del equipo, que decide el equipo. Revisar cada seis meses.",
+    "hasta": "2027-05-21",
+    "decidido": "CEO, 21-11-2026, paso 2 de la arquitectura (hallado en el tercer run)"
+  },
+  {
+    "valor": "b49fba1b6f69419094ae185efd3802506d3b48f901a6a07ab5f4f08ff3e4e8ee",
+    "motivo": "Huella pública del texto de consentimiento para analizar la carpeta de materiales (drive/model/materialAnalysisConsent.ts); el servidor la comprueba (product_materials_consent.py). Es así por diseño: revisar cada año.",
+    "hasta": "2027-11-21",
+    "decidido": "CEO, 21-11-2026, paso 2 de la arquitectura"
+  },
+  {
+    "valor": "08c68e5c888f87d04fe1d894b3daeaff4d0a2a1df13064ce923b7d988cbaa156",
+    "motivo": "Huella pública de un texto de consentimiento de control de materiales (drive/model/materialControlConsent.ts). Por diseño: revisar cada año.",
+    "hasta": "2027-11-21",
+    "decidido": "CEO, 21-11-2026, paso 2 de la arquitectura"
+  },
+  {
+    "valor": "261472692cbc2fab27ce0bf2d3a65f1d3623b70e2d531cd94bbfb6034c2ae2ab",
+    "motivo": "Huella pública de un texto de consentimiento de control de materiales (drive/model/materialControlConsent.ts). Por diseño: revisar cada año.",
+    "hasta": "2027-11-21",
+    "decidido": "CEO, 21-11-2026, paso 2 de la arquitectura"
+  }
+]

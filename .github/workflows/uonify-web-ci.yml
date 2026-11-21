@@ -12,12 +12,14 @@ on:
       - 'frontend/modules/0-uonify/0.2-app/**'
       - '!frontend/modules/0-uonify/0.2-app/README.md'
       - '.github/workflows/uonify-web-ci.yml'
+      - 'backend/modules/0-uonify/0.2-app/app/creative_google_capabilities.py'
   push:
     branches: [dev]
     paths:
       - 'frontend/modules/0-uonify/0.2-app/**'
       - '!frontend/modules/0-uonify/0.2-app/README.md'
       - '.github/workflows/uonify-web-ci.yml'
+      - 'backend/modules/0-uonify/0.2-app/app/creative_google_capabilities.py'
 
 permissions: {}
 
@@ -308,6 +310,17 @@ jobs:
           sin=$(find dist -name '*.html' -exec grep -L 'noindex' {} + || true)
           [ -z "$sin" ] || { echo "::error::HTML sin noindex: $sin"; exit 1; }
           git diff --exit-code --stat -- . || { echo "::error::El build ha cambiado ficheros de git"; exit 1; }
+
+      - name: Identificadores internos en el dist (paso 2 de la arquitectura), con sus casos trampa
+        if: (success() || failure()) && steps.build.outcome == 'success'
+        working-directory: frontend/modules/0-uonify/0.2-app
+        timeout-minutes: 2
+        run: |
+          set -euo pipefail
+          # Ids del catálogo (también en paths:), sha256, gs:// y campos internos: excepciones en internal-ids-allowlist.json.
+          catalogo="$GITHUB_WORKSPACE/backend/modules/0-uonify/0.2-app/app/creative_google_capabilities.py"
+          node scripts/check-internal-ids.mjs --probar --catalogo "$catalogo"
+          node scripts/check-internal-ids.mjs --dist dist --catalogo "$catalogo"
 
       - name: Puerta generada para este dist (build_gate --root-gated --write), igual que la de git
         id: puerta
