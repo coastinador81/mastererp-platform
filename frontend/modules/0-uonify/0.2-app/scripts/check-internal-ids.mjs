@@ -92,14 +92,20 @@ export function juzgar(lista, excepciones, hoy) {
     }
   }
   const usadas = new Set();
+  const cubiertos = [];
   for (const h of lista) {
-    if (vigentes.has(h.valor)) usadas.add(h.valor);
-    else errores.push(`${h.tipo}: «${h.valor}» en ${h.fichero} (${h.veces} ${h.veces === 1 ? 'vez' : 'veces'})`);
+    const donde = `${h.tipo}: «${h.valor}» en ${h.fichero} (${h.veces} ${h.veces === 1 ? 'vez' : 'veces'})`;
+    if (vigentes.has(h.valor)) {
+      usadas.add(h.valor);
+      cubiertos.push(`${donde}, con excepción hasta el ${vigentes.get(h.valor).hasta}`);
+    } else {
+      errores.push(donde);
+    }
   }
   for (const valor of vigentes.keys()) {
     if (!usadas.has(valor)) avisos.push(`excepción sin uso, quitarla: «${valor}»`);
   }
-  return { errores, avisos };
+  return { errores, avisos, cubiertos };
 }
 
 /** Casos trampa: lo que se tiene que cazar se caza, y lo limpio pasa. */
@@ -151,7 +157,8 @@ function main() {
     const hoy = opciones.hoy ?? new Date().toISOString().slice(0, 10);
     const excepciones = JSON.parse(readFileSync(EXCEPCIONES, 'utf8'));
     const lista = hallazgos(opciones.dist, ids);
-    const { errores, avisos } = juzgar(lista, excepciones, hoy);
+    const { errores, avisos, cubiertos } = juzgar(lista, excepciones, hoy);
+    for (const cubierto of cubiertos) console.log(`::notice::${cubierto}`);
     for (const aviso of avisos) console.log(`::warning::${aviso}`);
     for (const error of errores) console.log(`::error::${error}`);
     console.log(`Identificadores internos en ${opciones.dist}: ${lista.length} hallazgos, `

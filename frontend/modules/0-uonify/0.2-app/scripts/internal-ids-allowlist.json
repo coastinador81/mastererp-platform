@@ -1,39 +1,21 @@
 [
   {
-    "valor": "planSha256",
-    "motivo": "Campo del plan del Estudio que hoy devuelve la API (creative/model/creativePreparation.ts). Lo quita el contrato v1 del Estudio (C3, paso 5 de la arquitectura): solo ids opacos.",
-    "hasta": "2026-12-31",
-    "decidido": "CEO, 21-11-2026, paso 2 de la arquitectura"
-  },
-  {
-    "valor": "googleCloudProjectId",
-    "motivo": "Id del proyecto de Google del cliente en el plan del Estudio (creativePreparation.ts). Lo quita C3.",
-    "hasta": "2026-12-31",
-    "decidido": "CEO, 21-11-2026, paso 2 de la arquitectura"
-  },
-  {
-    "valor": "knownGenerationComponentUsd",
-    "motivo": "Importe en dólares del plan del Estudio (creativePreparation.ts). C3: solo euros.",
-    "hasta": "2026-12-31",
-    "decidido": "CEO, 21-11-2026, paso 2 de la arquitectura"
-  },
-  {
-    "valor": "completeMaximumUsd",
-    "motivo": "Importe en dólares del plan del Estudio (creativePreparation.ts). C3: solo euros.",
-    "hasta": "2026-12-31",
-    "decidido": "CEO, 21-11-2026, paso 2 de la arquitectura"
-  },
-  {
-    "valor": "spendLimitUsd",
-    "motivo": "Límite de gasto en dólares del plan del Estudio (creativePreparation.ts). C3: solo euros.",
-    "hasta": "2026-12-31",
-    "decidido": "CEO, 21-11-2026, paso 2 de la arquitectura"
-  },
-  {
     "valor": "veo-3.1-generate-001",
-    "motivo": "La API de vídeo de producto devuelve el id crudo y la web lo traduce a «Veo 3.1» (pim-video/model/constants.ts, MODELS); si no lo conoce, enseña el id. Lo arregla C3 con la etiqueta desde el servidor.",
+    "motivo": "La API de vídeo de producto devuelve el id crudo y la web lo traduce a «Veo 3.1» (pim-video/model/constants.ts, MODELS); si no lo conoce, enseña el id. Sale también en los datos simulados de la consola (admin/mocks/fixtures/operations.ts), que el build de producción emite aunque no se ejecuten. Lo arreglan C3, con la etiqueta desde el servidor, y la salida de los mocks del build.",
     "hasta": "2026-12-31",
     "decidido": "CEO, 21-11-2026, paso 2 de la arquitectura"
+  },
+  {
+    "valor": "spentUsd",
+    "motivo": "Gasto en dólares de cada proveedor de IA: la página Proveedores de la consola de administración (admin/components/providers/ProvidersPage.tsx) y sus datos simulados (admin/mocks/fixtures/operations.ts), que viajan en el paquete público. Pendiente: que el build de producción no emita los mocks y que la consola no vaya en el paquete público o hable en euros.",
+    "hasta": "2026-12-31",
+    "decidido": "CEO, 21-11-2026, paso 2 de la arquitectura (hallado en el primer run de la comprobación)"
+  },
+  {
+    "valor": "monthlyCapUsd",
+    "motivo": "Tope mensual en dólares de cada proveedor de IA, en la misma página Proveedores de la consola y en sus datos simulados. Mismo arreglo pendiente que spentUsd.",
+    "hasta": "2026-12-31",
+    "decidido": "CEO, 21-11-2026, paso 2 de la arquitectura (hallado en el primer run de la comprobación)"
   },
   {
     "valor": "b49fba1b6f69419094ae185efd3802506d3b48f901a6a07ab5f4f08ff3e4e8ee",
