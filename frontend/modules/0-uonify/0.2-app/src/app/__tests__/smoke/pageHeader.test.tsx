@@ -11,6 +11,9 @@ setupSmokeServer();
 async function pageHeader(path: string): Promise<HTMLElement> {
   renderApp(path);
   await waitFor(() => expect(document.querySelector('header.header--row')).not.toBeNull(), { timeout: 5000 });
+  // Mientras la sesión carga, la marca lleva su etiqueta provisional (HomeLink); settle() puede volver
+  // antes de que se pida la sesión, así que se espera a la etiqueta ya resuelta (sin sesión).
+  await waitFor(() => expect(document.querySelector('header.header--row a.brand')).toHaveAttribute('aria-label', 'Uonify, ir al inicio'), { timeout: 5000 });
   await settle();
   const headers = document.querySelectorAll<HTMLElement>('header.header--row');
   expect(headers).toHaveLength(1);
