@@ -6,6 +6,12 @@
     "decidido": "CEO, 21-11-2026, paso 2 de la arquitectura"
   },
   {
+    "valor": "assistantNotes",
+    "motivo": "Indicaciones internas para Uony: viajan en los artículos semilla de la Ayuda (help/content/articles/*.ts, campo assistantNotes) y en el editor de la consola. El paso 2b las saca del paquete público. FECHA DURA, no se renueva sin revisión (REA, 21-11-2026): si 2b no ha llegado, la CI cae.",
+    "hasta": "2026-12-15",
+    "decidido": "CEO, 21-11-2026, paso 2 de la arquitectura, a petición de REA"
+  },
+  {
     "valor": "spentUsd",
     "motivo": "Gasto en dólares de cada proveedor de IA: la página Proveedores de la consola de administración (admin/components/providers/ProvidersPage.tsx) y sus datos simulados (admin/mocks/fixtures/operations.ts), que viajan en el paquete público. Pendiente: que el build de producción no emita los mocks y que la consola no vaya en el paquete público o hable en euros.",
     "hasta": "2026-12-31",
