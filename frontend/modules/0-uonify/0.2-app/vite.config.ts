@@ -41,5 +41,7 @@ export default defineConfig(({ isSsrBuild }) => ({
     setupFiles: ['./src/test/setup.ts'],
     css: false,
     include: ['src/**/*.test.{ts,tsx}'],
+    // En la CI (runner de 2 vCPU) las esperas de src/test/setup.ts llegan a 5 s: cada prueba, hasta 15.
+    testTimeout: process.env.CI ? 15_000 : 5_000,
   },
 }));
