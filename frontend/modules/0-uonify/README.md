@@ -209,7 +209,7 @@ Todo lo de Uonify va en `0.2-app`, salvo este README y el manual de identidad co
 
 ### ⚠ Qué lanza cada ruta al fusionar en `dev`
 
-Detalle de la sección 6 de las Reglas comunes para esta carpeta, leído de `.github/workflows` en `dev` 59ae0eb. Los PR solo lanzan «Validate structure»; los `publish-*` corren al fusionar.
+Detalle de la sección 6 de las Reglas comunes para esta carpeta, leído de `.github/workflows` en `dev` 59ae0eb, más `uonify-web-ci.yml` (F1.3). Los PR lanzan «Validate structure» y, si tocan `0.2-app` (salvo su README), `uonify-web-ci.yml`; los `publish-*` corren al fusionar.
 
 | Ruta dentro de `frontend/modules/0-uonify` | Workflows |
 | --- | --- |
@@ -217,7 +217,8 @@ Detalle de la sección 6 de las Reglas comunes para esta carpeta, leído de `.gi
 | Cualquier `*.jsx` o `*.tsx` fuera de `0.2-app` | `publish-uonify-dev.yml` |
 | `components/Conversation.jsx` y `components/ShellIcons.tsx` | `publish-uonify-dev.yml` y `publish-finance-dev.yml` |
 | `auth-config.json` | `publish-uonify-dev.yml`, `publish-finance-dev.yml` y `publish-ecommerce-dev.yml` |
-| `README.md`, `.gitignore` y todo `0.2-app/**` | Solo «Validate structure» (`publish-uonify-dev.yml:36` excluye `0.2-app/**`) |
+| `README.md`, `.gitignore` y `0.2-app/README.md` | Solo «Validate structure» |
+| El resto de `0.2-app/**` | `uonify-web-ci.yml`, en el PR y al fusionar: comprueba, compila y prueba la web, sin AWS y sin publicar (README de `0.2-app`). `publish-uonify-dev.yml:36` excluye `0.2-app/**` |
 
 - `publish-uonify-dev.yml` compila la raíz con lo que haya en `dev` en ese momento, también trabajo a medias del equipo, y la publica con su rol OIDC, que solo puede escribir en el bucket y la distribución de app-dev (infrastructure `modules/0-uonify/resources.yml:69-70` y `:199-236`). No toca dev.uonify.com, pero republica la app del equipo.
 - Ningún patrón de `publish-uonify-dev.yml` alcanza a `0.2-app`: la última línea de su lista `paths:` (`:36`), `'!frontend/modules/0-uonify/0.2-app/**'`, la excluye. Quitarla volvería a republicar la app del equipo con cada cambio de la web.

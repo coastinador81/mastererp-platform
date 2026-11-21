@@ -1,0 +1,485 @@
+# Uonify · CI de la web de dev.uonify.com (frontend/modules/0-uonify/0.2-app). Paso F1.3 del plan F1 (DISENO-F1-GHA-20261120,
+# «Workflows y jobs»; decisión 10 del roadmap). Comprueba, compila y prueba la web desde git en un runner x64 de GitHub, sin
+# AWS, sin secretos y sin publicar nada: solo deja su artefacto; publicar sigue siendo cosa del dueño (README de 0.2-app).
+# Reglas de Uonify: acciones fijadas por SHA, persist-credentials: false, timeouts, datos del evento solo por env: (ningún
+# ${{ }} dentro de run), permissions: {} y contents: read, sin caché ni dispatch, solo PR del propio repo y sin roles de AWS.
+name: Uonify · CI de la web
+
+on:
+  pull_request:
+    branches: [dev]
+    paths:
+      - 'frontend/modules/0-uonify/0.2-app/**'
+      - '!frontend/modules/0-uonify/0.2-app/README.md'
+      - '.github/workflows/uonify-web-ci.yml'
+  push:
+    branches: [dev]
+    paths:
+      - 'frontend/modules/0-uonify/0.2-app/**'
+      - '!frontend/modules/0-uonify/0.2-app/README.md'
+      - '.github/workflows/uonify-web-ci.yml'
+
+permissions: {}
+
+# Un PR cancela su ejecución anterior; cada push a dev corre entero, porque su artefacto es el que se publica.
+concurrency:
+  group: uonify-web-ci-${{ github.event_name }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  web:
+    name: Web de dev.uonify.com · comprobar, compilar y probar
+    # Un PR desde un fork no corre: gastaría minutos de pago de todo el equipo (riesgo 2 del diseño).
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    # Holgado hasta medir la primera ejecución (2 vCPU; con mutantes, 30-45 min estimados).
+    timeout-minutes: 90
+    permissions:
+      contents: read
+    defaults:
+      run:
+        shell: bash
+    env:
+      WEB: frontend/modules/0-uonify/0.2-app
+      # La zona del Mac en el que se ha validado la web hasta hoy: hay pruebas con fechas y horas.
+      TZ: Europe/Madrid
+      NPM_CONFIG_AUDIT: 'false'
+      NPM_CONFIG_FUND: 'false'
+      NPM_CONFIG_UPDATE_NOTIFIER: 'false'
+    steps:
+      - name: Guarda · solo en un runner alojado por GitHub (más abajo hay sudo)
+        timeout-minutes: 1
+        run: '[ "${RUNNER_ENVIRONMENT:-}" = github-hosted ] || { echo "::error::Este workflow solo corre en runners alojados por GitHub."; exit 1; }'
+
+      - name: Código del commit, con historial y sin credenciales guardadas
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        timeout-minutes: 5
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Base de comparación y alcance del cambio
+        id: base
+        timeout-minutes: 2
+        env:
+          EVENTO: ${{ github.event_name }}
+          ANTES: ${{ github.event.before }}
+        run: |
+          set -euo pipefail
+          # PR: HEAD es el commit de fusión de prueba y su primer padre, la punta de dev. Push: lo que había en dev
+          # antes, que tiene que ser antecesor de HEAD; si no lo es (push forzado), no hay un cambio fiable que revisar.
+          if [ "$EVENTO" = pull_request ]; then
+            git rev-parse -q --verify 'HEAD^2' >/dev/null || { echo "::error::HEAD no es el commit de fusión del PR"; exit 1; }
+            base=$(git rev-parse 'HEAD^1')
+          elif [[ "${ANTES:-}" =~ ^[0-9a-f]{40}$ ]] && git cat-file -e "$ANTES^{commit}" 2>/dev/null \
+            && git merge-base --is-ancestor "$ANTES" HEAD; then
+            base=$ANTES
+          else
+            echo "::error::El push no trae una base antecesora de HEAD (¿push forzado?): no se puede revisar el cambio"
+            exit 1
+          fi
+          # Mutantes, solo si cambia la lógica de edge/ o este workflow: regenerar la puerta (el bloque GENERATED y
+          # public-pages/), que pide casi cualquier cambio de la web, no la cambia.
+          logica=$(git diff --name-only "$base" HEAD -- "$WEB/edge" .github/workflows/uonify-web-ci.yml \
+            ":(exclude)$WEB/edge/public-pages" ":(exclude)$WEB/edge/gate-default.js")
+          fuera=$(git diff -U0 "$base" HEAD -- "$WEB/edge/gate-default.js" | grep -E '^[+-]' \
+            | grep -vE '^(\+\+\+|---) |^[+-](// BEGIN GENERATED|var (ROOT_PUBLIC|LEGAL_NOJS|PRERENDERED|PUBLIC_ASSETS) = )' || true)
+          edge=false
+          [ -z "$logica$fuera" ] || edge=true
+          printf 'base=%s\nedge=%s\n' "$base" "$edge" >> "$GITHUB_OUTPUT"
+          echo "Base: $base · el cambio toca la lógica de edge/ o este workflow: $edge"
+
+      - name: Reglas comunes de 0-uonify, secciones 8 y 10 (árbol de la web y cada commit del cambio)
+        timeout-minutes: 5
+        env:
+          BASE: ${{ steps.base.outputs.base }}
+          CUERPO_PR: ${{ github.event.pull_request.body }}
+        run: |
+          set -euo pipefail
+          shopt -s lastpipe
+          alcance=("$WEB" .github/workflows/uonify-web-ci.yml)
+          fallo=0
+          declare -A dicho=()
+          error() { [ -n "${dicho[$1]:-}" ] || echo "$1"; dicho[$1]=1; fallo=1; }
+          # Cada commit del cambio, sin fusiones ni borrados: lo que entra y sale en un mismo PR queda en el historial.
+          commits() { for c in $(git rev-list --no-merges "$BASE..HEAD"); do
+            git diff-tree -r --root --no-commit-id --no-renames --diff-filter=d -z "$@" "$c" -- "${alcance[@]}"; done; }
+          # 0. Rutas que git entrecomilla (comillas, barra invertida o caracteres de control): romperían todo lo
+          #    demás y podrían colar órdenes en el log. Se cuentan sin imprimirlas y paran aquí.
+          re_rara='["\\[:cntrl:]]'
+          n=0
+          { git ls-files -z -- "${alcance[@]}"; commits --name-only; } | while IFS= read -r -d '' f; do
+            [[ ! $f =~ $re_rara ]] || n=$((n + 1)); done
+          [ "$n" = 0 ] || { echo "::error::$n rutas con comillas, barras invertidas o caracteres de control: no se admiten"; exit 1; }
+          # 1. Enlaces simbólicos y submódulos: Vite copia public/ siguiendo los enlaces.
+          git ls-files -s -- "${alcance[@]}" | awk '$1 == "120000" || $1 == "160000"' | while read -r modo _ _ f; do
+            error "::error file=$f::Enlace simbólico o submódulo ($modo): no se admite"; done
+          # 2. En el árbol entero y en cada commit: lo que nunca se sube (.env reales, claves, volcados y copias de
+          #    bases de datos, también comprimidos) y binarios, por contenido o por .gitattributes, fuera de public/
+          #    o sin extensión de media (git diff -U0 no da líneas de un binario y el escaneo no lo vería).
+          re_env='(^|/)\.env($|\.)'
+          re_ejemplo='\.env\.example$'
+          re_claves='\.(pem|key|p12|pfx|jks|keystore|sql|dump|db|sqlite3?|bak)(\.(gz|bz2|xz|zip|7z))?$'
+          re_media="^$WEB/public/.+\.(png|jpe?g|webp|gif|ico|avif|hdr|glb|mp4|webm|woff2?)$"
+          { git diff --numstat -z --no-renames "$(git hash-object -t tree /dev/null)" HEAD -- "${alcance[@]}"
+            commits --numstat; } | while IFS=$'\t' read -r -d '' mas menos f; do
+            if { [[ $f =~ $re_env ]] && [[ ! $f =~ $re_ejemplo ]]; } || [[ $f =~ $re_claves ]]; then
+              error "::error file=$f::Este tipo de fichero no se sube nunca (sección 8)"
+            fi
+            if [[ $mas$menos == -- && ! $f =~ $re_media ]]; then
+              error "::error file=$f::Binario fuera de public/ o sin extensión de media: no se sube (sección 8)"
+            fi
+          done
+          # 3. git diff --check y 500 líneas (D3) en lo que cambia, sin enseñar el texto de las líneas.
+          if ! salida=$(git -c core.quotePath=false diff --check "$BASE" HEAD -- "${alcance[@]}"); then
+            sed -nE 's/^([^+][^:]*):([0-9]+): (.*)$/::error file=\1,line=\2::\3/p' <<< "$salida"
+            fallo=1
+          fi
+          git diff --name-only -z --diff-filter=d "$BASE" HEAD -- "${alcance[@]}" | while IFS= read -r -d '' f; do
+            { [ -f "$f" ] && grep -Iq . "$f"; } || continue
+            [ "${f##*/}" != package-lock.json ] || continue
+            n=$(awk 'END { print NR }' "$f")
+            [ "$n" -le 500 ] || error "::error file=$f::$n líneas: el máximo es 500 (sección 3, D3)"
+          done
+          # 4. Patrones de la sección 8 (con corchetes, para que este fichero no se detecte a sí mismo) en el árbol
+          #    entero (HEAD) y en las líneas que añade cada commit; solo se enseña fichero:línea. Queda en aviso
+          #    únicamente una clave de prueba de Stripe dentro de una prueba (__tests__/ o *.test.*).
+          duro='(AKIA|ASIA)[0-9A-Z]{16}|AIza[0-9A-Za-z_-]{35}|GOCSPX[-]|ya29[.]|1//0[0-9A-Za-z_-]{20}|(sk|rk)_live_|whsec[_]|gh[pousr]_[0-9A-Za-z]{36}|github[_]pat[_]|eyJ[0-9A-Za-z_-]{20,}[.]eyJ|PRIVATE[ ]KEY'
+          secreto="$duro|(sk|rk)_test_"
+          pruebas='(^|/)__tests__/|\.test\.[cm]?[jt]sx?$'
+          # Líneas añadidas de un diff como «dónde<TAB>fichero<TAB>línea<TAB>texto»; sin ruta reconocida, error.
+          anadidas='BEGIN { c = "el cambio" }
+            /^commit / { c = "el commit " $2; f = ""; cab = 0; next }
+            /^diff --git / { cab = 1; f = ""; next }
+            /^@@ / { cab = 0; n = $3; sub(/^\+/, "", n); sub(/,.*/, "", n); n += 0; next }
+            cab { if ($0 ~ /^\+\+\+ b\//) { f = substr($0, 7); sub(/\t$/, "", f) } next }
+            /^\+/ { if (f == "") { print "::error::Línea añadida sin ruta reconocida en el diff" > "/dev/stderr"; exit 3 }
+                    printf "%s\t%s\t%d\t%s\n", c, f, n, substr($0, 2); n++ }'
+          { { git grep -z -I -n -E -e "$secreto" HEAD -- "${alcance[@]}" || [ $? -eq 1 ]; } | tr '\0' '\t' | sed 's/^HEAD:/HEAD\t/'
+            git -c core.quotePath=false log -p --full-history --no-merges --no-renames --no-ext-diff --no-textconv \
+              --src-prefix=a/ --dst-prefix=b/ -U0 --format='commit %h' "$BASE..HEAD" -- "${alcance[@]}" \
+              | awk "$anadidas" | { grep -E -- "$secreto" || true; }
+          } | while IFS=$'\t' read -r donde f l t; do
+            if [[ $f =~ $pruebas ]] && ! grep -qE -- "$duro" <<< "$t"; then
+              echo "::warning file=$f,line=$l::Clave de prueba de Stripe en una prueba ($donde): tiene que ser un valor falso evidente (sección 8)"
+            else
+              error "::error file=$f,line=$l::Patrón de secreto en $donde (sección 8): no se sube"
+            fi
+          done
+          # 5. Avisos para revisar a mano en las líneas que añade el cambio (fichero:línea, nunca el texto).
+          tsv="$RUNNER_TEMP/lineas-anadidas.tsv"
+          git -c core.quotePath=false diff --no-color --no-ext-diff --no-textconv --no-renames --src-prefix=a/ --dst-prefix=b/ \
+            -U0 "$BASE" HEAD -- "${alcance[@]}" | awk "$anadidas" > "$tsv"
+          lineas() { cut -f4- "$tsv" | { grep -nE"${2:-}" -- "$1" || true; } | cut -d: -f1 \
+            | awk -F'\t' 'NR == FNR { k[$1]; next } FNR in k { print $2 ":" $3 }' - "$tsv"; }
+          lineas 'Header[V]alue' | while IFS=: read -r f l; do
+            echo "::warning file=$f,line=$l::Cabecera de origen de CloudFront: revisar que no lleva un valor real (sección 8)"; done
+          n=0
+          lineas 'password|secret|token' i | while IFS=: read -r f l; do echo "  revisar $f:$l"; n=$((n + 1)); done
+          [ "$n" = 0 ] || echo "::warning::$n líneas añadidas con password, secret o token: revisarlas (sección 8; fichero:línea arriba)"
+          # Correos fuera de los dominios reservados: los revisa una persona (solo valen buzones genéricos).
+          awk -F'\t' '{ t = $0; sub(/^[^\t]*\t[^\t]*\t[^\t]*\t/, "", t)
+              while (match(t, /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z][A-Za-z]+/)) { m = tolower(substr(t, RSTART, RLENGTH))
+                t = substr(t, RSTART + RLENGTH); if (m !~ /@([a-z0-9-]+\.)*(example|test|invalid|localhost)$/ && m !~ /@example\.(com|net|org)$/) { print $2 ":" $3; break } }
+            }' "$tsv" | while IFS=: read -r f l; do
+            echo "::warning file=$f,line=$l::Correo fuera de los dominios reservados: solo valen buzones genéricos (sección 8)"; done
+          # 6. Mensajes de commit y cuerpo del PR (sección 8): un patrón de secreto es error; los correos, un recuento.
+          textos=$(git log --format=%B "$BASE..HEAD"; printf '%s\n' "${CUERPO_PR:-}")
+          if grep -qE -- "$secreto" <<< "$textos"; then error "::error::Patrón de secreto en un mensaje de commit o en el cuerpo del PR (sección 8)"; fi
+          n=$(grep -oE '[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}' <<< "$textos" \
+            | grep -viE '@([a-z0-9-]+\.)*(example|test|invalid|localhost)$|@example\.(com|net|org)$' | wc -l || true)
+          [ "$n" -eq 0 ] || echo "::warning::$n correos fuera de los dominios reservados en los mensajes de commit o en el cuerpo del PR: revisarlos (sección 8)"
+          exit "$fallo"
+
+      - name: Comprobaciones del árbol de la web (README de 0.2-app)
+        if: success() || failure()
+        working-directory: frontend/modules/0-uonify/0.2-app
+        timeout-minutes: 3
+        run: |
+          set -euo pipefail
+          fallo=0
+          # public/: nada de más de 1 MiB salvo la librería de la lista cerrada (D3).
+          while IFS= read -r f; do
+            [ "$(wc -c < "$f")" -le 1048576 ] || [ "$f" = public/assets/vendor/model-viewer-4.3.1.min.js ] \
+              || { echo "::error file=$WEB/$f::Más de 1 MiB en public/: esa media vive en el bucket (media-fuera-de-git.sha256)"; fallo=1; }
+          done < <(git ls-files public)
+          # La media de fuera de git: lista bien formada, en .gitignore y nunca en git.
+          ! grep -qvE '^[0-9a-f]{64}  public/[A-Za-z0-9._/-]+$' media-fuera-de-git.sha256 \
+            || { echo "::error file=$WEB/media-fuera-de-git.sha256::Hay líneas que no son «sha256  public/…»"; fallo=1; }
+          while read -r _ f; do
+            [ -z "$(git ls-files -- "$f")" ] || { echo "::error file=$WEB/$f::Está en git y solo puede vivir en el bucket"; fallo=1; }
+            git check-ignore -q --no-index -- "$f" || { echo "::error file=$WEB/.gitignore::Falta ignorar $f"; fallo=1; }
+          done < media-fuera-de-git.sha256
+          # Ninguna carpeta empieza por un dígito ni se llama screens (Reglas comunes, sección 11).
+          while IFS= read -r f; do
+            echo "::error file=$WEB/$f::Carpeta que empieza por un dígito o se llama screens"
+            fallo=1
+          done < <(git ls-files | awk -F/ '{ for (i = 1; i < NF; i++) if ($i ~ /^[0-9]/ || $i == "screens") { print; break } }')
+          exit "$fallo"
+
+      # Desde aquí, un fallo no oculta el resto: cada paso corre si corrió bien aquello de lo que depende.
+      - name: Node 24.20.0, el mismo que el Mac en el que se ha compilado hasta hoy
+        id: node
+        if: success() || failure()
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        timeout-minutes: 5
+        with:
+          node-version: '24.20.0'
+          package-manager-cache: false
+
+      - name: Dependencias exactas del lockfile (npm ci, sin scripts de instalación)
+        id: deps
+        if: (success() || failure()) && steps.node.outcome == 'success'
+        working-directory: frontend/modules/0-uonify/0.2-app
+        timeout-minutes: 10
+        run: |
+          set -euo pipefail
+          echo "node $(node --version) · npm $(npm --version)"
+          npm ci --ignore-scripts
+          git diff --exit-code --stat -- . || { echo "::error::npm ci ha cambiado ficheros de git"; exit 1; }
+
+      - name: Líneas de src (npm run check:lines)
+        if: (success() || failure()) && steps.deps.outcome == 'success'
+        working-directory: frontend/modules/0-uonify/0.2-app
+        timeout-minutes: 2
+        run: npm run check:lines
+
+      - name: Tipos (npm run typecheck)
+        if: (success() || failure()) && steps.deps.outcome == 'success'
+        working-directory: frontend/modules/0-uonify/0.2-app
+        timeout-minutes: 10
+        run: npm run typecheck
+
+      - name: Lint (npm run lint)
+        if: (success() || failure()) && steps.deps.outcome == 'success'
+        working-directory: frontend/modules/0-uonify/0.2-app
+        timeout-minutes: 10
+        run: npm run lint
+
+      - name: Pruebas (npm run test), salvo la única que necesita la media de fuera de git
+        id: pruebas
+        if: (success() || failure()) && steps.deps.outcome == 'success'
+        working-directory: frontend/modules/0-uonify/0.2-app
+        timeout-minutes: 25
+        env:
+          SIN_MEDIA: 'cada imagen, modelo y vídeo del ejemplo existe con su peso y sus medidas'
+          E2E: 'cruza el cliente real con FastAPI en un esquema aislado: aplazar, cierre, replay, 409 y cuenta'
+        run: |
+          set -euo pipefail
+          trap 'echo "duracion=${SECONDS}s" >> "$GITHUB_OUTPUT"' EXIT
+          # Esa prueba (src/modules/catalog/__tests__/sampleProduct.test.ts) mide 3 GLB y 1 MP4 que, por la regla
+          # de la media de más de 1 MiB, no están en git. Se omite solo ella; que la prueba distinga esa media va
+          # en su propio PR, que quita esta omisión.
+          grep -qF "'$SIN_MEDIA'" src/modules/catalog/__tests__/sampleProduct.test.ts \
+            || { echo "::error::Ya no hay una prueba con ese nombre: quitar la omisión de este workflow"; exit 1; }
+          echo "::warning::Se omite «$SIN_MEDIA»: lee media que no está en git (media-fuera-de-git.sha256)."
+          resultado="$RUNNER_TEMP/vitest.json"
+          # 2 vCPU: sin --maxWorkers, Vitest 5 usaría un solo proceso (núcleos - 1).
+          npm run test -- --maxWorkers=2 --testNamePattern "^(?!.*$SIN_MEDIA)" --reporter=default --reporter=json \
+            --outputFile.json="$resultado"
+          # Sin pasar, exactamente 2, cada una en su fichero: esta y la e2e que solo corre con una URL viva (it.skipIf).
+          jq -e --arg m "$SIN_MEDIA" --arg e "$E2E" '.success and .numFailedTests == 0 and .numPassedTests > 0
+            and ([.testResults[] | (.name | sub("^.*/0\\.2-app/"; "")) as $f | .assertionResults[]
+                  | select(.status != "passed") | [$f, .title]] | sort)
+              == ([["src/modules/catalog/__tests__/sampleProduct.test.ts", $m],
+                   ["src/modules/workspace/__tests__/conversationCards.contract.e2e.test.ts", $e]] | sort)' \
+            "$resultado" >/dev/null \
+            || { echo "::error::Vitest: las pruebas omitidas o fallidas no son exactamente las 2 previstas"; exit 1; }
+
+      - name: Compilar con la receta del dist aprobado (VITE_SITE_URL y sin las otras variables)
+        id: build
+        if: (success() || failure()) && steps.deps.outcome == 'success'
+        working-directory: frontend/modules/0-uonify/0.2-app
+        timeout-minutes: 15
+        env:
+          VITE_SITE_URL: https://dev.uonify.com
+        run: |
+          set -euo pipefail
+          # README, «Variables de compilación»: sin VITE_USE_MOCKS, VITE_INDEXING ni VITE_ESTUDIO_CLIP_WIRING
+          # (ni VITE_API_BASE o VITE_REVIEW_MODE, que la receta no fija) y sin .env* que Vite pueda leer.
+          otras=$(env | cut -d= -f1 | grep '^VITE_' | grep -vx VITE_SITE_URL || true)
+          [ -z "$otras" ] || { echo "::error::Variables VITE_ que la receta no admite: $otras"; exit 1; }
+          envs=$(find . -maxdepth 1 -name '.env*' ! -name '.env.example')
+          [ -z "$envs" ] || { echo "::error::Ficheros que Vite leería: $envs"; exit 1; }
+          npm run build
+          # Lo que garantiza la receta: spa.html, robots.txt cerrado y noindex en todos los HTML.
+          [ -f dist/spa.html ] || { echo "::error::El dist no tiene spa.html"; exit 1; }
+          grep -qx 'Disallow: /' dist/robots.txt || { echo "::error::robots.txt no cierra la web (Disallow: /)"; exit 1; }
+          sin=$(find dist -name '*.html' -exec grep -L 'noindex' {} + || true)
+          [ -z "$sin" ] || { echo "::error::HTML sin noindex: $sin"; exit 1; }
+          git diff --exit-code --stat -- . || { echo "::error::El build ha cambiado ficheros de git"; exit 1; }
+
+      - name: Puerta generada para este dist (build_gate --root-gated --write), igual que la de git
+        id: puerta
+        if: (success() || failure()) && steps.build.outcome == 'success'
+        working-directory: frontend/modules/0-uonify/0.2-app
+        timeout-minutes: 3
+        run: |
+          set -euo pipefail
+          node edge/build_gate.mjs --dist dist --root-gated --write | tee "$RUNNER_TEMP/build_gate.log"
+          read -r huella rutas < <(sed -nE 's/^huella ([0-9a-f]+) .* ([0-9]+) rutas prerenderizadas.*/\1 \2/p' "$RUNNER_TEMP/build_gate.log") || true
+          echo "huella=${huella:-}" >> "$GITHUB_OUTPUT"
+          echo "rutas=${rutas:-}" >> "$GITHUB_OUTPUT"
+          if [ -n "$(git status --porcelain --untracked-files=all -- edge/gate-default.js edge/public-pages)" ]; then
+            echo "distinta=true" >> "$GITHUB_OUTPUT"
+            git status --short --untracked-files=all -- edge/gate-default.js edge/public-pages
+            git diff -U0 -- edge/gate-default.js
+            echo "::error file=$WEB/edge/gate-default.js::La puerta de git no es la de este dist: bajarla con «gh run download $GITHUB_RUN_ID -n puerta-regenerada» y revisarla antes de subirla al PR (ver el log)"
+            echo "Con el ID: sin él, gh baja el último artefacto con ese nombre, de cualquier ejecución. La genera el build_gate.mjs del propio PR y la CI no la avala: se sube solo si el diff de arriba deja ROOT_PUBLIC en false, LEGAL_NOJS en true y ningún .js en PUBLIC_ASSETS, y el cambio de la puerta lo revisa el dueño (o cibersegurity) antes de fusionar."
+            exit 1
+          fi
+          echo "La puerta de git es la de este dist: huella ${huella:-?}, ${rutas:-?} rutas prerenderizadas."
+
+      - name: Dejar la puerta regenerada para revisarla (3 días)
+        if: failure() && steps.puerta.outputs.distinta == 'true'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        timeout-minutes: 5
+        with:
+          name: puerta-regenerada
+          path: |
+            frontend/modules/0-uonify/0.2-app/edge/gate-default.js
+            frontend/modules/0-uonify/0.2-app/edge/public-pages/
+          retention-days: 3
+          if-no-files-found: error
+
+      - name: Entorno de test_gate como el del Mac (zsh, y /bin/sh es bash)
+        id: entorno
+        if: (success() || failure()) && steps.build.outcome == 'success'
+        timeout-minutes: 5
+        run: |
+          set -euo pipefail
+          [ "${RUNNER_ENVIRONMENT:-}" = github-hosted ] || exit 1
+          # test_gate lanza set_gate_credentials.sh con /bin/zsh y con /bin/sh, como hace el dueño en macOS,
+          # donde /bin/sh es bash. En Ubuntu no hay zsh y /bin/sh es dash, que no entiende [[ ni read -s.
+          sudo apt-get -o Acquire::Retries=3 update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get -o Acquire::Retries=3 install -y -qq --no-install-recommends zsh
+          sudo ln -sfn bash /usr/bin/sh
+          [ "$(readlink -f /bin/sh)" = /usr/bin/bash ] || { echo "::error::/bin/sh no es bash"; exit 1; }
+          echo "$(/bin/zsh --version) · /bin/sh → $(readlink -f /bin/sh)"
+
+      - name: Banco de la puerta (edge/test_gate.mjs), todas en verde y al menos 82
+        id: test_gate
+        if: (success() || failure()) && steps.entorno.outcome == 'success'
+        working-directory: frontend/modules/0-uonify/0.2-app
+        timeout-minutes: 10
+        run: |
+          set -euo pipefail
+          unset GATE_SKIP_SCRIPT
+          export GATE_DIST="$PWD/dist" GATE_FRONT_SRC="$PWD/src" GATE_ACORN="$PWD/node_modules/acorn"
+          export GATE_BACKEND_SRC="$GITHUB_WORKSPACE/backend/modules/0-uonify/0.2-app/app"
+          node edge/test_gate.mjs | tee "$RUNNER_TEMP/test_gate.log" || { echo "::error::test_gate.mjs falla (detalle en el log)"; exit 1; }
+          read -r ok total < <(sed -nE 's#^([0-9]+)/([0-9]+) pruebas OK.*#\1 \2#p' "$RUNNER_TEMP/test_gate.log" | tail -n 1) || true
+          # 82 = las 68 de test_gate.mjs y las 14 de test/deploy_tests.mjs; menos es una prueba perdida.
+          if [ -z "${total:-}" ] || [ "$ok" != "$total" ] || [ "$total" -lt 82 ]; then
+            echo "::error::test_gate: ${ok:-?}/${total:-?}; se exigen todas y al menos 82"
+            exit 1
+          fi
+          echo "pruebas=$ok/$total" >> "$GITHUB_OUTPUT"
+
+      - name: Mutantes del banco (edge/test/mutants.mjs), si cambia la lógica de edge/ o este workflow
+        id: mutantes
+        if: (success() || failure()) && steps.test_gate.outcome == 'success' && steps.base.outputs.edge == 'true'
+        working-directory: frontend/modules/0-uonify/0.2-app
+        timeout-minutes: 40
+        run: |
+          set -euo pipefail
+          trap 'echo "duracion=${SECONDS}s" >> "$GITHUB_OUTPUT"' EXIT
+          unset GATE_SKIP_SCRIPT
+          export GATE_DIST="$PWD/dist" GATE_FRONT_SRC="$PWD/src" GATE_ACORN="$PWD/node_modules/acorn"
+          export GATE_BACKEND_SRC="$GITHUB_WORKSPACE/backend/modules/0-uonify/0.2-app/app"
+          node edge/test/mutants.mjs | tee "$RUNNER_TEMP/mutantes.log" \
+            || { echo "::error::Algún mutante sobrevive: hay una regla de la puerta sin prueba que la defienda"; exit 1; }
+          read -r muertos total < <(sed -nE 's#^([0-9]+)/([0-9]+) mutantes detectados.*#\1 \2#p' "$RUNNER_TEMP/mutantes.log" | tail -n 1) || true
+          if [ -z "${total:-}" ] || [ "$muertos" != "$total" ] || [ "$total" -lt 70 ]; then
+            echo "::error::Mutantes: ${muertos:-?}/${total:-?} detectados; se exigen todos y al menos 70"
+            exit 1
+          fi
+          echo "mutantes=$muertos/$total" >> "$GITHUB_OUTPUT"
+
+      - name: Las comprobaciones no dejan cambios en la carpeta de la web
+        working-directory: frontend/modules/0-uonify/0.2-app
+        timeout-minutes: 1
+        run: |
+          sucio=$(git status --porcelain --untracked-files=all -- .)
+          [ -z "$sucio" ] || { printf '%s\n' "$sucio"; echo "::error::Quedan cambios o ficheros nuevos en la carpeta de la web"; exit 1; }
+
+      - name: Preparar el artefacto (dist sin la media de fuera de git, sumas y ficha)
+        if: github.event_name == 'push'
+        working-directory: frontend/modules/0-uonify/0.2-app
+        timeout-minutes: 5
+        env:
+          HUELLA: ${{ steps.puerta.outputs.huella }}
+          RUTAS: ${{ steps.puerta.outputs.rutas }}
+          PRUEBAS: ${{ steps.test_gate.outputs.pruebas }}
+          MUTANTES: ${{ steps.mutantes.outputs.mutantes }}
+        run: |
+          set -euo pipefail
+          # upload_dist.mjs se niega a subir una extensión que no conoce, y un fichero oculto no se publica.
+          conocidas="$RUNNER_TEMP/extensiones.txt"
+          grep -oE "'\.[a-z0-9]+':" edge/upload_dist.mjs | tr -d "':" | sort -u > "$conocidas"
+          raras=$(find dist -type f ! -name '*.md' \
+            | awk -F/ '{ n = split($NF, p, "."); print (n > 1 ? "." tolower(p[n]) : "(sin extensión)") }' \
+            | sort -u | grep -vxF -f "$conocidas" || true)
+          [ -z "$raras" ] || { echo "::error::Extensiones que upload_dist.mjs no sube: $raras"; exit 1; }
+          ocultos=$(find dist -name '.*' -print -quit)
+          [ -z "$ocultos" ] || { echo "::error::El dist trae ficheros ocultos: $ocultos"; exit 1; }
+          destino="$GITHUB_WORKSPACE/artefacto-web"
+          rm -rf "$destino" && mkdir -p "$destino"
+          cp -a dist "$destino/dist"
+          cp media-fuera-de-git.sha256 "$destino/"
+          (cd "$destino" && find dist -type f -print0 | LC_ALL=C sort -z | xargs -0 sha256sum) > "$destino/dist.sha256"
+          # «origen» son datos para cruzarlos con la API de GitHub antes de publicar, no una prueba: los escribe el
+          # mismo YAML que corre (README de 0.2-app, «CI de la web»).
+          jq -n --arg commit "$GITHUB_SHA" --arg ejecucion "$GITHUB_RUN_ID/$GITHUB_RUN_ATTEMPT" \
+            --arg workflow_ref "$GITHUB_WORKFLOW_REF" --arg workflow_sha "$GITHUB_WORKFLOW_SHA" \
+            --arg evento "$GITHUB_EVENT_NAME" --arg ref "$GITHUB_REF" --arg actor_id "$GITHUB_ACTOR_ID" \
+            --arg blob "$(git rev-parse HEAD:.github/workflows/uonify-web-ci.yml)" \
+            --arg node "$(node --version)" --arg npm "$(npm --version)" \
+            --arg huella "$HUELLA" --arg rutas "$RUTAS" --arg pruebas "$PRUEBAS" \
+            --arg mutantes "${MUTANTES:-no ejecutados: el cambio no toca la lógica de edge/}" \
+            --arg ficheros "$(wc -l < "$destino/dist.sha256")" \
+            --arg sumas "$(sha256sum "$destino/dist.sha256" | cut -d' ' -f1)" \
+            '{commit: $commit, ejecucion: $ejecucion, node: $node, npm: $npm,
+              origen: {workflow_ref: $workflow_ref, workflow_sha: $workflow_sha, evento: $evento, ref: $ref,
+                actor_id: $actor_id, blob_del_workflow: $blob},
+              puerta: {huella: $huella, rutas_prerenderizadas: $rutas, test_gate: $pruebas, mutantes: $mutantes},
+              dist: {ficheros: $ficheros, sha256_de_dist_sha256: $sumas},
+              media: "fuera del artefacto: la de media-fuera-de-git.sha256 vive solo en el bucket y publicar nunca borra"}' \
+            > "$destino/ficha.json"
+          cat "$destino/ficha.json"
+
+      - name: Subir el artefacto uonify-web-dist (solo en push a dev, 7 días)
+        id: subir
+        if: github.event_name == 'push'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        timeout-minutes: 10
+        with:
+          name: uonify-web-dist
+          path: artefacto-web/
+          retention-days: 7
+          if-no-files-found: error
+
+      - name: Resumen
+        if: always()
+        timeout-minutes: 1
+        env:
+          HUELLA: ${{ steps.puerta.outputs.huella }}
+          RUTAS: ${{ steps.puerta.outputs.rutas }}
+          PRUEBAS: ${{ steps.test_gate.outputs.pruebas }}
+          MUTANTES: ${{ steps.mutantes.outputs.mutantes }}
+          T_PRUEBAS: ${{ steps.pruebas.outputs.duracion }}
+          T_MUTANTES: ${{ steps.mutantes.outputs.duracion }}
+          DIGEST: ${{ steps.subir.outputs.artifact-digest }}
+        run: |
+          {
+            echo "### Web de dev.uonify.com · $GITHUB_SHA"
+            echo "- Puerta: huella ${HUELLA:-?} · ${RUTAS:-?} rutas prerenderizadas · test_gate ${PRUEBAS:-sin resultado} · mutantes ${MUTANTES:-no ejecutados}"
+            echo "- Duración (para recalibrar los minutos del diseño): Vitest ${T_PRUEBAS:-?} · mutantes ${T_MUTANTES:-no ejecutados}"
+            echo "- Pendiente: check:contract (scripts/check-live-contract.mjs no lee aún el backend de 0.2-app) y la prueba de la media del producto de ejemplo, omitida en la CI."
+            if [ -n "${DIGEST:-}" ]; then
+              echo "- Artefacto uonify-web-dist (7 días), sha256 del zip: $DIGEST"
+              echo "- Dentro: dist/ sin la media de media-fuera-de-git.sha256, dist.sha256, ficha.json y media-fuera-de-git.sha256."
+            else
+              echo "- Sin artefacto: solo se sube en los push a dev en verde."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

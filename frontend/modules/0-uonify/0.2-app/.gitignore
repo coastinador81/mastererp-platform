@@ -13,7 +13,7 @@ playwright-report/
 __qa_*
 edge/backups/
 edge/test/tmp/
-# Media de más de 1 MiB: vive en el bucket; la CI la restaura (media-fuera-de-git.sha256)
+# Media de más de 1 MiB: vive en el bucket y la CI compila sin ella (media-fuera-de-git.sha256)
 /public/assets/brands/uonify-compact-master.png
 /public/assets/brands/uonify-overlay-master.png
 /public/assets/brands/uonify-wordmark-master.png
