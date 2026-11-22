@@ -1,28 +1,50 @@
 import React,{useEffect,useRef,useState} from 'react';
 import PurchaseForm,{purchaseKinds,emptyPurchase,purchasePayload} from './PurchaseForm.jsx';
+import PurchaseRequestForm from './PurchaseRequestForm.jsx';
 const API=window.location.origin==='https://finanzas-dev.uonify.com'?window.location.origin:'https://qx8nmypdhi.execute-api.us-west-1.amazonaws.com';
 const messages={400:'Revisa proveedor, documento de origen, fechas e importes. Cada total de línea debe respetar los decimales de la moneda.',401:'Tu sesión ha caducado.',403:'No tienes acceso a esta operación.',404:'El documento no está disponible en esta empresa.',409:'Conflicto: versión obsoleta, origen utilizado o referencia repetida. Recarga el documento.',503:'El servicio no está disponible. Puedes reintentar.'};
 export default function Purchases({workspace,capacity,path,navigate}){
  const {tenant,company,context,request,denied}=workspace,kind=purchaseKinds[capacity],base='/modulos/finanzas/administracion/'+capacity;
+ const purchaseRequest=kind.api==='solicitudes';
  const tail=path.slice(base.length).split('/').filter(Boolean),create=tail[0]==='nuevo',id=tail[0]&&!create?tail[0]:null,edit=tail[1]==='editar';
  const canRead=context.permissions.includes('administration.purchases.read'),canWrite=context.permissions.includes('administration.purchases.write');
  const [data,setData]=useState(null),[options,setOptions]=useState(null),[sources,setSources]=useState([]),[sourceCursor,setSourceCursor]=useState(null),[supplierMore,setSupplierMore]=useState(false);
  const [draft,setDraft]=useState(null),[error,setError]=useState(''),[loading,setLoading]=useState(true),[busy,setBusy]=useState(false),[reload,setReload]=useState(0),[cursor,setCursor]=useState(''),[pages,setPages]=useState([]);
- const active=useRef(true),key=useRef(null),headers={'X-MasterERP-Tenant-Id':tenant};
+ const active=useRef(true),key=useRef(null),supplierCatalog=useRef(null),headers={'X-MasterERP-Tenant-Id':tenant};
  const get=(resource,extra={})=>request(API+'/v1/administration/compras/'+resource+'?'+new URLSearchParams({company_id:company,...extra}),{headers});
  const fail=e=>{if(e.name==='AbortError'||!active.current)return;setError(messages[e.status]||'No se pudo completar la operación. Reintenta el mismo contenido.');if(e.status===403)denied();};
  useEffect(()=>{active.current=true;return()=>{active.current=false;};},[]);
- useEffect(()=>{let live=true;setLoading(true);setError('');setData(null);setDraft(null);key.current=null;
+ useEffect(()=>{let live=true;setLoading(true);setError('');setData(null);setDraft(null);key.current=null;supplierCatalog.current=null;
   if(!canRead){setLoading(false);return()=>{live=false;};}
   (async()=>{try{
    if(create||edit){const [lookup,result,origins]=await Promise.all([get('opciones',{limit:'100'}),id?get(kind.api+'/'+id):Promise.resolve(null),kind.source?get(kind.source,{limit:'100'}):Promise.resolve(null)]);
     if(!live)return;
+    if(purchaseRequest)supplierCatalog.current={firstPage:[...lookup.data.proveedores],complete:null};
     if(result&&!lookup.data.proveedores.some(s=>s.id===result.data.proveedor_id))lookup.data.proveedores.push({id:result.data.proveedor_id,codigo:'',nombre:result.data.proveedor});
     if(result?.data.origen_id&&origins&&!origins.data.items.some(s=>s.id===result.data.origen_id))origins.data.items.push({id:result.data.origen_id,numero:result.data.origen_id,proveedor:result.data.proveedor,moneda:result.data.moneda,total:''});
-    setOptions(lookup.data);setSupplierMore(lookup.data.proveedores.length===100);setSources(origins?.data.items||[]);setSourceCursor(origins?.data.next_cursor);setData(result?.data||null);setDraft(result?purchasePayload(result.data):emptyPurchase(lookup.data.moneda_base));
+    const initial=emptyPurchase(lookup.data.moneda_base);
+    if(purchaseRequest)initial.lineas[0].precio_unitario='';
+    setOptions(lookup.data);setSupplierMore(lookup.data.proveedores.length===100);setSources(origins?.data.items||[]);setSourceCursor(origins?.data.next_cursor);setData(result?.data||null);setDraft(result?purchasePayload(result.data):initial);
    }else{const result=await get(kind.api+(id?'/'+id:''),{limit:'10',...(cursor?{after:cursor}:{})});if(live)setData(result.data);}
   }catch(e){if(live)fail(e);}finally{if(live)setLoading(false);}})();return()=>{live=false;};
  },[path,cursor,reload,tenant,company,canRead]);
+ const loadPurchaseSuppliers=()=>{
+  const catalog=supplierCatalog.current;
+  if(!catalog.complete)catalog.complete=(async()=>{
+   const suppliers=new Map(),cursors=new Set();
+   let page=catalog.firstPage;
+   for(;;){
+    for(const row of page)suppliers.set(row.id,row);
+    if(page.length<100)return [...suppliers.values()];
+    const after=page.at(-1).id;
+    if(!after||cursors.has(after))throw new Error('supplier_catalog_incomplete');
+    cursors.add(after);
+    page=(await get('opciones',{limit:'100',after})).data.proveedores;
+    if(!active.current||supplierCatalog.current!==catalog)return [];
+   }
+  })().catch(error=>{catalog.complete=null;if(error.status===403&&active.current&&supplierCatalog.current===catalog)denied();throw error;});
+  return catalog.complete;
+ };
  const loadSuppliers=async()=>{try{const r=await get('opciones',{limit:'100',after:options.proveedores.at(-1).id});if(active.current){setOptions(o=>({...o,proveedores:[...o.proveedores,...r.data.proveedores]}));setSupplierMore(r.data.proveedores.length===100);}}catch(e){fail(e);}};
  const loadSources=async()=>{try{const r=await get(kind.source,{limit:'100',after:sourceCursor});if(active.current){setSources(s=>[...s,...r.data.items]);setSourceCursor(r.data.next_cursor);}}catch(e){fail(e);}};
  const onSource=async source=>{if(!source){setDraft(emptyPurchase(options.moneda_base));return;}try{const r=await get(kind.source+'/'+source);if(!active.current)return;const parent=r.data;
@@ -35,10 +57,12 @@ export default function Purchases({workspace,capacity,path,navigate}){
  };
  if(!canRead)return <p className="notice" role="alert">No tienes permiso para consultar compras.</p>;
  if(loading)return <p role="status">Cargando {kind.title.toLowerCase()}…</p>;
- return <section><div className="page-heading"><div><p className="eyebrow">Finanzas / Administración / Compras</p><h1>{create?'Crear '+kind.singular:edit?'Editar '+kind.singular:kind.title}</h1></div>{!id&&!create&&canWrite&&<button onClick={()=>navigate(base+'/nuevo')}>Crear {kind.singular}</button>}</div>
+ return <section><div className="page-heading"><div><p className="eyebrow">Finanzas / Administración / Compras</p><h1>{create?(purchaseRequest?'Nueva solicitud de compra':'Crear '+kind.singular):edit?'Editar '+kind.singular:kind.title}</h1></div>{!id&&!create&&canWrite&&<button onClick={()=>navigate(base+'/nuevo')}>Crear {kind.singular}</button>}</div>
   {error&&<div className="notice error" role="alert">{error} <button className="secondary" onClick={()=>setReload(r=>r+1)}>Recargar</button></div>}
   {(create||edit)&&!canWrite&&<p className="notice" role="alert">No tienes permiso para guardar compras.</p>}
-  {(create||edit)&&draft&&canWrite&&<PurchaseForm {...{kind,draft,setDraft,options,sources,onSource,save,busy}} editing={edit} moreSuppliers={supplierMore?loadSuppliers:null} moreSources={sourceCursor?loadSources:null} cancel={()=>navigate(id?base+'/'+id:base)}/>}
+  {(create||edit)&&draft&&canWrite&&(purchaseRequest
+   ?<PurchaseRequestForm {...{draft,setDraft,options,save,busy}} loadSuppliers={loadPurchaseSuppliers} cancel={()=>navigate(id?base+'/'+id:base)}/>
+   :<PurchaseForm {...{kind,draft,setDraft,options,sources,onSource,save,busy}} editing={edit} moreSuppliers={supplierMore?loadSuppliers:null} moreSources={sourceCursor?loadSources:null} cancel={()=>navigate(id?base+'/'+id:base)}/>)}
   {id&&!edit&&data&&<div className="panel detail"><p><strong>Borrador</strong> · {data.numero||'Sin referencia'} · Versión {data.version}</p><dl><dt>Proveedor</dt><dd>{data.proveedor}</dd><dt>Fecha</dt><dd>{data.fecha}</dd><dt>Total</dt><dd>{data.moneda} {data.total}</dd><dt>Total en moneda base</dt><dd>{data.moneda_base} {data.total_base}</dd><dt>Tipo de cambio</dt><dd>{data.tipo_cambio} · {data.cambio_fecha} · {data.cambio_fuente}</dd></dl>
    <div className="table-scroll"><table><thead><tr><th>Descripción</th><th>Cantidad</th><th>Precio</th><th>Total</th></tr></thead><tbody>{data.lineas.map((l,i)=><tr key={i}><td>{l.descripcion}</td><td>{l.cantidad}</td><td>{l.precio_unitario}</td><td>{l.total}</td></tr>)}</tbody></table></div>
    <div className="actions"><button className="secondary" onClick={()=>navigate(base)}>Volver al listado</button>{canWrite&&data.editable&&<button onClick={()=>navigate(base+'/'+id+'/editar')}>Editar</button>}</div>{!data.editable&&<p className="notice">Tiene un documento derivado; este borrador se conserva sin cambios.</p>}</div>}
