@@ -4,7 +4,7 @@ import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Screen } from '@/components/Screen';
 import { useStore } from '@/store/StoreProvider';
 import { colors, radii, spacing } from '@/theme';
-import {cartLineKey,cartLinePrice} from '@/types';
+import { cartLineKey, cartLinePrice, variantImageUrl } from '@/types';
 
 const money = (value: number) => new Intl.NumberFormat('es-VE', { style: 'currency', currency: 'USD' }).format(value);
 
@@ -21,8 +21,8 @@ export default function CartPage() {
       <View style={styles.heading}><Text style={styles.eyebrow}>TU SELECCIÓN</Text><Text style={styles.title}>Mi carrito</Text><Text style={styles.subtitle}>{cart.length ? 'Revisa las cantidades antes de continuar.' : 'Aún no agregaste productos.'}</Text></View>
       {!cart.length ? <View style={styles.empty}><View style={styles.emptyIcon}><Ionicons name="bag-handle-outline" size={42} color={colors.primary} /></View><Text style={styles.emptyTitle}>Tu carrito está esperando</Text><Text style={styles.emptyText}>Explora el catálogo y agrega todo lo que necesites.</Text><Pressable style={styles.primary} onPress={() => router.replace('/catalog')}><Text style={styles.primaryText}>Ver productos</Text></Pressable></View> :
       <View style={styles.layout}>
-        <View style={styles.lines}>{cart.map(line => { const { product, quantity, variant } = line; const unitPrice = priceOf(line), lineKey=cartLineKey(line); return <View key={lineKey} style={styles.line}>
-          <View style={styles.lineTop}><View style={styles.thumb}>{product.image_url ? <Image source={{ uri: product.image_url }} style={styles.image} /> : <Ionicons name="basket-outline" size={30} color={colors.primary} />}</View>
+        <View style={styles.lines}>{cart.map(line => { const { product, quantity, variant } = line; const unitPrice = priceOf(line), lineKey = cartLineKey(line); const imageUrl = variantImageUrl(line); return <View key={lineKey} style={styles.line}>
+          <View style={styles.lineTop}><View style={styles.thumb}>{imageUrl ? <Image source={{ uri: imageUrl }} style={styles.image} /> : <Ionicons name="basket-outline" size={30} color={colors.primary} />}</View>
           <View style={styles.lineCopy}><Text style={styles.lineName}>{product.name}</Text>{variant?<Text style={styles.variant}>{variant.label || Object.values(variant.values||{}).join(' / ')}</Text>:null}<Text style={styles.unitPrice}>{money(unitPrice)} c/u</Text></View><Pressable style={styles.removeButton} onPress={() => setQuantity(lineKey, 0)} accessibilityLabel={`Eliminar ${product.name}`}><Ionicons name="trash-outline" size={18} color={colors.muted} /></Pressable></View>
           <View style={styles.lineBottom}><View style={styles.quantity}><Pressable style={styles.quantityButton} onPress={() => setQuantity(lineKey, quantity - 1)}><Ionicons name="remove" size={17} color={colors.primaryDark} /></Pressable><Text style={styles.quantityText}>{quantity}</Text><Pressable style={styles.quantityButton} onPress={() => setQuantity(lineKey, quantity + 1)}><Ionicons name="add" size={17} color={colors.primaryDark} /></Pressable></View><Text style={styles.lineTotal}>{money(unitPrice * quantity)}</Text></View>
         </View>;})}</View>

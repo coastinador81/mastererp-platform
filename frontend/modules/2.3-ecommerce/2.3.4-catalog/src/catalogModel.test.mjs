@@ -143,3 +143,27 @@ test('variant generation combines selected attribute values and preserves edits'
   const edited = [{...initial[0], sku: 'SKU-1'}];
   assert.equal(generateProductVariants(['color', 'size'], attributes, edited)[0].sku, 'SKU-1');
 });
+
+test('variant generation rejects oversized selections before expanding them', () => {
+  const attributes = Array.from({length: 20}, (_, index) => ({
+    code: 'attribute-' + index,
+    options: ['A', 'B', 'C'],
+  }));
+  assert.throws(
+    () => generateProductVariants(attributes.map(attribute => attribute.code), attributes),
+    /too_many_variants/,
+  );
+});
+
+test('product save includes the variant image and presentation fields', () => {
+  const variant = {
+    key: 'base', values: {}, label: 'Presentación base', sku: 'SKU-1',
+    image_url: 'https://example.test/presentation.png', image_kind: 'specific',
+    net_content: '500 g', packaging_unit: 'BAG', sale_unit: 'UNIT', barcode: '12345678',
+  };
+  const payload = payloadFor('products', {
+    name: 'Producto', price: 10, status: 'ACTIVE',
+    attributes: {_catalog: {attribute_codes: [], variants: [variant]}},
+  });
+  assert.deepEqual(payload.attributes._catalog.variants, [variant]);
+});

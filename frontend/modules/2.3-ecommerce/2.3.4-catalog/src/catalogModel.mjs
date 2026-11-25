@@ -158,13 +158,19 @@ export function payloadFor(route, draft, record) {
 export function generateProductVariants(selectedCodes, definitions, existing = []) {
   const selected = selectedCodes.map(code => definitions.find(item => item.code === code)).filter(Boolean);
   if (!selected.length) return [];
-  if (selected.some(item => !Array.isArray(item.options) || !item.options.filter(Boolean).length)) throw new Error('missing_values');
-  const combinations = selected.reduce((rows, attribute) => rows.flatMap(row => attribute.options.filter(Boolean).map(value => ({...row, [attribute.code]: value}))), [{}]);
-  if (combinations.length > 200) throw new Error('too_many_variants');
+  const options = selected.map(attribute => Array.isArray(attribute.options) ? [...new Set(attribute.options.filter(Boolean))] : []);
+  if (options.some(values => !values.length)) throw new Error('missing_values');
+  if (options.reduce((count, values) => count * values.length, 1) > 200) throw new Error('too_many_variants');
+  const combinations = selected.reduce((rows, attribute, index) => rows.flatMap(row =>
+    options[index].map(value => ({...row, [attribute.code]: value}))), [{}]);
   return combinations.map(values => {
     const key = selected.map(item => `${item.code}:${values[item.code]}`).join('|');
-    const previous = existing.find(item => item.key === key);
-    return previous ? {...previous, values, key} : {key, values, sku: '', price_delta: 0, active: true};
+    const previous = existing.find(item => item.key === key) || existing.find(item => {
+      const entries = Object.entries(item.values || {});
+      return !item.key.startsWith('custom:') && entries.length === selected.length
+        && entries.every(([code, value]) => values[code] === value);
+    });
+    return previous ? {...previous, values} : {key, values, sku: '', price_delta: 0, active: true};
   });
 }
 export function filterRecords(items, query, status, definition) {

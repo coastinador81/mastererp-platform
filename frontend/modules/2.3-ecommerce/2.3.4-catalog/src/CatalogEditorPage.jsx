@@ -1,10 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import CatalogImageGallery from './CatalogImageGallery.jsx';
 import CatalogAttributePicker from './CatalogAttributePicker.jsx';
+import CatalogVariantRows, {duplicateVariantSkus, VariantGeneration} from './CatalogVariantRows.jsx';
 import CatalogSupplierPicker from './CatalogSupplierPicker.jsx';
 import {CatalogStatusBadge} from './CatalogListPage.jsx';
 import CatalogProductPriceSection from './CatalogProductPriceSection.jsx';
-import {catalogHref, generateProductVariants, packagingRequiresConversionFactor, productIdentificationFromRecord, productMeasureFromRecord, productPackagingUnits, productPricingFromRecord, productSaleUnits, productStorageTypes, statusLabels} from './catalogModel.mjs';
+import {catalogHref, packagingRequiresConversionFactor, productIdentificationFromRecord, productMeasureFromRecord, productPackagingUnits, productPricingFromRecord, productSaleUnits, productStorageTypes, statusLabels} from './catalogModel.mjs';
 import {mergeProductPricingDemo} from './productPricingFinance.mjs';
 
 export function CatalogFormSection({title, description, children}) {
@@ -33,7 +34,8 @@ export default function CatalogEditorPage({definition, route, record, writable, 
     ...(route === 'products' ? mergeProductPricingDemo(productPricingFromRecord(record)) : productPricingFromRecord(record)),
   }));
   const [tab, setTab] = useState('general'), [dirty, setDirty] = useState(false);
-  const disabled = !writable || busy;
+  const [variantUploading, setVariantUploading] = useState(false);
+  const disabled = !writable || busy || variantUploading;
   const canSetStatus = Boolean(record) || route === 'products';
   const update = (key, value) => {
     setDraft(current => ({
@@ -69,7 +71,12 @@ export default function CatalogEditorPage({definition, route, record, writable, 
     }
     update('suppliers', (draft.suppliers || []).filter(item => item.id !== supplier.id));
   };
-  const catalogAttributes = draft.attributes?._catalog || {attribute_codes: [], variants: []};
+  const catalogAttributes = {attribute_codes: [], variants: [], ...draft.attributes?._catalog};
+  const savedVariantKeys = new Set((record?.attributes?._catalog?.variants || []).map(item => item.key));
+  const gallery = draft.attributes?._media?.images || [];
+  const images = draft.image_url && !gallery.some(image => image.url === draft.image_url)
+    ? [...gallery, {name: 'Portada del producto', url: draft.image_url}]
+    : gallery;
   const updateCatalogAttributes = changes => update('attributes', {...(draft.attributes || {}), _catalog: {...catalogAttributes, ...changes}});
   const toggleAttribute = code => updateCatalogAttributes({attribute_codes: catalogAttributes.attribute_codes.includes(code) ? catalogAttributes.attribute_codes.filter(item => item !== code) : [...catalogAttributes.attribute_codes, code]});
   const variantAttributeOptions = attributeOptions.filter(attribute => ['SELECT', 'MULTISELECT'].includes(attribute.type));
@@ -78,10 +85,38 @@ export default function CatalogEditorPage({definition, route, record, writable, 
     if (checked === isSelected) return;
     toggleAttribute(code);
   };
-  const buildVariants = () => {try {updateCatalogAttributes({variants: generateProductVariants(catalogAttributes.attribute_codes, attributeOptions, catalogAttributes.variants)});} catch (error) {notify(error.message === 'too_many_variants' ? 'La selección supera 200 combinaciones. Reduce atributos o valores.' : 'Cada atributo seleccionado necesita al menos un valor.');}};
   const changeVariant = (key, changes) => updateCatalogAttributes({variants: catalogAttributes.variants.map(item => item.key === key ? {...item, ...changes} : item)});
-  const addVariant = () => {const key = `custom:${crypto.randomUUID()}`; updateCatalogAttributes({variants: [...catalogAttributes.variants, {key, values: {}, label: 'Nueva combinación', sku: '', price_delta: 0, active: true}]});};
+  const addVariant = (base = false) => {
+    const key = base ? 'base' : `custom:${crypto.randomUUID()}`;
+    const row = {key, values: {}, label: base ? 'Presentación base' : 'Nueva combinación', sku: base ? draft.sku || '' : '', price_delta: 0, active: true};
+    updateCatalogAttributes({variants: [...catalogAttributes.variants, row]});
+  };
   const removeVariant = key => updateCatalogAttributes({variants: catalogAttributes.variants.filter(item => item.key !== key)});
+  async function uploadVariantImage(key, file) {
+    if (disabled || !record?.id) return;
+    if (images.length >= 8 || !['image/jpeg', 'image/png', 'image/webp'].includes(file.type) || file.size > 5 * 1024 * 1024) {
+      notify('La galería admite hasta 8 imágenes JPG, PNG o WebP de máximo 5 MB.');
+      return;
+    }
+    setVariantUploading(true);
+    try {
+      const image = await uploadProductImage(record.id, file);
+      setDraft(current => {
+        const attributes = current.attributes || {};
+        const catalog = attributes._catalog;
+        return {...current, attributes: {...attributes,
+          _media: {...attributes._media, images: [...images, image]},
+          _catalog: {...catalog, variants: catalog.variants.map(row => row.key === key
+            ? {...row, image_url: image.url, image_kind: 'specific'} : row)},
+        }};
+      });
+      setDirty(true);
+    } catch {
+      notify('No se pudo cargar la imagen de la variante.');
+    } finally {
+      setVariantUploading(false);
+    }
+  }
   const prepareVariantAttribute = async preset => {const attribute = await createVariantAttribute(preset); if (attribute && !catalogAttributes.attribute_codes.includes(attribute.code)) toggleAttribute(attribute.code);};
   useEffect(() => {const prevent = event => {if (dirty) {event.preventDefault(); event.returnValue = '';}}; window.addEventListener('beforeunload', prevent); return () => window.removeEventListener('beforeunload', prevent);}, [dirty]);
   useEffect(() => {
@@ -110,6 +145,12 @@ export default function CatalogEditorPage({definition, route, record, writable, 
     event.preventDefault();
     if (!draft.name.trim() || (route === 'products' && !(Number(draft.price) > 0))) {notify('Completa el nombre y un precio mayor que cero.'); setTab(!draft.name.trim() ? 'general' : 'price'); return;}
     if (route === 'attributes' && ['SELECT', 'MULTISELECT'].includes(draft.type) !== draft.options.some(value => value.trim())) {notify('Los tipos de selección requieren valores; los demás tipos no admiten opciones.'); setTab('general'); return;}
+    if (disabled) return;
+    if (route === 'products' && duplicateVariantSkus(catalogAttributes.variants).size) {
+      notify('Corrige los SKU duplicados de las variantes.');
+      setTab('variants');
+      return;
+    }
     if (await save(draft)) setDirty(false);
   }
   return <form className="cat-editor" onSubmit={submit} onInvalid={event => {event.preventDefault(); const control = event.target; const panel = control.closest('[role=tabpanel]'); if (panel) setTab(panel.id.replace('cat-panel-', '')); requestAnimationFrame(() => control.focus()); notify('Revisa los campos obligatorios y sus formatos.');}}><a className="cat-back" href={catalogHref(route)} onClick={back}>← Volver a {definition.title.toLowerCase()}</a>
@@ -164,9 +205,22 @@ export default function CatalogEditorPage({definition, route, record, writable, 
           />
         </CatalogFormSection>}
         {key === 'variants' && <CatalogFormSection title="Variantes" description="Crea las presentaciones vendibles del producto a partir de atributos como color, talla, peso o sabor.">
-          <section className="cat-full cat-variant-builder"><div className="cat-variant-builder-heading"><div><span className="cat-step">1</span><div><h3>Elige los atributos</h3><p>Selecciona uno o más atributos para combinar sus valores.</p></div></div><span>{catalogAttributes.attribute_codes.length} seleccionados</span></div><CatalogAttributePicker attributeOptions={variantAttributeOptions} selectedCodes={catalogAttributes.attribute_codes} disabled={disabled} onToggle={toggleVariantAttribute}/><div className="cat-builder-actions"><details className="cat-preset-panel" open={!attributeOptions.length}><summary>Añadir atributos al catálogo</summary><p>Usa una plantilla y luego ajusta sus valores desde Atributos.</p><div className="cat-attribute-presets">{canCreateAttributes && variantPresets.map(preset => {const exists = attributeOptions.some(attribute => attribute.code === preset.code); return <button type="button" key={preset.code} disabled={busy || exists} onClick={() => prepareVariantAttribute(preset)}>{exists ? `${preset.name} disponible` : `Usar ${preset.name}`}</button>;})}<a className="cat-detail-link" href={catalogHref('attributes', null, 'new')}>Crear personalizado</a></div></details><button type="button" className="cat-primary" disabled={disabled || !catalogAttributes.attribute_codes.length} onClick={buildVariants}>Generar combinaciones</button></div></section>
-          <div className="cat-full cat-variant-list-heading"><div><span className="cat-step">2</span><div><h3>Combinaciones</h3><p>Edita el nombre, SKU, precio y disponibilidad de cada variante.</p></div></div><button type="button" disabled={disabled || catalogAttributes.variants.length >= 200} onClick={addVariant}>Añadir manualmente</button></div>
-          <div className="cat-full cat-variants">{catalogAttributes.variants.length ? <><div className="cat-variant-head"><span>Combinación</span><span>SKU</span><span>Ajuste de precio</span><span>Activa</span><span>Acción</span></div>{catalogAttributes.variants.map(variant => <div className="cat-variant-row" key={variant.key}><input aria-label={`Nombre de combinación ${variant.key}`} maxLength="160" value={variant.label ?? Object.values(variant.values || {}).join(' / ')} disabled={disabled} onChange={event => changeVariant(variant.key, {label: event.target.value})}/><input aria-label={`SKU ${variant.key}`} maxLength="120" value={variant.sku || ''} disabled={disabled} onChange={event => changeVariant(variant.key, {sku: event.target.value})}/><input aria-label={`Ajuste de precio ${variant.key}`} type="number" step="0.000001" value={variant.price_delta ?? 0} disabled={disabled} onChange={event => changeVariant(variant.key, {price_delta: Number(event.target.value)})}/><input aria-label={`Activar ${variant.key}`} type="checkbox" checked={variant.active !== false} disabled={disabled} onChange={event => changeVariant(variant.key, {active: event.target.checked})}/><button type="button" className="cat-variant-remove" disabled={disabled} onClick={() => removeVariant(variant.key)}>Quitar</button></div>)}</> : <p>Selecciona atributos y genera sus combinaciones, o añade una combinación manual. El producto también puede venderse sin variantes.</p>}</div>
+          <section className="cat-full cat-variant-builder"><div className="cat-variant-builder-heading"><div><span className="cat-step">1</span><div><h3>Elige los atributos</h3><p>Selecciona uno o más atributos para combinar sus valores.</p></div></div><span>{catalogAttributes.attribute_codes.length} {catalogAttributes.attribute_codes.length === 1 ? 'atributo seleccionado' : 'atributos seleccionados'}</span></div><CatalogAttributePicker attributeOptions={variantAttributeOptions} selectedCodes={catalogAttributes.attribute_codes} disabled={disabled} onToggle={toggleVariantAttribute}/><div className="cat-builder-actions"><details className="cat-preset-panel" open={!attributeOptions.length}><summary>Añadir atributos al catálogo</summary><p>Usa una plantilla y luego ajusta sus valores desde Atributos.</p><div className="cat-attribute-presets">{canCreateAttributes && variantPresets.map(preset => {const exists = attributeOptions.some(attribute => attribute.code === preset.code); return <button type="button" key={preset.code} disabled={busy || exists} onClick={() => prepareVariantAttribute(preset)}>{exists ? `${preset.name} disponible` : `Usar ${preset.name}`}</button>;})}<a className="cat-detail-link" href={catalogHref('attributes', null, 'new')}>Crear personalizado</a></div></details></div><VariantGeneration
+            key={JSON.stringify([catalogAttributes.attribute_codes, catalogAttributes.variants.map(row => row.key)])}
+            codes={catalogAttributes.attribute_codes} definitions={variantAttributeOptions} variants={catalogAttributes.variants}
+            savedKeys={savedVariantKeys} onApply={variants => updateCatalogAttributes({variants})}
+            disabled={disabled} notify={notify}/></section>
+          <div className="cat-full cat-variant-list-heading">
+            <h3>Combinaciones</h3>
+            <div className="cat-variant-buttons">
+              <button type="button" disabled={disabled || catalogAttributes.variants.length > 0} onClick={() => addVariant(true)}>Crear variante base</button>
+              <button type="button" disabled={disabled || catalogAttributes.variants.length >= 200} onClick={() => addVariant()}>Añadir manualmente</button>
+            </div>
+          </div>
+          {variantUploading && <p className="cat-full" role="status">Cargando imagen…</p>}
+          <CatalogVariantRows variants={catalogAttributes.variants} savedKeys={savedVariantKeys} images={images}
+            price={draft.price} currency={draft.pricing_currency || 'USD'} disabled={disabled} notify={notify}
+            onChange={changeVariant} onRemove={removeVariant} upload={record?.id && uploadProductImage ? uploadVariantImage : undefined}/>
           <aside className="cat-full cat-info-block"><span aria-hidden="true">i</span><p>Para editar o agregar variantes, utiliza esta pestaña antes de guardar el producto.</p></aside>
         </CatalogFormSection>}
         {key === 'price' && <CatalogProductPriceSection draft={draft} disabled={disabled} update={update} applyPricingFields={applyPricingFields} financePricingConfig={financePricingConfig}/>}

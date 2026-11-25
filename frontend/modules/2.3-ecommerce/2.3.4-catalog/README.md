@@ -90,3 +90,11 @@ Aplicar el [estándar UX/UI de MasterERP](../../../../docs/UX_UI_STANDARD.md) an
 
 Esta sección orienta el diseño; no acredita implementación ni añade requisitos funcionales. Ver la guía para composición aplicable, pruebas y variantes justificadas.
 <!-- ux-ui-standard:end -->
+
+## Editor de variantes
+
+El editor permite previsualizar y elegir combinaciones, crear una variante base
+y conservar las filas manuales durante la generación. Las variantes guardadas
+pueden desactivarse. La asociación de imagen se guarda con los atributos de la
+variante y reutiliza la galería y el servicio de carga del producto. La
+disponibilidad queda identificada como pendiente de un contrato por variante.

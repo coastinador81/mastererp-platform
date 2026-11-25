@@ -12,7 +12,7 @@ export type Product = {
   available: number;
   attributes?: { _catalog?: { variants?: ProductVariant[] } };
 };
-export type ProductVariant = { key: string; label?: string; sku?: string; price_delta?: number; active?: boolean; values?: Record<string, string> };
+export type ProductVariant = { key: string; label?: string; sku?: string; price_delta?: number; image_url?: string | null; image_kind?: 'specific' | 'compatible_cover' | null; active?: boolean; values?: Record<string, string> };
 
 export type StorefrontCatalog = {
   store: {
@@ -56,9 +56,14 @@ export type CustomerPaymentMethod = PayerDetails & { method: 'mobile' | 'transfe
 export type CartLine = { product: Product; quantity: number; variant?: ProductVariant };
 export const cartLineKey = (line: Pick<CartLine, 'product' | 'variant'>) => `${line.product.id}:${line.variant?.key || ''}`;
 export const cartLinePrice = (line: Pick<CartLine, 'product' | 'variant'>) => {
+  if (line.variant || line.product.attributes?._catalog?.variants?.length) {
+    return Number(line.product.price) + Number(line.variant?.price_delta || 0);
+  }
   const base = line.product.offer_price != null && line.product.offer_price < line.product.price ? line.product.offer_price : line.product.price;
-  return base + Number(line.variant?.price_delta || 0);
+  return Number(base);
 };
+export const variantImageUrl = ({product, variant}: Pick<CartLine, 'product' | 'variant'>) =>
+  variant ? variant.image_url || undefined : product.image_url;
 export type CustomerProfile = { id: string; name: string; code: string; phone: string; birthDate: string; photoUrl?: string };
 export type CustomerAddress = { id: string; label: string; address: string; zone: string; unit?: string; reference?: string; latitude: number; longitude: number; default: boolean; version: number };
 export type CustomerOrder = {

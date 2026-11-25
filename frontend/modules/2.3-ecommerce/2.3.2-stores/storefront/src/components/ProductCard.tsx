@@ -3,7 +3,7 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Image, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, radii } from '../theme';
-import type { Product, ProductVariant } from '../types';
+import { cartLinePrice, variantImageUrl, type Product, type ProductVariant } from '../types';
 import { useStore } from '../store/StoreProvider';
 
 const money = (value: number) => new Intl.NumberFormat('es-VE', { style: 'currency', currency: 'USD' }).format(value);
@@ -14,15 +14,17 @@ export function ProductCard({ product, width, featured = false }: { product: Pro
   const { add } = useStore();
   const [variantsOpen, setVariantsOpen] = useState(false);
   const [selectedKey, setSelectedKey] = useState('');
-  const available = product.available > 0;
-  const price = product.offer_price != null && product.offer_price < product.price ? product.offer_price : product.price;
+  const catalogVariants = product.attributes?._catalog?.variants || [];
+  const variants = catalogVariants.filter(variant => variant.active !== false);
+  const available = product.available > 0 && (!catalogVariants.length || variants.length > 0);
+  const price = cartLinePrice({product});
   const onOffer = price < product.price;
   const discount = onOffer ? Math.round((1 - price / product.price) * 100) : 0;
-  const variants = (product.attributes?._catalog?.variants || []).filter(variant => variant.active !== false);
   const selectedVariant = variants.find(variant => variant.key === selectedKey);
+  const selectedImage = variantImageUrl({product, variant: selectedVariant});
   const quickAdd = () => variants.length ? setVariantsOpen(true) : add(product);
   const addVariant = () => {
-    if (!selectedVariant) return;
+    if (!available || !selectedVariant) return;
     add(product, 1, selectedVariant);
     setVariantsOpen(false);
     setSelectedKey('');
@@ -53,12 +55,15 @@ export function ProductCard({ product, width, featured = false }: { product: Pro
         <Pressable style={styles.sheet} onPress={event => event.stopPropagation()}>
           <View style={styles.handle} />
           <View style={styles.sheetHeading}><View style={styles.sheetHeadingCopy}><Text style={styles.sheetEyebrow}>ELIGE UNA COMBINACIÓN</Text><Text style={styles.sheetTitle}>{product.name}</Text></View><Pressable style={styles.close} onPress={() => setVariantsOpen(false)} accessibilityLabel="Cerrar selector"><Ionicons name="close" size={20} color={colors.ink} /></Pressable></View>
+          {selectedVariant && <View style={styles.variantPreview}>
+            {selectedImage ? <Image source={{uri: selectedImage}} style={styles.image} /> : <Ionicons name="basket-outline" size={36} color={colors.primary} />}
+          </View>}
           <View style={styles.variantList}>{variants.map(variant => {
             const selected = variant.key === selectedKey;
-            const variantPrice = price + Number(variant.price_delta || 0);
+            const variantPrice = cartLinePrice({product, variant});
             return <Pressable key={variant.key} style={[styles.variant, selected && styles.variantSelected]} onPress={() => setSelectedKey(variant.key)} accessibilityRole="radio" accessibilityState={{ selected }}><View style={[styles.radio, selected && styles.radioSelected]}>{selected ? <View style={styles.radioDot} /> : null}</View><View style={styles.variantCopy}><Text style={[styles.variantName, selected && styles.variantNameSelected]}>{variantLabel(variant)}</Text>{variant.sku ? <Text style={styles.variantSku}>SKU {variant.sku}</Text> : null}</View><Text style={styles.variantPrice}>{money(variantPrice)}</Text></Pressable>;
           })}</View>
-          <Pressable style={[styles.confirm, !selectedVariant && styles.confirmDisabled]} disabled={!selectedVariant} onPress={addVariant}><Text style={styles.confirmText}>{selectedVariant ? `Agregar · ${money(price + Number(selectedVariant.price_delta || 0))}` : 'Selecciona una combinación'}</Text></Pressable>
+          <Pressable style={[styles.confirm, !selectedVariant && styles.confirmDisabled]} disabled={!selectedVariant} onPress={addVariant}><Text style={styles.confirmText}>{selectedVariant ? `Agregar · ${money(cartLinePrice({product, variant: selectedVariant}))}` : 'Selecciona una combinación'}</Text></Pressable>
         </Pressable>
       </Pressable>
     </Modal>
@@ -66,6 +71,7 @@ export function ProductCard({ product, width, featured = false }: { product: Pro
 }
 
 const styles = StyleSheet.create({
+  variantPreview: {width: 100, height: 100, alignSelf: 'center', alignItems: 'center', justifyContent: 'center'},
   card: { backgroundColor: colors.surface, borderRadius: 18 }, featuredCard: { borderWidth: 1, borderColor: '#e9edea', shadowColor: '#132a1c', shadowOpacity: .06, shadowRadius: 16, shadowOffset: { width: 0, height: 8 } },
   imageWrap: { height: 158, overflow: 'hidden', alignItems: 'center', justifyContent: 'center', borderRadius: 18, backgroundColor: '#f4f6f4' }, featuredImage: { height: 176, borderBottomLeftRadius: 0, borderBottomRightRadius: 0 },
   image: { width: '100%', height: '100%', resizeMode: 'cover' },

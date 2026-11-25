@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Screen } from '@/components/Screen';
 import { useStore } from '@/store/StoreProvider';
+import { cartLinePrice, variantImageUrl } from '@/types';
 import { colors, radii, spacing } from '@/theme';
 
 const money = (value: number) => new Intl.NumberFormat('es-VE', { style: 'currency', currency: 'USD' }).format(value);
@@ -16,26 +17,28 @@ export default function ProductPage() {
   const [variantKey, setVariantKey] = useState('');
   const product = catalog?.products.find(item => item.id === id);
   if (!product) return <Screen><View style={styles.empty}><Text style={styles.title}>Producto no disponible</Text><Pressable onPress={() => router.replace('/catalog')}><Text style={styles.backLink}>Volver al catálogo</Text></Pressable></View></Screen>;
-  const available = product.available > 0;
+  const catalogVariants = product.attributes?._catalog?.variants || [];
+  const variants = catalogVariants.filter(item => item.active !== false);
+  const requiresVariant = catalogVariants.length > 0;
+  const available = product.available > 0 && (!requiresVariant || variants.length > 0);
   const maxQuantity = Math.max(1, product.available);
-  const price = product.offer_price != null && product.offer_price < product.price ? product.offer_price : product.price;
-  const onOffer = price < product.price;
-  const variants = (product.attributes?._catalog?.variants || []).filter(item => item.active !== false);
+  const price = cartLinePrice({product});
   const selectedVariant = variants.find(item => item.key === variantKey);
-  const requiresVariant = variants.length > 0;
-  const finalPrice = price + Number(selectedVariant?.price_delta || 0);
+  const onOffer = !selectedVariant && price < product.price;
+  const finalPrice = cartLinePrice({product, variant: selectedVariant});
+  const imageUrl = variantImageUrl({product, variant: selectedVariant});
   return (
     <Screen>
       <Pressable style={styles.back} onPress={() => router.back()}><Ionicons name="arrow-back" size={19} color={colors.primaryDark} /><Text style={styles.backText}>Volver</Text></Pressable>
       <View style={styles.layout}>
-        <View style={styles.imageWrap}>{product.image_url ? <Image source={{ uri: product.image_url }} style={styles.image} /> : <Ionicons name="basket-outline" size={82} color={colors.primary} />}</View>
+        <View style={styles.imageWrap}>{imageUrl ? <Image source={{ uri: imageUrl }} style={styles.image} /> : <Ionicons name="basket-outline" size={82} color={colors.primary} />}</View>
         <View style={styles.copy}>
           <View style={styles.availability}><View style={[styles.dot,!available&&styles.dotUnavailable]}/><Text style={[styles.availabilityText, !available && styles.unavailable]}>{available ? 'Disponible' : 'No disponible por ahora'}</Text></View>
           {product.brand_ref ? <Text style={styles.eyebrow}>{product.brand_ref}</Text> : null}
           <Text style={styles.title}>{product.name}</Text>
           <Text style={styles.description}>{product.description || 'Producto seleccionado y disponible para tu compra.'}</Text>
-          <View style={styles.priceRow}><Text style={[styles.price, onOffer && styles.offerPrice]}>{money(finalPrice)}</Text>{onOffer ? <Text style={styles.originalPrice}>{money(product.price + Number(selectedVariant?.price_delta || 0))}</Text> : null}</View>
-          {requiresVariant ? <View style={styles.variants}><Text style={styles.variantTitle}>Elige una combinación</Text><View style={styles.variantOptions}>{variants.map(item => <Pressable key={item.key} style={[styles.variantOption,variantKey===item.key&&styles.variantSelected]} onPress={()=>setVariantKey(item.key)} accessibilityRole="radio" accessibilityState={{selected:variantKey===item.key}}><Text style={[styles.variantText,variantKey===item.key&&styles.variantTextSelected]}>{item.label || Object.values(item.values || {}).join(' / ') || item.sku || 'Combinación'}</Text>{item.price_delta ? <Text style={styles.variantDelta}>{item.price_delta>0?'+':''}{money(item.price_delta)}</Text>:null}</Pressable>)}</View></View> : null}
+          <View style={styles.priceRow}><Text style={[styles.price, onOffer && styles.offerPrice]}>{money(finalPrice)}</Text>{onOffer ? <Text style={styles.originalPrice}>{money(product.price)}</Text> : null}</View>
+          {variants.length > 0 ? <View style={styles.variants}><Text style={styles.variantTitle}>Elige una combinación</Text><View style={styles.variantOptions}>{variants.map(item => <Pressable key={item.key} style={[styles.variantOption,variantKey===item.key&&styles.variantSelected]} onPress={()=>setVariantKey(item.key)} accessibilityRole="radio" accessibilityState={{selected:variantKey===item.key}}><Text style={[styles.variantText,variantKey===item.key&&styles.variantTextSelected]}>{item.label || Object.values(item.values || {}).join(' / ') || item.sku || 'Combinación'}</Text>{item.price_delta ? <Text style={styles.variantDelta}>{item.price_delta>0?'+':''}{money(item.price_delta)}</Text>:null}</Pressable>)}</View></View> : null}
           <View style={styles.quantityRow}><Text style={styles.quantityLabel}>Cantidad</Text><View style={styles.stepper}><Pressable style={styles.stepButton} disabled={quantity <= 1} onPress={() => setQuantity(value => Math.max(1, value - 1))} accessibilityLabel="Disminuir cantidad"><Ionicons name="remove" size={18} color={quantity <= 1 ? colors.line : colors.ink} /></Pressable><Text style={styles.quantity}>{quantity}</Text><Pressable style={styles.stepButton} disabled={!available || quantity >= maxQuantity} onPress={() => setQuantity(value => Math.min(maxQuantity, value + 1))} accessibilityLabel="Aumentar cantidad"><Ionicons name="add" size={18} color={!available || quantity >= maxQuantity ? colors.line : colors.ink} /></Pressable></View></View>
           <Pressable style={[styles.add, (!available || (requiresVariant&&!selectedVariant)) && styles.disabled]} disabled={!available || (requiresVariant&&!selectedVariant)} onPress={() => { add(product, quantity, selectedVariant); router.push('/cart'); }}><Ionicons name="bag-add-outline" size={22} color={colors.surface} /><Text style={styles.addText}>{!available ? 'Producto agotado' : requiresVariant&&!selectedVariant ? 'Selecciona una combinación' : `Agregar ${quantity} al carrito`}</Text></Pressable>
           <View style={styles.trust}><Ionicons name="shield-checkmark-outline" size={22} color={colors.primary} /><View style={styles.trustCopy}><Text style={styles.trustTitle}>Compra protegida por MasterERP</Text><Text style={styles.trustText}>El precio y el inventario se validan nuevamente al crear tu pedido.</Text></View></View>

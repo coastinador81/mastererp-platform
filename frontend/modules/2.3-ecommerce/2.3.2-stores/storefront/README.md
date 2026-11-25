@@ -74,3 +74,7 @@ debe resolver y volver a autorizar tenant, empresa, tienda y nodo, consultar las
 APIs canónicas de Catálogo e Inventario y limitar cualquier herramienta de
 Pedidos al usuario autenticado. Esta preparación frontend no acredita que el
 endpoint, el agente ni su infraestructura estén implementados o desplegados.
+
+Al seleccionar una variante, la ficha, la compra rápida y el carrito muestran
+su imagen asociada o el icono neutro. El precio de una variante sigue el precio
+base más su ajuste, como en el checkout canónico.
